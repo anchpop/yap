@@ -7551,6 +7551,7 @@ non sentirsela
 non si sa mai
 non so che
 non solo
+non solo ma anche
 non stare nella pelle
 non stare né in cielo né in terra
 non stuzzicare il can che dorme
@@ -7684,6 +7685,7 @@ não é à toa
 né capo né coda
 né carne né pesce
 né così né cosà
+né né
 né più né meno
 o così o cosà
 o la va o la spacca

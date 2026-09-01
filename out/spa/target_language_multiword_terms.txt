@@ -11300,6 +11300,7 @@ ni mu
 ni mucho menos
 ni muerto
 ni más ni menos
+ni ni
 ni olvido, ni perdón
 ni papa
 ni pensarlo
@@ -11438,8 +11439,13 @@ no mover un dedo
 no más
 no más que
 no nací ayer
+no nada
+no nadie
 no ni na
 no ni ná
+no ninguna
+no ninguno
+no nunca
 no obstante
 no otra cosa que
 no parar
@@ -11469,11 +11475,13 @@ no ser nada
 no ser para tanto
 no ser plan
 no sino
+no solo sino también
 no soltar prenda
 no sé
 no sé cuántos
 no sé qué
 no sé qué y no sé cuánto
+no sólo sino también
 no tardar en
 no te acostarás sin saber una cosa más
 no te cortes

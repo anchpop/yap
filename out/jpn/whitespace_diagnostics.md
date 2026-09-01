@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 1656343
-Total errors: 22212
-Accuracy: 98.66%
+Total predictions: 1676680
+Total errors: 20055
+Accuracy: 98.80%
 
 ## Error Patterns (sorted by frequency)
 
-### "は" + "どこ" (88 occurrences)
+### "は" + "どこ" (86 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -22,7 +22,7 @@ Accuracy: 98.66%
   - あなたが私の頭をいじってるのね！ -シーッ！
   - いいや！ - 言ってない？！
 
-### "は" + "どう" (81 occurrences)
+### "は" + "どう" (82 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -30,23 +30,15 @@ Accuracy: 98.66%
   - あなたのお母さんは どうやって死んだのですか？
   - あなたのような召使いは どうあるべきか知ってますね？
 
-### "？" + "何" (67 occurrences)
+### "？" + "何" (66 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ああ？ 何？
   - あの石は何だ？ 何の重石だ？
-  - あれ？ 何か悪い？
+  - えっ 腹？ 腹… 時計？ 何 これ？
 
-### "？" + "-" (58 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは聞いたの ジム？ -いや なに？
-  - あなたは誰なの？ - それのほうがいい。
-  - あなたは誰なの？ -私は真実を言っています。
-
-### "か" + "?" (57 occurrences)
+### "か" + "?" (59 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -54,7 +46,15 @@ Accuracy: 98.66%
   - あんたもテロの仲間か ?
   - これから なんて呼ぼうか ?
 
-### "！" + "（" (50 occurrences)
+### "？" + "-" (59 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたは聞いたの ジム？ -いや なに？
+  - あなたは誰なの？ - それのほうがいい。
+  - あなたは誰なの？ -私は真実を言っています。
+
+### "！" + "（" (46 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -62,7 +62,7 @@ Accuracy: 98.66%
   - うわ～！ （メイ） 待って！
   - う～ん… 赤！ （のり子） 赤！
 
-### "は" + "何" (43 occurrences)
+### "は" + "何" (44 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -70,7 +70,7 @@ Accuracy: 98.66%
   - あいつは 何を言っている？
   - あなたは 何を求めてるの?
 
-### "？" + "どこ" (43 occurrences)
+### "？" + "どこ" (40 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -78,7 +78,7 @@ Accuracy: 98.66%
   - あいつはどこだ？ どこにいるんだ？
   - あいつらは？ どこだ？
 
-### "？" + "それ" (39 occurrences)
+### "？" + "それ" (37 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -86,29 +86,45 @@ Accuracy: 98.66%
   - あなたはエンジニアなの？ それともお医者さん？
   - いいな？ それとも またやるか？
 
-### "！" + "何" (33 occurrences)
+### "）" + "（" (31 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あそこだ！ シータがいる！ 何!
-  - あっ！ 何ということだ！ 人間に化けている！
-  - あなた 何してるの！ やめなさい！ 何をしてるの！
-
-### "？" + "どう" (30 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お母さんに何かあったの？ どうしよう お父さん！
-  - ちょっと… 何だ？ どうなってんだ これ!
-  - どうでい？ どうでい？
-
-### "）" + "（" (29 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
+  - ハッキングです （警報音） （安城三尉）どうした？
   - （たのしい音楽） （おソノ）わあ！
   - （なぐる音） （捨丸）ううっ！
-  - （カミナリの音） （キキ）わあーっ！
+
+### "？" + "どう" (31 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ 何なに？ どうしたの？
+  - お母さんに何かあったの？ どうしよう お父さん！
+  - どうでい？ どうでい？
+
+### "！" + "何" (28 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ 何ということだ！ 人間に化けている！
+  - あなた 何してるの！ やめなさい！ 何をしてるの！
+  - え ちょっと！ 何よ！
+
+### "。" + "-" (27 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ―何と感動的な悲しみの表現でしょう。 -ああ、シズ。
+  - あなたはここにいてください。 -何？
+  - お殿様は・それを・続けてください。 - シヴァ神万歳！
+
+### "は" + "誰" (27 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ、でもお前は 誰かの女なんだろう、ショーン？
+  - あなたは ほかには 誰だったの？
+  - あの女は 誰かしら？
 
 ### "一体" + "何" (27 occurrences)
 - Predicted: None
@@ -118,61 +134,29 @@ Accuracy: 98.66%
   - こいつは一体 何だ？
   - これは一体 何だ？
 
-### "！" + "早く" (27 occurrences)
+### "？" + "なぜ" (27 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ 早く下ろせ！
-  - あれだ あの石だ！ 早く隣の部屋へ。
-  - おい 開門だ！ 早く開けろ！
-
-### "？" + "誰" (27 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは誰？ 誰なの？
-  - いつも同じ服着てるな ここに友達は？ 誰もいないのか？
-  - どういう意味だ？ 誰がデイブを車に乗せたんだ？
-
-### "。" + "-" (26 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ―何と感動的な悲しみの表現でしょう。 -ああ、シズ。
-  - あなたはここにいてください。 -何？
-  - お母さん。 - 今何時ですか？
-
-### "。" + "うん" (26 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いってくるね。 うん。
-  - いないね。 うん。
-  - うん。 うん。
-
-### "は" + "誰" (26 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ、でもお前は 誰かの女なんだろう、ショーン？
-  - あなたは ほかには 誰だったの？
-  - あの女は 誰かしら？
-
-### "？" + "なぜ" (26 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
+  - ”たち”って複数？ なぜ銃を持ってこいと言わなかった？
   - あなたは どなた？ なぜ 私たちの名前を知ってるの？
   - あなたは誰だ？ なぜあなたは私のところに来たのですか？
-  - あなた流のユーモア？ なぜこんなモノを？
 
-### "に" + "何" (25 occurrences)
+### "に" + "何" (26 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたはお母さんに 何を望んでるの？
   - あの家族とラモンに 何があった？
   - その状況で心理的に 何をするだろう？
+
+### "？" + "誰" (26 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたは誰？ 誰なの？
+  - いつも同じ服着てるな ここに友達は？ 誰もいないのか？
+  - どういう意味だ？ 誰がデイブを車に乗せたんだ？
 
 ### "は" + "?" (25 occurrences)
 - Predicted: None
@@ -190,13 +174,21 @@ Accuracy: 98.66%
   - お前は誰だ ?
   - それは誰だ ?
 
-### "？" + "私" (22 occurrences)
+### "は" + "いつ" (22 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ええっ？ 私を男だと思ったの？
-  - ちょっと短か過ぎない？ 私 このほうが好き。
-  - できるの？ 私と一緒にいて幸せだった？
+  - この階層には いつまで？
+  - では いつ なぜこの状況が変わったのでしょうか?
+  - アメリカには いつ来たの？
+
+### "！" + "早く" (22 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ 早く下ろせ！
+  - おい 開門だ！ 早く開けろ！
+  - おりろ！ 早くおりろ！
 
 ### "のに" + "なぜ" (21 occurrences)
 - Predicted: None
@@ -206,37 +198,29 @@ Accuracy: 98.66%
   - そんなにきついのに なぜあんなに踊ったんだ？
   - そんなに楽しいのに なぜ銀行詐欺の部署に？
 
-### "は" + "いつ" (21 occurrences)
+### "？" + "私" (21 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この階層には いつまで？
-  - では いつ なぜこの状況が変わったのでしょうか?
-  - アメリカには いつ来たの？
+  - ええっ？ 私を男だと思ったの？
+  - ちょっと短か過ぎない？ 私 このほうが好き。
+  - できるの？ 私と一緒にいて幸せだった？
 
-### "は" + "私" (20 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは 私がここから出るのを 手伝ってくれないの？
-  - あのコは 私の最後の弟子なのに…。
-  - あの夜、ボクが私に言ったのは 私は美しかった。
-
-### "！" + "私" (20 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ お父さん！ 私 サツキ！
-  - あなたが欲しいのは私よ！ 私よ！
-  - あら！ 私は上がったんでしょうか？
-
-### "？" + "（" (20 occurrences)
+### "？" + "（" (21 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おじさん リサ知らない？ （青年） リサさん？
   - これくらいあったほうが安心だろ？ （将也）は？
   - 僕 いいもの持ってるか？ （ヨシエ） 持ってる！
+
+### "。" + "うん" (20 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いないね。 うん。
+  - うん。 うん。
+  - お姉ちゃん よかったね。 うん。
 
 ### "で" + "何" (19 occurrences)
 - Predicted: None
@@ -246,21 +230,13 @@ Accuracy: 98.66%
   - この新しいドイツで 何を書けばいいのか？
   - こんな所で 何してる？
 
-### "！" + "この" (19 occurrences)
+### "は" + "私" (18 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あいつら海賊だ！ この子を狙ってるんだ！
-  - いい音だ！ このエンジンは当たりだぜ！
-  - お前は 兄貴を殺したんだ！ このクソ野郎が！
-
-### "は" + "もう" (18 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの夜の事は もう 考えないほうがいいと思うよ。
-  - おまえは もう ここに住めない！
-  - お父上は もうご高齢で？
+  - あなたは 私がここから出るのを 手伝ってくれないの？
+  - あの夜、ボクが私に言ったのは 私は美しかった。
+  - お前は 私を騙したつもり？
 
 ### "？" + "?" (18 occurrences)
 - Predicted: None
@@ -270,22 +246,6 @@ Accuracy: 98.66%
   - いたの？ ?
   - お互いを愛し合っているか？ ?
 
-### "？" + "うん" (18 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ それ保育園に持って行くの？ うん。
-  - あの木？ うん。
-  - これ？ うん。
-
-### "…" + "何" (17 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ… 何のまねだ？
-  - ああ さっきの… 何？ ご用？
-  - それを聞いたら怖くて… 何か忠告を頂けます？
-
 ### "で" + "どう" (17 occurrences)
 - Predicted: None
 - Actual: Space
@@ -293,6 +253,14 @@ Accuracy: 98.66%
   - それで どうされました？
   - それで どうする？
   - それで どうなの？
+
+### "は" + "もう" (17 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あの夜の事は もう 考えないほうがいいと思うよ。
+  - おまえは もう ここに住めない！
+  - お前は もう行け！
 
 ### "だ" + "いい" (16 occurrences)
 - Predicted: None
@@ -302,13 +270,21 @@ Accuracy: 98.66%
   - あとの話はそれからだ いいな？
   - そこのベンチで待ってるんだ いいな？
 
-### "は" + "いい" (16 occurrences)
+### "だ" + "お前" (16 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたのいるここは いい環境？
-  - お母さんは いいの!
-  - そんなはずはないわ！ ポルコは いい人だもの！
+  - いや パッツ人だ お前は？
+  - お前の写真 すごく気に入ったそうだ お前の写真に夢中だ！
+  - そうだ お前は俺を撃った！
+
+### "は" + "あなた" (16 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたは あなたはいい人だ。
+  - お母さんの生命保険は あなたのものよ！
+  - きっと 妹は あなたの同族なんだ。
 
 ### "を" + "どう" (16 occurrences)
 - Predicted: None
@@ -318,22 +294,6 @@ Accuracy: 98.66%
   - お前たち 俺の頭を どうしやがった！
   - こいつらを どうする？
 
-### "！" + "これ" (16 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あった！ これだ！
-  - うわっ！ これが お城!
-  - きんだ！ きんだ！ これ わしにくれるのか？
-
-### "だ" + "お前" (15 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや パッツ人だ お前は？
-  - お前の写真 すごく気に入ったそうだ お前の写真に夢中だ！
-  - そうだ お前は俺を撃った！
-
 ### "なぜ" + "そんな" (15 occurrences)
 - Predicted: None
 - Actual: Space
@@ -342,45 +302,29 @@ Accuracy: 98.66%
   - なぜ そんなことを？
   - なぜ そんなに 確信が持てる？
 
-### "は" + "あなた" (15 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは あなたはいい人だ。
-  - お母さんの生命保険は あなたのものよ！
-  - きっと 妹は あなたの同族なんだ。
-
-### "は" + "ここ" (15 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは ここから 出ることもできずに 私と死ぬの。
-  - ええと あなたとベッキーは ここに残って飾り付けよ ね？
-  - おう 橋向こうの者は ここさ来い!
-
 ### "は" + "まだ" (15 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
+  - あぁ ごめんね 赤ちゃんは まだスープを飲めないの。
   - お茶は まだか？
   - ここには まだ “コードＲ”が？
-  - この基地では まだ“コードＲ”が横行を？
 
-### "？" + "これ" (15 occurrences)
+### "！" + "この" (15 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 「竜の巣」？ これが…。
-  - えっ？ これ！ 姫様！
-  - どうだい？ これは フォルゴーレじゃねえか！
+  - お前は 兄貴を殺したんだ！ このクソ野郎が！
+  - それはお前だ！ この小汚いディーゼルめ！
+  - ちょっと！ この数字は何なの？
 
-### "？" + "俺" (15 occurrences)
+### "！" + "私" (15 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いるんだろ？ 俺の体の中に！
-  - どうして 彼に金を渡した？ 俺たちと話すためか？
-  - どうだ？ 俺がクールに聞こえたか？
+  - あっ お父さん！ 私 サツキ！
+  - あなたが欲しいのは私よ！ 私よ！
+  - あら！ 私は上がったんでしょうか？
 
 ### "…" + "（" (14 occurrences)
 - Predicted: None
@@ -398,21 +342,13 @@ Accuracy: 98.66%
   - なぜ 私が持っていてはいけないのですか？
   - なぜ 私が？
 
-### "！" + "もう" (14 occurrences)
+### "？" + "俺" (14 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いぃやぁ！ もうとんでもないっす！
-  - がんばれ！ もうちょっとだ！
-  - これだよ！ もう子守りは しないぞ。
-
-### "が" + "なぜ" (13 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたのような方が なぜ砂漠なんかに？
-  - この汚い手帳が なぜ それほど大事なのかね？
-  - だが なぜ現れた？
+  - いるんだろ？ 俺の体の中に！
+  - どうして 彼に金を渡した？ 俺たちと話すためか？
+  - どうだ？ 俺がクールに聞こえたか？
 
 ### "だ" + "何" (13 occurrences)
 - Predicted: None
@@ -422,37 +358,21 @@ Accuracy: 98.66%
   - これはジェネシス波だ 何だと？
   - でも 作戦が不明だ 何をする？
 
-### "よ" + "何" (13 occurrences)
+### "！" + "さあ" (13 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - それ…重傷ですよ 何で？
-  - だって おかしいわよ 何もしてないなら。
-  - どうするのよ 何か計画は？
+  - くそったれ！ さあ！
+  - ここだ！ さあ！ 急げ！
+  - ほら！ 安いよ！ さあ！
 
-### "！" + "ここ" (13 occurrences)
+### "！" + "もう" (13 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あ ここ！ ここが気になって！
-  - あ！ ここって！
-  - ここだ！ ここだ！
-
-### "！" + "こっち" (13 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ～っ！ こっちへ来るぞ！
-  - おいで！ こっちだよ！
-  - おっと！ こっちの道じゃねえ。
-
-### "！" + "俺" (13 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - “誰だ”とは何だ！ 俺が敵に見えるか？
-  - うるさい！ 俺に命令すんな～！
-  - ここに残るぞ！ 俺はここに住むんだ！
+  - いぃやぁ！ もうとんでもないっす！
+  - がんばれ！ もうちょっとだ！
+  - これだよ！ もう子守りは しないぞ。
 
 ### "？" + "あなた" (13 occurrences)
 - Predicted: None
@@ -462,13 +382,13 @@ Accuracy: 98.66%
   - あなたは誰？ あなたは誰？
   - え？ あなたに？
 
-### "が" + "ある" (12 occurrences)
+### "なら" + "なぜ" (12 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いろんな可能性が あるだろ？
-  - お前にも面白い話が あるだろう？
-  - ぜひ見てもらいたいものが あるんだ。
+  - それが真相なら なぜ 召喚ですか？
+  - そんなに安全なら なぜ開けなかった？
+  - そんなに良いことなら なぜ彼は震えているのでしょう?
 
 ### "は" + "ない" (12 occurrences)
 - Predicted: None
@@ -478,53 +398,53 @@ Accuracy: 98.66%
   - ハッキングできない システムは ない！
   - ヒロシマでは ない！
 
-### "！" + "さあ" (12 occurrences)
+### "よ" + "何" (12 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - くそったれ！ さあ！
-  - ここだ！ さあ！ 急げ！
-  - ほら！ 安いよ！ さあ！
+  - それ…重傷ですよ 何で？
+  - どうするのよ 何か計画は？
+  - わかったよ 何の話だ？
 
-### "！" + "どう" (12 occurrences)
+### "！" + "ここ" (12 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うるさい！ 黙れ！ どうやったんだ？
-  - ちくしょう！ どうしたんだ スモーク？
-  - よく考えろ！ どうするか明日返事しろ！
+  - あ ここ！ ここが気になって！
+  - あ！ ここって！
+  - ここだ！ ここだ！
 
-### "？" + "もう" (12 occurrences)
+### "！" + "これ" (12 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたは大事な人なの、いい？ もうやらないよね？
-  - えっ？ もう…。
-  - けがは？ もう だいじょうぶなの？
+  - きんだ！ きんだ！ これ わしにくれるのか？
+  - だまれ！ これも盗んだのか？
+  - もちろん！ これは強力な儀式です！
 
-### "が" + "いい" (11 occurrences)
+### "？" + "これ" (12 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - まさか みんなが いいと言ったら？
-  - もう 戻った方が いいんじゃないですかねぇ？
-  - 墓地の方が いいんじゃないか？
+  - えっ？ これ！ 姫様！
+  - どちらが良い？ これか？
+  - もしもし？聞こえる？ これ覚えてる？
 
-### "が" + "この" (11 occurrences)
+### "が" + "ある" (11 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この石が この海の世界を 作ったのですか？
-  - すべての枢機卿が この願望を持っている。
-  - そこら中で サリマンの手先が この家を捜し回っているよ。
+  - いろんな可能性が あるだろ？
+  - お前にも面白い話が あるだろう？
+  - どの本にも出てないことが あるのか？
 
-### "じゃ" + "ない" (11 occurrences)
+### "が" + "なぜ" (11 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お父さん もう 帰りたいんじゃ ないんですか?
-  - すごいことじゃ ないか？
-  - ねっ いつでも会えるわけじゃ ないんだよ。
+  - あなたのような方が なぜ砂漠なんかに？
+  - この汚い手帳が なぜ それほど大事なのかね？
+  - だが なぜ現れた？
 
 ### "は" + "いかが" (11 occurrences)
 - Predicted: None
@@ -532,23 +452,15 @@ Accuracy: 98.66%
 - Examples:
   - お仕事は いかが？
   - ご機嫌は いかがですかな？
-  - アイスクリームは いかが？
+  - アイスクリームは いかが？ ドドンと張ってみろ！
 
-### "は" + "お前" (11 occurrences)
+### "は" + "ここ" (11 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この地球上で心優しい男は お前だけか？
-  - この辺の畑 荒らしとったんは お前やな！
-  - これは お前の仕事！
-
-### "は" + "それ" (11 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前の仲間は それで満足なのか？
-  - ここをヤツらから守るには それしかないよ。
-  - それは それは。 この者達は？
+  - ええと あなたとベッキーは ここに残って飾り付けよ ね？
+  - おう 橋向こうの者は ここさ来い!
+  - きっと うまくいく。 あの子たちの家は ここだけよ。
 
 ### "は" + "なぜ" (11 occurrences)
 - Predicted: None
@@ -558,29 +470,13 @@ Accuracy: 98.66%
   - あなたは なぜ結婚しない？
   - おれは なぜ生きる？
 
-### "も" + "いい" (11 occurrences)
+### "！" + "どう" (11 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんたも いい男になっちまったねぇ。
-  - そこでは空賊も賞金稼ぎも いいコにしてるってよ。
-  - オレが持ってても いいかい？
-
-### "！" + "お前" (11 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このバカ者め！ お前は我々を破滅させたんだ！
-  - この愚か者！ お前は 愛のことしか考えんのか！
-  - もっと水を！ お前ら 一緒に来い！
-
-### "！" + "それ" (11 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ！ それ行け！
-  - いいや！ それはない！
-  - え～！ それ魔法使いじゃないの!
+  - うるさい！ 黙れ！ どうやったんだ？
+  - ちくしょう！ どうしたんだ スモーク？
+  - よく考えろ！ どうするか明日返事しろ！
 
 ### "！" + "ポニョ" (11 occurrences)
 - Predicted: None
@@ -598,6 +494,14 @@ Accuracy: 98.66%
   - どうして？ いつ？
   - どこで？ いつ？
 
+### "？" + "うん" (11 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ それ保育園に持って行くの？ うん。
+  - あの木？ うん。
+  - ジョウジョウ？ うん。
+
 ### "？" + "大丈夫" (11 occurrences)
 - Predicted: None
 - Actual: Space
@@ -606,29 +510,13 @@ Accuracy: 98.66%
   - どうした？ 大丈夫かい？
   - どうした？ 大丈夫か？
 
-### "…" + "あっ" (10 occurrences)
+### "…" + "何" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あはっ… あっ ねえ 次私もっ！
-  - いいかげんに… あっ！
-  - うう… あっ！
-
-### "おい" + "どう" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい どうした?
-  - おい どうしたんだい?
-  - おい どうした？
-
-### "だ" + "この" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そこから入るんだ このバカ者め！
-  - どうだ このまま続けるか？
-  - なんなんだ このクソ家族は？
+  - ああ さっきの… 何？ ご用？
+  - それを聞いたら怖くて… 何か忠告を頂けます？
+  - でも… 何です？
 
 ### "だ" + "どこ" (10 occurrences)
 - Predicted: None
@@ -646,85 +534,53 @@ Accuracy: 98.66%
   - どいてな 何が必要だい？
   - な 何だとぉー？
 
-### "なら" + "なぜ" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それが真相なら なぜ 召喚ですか？
-  - そんなに安全なら なぜ開けなかった？
-  - どこに？ 近くにいるなら なぜ来ないんです？
-
-### "に" + "どう" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたが勉強せずに どうやってこの娘を結婚させるの？
-  - やあ 一緒に どう？
-  - ギータに どうやって伝えるの？
-
 ### "に" + "私" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたの新聞に 私の写真が載るのを待ってるわ！
-  - あなたは ここから 出ることもできずに 私と死ぬの。
   - そして今、あなたは私に 私に言うのか？
+  - クリスマスに 私が欲しいのは あなた！
 
-### "は" + "君" (10 occurrences)
+### "は" + "いい" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの少年の運命は 君が握っているんだよ。
-  - いえ 説明するのは 君のほうですよ！
-  - こいつは 君の手にある時にしか働かない。
+  - あなたのいるここは いい環境？
+  - お母さんは いいの!
+  - サンティアゴは いい兵士だったと？
 
-### "ハァ" + "ハァ" (10 occurrences)
+### "は" + "お前" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた ちょっと下りて ハァ ハァ…。
-  - うるさいわね ハァ ハァ…。
-  - ハァ ハァ ちょっと待ちなさい！
+  - この地球上で心優しい男は お前だけか？
+  - この辺の畑 荒らしとったんは お前やな！
+  - これは お前の仕事！
 
-### "！" + "その" (10 occurrences)
+### "は" + "どんな" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いいぞ！ その調子！
-  - おい ジョジョうさぎ！ その顔はどうしたんだ？
-  - そうか！ その手もあったな フフフフ…。
+  - しょーちゃんは どんな高校 行ってるの？
+  - そうなら そいつは どんな男だ？
+  - ギバリアンは どんな死に方だった？
 
-### "！" + "どこ" (10 occurrences)
+### "！" + "こっち" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ((ベルリーニ 待て！ どこへ行く!
-  - うまいじゃないか！ どこが！
-  - おい ゴラム！ どこだ？
+  - おいで！ こっちだよ！
+  - きた！ こっちだよー！！
+  - ここだ！ こっちだ！
 
-### "？" + "この" (10 occurrences)
+### "？" + "もう" (10 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この会合に出席しましたか？ この会議に出席しましたか？
-  - この名前はどう発音するのですか？ この名前は？
-  - どう？ この刀に見覚えが？
-
-### "？" + "そう" (10 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お話…？ そうだなぁ…。
-  - じゃあ 黙っていればいいと？ そう言いたいのかしら？
-  - そうだろ、ムニ？ そうだよね？
-
-### "。" + "この" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あった。 この井戸も描いてた。
-  - それは それは。 この者達は？
-  - もう…。 この黒いところは どこへ行くの？
+  - あなたは大事な人なの、いい？ もうやらないよね？
+  - けがは？ もう だいじょうぶなの？
+  - どうだ？ もう一度やるか？
 
 ### "。" + "私" (9 occurrences)
 - Predicted: None
@@ -733,14 +589,6 @@ Accuracy: 98.66%
   - いつもと同じ。 私たちはイタリアにいる。
   - お前は 街が好きになるよ、 ベン。 私には わかってる。
   - お願いします。 私は、家に帰りたいです。
-
-### "。" + "（" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あらあら。 （トキ） 宗介ちゃん。
-  - お世話さま。 （保母） ご苦労さま。
-  - どうかな？ 体の具合は。 （サリマン） おそれいります。
 
 ### "。" + "－" (9 occurrences)
 - Predicted: None
@@ -758,13 +606,21 @@ Accuracy: 98.66%
   - おい おい おい おい そこを片付けろ いいな？
   - おい おい おい おい そこを片付けろ いいな？
 
-### "おい" + "何" (9 occurrences)
+### "おい" + "どう" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おい 何があった？
-  - おい 何が見える？
-  - おい 何すんだ？
+  - おい どうした?
+  - おい どうしたんだい?
+  - おい どうした？
+
+### "が" + "この" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この石が この海の世界を 作ったのですか？
+  - すべての枢機卿が この願望を持っている。
+  - それが この穴の目的か？
 
 ### "が" + "私" (9 occurrences)
 - Predicted: None
@@ -774,6 +630,14 @@ Accuracy: 98.66%
   - お言葉ですが 私には そんな力はありません！
   - その権利が 私にあるだろうか？
 
+### "じゃ" + "ない" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん もう 帰りたいんじゃ ないんですか?
+  - すごいことじゃ ないか？
+  - ねっ いつでも会えるわけじゃ ないんだよ。
+
 ### "だ" + "-" (9 occurrences)
 - Predicted: None
 - Actual: Space
@@ -782,13 +646,13 @@ Accuracy: 98.66%
   - そうだ -分かったな？
   - テレンス・マンだ -彼の？
 
-### "で" + "私" (9 occurrences)
+### "と" + "言った" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おかげで 私は 掃除婦として働いているけど。
-  - その 湧き上がる感情で 私は 病んでしまった。
-  - その件で 私たちに 石田を責める権利ないでしょ？
+  - “誰も信用するな”と 言っただろう？
+  - それで何と 言ったんだっけ？
+  - でも 好きな時に帰れると 言ったでしょ？
 
 ### "なぜ" + "ここ" (9 occurrences)
 - Predicted: None
@@ -798,29 +662,13 @@ Accuracy: 98.66%
   - なぜ ここでするんだ？
   - なぜ ここに 来ようと言ったの？
 
-### "に" + "いる" (9 occurrences)
+### "に" + "どう" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - さて 君はなぜここに いるのか分かってるか？
-  - そこに いるのか？
-  - どこに いるの ぼう！！
-
-### "は" + "いつも" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おじいちゃんは いつも言ってたわ。
-  - お話は いつも私を 悪者に描いてる。
-  - この手紙は いつものように？
-
-### "は" + "この" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お静かに！ 皆さんは この神聖な試練の立会人です。
-  - さあ おめえは この話をどこから知ってるんだ？
-  - その友人は この中にいますか？
+  - あなたが勉強せずに どうやってこの娘を結婚させるの？
+  - やあ 一緒に どう？
+  - ギータに どうやって伝えるの？
 
 ### "は" + "どの" (9 occurrences)
 - Predicted: None
@@ -830,61 +678,37 @@ Accuracy: 98.66%
   - では どの呪文から始めますか?
   - スポック、彼ら士官候補生は どのくらい、頼りになる？
 
-### "は" + "どんな" (9 occurrences)
+### "も" + "いい" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - しょーちゃんは どんな高校 行ってるの？
-  - ギバリアンは どんな死に方だった？
-  - フィスクは どんな夜を過ごすのだろう？
+  - オレが持ってても いいかい？
+  - オレンジソーダでも いいんじゃないか？
+  - 僕も いいですか？
 
-### "も" + "そう" (9 occurrences)
+### "！" + "それ" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この前も そうだったの。
-  - でも そうならば？
-  - シータ。 お願い… パズーも そうしろって。
+  - いいぞ！ それ行け！
+  - いいや！ それはない！
+  - その通り！ それこそ ボヘミアン革命の魂だ！
 
-### "よ" + "私" (9 occurrences)
+### "！" + "俺" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いいのよ 私達 歩くから。
-  - お乳が出るんですよ 私！
-  - その為の英語よ 私を責めないで！
+  - “誰だ”とは何だ！ 俺が敵に見えるか？
+  - うるさい！ 俺に命令すんな～！
+  - ここに残るぞ！ 俺はここに住むんだ！
 
-### "！" + "やめて" (9 occurrences)
+### "？" + "この" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おい、おい！ やめてよ！
-  - ねえ！ やめてよ！
-  - やめて下さい！ お願いだ！ やめて！
-
-### "！" + "今" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ 帰りたい！ 今すぐに！
-  - あっ パズー！ シータ！ 今 行く！
-  - ありがとう！ 今は大丈夫で～す！
-
-### "？" + "あれ" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの水を張ったやつ？ あれか？
-  - あれ？ あれ？
-  - あれ～？ あれ～？
-
-### "…" + "ああっ" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ… ああっ！
-  - あっ あっ… ああっ！
-  - あっ… ああっ…。
+  - この会合に出席しましたか？ この会議に出席しましたか？
+  - この名前はどう発音するのですか？ この名前は？
+  - どう？ この刀に見覚えが？
 
 ### "…" + "あの" (8 occurrences)
 - Predicted: None
@@ -894,14 +718,6 @@ Accuracy: 98.66%
   - あ… あの 覚えてる？
   - しかしあれは… あの少年を攻撃するのか？
 
-### "…" + "これ" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた… これは夢なの？
-  - これ… これだよぉ。
-  - これって… これって もしかして！
-
 ### "、" + "シアーシャ" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -909,6 +725,14 @@ Accuracy: 98.66%
   - あぁ、 シアーシャ。
   - ああ、 シアーシャ。
   - やったよ、 シアーシャ！
+
+### "おい" + "何" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい 何があった？
+  - おい 何が見える？
+  - おい 何すんだ？
 
 ### "か" + "何" (8 occurrences)
 - Predicted: None
@@ -918,13 +742,21 @@ Accuracy: 98.66%
   - レイ、何が問題なのか 何が問題なんだ？
   - 何だ？ 卵でこの騒ぎか 何をカッカしてる？
 
-### "が" + "その" (8 occurrences)
+### "が" + "いい" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなた自身が その男児だと？
-  - すべてがあったが その終わりは？
-  - すまんが その石をしまってくれんか。
+  - まさか みんなが いいと言ったら？
+  - もう 戻った方が いいんじゃないですかねぇ？
+  - 墓地の方が いいんじゃないか？
+
+### "が" + "どう" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それが どうした？ 役に立つのか？
+  - それが どう付着したのか？
+  - できることはしてますが どうにもなりません！
 
 ### "が" + "何" (8 occurrences)
 - Predicted: None
@@ -934,13 +766,13 @@ Accuracy: 98.66%
   - この子が 何を？
   - それが 何か？
 
-### "だ" + "誰" (8 occurrences)
+### "だ" + "この" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの世はどうだ 誰かいたか?
-  - お終いだ 誰も何も得られない！
-  - その通りだ 誰が対策する アンタか？
+  - そこから入るんだ このバカ者め！
+  - どうだ このまま続けるか？
+  - なんなんだ このクソ家族は？
 
 ### "と" + "思う" (8 occurrences)
 - Predicted: None
@@ -949,14 +781,6 @@ Accuracy: 98.66%
   - なぜだと 思う？
   - イマムが受け取ると 思うのか？
   - 何だと思ってると 思う？
-
-### "と" + "言った" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - “誰も信用するな”と 言っただろう？
-  - それで何と 言ったんだっけ？
-  - でも 好きな時に帰れると 言ったでしょ？
 
 ### "に" + "ここ" (8 occurrences)
 - Predicted: None
@@ -974,6 +798,38 @@ Accuracy: 98.66%
   - スウェーデンの ?
   - ビルが崩れても 平気なの ?
 
+### "は" + "いつも" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お話は いつも私を 悪者に描いてる。
+  - この手紙は いつものように？
+  - さあ、カリフォルニは いつも火事があるじゃない？
+
+### "は" + "この" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お静かに！ 皆さんは この神聖な試練の立会人です。
+  - さあ おめえは この話をどこから知ってるんだ？
+  - その友人は この中にいますか？
+
+### "は" + "それ" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前の仲間は それで満足なのか？
+  - そうだなあ、王と娘は それほど意見が一致してないな。
+  - なぜ彼は それに賭ける？
+
+### "は" + "君" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いえ 説明するのは 君のほうですよ！
+  - この家は 君の時間だけで動く！
+  - この椅子は 君のお母さんの形見なのか？
+
 ### "も" + "どう" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -982,14 +838,6 @@ Accuracy: 98.66%
   - そんなの知ってるよ でも どう測るの？
   - でも どうしたんだ？
 
-### "も" + "私" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいわ！ でも 私 もう決めたから。
-  - この石を受け継ぐ時 その名前も 私 継いだの。
-  - でも 私 今の暮らしが気に入ってるから。
-
 ### "よ" + "-" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -997,6 +845,14 @@ Accuracy: 98.66%
   - ”苦痛”だよ -なぜ彼と？
   - おいでよ -ダンス？
   - これは多分罰を与えられているんですよ -罰ですか？
+
+### "よ" + "私" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いいのよ 私達 歩くから。
+  - お乳が出るんですよ 私！
+  - その為の英語よ 私を責めないで！
 
 ### "を" + "知ってる" (8 occurrences)
 - Predicted: None
@@ -1022,37 +878,37 @@ Accuracy: 98.66%
   - ダメ ダメ ダメ ダメ！
   - ダメ ダメ ダメ ダメ！
 
-### "！" + "あっ" (8 occurrences)
+### "！" + "お前" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ あっ ごめん！
-  - うわっ！ あっ！
-  - わあ！ あっ！
+  - ああ 兄弟！ お前は上手くやったよ！
+  - このバカ者め！ お前は我々を破滅させたんだ！
+  - この愚か者！ お前は 愛のことしか考えんのか！
 
-### "！" + "あの" (8 occurrences)
+### "！" + "どこ" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あ～！ あの家？
-  - お父さん！ あのラジオちょうだい！
-  - そうだ！ あの地図だよ！
+  - おい ゴラム！ どこだ？
+  - せん！ せん！ どこだ！
+  - ちょっと！ どこ行くと!
 
-### "！" + "みんな" (8 occurrences)
+### "！" + "今" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああ 頼むよ！ みんなバカなんだ！
-  - ああっ！ みんな捕まってるわ！
-  - あっ！ こいつ…！ みんな逃げて！ あ～っ！
+  - ああ 帰りたい！ 今すぐに！
+  - ありがとう！ 今は大丈夫で～す！
+  - つまみ出せ！ 今すぐだ！
 
-### "！" + "やった" (8 occurrences)
+### "！" + "君" (8 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - つけ！ やった！
-  - やった！ やったぞ！
-  - やった！ やったよ シアーシャ！
+  - あー！ 君なのか！
+  - いかん！ 君達に それは強すぎる！
+  - クー！ 君は扉を踏んでる！ そこをどいて！
 
 ### "！" + "誰" (8 occurrences)
 - Predicted: None
@@ -1062,14 +918,6 @@ Accuracy: 98.66%
   - いい加減にしろ！ 誰だ！
   - うん！ 誰か、彼女を殺して！
 
-### "）" + "これ" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ソフィー） これ 仕上げちゃう 楽しんで来て。
-  - （マルクル） これは町長殿か。
-  - （ムスカ） これは私の機関の仕事です。
-
 ### "？" + "どういう" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1078,21 +926,13 @@ Accuracy: 98.66%
   - なぜ父は死んだの？ どういう意味があるの？
   - 仕事？ どういうこと？
 
-### "？" + "ん" (8 occurrences)
+### "…" + "あっ" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああ どうだ？ ん？
-  - あ？ ん？
-  - いいコだろう？ ん？
-
-### "？" + "僕" (8 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたは？ 僕に何の用だ？
-  - このためにイポへ？ 僕をナメてますか？
-  - どこにいるんだ？ 僕の声は聞こえてる？
+  - あ… あっ！
+  - あはっ… あっ ねえ 次私もっ！
+  - いいかげんに… あっ！
 
 ### "、" + "あなた" (7 occurrences)
 - Predicted: None
@@ -1117,14 +957,6 @@ Accuracy: 98.66%
   - お前は 街が好きになるよ、 ベン。 私には わかってる。
   - なぜ そんなに泣く、 ベン？
   - まだたくさん 時間はあるわ、 ベン。
-
-### "。" + "そう" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おいしい。 そうかい。
-  - お母さんを 失った。 そうだろう？
-  - ほんの子どもなのに。 そうだろう？
 
 ### "。" + "それ" (7 occurrences)
 - Predicted: None
@@ -1158,22 +990,6 @@ Accuracy: 98.66%
   - お前の雇い主が お前を殺さないとどうしてわかる？
   - それが お前の気分を 最悪にしてる。
 
-### "が" + "そう" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この俺が そう簡単に くたばって堪るか！
-  - これが そうなのでしょうか？
-  - さっきの人が そう言っておったぞ。
-
-### "が" + "どう" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それが どう付着したのか？
-  - できることはしてますが どうにもなりません！
-  - なにが どうしたの？
-
 ### "が" + "どこ" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1182,21 +998,13 @@ Accuracy: 98.66%
   - キリストが どこにいる？
   - 奴隷解放宣言の精神が どこに生きてる？
 
-### "じゃ" + "何" (7 occurrences)
+### "じゃ" + "なぜ" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - じゃ 何がうまい？
-  - じゃ 何だなぁ あんたらも じきに非合法になるな。
-  - じゃ 何に見える？
-
-### "だ" + "これ" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あれは ただの空想なんだ これは父さんが描いた想像図。
-  - ちょっと… 何だ？ どうなってんだ これ!
-  - テレビで見たんだ これ何ていう映画？
+  - じゃ なぜ文句を？
+  - じゃ なぜ検非違使で その話をしなかったんだ？
+  - じゃ なぜ私は入れた？
 
 ### "だ" + "君" (7 occurrences)
 - Predicted: None
@@ -1206,21 +1014,21 @@ Accuracy: 98.66%
   - クレリチだ 君は?
   - ロベルトだ 君は？
 
-### "って" + "言った" (7 occurrences)
+### "だ" + "誰" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた 「家を連れて来い」って 言ったけど まさか…！
-  - お館様が案内しろって 言ったんだろ？
-  - だから掃除も たいがいにしろって 言ったのに！
+  - あの世はどうだ 誰かいたか?
+  - お終いだ 誰も何も得られない！
+  - その通りだ 誰が対策する アンタか？
 
-### "で" + "いい" (7 occurrences)
+### "で" + "私" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あしたで いいんじゃねえのか？
-  - いつものだけで いいんですか？
-  - そこの席で いい？
+  - その 湧き上がる感情で 私は 病んでしまった。
+  - その件で 私たちに 石田を責める権利ないでしょ？
+  - それで 私に？
 
 ### "と" + "一緒" (7 occurrences)
 - Predicted: None
@@ -1230,6 +1038,14 @@ Accuracy: 98.66%
   - チャンド・ナワーブと 一緒じゃなかったのか？
   - 夕方までに おばあちゃんと 一緒に町から出て！
 
+### "なら" + "どう" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんたなら どうした？
+  - すかしっ屁なら どうしたかな？
+  - そりゃいい 実行するなら どうすればいい？
+
 ### "なんで" + "そんな" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1238,13 +1054,21 @@ Accuracy: 98.66%
   - なんで そんなことを知ってるの？
   - なんで そんなに 高いんですか？
 
-### "に" + "なって" (7 occurrences)
+### "に" + "いる" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - こりゃあ 一方的な展開に なって来たぞ。
-  - すぐに ただの石に なってしまうがのう。
-  - もう約束の時間に なってしまったの？
+  - さて 君はなぜここに いるのか分かってるか？
+  - そこに いるのか？
+  - どこに いるの ぼう！！
+
+### "に" + "行った" (7 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あの子 お母さんの病院に 行ったんじゃないかしら!
+  - これは救急救命室に 行った日ですね？
+  - どこに 行ったの？
 
 ### "の" + "何" (7 occurrences)
 - Predicted: None
@@ -1262,46 +1086,6 @@ Accuracy: 98.66%
   - ほかに どんな洒落の 名前を使ったの？
   - アトランティスはあなた方の 名前を忘れないでしょう。
 
-### "は" + "そんな" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お言葉ですが 私には そんな力はありません！
-  - カンドゥは そんなに情けない兄か？
-  - 俺もクズだけど なんで女は そんなクズと寝るんだ？
-
-### "は" + "ただ" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あれは ただの空想なんだ これは父さんが描いた想像図。
-  - おれたちは ただのバンドマンだ！
-  - ビル･カーソンは ただの偽名か？
-
-### "は" + "とても" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたの単独飛行は とても早かったんですってね。
-  - あのコは とても危険です。
-  - そして私にとっては とても大切な思い出だ。
-
-### "は" + "みんな" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～あ… ソフィーは みんな連れて来ちゃったな。
-  - いいヤツは みんな死ぬ。
-  - この映画館は みんなのものだ！
-
-### "は" + "自分" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは 自分が 誰だか わかる？
-  - あなたは 自分だけの為に！
-  - お姉ちゃん 自分のことは 自分で決めなきゃダメよ！
-
 ### "よ" + "いい" (7 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1310,85 +1094,37 @@ Accuracy: 98.66%
   - だから 別々の道を歩もうよ いいよね？
   - ソファの隙間に座るのよ いい？
 
-### "よ" + "それ" (7 occurrences)
+### "！" + "あの" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あら おばさまも女よ それに私 山育ちで目はいいの。
-  - これがあなたの名前よ それを読むことができないの？
-  - もう女優よ それが何か？
+  - あ～！ あの家？
+  - お父さん！ あのラジオちょうだい！
+  - そうだ！ あの地図だよ！
 
-### "を" + "持ってる" (7 occurrences)
+### "！" + "その" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前がオレのものを 持ってるんだって？
-  - ご主人はオート三輪を 持ってると言ってなかった？
-  - その手にギターを 持ってるな 小僧？
+  - いいぞ！ その調子！
+  - おい ジョジョうさぎ！ その顔はどうしたんだ？
+  - そら！ そら！ その女と 押しくら饅頭だ！
 
-### "！" + "ああっ" (7 occurrences)
+### "！" + "やった" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ ああっ！
-  - うわあ！ ああっ！
-  - お前達！ ああっ 危ない…。
+  - つけ！ やった！
+  - やった！ やったぞ！
+  - やった！ やったよ シアーシャ！
 
-### "！" + "ソフィー" (7 occurrences)
+### "！" + "やめて" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ねっ！ ソフィーなら うまくやれるよ。
-  - ソフィー こっちへ来て！ ソフィー！
-  - ソフィー！ ソフィーはキレイだよ！
-
-### "！" + "ハウル" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ 焼きついた！ ハウルさん これ…！
-  - これ おかしくない？ ねぇ 見て！ ハウルの城が来てる。
-  - もう！ ハウルが来るなら 私が来ることなかったのよ！
-
-### "！" + "僕" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ 僕んとこ 後回しにして！
-  - こら、泥棒！ 僕のだぞ。 返せよ。
-  - そうか！ 僕らは東へ進んでるはずなんだ。
-
-### "！" + "助けて" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おーい 誰か！ 助けてくれ！
-  - お願い！ 助けて！
-  - お願い！ 助けて！ お願い！
-
-### "！" + "君" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あー！ 君なのか！
-  - いかん！ 君達に それは強すぎる！
-  - クー！ 君は扉を踏んでる！ そこをどいて！
-
-### "！" + "大丈夫" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの！ 大丈夫ですか!
-  - ちぇっ！ 大丈夫かなぁ。
-  - どうしたんだ！ 突風です！ 大丈夫！
-
-### "！" + "待って" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい！ 待ってくれ！
-  - わっ！ 待って！ あ～っ！
-  - ステファン！ 待って！
+  - おい、おい！ やめてよ！
+  - ねえ！ やめてよ！
+  - やめて下さい！ お願いだ！ やめて！
 
 ### "！" + "急げ" (7 occurrences)
 - Predicted: None
@@ -1406,21 +1142,13 @@ Accuracy: 98.66%
   - うん！ 来てくれる？
   - ひゃー！ 来て！ ひゃー！
 
-### "？" + "あの" (7 occurrences)
+### "？" + "あれ" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あれでいいのか？ あの人生で？
-  - どこにいる？ あのスパイと？
-  - なんで？ あの夜あなたも 家にいたの？
-
-### "？" + "あんた" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あれ？ あんた なんかちょっと顔赤いっちゃねぇ？
-  - おはよう 眠れた？ あんた 徹夜したのか？
-  - じゃ誰だ？ あんたか？
+  - あの水を張ったやつ？ あれか？
+  - あれ？ あれ？
+  - あれ～？ あれ～？
 
 ### "？" + "え" (7 occurrences)
 - Predicted: None
@@ -1430,13 +1158,13 @@ Accuracy: 98.66%
   - 寢こみを襲われてもつまらぬ. 走るか？ え？
   - 就職するのっ？ え 閉じ師は!
 
-### "？" + "ここ" (7 occurrences)
+### "？" + "僕" (7 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんな退屈な人達の所へ？ ここに居れないの？
-  - え、ここがジェネシスじゃないのか？ ここ？
-  - これが玉座ですって？ ここは お墓よ あなたと私の。
+  - あんたは？ 僕に何の用だ？
+  - このためにイポへ？ 僕をナメてますか？
+  - どこにいるんだ？ 僕の声は聞こえてる？
 
 ### "？" + "名前" (7 occurrences)
 - Predicted: None
@@ -1454,21 +1182,13 @@ Accuracy: 98.66%
   - が あっさり打ち負かしたとか？ 本当か？
   - なに？ 本当か？
 
-### "…" + "それ" (6 occurrences)
+### "…" + "これ" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そ… それから?
-  - その代わりにパイを… それとも こっちがいい？
-  - だから… それは… 知らないの。
-
-### "…" + "パズー" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はて… パズーによく似た小鬼だ。
-  - まあ… パズーのカバンって 魔法のカバンみたいね。
-  - アチチ… パズー レンチよこせ。
+  - あなた… これは夢なの？
+  - これ… これだよぉ。
+  - これって… これって もしかして！
 
 ### "…" + "－" (6 occurrences)
 - Predicted: None
@@ -1478,6 +1198,14 @@ Accuracy: 98.66%
   - －どうしてそんな… －これは暴力だ！
   - －どんなにして… －ちょっと待ってよ。
 
+### "、" + "私" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だから関わるな、 私に任せて。
+  - でも、あなたはいい人だ、 私は知っている。
+  - ママ、 私 ここに居たい。
+
 ### "。" + "あなた" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1485,22 +1213,6 @@ Accuracy: 98.66%
   - あなたも死ぬ。 あなたの息子も、 あなたの同族も。
   - はい、そうです。 あなたはとても悪い男です。
   - マハ、 お願いだよ。 あなたは 分かってないんだ。
-
-### "。" + "いい" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや、 モッシーから行こう。 いいな？
-  - は～い ちょっと待ってね。 いいよ。
-  - よし、そうだ。 いいぞ、これでいい。
-
-### "。" + "どう" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えー、はい。 どういたしまして。
-  - で、野郎ども。 どう始める？
-  - もう少し 明るくしようか。 どうかね？
 
 ### "。" + "良い" (6 occurrences)
 - Predicted: None
@@ -1518,29 +1230,21 @@ Accuracy: 98.66%
   - いや いや いや！
   - ホォホォ… いや いや いや いや いや。
 
-### "が" + "いる" (6 occurrences)
+### "えっ" + "何" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この場を離れた者が いるのでは?
-  - それでもいいと言う男の子が いるんです。
-  - そんな奴が いるか？
+  - えっ 何なに？ どうしたの？
+  - えっ 何？
+  - （夏美）えっ 何それ？（アメ）ニャッ？
 
-### "が" + "ここ" (6 occurrences)
+### "が" + "その" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - イタリア空軍が ここへ向かってるわ。
-  - 俺が ここにいんの 合ってる？
-  - 宗介が ここを守ってくれてた ほうが リサの力が出るの。
-
-### "が" + "こんな" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう予算オーバーの請求書が こんなになっちまったんだ。
-  - 小さなリスさんが こんな時間に何してる？
-  - 小さな赤ん坊が こんなにウンコを？
+  - あなた自身が その男児だと？
+  - すべてがあったが その終わりは？
+  - それは称賛に値しますが その前は どうしてたんですか？
 
 ### "が" + "何か" (6 occurrences)
 - Predicted: None
@@ -1550,14 +1254,6 @@ Accuracy: 98.66%
   - ピッタリですが 何か ?
   - 善良な彼等が 何か悪事をしたか？
 
-### "が" + "好き" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そこまで 探偵ごっこが 好きなのか？
-  - トーマスの方が 好きだったんだろ？
-  - 何も起こらない映画が 好きか？
-
 ### "さあ" + "どう" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1566,13 +1262,13 @@ Accuracy: 98.66%
   - さあ どうする？
   - さあ どう答える？
 
-### "じゃ" + "なぜ" (6 occurrences)
+### "だ" + "あの" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - じゃ なぜ文句を？
-  - じゃ なぜ検非違使で その話をしなかったんだ？
-  - じゃ なぜ連れてきた？
+  - あそこだ あの上！
+  - あれだ あの石だ！
+  - だれだ あのカワイコちゃんは？
 
 ### "ちょっと" + "何" (6 occurrences)
 - Predicted: None
@@ -1582,6 +1278,14 @@ Accuracy: 98.66%
   - おい ちょっと 何してるんだ？
   - ちょっと 何しとんの？
 
+### "って" + "どう" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたが嘘をついていないって どうすれば分かるの?
+  - それって どうなのよ ゲイっぽくない？
+  - りんって どうしてますか？
+
 ### "って" + "何" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1589,6 +1293,14 @@ Accuracy: 98.66%
   - 〝夏の夜の夢〟って 何なんだい？
   - あなたの幸せって 何？
   - ニガ ニガって 何だ？
+
+### "で" + "いい" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あしたで いいんじゃねえのか？
+  - そこの席で いい？
+  - ホントよ！ 絶対に手ぶらで いいわね！
 
 ### "と" + "思った" (6 occurrences)
 - Predicted: None
@@ -1606,14 +1318,6 @@ Accuracy: 98.66%
   - なぜ こんなことをするの？
   - なぜ こんな所で？
 
-### "なら" + "どう" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたなら どうした？
-  - すかしっ屁なら どうしたかな？
-  - なら どうする？
-
 ### "に" + "反対" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1630,13 +1334,13 @@ Accuracy: 98.66%
   - あの連中が彼女に 手を出すかも？
   - あるいは 握手をした後に 手を洗われた経験 ありますか？
 
-### "に" + "行った" (6 occurrences)
+### "ね" + "?" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの子 お母さんの病院に 行ったんじゃないかしら!
-  - どこに 行ったの？
-  - なぜサンティアゴの部屋に 行ったのです？
+  - うまく行くと良いね ?
+  - シャープ警部ですね ?
+  - 何人 死ぬかね ?
 
 ### "の" + "どこ" (6 occurrences)
 - Predicted: None
@@ -1646,14 +1350,6 @@ Accuracy: 98.66%
   - いったい俺の どこが おかしいんだ？
   - お前 そういうの どこで覚えたの？
 
-### "は" + "あの" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ リサさんは あの波を突っ切ったんだ！
-  - ハァ～ ソフィーは あの人達を知らないんだ。
-  - 俺がボニュスに投げた巨石は あの綱で引けるかな?
-
 ### "は" + "ある" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1662,29 +1358,21 @@ Accuracy: 98.66%
   - 天国には あるかな？
   - 家は ある？
 
-### "は" + "こちら" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでは 今日の映画は こちら！
-  - ベッカーさんは こちらに？
-  - 今日の映画は こちら！
-
 ### "は" + "俺" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いいか ここの値段は 俺が決めてるんだ！
+  - ひどい バカな使用人は 俺の店だけじゃない！
   - まだ 知ってるのは 俺達だけか？
-  - エンジェル･アイは 俺が殺るそ？
 
-### "は" + "僕" (6 occurrences)
+### "も" + "そう" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お父さんは 僕たちが監査を 受けていることを知ってる？
-  - ここは 僕の家だぞ！
-  - なぜ彼は 僕たちを 見てるんだろう？
+  - この前も そうだったの。
+  - でも そうならば？
+  - 前期も そうできないか？
 
 ### "よ" + "これ" (6 occurrences)
 - Predicted: None
@@ -1702,6 +1390,14 @@ Accuracy: 98.66%
   - イヤよ どうしろと言うの？
   - チェリージャムよ どうしたの？
 
+### "を" + "持ってる" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前がオレのものを 持ってるんだって？
+  - ご主人はオート三輪を 持ってると言ってなかった？
+  - その手にギターを 持ってるな 小僧？
+
 ### "を" + "知って" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1710,14 +1406,6 @@ Accuracy: 98.66%
   - でも 我々の中で 人の殺し方を 知っている者が居るか？
   - どうして彼女を 知っているのですか？
 
-### "ヒン" + "ヒン" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒン ヒン！
-  - ヒン！ ヒン ヒン ヒン！
-  - ヒン！ ヒン ヒン ヒン！
-
 ### "ヒーメ" + "おいで" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1725,22 +1413,6 @@ Accuracy: 98.66%
   - ヒーメ おいで！ ヒーメ おいで！
   - ヒーメ おいで！ ヒーメ おいで！
   - （子どもたち）ターケノコ！ （翁）ヒーメ おいで！
-
-### "一体" + "誰" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは 一体 誰？
-  - あらら 一体 誰かしら？
-  - この金は一体 誰のだ？
-
-### "！" + "おい" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい！ おい！
-  - ちょっと！ おい！
-  - マーラ！ マーラ！ おい マーラ 待て！
 
 ### "！" + "そこ" (6 occurrences)
 - Predicted: None
@@ -1774,29 +1446,21 @@ Accuracy: 98.66%
   - うわっ！ メイ。
   - えぇ～！ メイ リスがいい！
 
-### "！" + "人" (6 occurrences)
+### "！" + "ー" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ひっ！ 人？
-  - クソっ！ 人を踏みつぶしやがって。
-  - ハハハ… 見ろ！ 人がゴミのようだ！
+  - ーいや！ ーおじさんと言え！
+  - ーこのバカ！ ートマシン！
+  - ーなんてこと！ ーポーリーだったろ？
 
-### "！" + "気" (6 occurrences)
+### "！" + "助けて" (6 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いってきます！ 気をつけて。
-  - おい どこを見てる！ 気をつけろ！
-  - おい！ 気をつけて！
-
-### "！" + "熱い" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 最高のお茶！ 熱いお茶だよ！
-  - 本物の湧き水だよ！ 熱いお茶！
-  - 熱いお茶！ 熱いお茶！
+  - おーい 誰か！ 助けてくれ！
+  - お願い！ 助けて！
+  - お願い！ 助けて！ お願い！
 
 ### "！" + "草太" (6 occurrences)
 - Predicted: None
@@ -1822,22 +1486,6 @@ Accuracy: 98.66%
   - －それは同じ物なんだ！ －そんなはずないわ。
   - －どうやって見つけたんだ！ －ハーコートさん、待って！
 
-### "）" + "おい" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） おい 起きろ。
-  - （多襄丸） おい この女を どうするつもりだ？
-  - （多襄丸） おい 殺すか？ 助けるか？
-
-### "）" + "この" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （おかみ） この隙に裏からお逃げ。 僕も戦う！
-  - （カルシファー） この城 おいらが動かしてるんだぜ。
-  - （マルクル） この粉をまけば 舟にいい風が吹くじゃ。
-
 ### "）" + "宗介" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1846,14 +1494,6 @@ Accuracy: 98.66%
   - あ～ も～う！ （トキ） 宗介 こっちにおいで！
   - （カレン） 宗介 遊ぼう。 僕 今 忙しいから いい。
 
-### "？" + "おい" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ええ？ おい ちょっと！
-  - ならどうする？ おい！ 金田！
-  - ラジュー 何があった？ おい！
-
 ### "？" + "おまえ" (6 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1861,6 +1501,22 @@ Accuracy: 98.66%
   - おまえの兄？ おまえは何してるんだ？
   - なんだ！？ おまえたち！ もんくがあるのか！？
   - 今日は何の日だ？ おまえの誕生日だぞ！
+
+### "？" + "ここ" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんな退屈な人達の所へ？ ここに居れないの？
+  - え、ここがジェネシスじゃないのか？ ここ？
+  - どうだ？ ここなら安全か？
+
+### "？" + "そう" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - じゃあ 黙っていればいいと？ そう言いたいのかしら？
+  - そうだろ、ムニ？ そうだよね？
+  - だが 殺したんだろ？ そうだろ？
 
 ### "？" + "その" (6 occurrences)
 - Predicted: None
@@ -1885,6 +1541,14 @@ Accuracy: 98.66%
   - え？ なんで謝んの？
   - なんで覗いたんだ？ なんでそういつも首を突っ込みたがる?
   - イエス様に会った？ なんでそう優しいの？
+
+### "？" + "ん" (6 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ どうだ？ ん？
+  - あ？ ん？
+  - ん？ ん？
 
 ### "？" + "ー" (6 occurrences)
 - Predicted: None
@@ -1926,22 +1590,6 @@ Accuracy: 98.66%
   - 何？ エルフィ… -続けてください。
   - （鈴芽）あ あの… あの席に… -（ミキ）ん？ え？
 
-### "…" + "うっ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ… うっ！
-  - ううっ… うっ…。
-  - うっ… うっ！
-
-### "…" + "え" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ… え？
-  - えっ… え ちょっと環さん!
-  - えっ… え なんのことよ！
-
 ### "…" + "で" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1982,37 +1630,29 @@ Accuracy: 98.66%
   - この子は誰で、 何をしているんだ？
   - ドンスヒョン、 何するの？
 
-### "、" + "私" (5 occurrences)
+### "。" + "この" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも、あなたはいい人だ、 私は知っている。
-  - ママ、 私 ここに居たい。
-  - 一体なんで、 私達はこうなってしまったの？
+  - あった。 この井戸も描いてた。
+  - 危ないよ。 この子には 最悪な土地だ。
+  - 声が無くては 歌えない。 この闇夜を 終わりにできない。
 
-### "。" + "えっ" (5 occurrences)
+### "。" + "そう" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの人達 海賊よ。 えっ？
-  - マルクル こっちへ来よう。 えっ？
-  - マルクル ゴム人間がいる。 えっ？
+  - おいしい。 そうかい。
+  - お母さんを 失った。 そうだろう？
+  - ほんの子どもなのに。 そうだろう？
 
-### "あなた" + "何" (5 occurrences)
+### "。" + "どう" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなた 何が好き？
-  - あなた 何してるの！ やめなさい！ 何をしてるの！
-  - あなた 何やってるの？
-
-### "えっ" + "何" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ 何？
-  - （夏美）えっ 何それ？（アメ）ニャッ？
-  - （帆高）えっ 何これ… カバ？
+  - えー、はい。 どういたしまして。
+  - で、野郎ども。 どう始める？
+  - もう少し 明るくしようか。 どうかね？
 
 ### "おい" + "ちょっと" (5 occurrences)
 - Predicted: None
@@ -2022,6 +1662,22 @@ Accuracy: 98.66%
   - おい ちょっと 何してるんだ？
   - おい ちょっとでも刺されば どうなるかわかるか？
 
+### "お前" + "何" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前 何やっとるんや！
+  - お前 何を言ってるのか わかってるのか！
+  - お前 何見てんだよ？
+
+### "から" + "いい" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 『ひまわりの家』のだから いいんです。
+  - だから いい香りの ハンドクリームを？
+  - よし リードから いいか？
+
 ### "から" + "どう" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2030,13 +1686,21 @@ Accuracy: 98.66%
   - さて これから どうする？
   - それから どうなった？
 
-### "から" + "何" (5 occurrences)
+### "が" + "ここ" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いやいや ヒマだから 何か手伝おうかな なんてな…。
-  - だから 何の用だ？
-  - だから 何もなかった いいな？
+  - 俺が ここにいんの 合ってる？
+  - 宗介が ここを守ってくれてた ほうが リサの力が出るの。
+  - 彼が ここに住んでいいって？
+
+### "が" + "そう" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この俺が そう簡単に くたばって堪るか！
+  - これが そうなのでしょうか？
+  - パパが そう言えと？
 
 ### "が" + "俺" (5 occurrences)
 - Predicted: None
@@ -2046,13 +1710,13 @@ Accuracy: 98.66%
   - そしてこれが 俺のガッファ爺さんの分！
   - マネは死んだが 俺は文無し!
 
-### "が" + "君" (5 occurrences)
+### "が" + "好き" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そもそも誰が 君に話したんだね？
-  - 同じ印が 君の家の古い暖炉にあった。
-  - 少し飲みたいところだが 君はどうだ？
+  - そこまで 探偵ごっこが 好きなのか？
+  - トーマスの方が 好きだったんだろ？
+  - 何も起こらない映画が 好きか？
 
 ### "が" + "彼" (5 occurrences)
 - Predicted: None
@@ -2070,6 +1734,14 @@ Accuracy: 98.66%
   - じゃあしてくれ 頼む！
   - 助けてくれ 頼む！
 
+### "じゃ" + "何" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - じゃ 何がうまい？
+  - じゃ 何に見える？
+  - じゃ 何のご用です？
+
 ### "じゃあ" + "何" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2085,14 +1757,6 @@ Accuracy: 98.66%
   - うるさいぞ !
   - グズグズすると 手遅れになるぞ !
   - 今すぐだぞ !
-
-### "だ" + "あの" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこだ あの上！
-  - あれだ あの石だ！ 早く隣の部屋へ。
-  - 見た目はクリスティ・ラブだ あの番組をおぼえてるか？
 
 ### "だ" + "そう" (5 occurrences)
 - Predicted: None
@@ -2118,13 +1782,13 @@ Accuracy: 98.66%
   - ダメだ ダメだ ダメだ！
   - ダメだ ダメだ ダメだ！
 
-### "って" + "どう" (5 occurrences)
+### "って" + "言った" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたが嘘をついていないって どうすれば分かるの?
-  - りんって どうしてますか？
-  - 悪いって どうなの?
+  - お館様が案内しろって 言ったんだろ？
+  - 彼は驚かないって 言ったのよ！
+  - 戦うときが来たらわかるって 言ったじゃない！
 
 ### "で" + "?" (5 occurrences)
 - Predicted: None
@@ -2138,9 +1802,9 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - …で あなたの ポケットの中のものは何？
   - あなたの家で あなたの 趣味のための部屋を？
   - それで あなたは何回も会ったのですか？
+  - で あなたのポケットの中のものは何？
 
 ### "で" + "これ" (5 occurrences)
 - Predicted: None
@@ -2190,6 +1854,14 @@ Accuracy: 98.66%
   - どこに あるんです？
   - マヤ 私の手の中に あるのは？
 
+### "に" + "なって" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もう約束の時間に なってしまったの？
+  - 世界全体が何かの隠喩に なっているんですか？
+  - 僕の親しい友に なってくれますか？
+
 ### "に" + "会った" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2214,14 +1886,6 @@ Accuracy: 98.66%
   - 先に 連れて来い!
   - 心配するな 必ずアメリカに 連れて帰ってやるからな！
 
-### "ね" + "?" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまく行くと良いね ?
-  - シャープ警部ですね ?
-  - 何人 死ぬかね ?
-
 ### "の" + "-" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2238,13 +1902,13 @@ Accuracy: 98.66%
   - ほかの隊員たちは “コードＲ”だと思っては？
   - マンガだ！ バリー･アレンは “フラッシュ”だ！
 
-### "は" + "あります" (5 occurrences)
+### "は" + "あの" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お～い！ 何かお手伝いすることは ありますか～！
-  - ボス どうします？ 説得力は ありますね。
-  - 仕事は ありますか？
+  - じゃあ リサさんは あの波を突っ切ったんだ！
+  - 俺がボニュスに投げた巨石は あの綱で引けるかな?
+  - 僕は あの人をほとんど知らない！
 
 ### "は" + "いる" (5 occurrences)
 - Predicted: None
@@ -2254,29 +1918,13 @@ Accuracy: 98.66%
   - ピィリャは いる？
   - 奥様は いるのですが 代わりますか？
 
-### "は" + "これ" (5 occurrences)
+### "は" + "そんな" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お楽しみは これからだ！
-  - これは これは 王女様ではないか。
-  - そう お礼は これでいい？
-
-### "は" + "そう" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは そう思うのね？
-  - そうするまでは そうだろ？
-  - そう言うてめえは そうじゃねえと言うのか？
-
-### "は" + "どうして" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その人は どうして 死んだの？
-  - では どうして?
-  - ねぇ ハウルは どうして 荒地の魔女に狙われてるの？
+  - お言葉ですが 私には そんな力はありません！
+  - カンドゥは そんなに情けない兄か？
+  - 俺もクズだけど なんで女は そんなクズと寝るんだ？
 
 ### "は" + "なんて" (5 occurrences)
 - Predicted: None
@@ -2286,21 +1934,21 @@ Accuracy: 98.66%
   - 彼女は なんて名前だっけ？
   - 本当の名前は なんていうの？
 
-### "も" + "これ" (5 occurrences)
+### "は" + "僕" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おまえは悪くない。 今までも これからも。
-  - お連れさんも これで?
-  - それとも これ？
+  - お父さんは 僕たちが監査を 受けていることを知ってる？
+  - なぜ彼は 僕たちを 見てるんだろう？
+  - パパは 僕を 監視役にした。
 
-### "も" + "その" (5 occurrences)
+### "は" + "自分" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - それとも その大砲で 私と勝負するかね？
-  - それとも その恰好の話か？
-  - でも そのバカ 夜のお店にしか来ないわ。
+  - あなたは 自分が 誰だか わかる？
+  - あなたは 自分だけの為に！
+  - こんな非常時には 自分のことだけ気にしろ いいな？
 
 ### "も" + "みんな" (5 occurrences)
 - Predicted: None
@@ -2310,21 +1958,29 @@ Accuracy: 98.66%
   - でも みんな そうでしょ？
   - 人間のポニョも みんな好きだよ。
 
-### "よ" + "俺" (5 occurrences)
+### "よ" + "それ" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとうよ 俺達は運命共同体ってわけだ。
-  - お嬢さんよ 俺は凶状持ちの賞金稼ぎだぞ。
-  - 何だよ 俺への仕返しか！
+  - これがあなたの名前よ それを読むことができないの？
+  - もう女優よ それが何か？
+  - レンバスですよ それにほら！
 
-### "を" + "して" (5 occurrences)
+### "よ" + "（" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ここで何を しているんだろう？
-  - なぜ悲しそうな顔を しているの？
-  - 僕は…すごく変な振る舞いを してただろ？
+  - （ケットのママ）おかしいのよ （ケットのパパ）え？
+  - （ピッコロのおやじ）手 出すなよ （ポルコ）ああ？
+  - （治）どうしたんだよ （信代）ん？
+
+### "を" + "殺す" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それで谷の人たちを 殺すというわけ？
+  - どうだ自分と同類を 殺す気分は？
+  - 僕を 殺すところだった！
 
 ### "を" + "知らない" (5 occurrences)
 - Predicted: None
@@ -2354,9 +2010,17 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
+  - やつらだ ママ どうしよう…?
   - ママ どうしたの？
   - ママ どうだい？
-  - ママ どう思う？
+
+### "一体" + "誰" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あらら 一体 誰かしら？
+  - この金は一体 誰のだ？
+  - だがな そんなケダモノ 作りやがったのは一体 誰だ?
 
 ### "待て" + "待て" (5 occurrences)
 - Predicted: None
@@ -2374,13 +2038,13 @@ Accuracy: 98.66%
   - 戻れ 戻れ 戻れ 戻れ 戻れ 戻れ…。
   - 戻れ 戻れ 戻れ 戻れ 戻れ 戻れ…。
 
-### "早く" + "早く" (5 occurrences)
+### "！" + "ああっ" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ばあちゃん 早く 早く！
-  - 国税局庁舎 - 早く 早く！ 遅れちゃうよ！
-  - 早く 早く 早く！
+  - うわあ！ ああっ！
+  - お前達！ ああっ 危ない…。
+  - この！ ああっ！
 
 ### "！" + "あっち" (5 occurrences)
 - Predicted: None
@@ -2390,30 +2054,6 @@ Accuracy: 98.66%
   - にげた！ あっち！ あっち！ あっち！
   - にげた！ あっち！ あっち！ あっち！
 
-### "！" + "あんた" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願いだ！ あんたのことは知らない 何も言わないから！
-  - そげな話はしとらんわ！ あんた だいたい学校は？
-  - もう！ あんたがいなければ 杖で殴ってやったのに！
-
-### "！" + "うわ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ うわ！
-  - うっ！ うわ～っ！
-  - うわっ！ うわっ！ うわ～っ！ うえいっ！
-
-### "！" + "うわっ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああーっ！ うわっ！
-  - あっ！ うわっ！
-  - うわっ！ うわっ！ うわ～っ！ うえいっ！
-
 ### "！" + "おまえ" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2422,77 +2062,21 @@ Accuracy: 98.66%
   - ダイジンっ！ おまえ！
   - 中に戻りなさい！ おまえは働けない！
 
-### "！" + "こいつ" (5 occurrences)
+### "！" + "人間" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ こいつ…！ みんな逃げて！ あ～っ！
-  - いた！ こいつだ！！
-  - ほらっ ダイジン！ こいつ何がしたいの!
+  - あっ！ 何ということだ！ 人間に化けている！
+  - あなたは人間じゃない！ 人間じゃない！ 人間じゃないわ！
+  - あなたは人間じゃない！ 人間じゃない！ 人間じゃないわ！
 
-### "！" + "ちょっと" (5 occurrences)
+### "！" + "僕" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前の艇は そっちだろ！ ちょっとだけ！
-  - フランク！ ちょっと見て！
-  - 去年を軽く超えると思われますが あら！ ちょっと…。
-
-### "！" + "ん" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うわぁ！ ん？
-  - それ！ ん～…！
-  - もおお～！ ん！
-
-### "！" + "クソ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい加減にしろ！ クソ野郎！
-  - このクソ野郎が！ クソ野郎！こっちへ来い クソガキ！
-  - クソ警察！ クソ警察！
-
-### "！" + "シータ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこだ！ シータがいる！ 何!
-  - あっ パズー！ シータ！ 今 行く！
-  - あっ！ シータ！
-
-### "！" + "ダメ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こら～！ ダメだよ！
-  - そう…ダメ！ ダメね！
-  - アルフレド！ ダメだ アルフレド！
-
-### "！" + "ハハハ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ ハハハ…。
-  - ハハハ！ ハハハ！
-  - ポニョだ！ ハハハ！ ハハハ！
-
-### "！" + "ヒン" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お城だわ 迎えに来てくれた！ ヒン！
-  - ヒン！ ヒン ヒン ヒン！
-  - ヒン！ ヒン ヒン！
-
-### "！" + "ー" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ーいや！ ーおじさんと言え！
-  - ーなんてこと！ ーポーリーだったろ？
-  - ーキリストを思うのよ！ ー悪魔を連れてくる！
+  - こら、泥棒！ 僕のだぞ。 返せよ。
+  - やめて、パパ！ シアーシャが悪いんだ！ 僕は関係ない！
+  - ダメ！ 僕と一緒！
 
 ### "！" + "宗介" (5 occurrences)
 - Predicted: None
@@ -2502,6 +2086,14 @@ Accuracy: 98.66%
   - すげぇや！ 宗介！ 私も乗せて！
   - ポニョ！ 宗介～！
 
+### "！" + "待って" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい！ 待ってくれ！
+  - ステファン！ 待って！
+  - 大監督！ 待ってください！
+
 ### "！" + "急いで" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2510,37 +2102,13 @@ Accuracy: 98.66%
   - みんな 逃げろ！ 急いで！
   - 入って！ 急いで！
 
-### "！" + "行け" (5 occurrences)
+### "！" + "気" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - みんな 行け！ 行け！
-  - よし！ 行け！
-  - 行け！ 行け！
-
-### "！" + "足" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こら！ 待て！ ドロボー犬め！ 足をひき千切ってやる！
-  - 子供たち！ 足で踏まないの！
-  - 手 出た！ 足 出た～！
-
-### "！" + "静か" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ロルフィ！ 静かに！
-  - 静かに…！ 静かにしなさい！
-  - 静かに！ 静かにしなさ～い！ おい 何とかしろよ！
-
-### "！" + "魔法" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 変装じゃありません！ 魔法です！
-  - 魔法！ 魔法！ 魔法！ 魔法！ 魔法！
-  - 魔法！ 魔法！ 魔法！ 魔法！ 魔法！
+  - おい どこを見てる！ 気をつけろ！
+  - おい！ 気をつけて！
+  - どうだ！ 気が済んだか 鉄雄！
 
 ### "）" + "-" (5 occurrences)
 - Predicted: None
@@ -2558,29 +2126,53 @@ Accuracy: 98.66%
   - （トンボ） あっ！ うわーっ！ ああっ！
   - （バタンと足音） あっ！
 
-### "）" + "うん" (5 occurrences)
+### "）" + "おい" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル あと お願いね。 （マルクル） うん。
-  - マルクル おばあちゃんをお願い！ （マルクル） うん。
-  - マルクル お湯をたっぷりね。 （マルクル） うん。
+  - （多襄丸） おい この女を どうするつもりだ？
+  - （多襄丸） おい 殺すか？ 助けるか？
+  - （放免） おい どうした？ どうした？ おい どうした？
 
-### "）" + "えっ" (5 occurrences)
+### "）" + "これ" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - もう いいんだ…。 （おかみ） えっ？
-  - （カルシファー） えっ それもかよ！
-  - （勅使河原･早耶香） えっ！
+  - （内海幸枝） これ一体 何なんですか？
+  - （女子生徒Ａ） これ どこで買ったの？
+  - （祥太） これは人の物じゃないの？
 
-### "？" + "えっ" (5 occurrences)
+### "？" + "あの" (5 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いいのかよ？ えっ？
-  - お父さん お弁当まだぁ？ えっ もう？
-  - それだけか？ えっ？ あっ いや… その…。
+  - あれでいいのか？ あの人生で？
+  - どこにいる？ あのスパイと？
+  - なんで？ あの夜あなたも 家にいたの？
+
+### "？" + "あんた" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれ？ あんた なんかちょっと顔赤いっちゃねぇ？
+  - じゃ誰だ？ あんたか？
+  - なんだって？ あんたは彼に名前を教えたのか？
+
+### "？" + "いい" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ 環さんデート？ いいよ いいよ ごゆっくり！
+  - ここから すぐ消える どうだ？ いいだろ？
+  - とうとう気が狂ったのかい？ いいから開けるんだよ！
+
+### "？" + "おい" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ええ？ おい ちょっと！
+  - ならどうする？ おい！ 金田！
+  - ラジュー 何があった？ おい！
 
 ### "？" + "お前" (5 occurrences)
 - Predicted: None
@@ -2590,14 +2182,6 @@ Accuracy: 98.66%
   - じゃ 誰が検死するんだ？ お前か？
   - アイツは誰だ？ お前の親父か？
 
-### "？" + "じゃあ" (5 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうなのか？ じゃあどこにいるんだ？
-  - そ～お？ じゃあね。
-  - プライドが高い？ じゃあ、ここで暮らせよ！
-
 ### "？" + "ちょっと" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2605,6 +2189,14 @@ Accuracy: 98.66%
   - いい？ ちょっと どこに行くの？
   - うん お弁当 提げて どちらへ？ ちょっと そこまで。
   - えっ？ ちょっと遅刻するが！
+
+### "？" + "また" (5 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なんだ？ また けんかしてんの？
+  - 何なの？ また地雷？
+  - 新作の準備を？ また絶望の物語？
 
 ### "？" + "一体" (5 occurrences)
 - Predicted: None
@@ -2646,13 +2238,37 @@ Accuracy: 98.66%
   - やっぱり彼女をここに置いてはいけないよ - どうして？
   - 入れません - どうして？
 
-### "…" + "あぁ" (4 occurrences)
+### "-" + "何" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あ… あぁ…。
-  - あ痛… あぁ…。
-  - ん… あぁ…。
+  - お父さんのことを教えて - 何を？
+  - サンガ？ - 何？
+  - マズいよ 忘れろ - 何で？
+
+### "…" + "ああっ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あ… ああっ！
+  - うっ… ん… ああっ！
+  - 武器も持たずに… ああっ！
+
+### "…" + "え" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ… え ちょっと環さん!
+  - えっ… え なんのことよ！
+  - （治）おいおいおい… え？
+
+### "…" + "ええっ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ… ええっ？
+  - 耕一？ うん… ええっ!
+  - （芹澤）ああ… ええっ？ -（鈴芽）芹澤さん 出して！
 
 ### "…" + "さん" (4 occurrences)
 - Predicted: None
@@ -2662,13 +2278,13 @@ Accuracy: 98.66%
   - 芹澤… さん？
   - 須賀… さん？
 
-### "…" + "どこ" (4 occurrences)
+### "…" + "それ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ ど… どこへ？
-  - どこだ… どこだ… どこにいる！
-  - どこだ… どこだ… どこにいる！
+  - そ… それから?
+  - その代わりにパイを… それとも こっちがいい？
+  - ふふふ… それなのに武器を持ってきている。
 
 ### "…" + "ん" (4 occurrences)
 - Predicted: None
@@ -2677,22 +2293,6 @@ Accuracy: 98.66%
   - うっ… ん… ああっ！
   - それからな… ん？
   - （媼）うっ… ん？
-
-### "…" + "今" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ… 今にローストポークに なっちゃうから。
-  - 何不自由ない良家の娘… 今 両親は？
-  - 分かったよ。ぼくは… 今の仕事をやめるよ。
-
-### "…" + "私" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ… 私はソフィーばあさんだよ。
-  - フフフ… 私がやってあげる。
-  - 財宝が… 私の財宝が燃えてしまう！
 
 ### "、" + "お願い" (4 occurrences)
 - Predicted: None
@@ -2710,22 +2310,6 @@ Accuracy: 98.66%
   - キレる前に失せろ、 この乞食野郎！
   - パパ、 この セルキーを見て。
 
-### "。" + "ああ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい。 ああ。
-  - お母さん 元気そうだったね。 ああ そうだね。
-  - ポルコ。 ああ？
-
-### "。" + "あっ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ。 あっ。
-  - は～い。 あっ メイも！
-  - 今日 田植え休みなの。 あっ そうか。
-
 ### "。" + "これ" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2733,14 +2317,6 @@ Accuracy: 98.66%
   - あり得ないよ。 これはシェパードの日記だ。
   - これからずっとお風呂に入ってもらえる。 これで解決？
   - なんてこと。 これは 完全に 台無しね。
-
-### "。" + "はい" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかあ様。 はい。
-  - そいつで 僕とシータをしばって。 はい！
-  - 下の連中を待たすんじゃねえ。 はい！
 
 ### "。" + "は～い" (4 occurrences)
 - Predicted: None
@@ -2758,6 +2334,14 @@ Accuracy: 98.66%
   - 教皇は彼を解任した。 を解任した。
   - 聖父は彼を説得した。 を説得した。
 
+### "。" + "コート" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 上だよ。 コートがいるんだ！
+  - 心配ないよ セルキー。 コートは ちゃんと ここにある。
+  - 急げ。 コートを取れ。
+
 ### "。" + "今" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2766,13 +2350,29 @@ Accuracy: 98.66%
   - おまえは悪くない。 今までも これからも。
   - ほら、聞いてください。 今、あなたは穴の中にいます。
 
-### "。" + "僕" (4 occurrences)
+### "あなた" + "何" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 僕は できる。 僕は コートを取り戻せる。
-  - 小っちゃな家。 僕の大事な隠れ家さ。
-  - （おかみ） この隙に裏からお逃げ。 僕も戦う！
+  - あなた 何が好き？
+  - あなた 何してるの！ やめなさい！ 何をしてるの！
+  - あなた 何やってるの？
+
+### "あんた" + "誰" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんた 誰?
+  - あんた 誰だ?
+  - あんた 誰だ？
+
+### "えっ" + "ええっ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ ええっ え？
+  - えっ ええっ！ 環さん!
+  - （芹澤）えっ ええっ 遠っ！
 
 ### "おい" + "お前" (4 occurrences)
 - Predicted: None
@@ -2790,14 +2390,6 @@ Accuracy: 98.66%
   - おい 待てよ 逃げるな！
   - おい 待てよ！
 
-### "お前" + "何" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前 何やっとるんや！
-  - ところでお前 何作ってんだい?
-  - 冗談じゃねえ！ お前 何を 言ってるのか分かってるのか!
-
 ### "か" + "わかる" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2805,14 +2397,6 @@ Accuracy: 98.66%
   - あなたは 自分が 誰だか わかる？
   - ジーナもそうさ 誰とか わかるか？
   - 何の音か わかる者はいるか？
-
-### "か" + "分かってる" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どういう事か 分かってるのか？
-  - どれだけ危険な事か 分かってるのか？
-  - ロイス 何を運んでるか 分かってるのか？
 
 ### "か" + "教えて" (4 occurrences)
 - Predicted: None
@@ -2822,6 +2406,14 @@ Accuracy: 98.66%
   - どこへ移送されたか 教えていただけますか？
   - 土曜の夜に何があったか 教えてくれないか ボイルさん？
 
+### "か" + "知って" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここが どんな場所か 知っているだろう？
+  - シュタージが何なのか 知っているのか？
+  - レイプ とは何か 知っているかい？
+
 ### "か" + "知ってる" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2830,29 +2422,13 @@ Accuracy: 98.66%
   - 去年オレがいくら稼いだか 知ってるかい？
   - 奴がどれほど人気か 知ってるか？
 
-### "か" + "私" (4 occurrences)
+### "から" + "何" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いいか 私が犯罪者に見えるか？
-  - 今は ラピュタが なぜ亡びたのか 私 よく分かる。
-  - 秘密を聞くか 私のように自分で悟るか？
-
-### "から" + "いい" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから いい香りの ハンドクリームを？
-  - よし リードから いいか？
-  - 姉さん 大丈夫よ 私がついてるから いいわね？
-
-### "が" + "あった" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この辺りは大昔から鉱山が あったんで穴だらけなんだ。
-  - 何が あった？
-  - 自殺する理由が あったのでしょうか？
+  - だから 何の用だ？
+  - だから 何もなかった いいな？
+  - 僕の部屋から 何が見えたと思う？
 
 ### "が" + "あったら" (4 occurrences)
 - Predicted: None
@@ -2861,6 +2437,14 @@ Accuracy: 98.66%
   - これよりましな考えが あったらよかったけど。
   - 何かぼくにできることが あったらと思うよ。
   - 何かまずいことが あったら？
+
+### "が" + "いる" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この場を離れた者が いるのでは?
+  - それでもいいと言う男の子が いるんです。
+  - そんな奴が いるか？
 
 ### "が" + "おかしい" (4 occurrences)
 - Predicted: None
@@ -2878,21 +2462,13 @@ Accuracy: 98.66%
   - 尼僧が そんな歌詞を？
   - 頼むのが そんなに嫌か？
 
-### "が" + "ない" (4 occurrences)
+### "が" + "君" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - だって 急に ご用が出来たんだから 仕様が ないじゃないの!
-  - だらしが ないわねえ!
-  - みずが ない！！
-
-### "さ" + "この" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうさ この国イチ怖～い魔女だよ！
-  - そうさ この国一番の キレイ好きな魔女さ。
-  - 何が言いたいのさ このクソジジイ。
+  - そもそも誰が 君に話したんだね？
+  - 少し飲みたいところだが 君はどうだ？
+  - 待てよ これが 君と事件にどう関係がある？
 
 ### "じゃ" + "どう" (4 occurrences)
 - Predicted: None
@@ -2901,14 +2477,6 @@ Accuracy: 98.66%
   - じゃ どうする?
   - じゃ どうするの？
   - じゃ どうする？ あなたの元に置いてくの？
-
-### "じゃ" + "ダメ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺じゃ ダメ？
-  - 最初から完璧じゃ ダメか？
-  - （カルシファー） オイラだけじゃ ダメなんだ… 目とか。
 
 ### "じゃあ" + "どう" (4 occurrences)
 - Predicted: None
@@ -2926,13 +2494,21 @@ Accuracy: 98.66%
   - フランキー 外出する ?
   - 外出する ?
 
-### "だ" + "ここ" (4 occurrences)
+### "だ" + "これ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そうだ ここは国境かね？
-  - な… 何だ ここは…。
-  - 僕 ソフィーが好きだ ここにいて。
+  - テレビで見たんだ これ何ていう映画？
+  - 何だ これ!
+  - （初枝）何だ これ ❝ドテゴロ❞って何？
+
+### "だ" + "その" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうだ その通りだ！
+  - みんな戦車を狙ってるんだ そのまま！
+  - 何だ その目は？
 
 ### "だ" + "どう" (4 occurrences)
 - Predicted: None
@@ -2966,6 +2542,14 @@ Accuracy: 98.66%
   - こっちだ 急げ！
   - エンジン音がジャマだ 急げ！
 
+### "だ" + "早く" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こっちが近道だ 早く来い！
+  - 医者だ 早く！
+  - 絶対だ 早く帰れ！ 消えろ この野郎！
+
 ### "だ" + "気" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2989,6 +2573,30 @@ Accuracy: 98.66%
   - げっ！ ちょ ちょっと須賀さん大丈夫なんすか？
   - ちょ ちょっと 鈴芽ぇ！
   - （三葉） ちょ ちょっと 何の話？
+
+### "って" + "ほんと" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ソフィーって ほんとに魔女じゃないの？
+  - 何をしてもいいって ほんと？
+  - 悪い人がいるって ほんと？
+
+### "って" + "誰" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうじふ 掃除婦って 誰が決めたの？
+  - みんなって 誰がそんな話をしたの？
+  - ジョニー・マドリードって 誰だ？
+
+### "ついて" + "何" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そのことについて 何て書いてあるの？
+  - ショーン・ケーシーについて 何か知っている?
+  - ニコ･ラサルテについて 何か知ってる？
 
 ### "で" + "お前" (4 occurrences)
 - Predicted: None
@@ -3046,21 +2654,13 @@ Accuracy: 98.66%
   - 守衛かな ?
   - 来るかな ?
 
-### "なら" + "私" (4 occurrences)
+### "なぜ" + "あの" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなた達にできないなら 私がやってあげる。
-  - もう！ ハウルが来るなら 私が来ることなかったのよ！
-  - 死ぬなら 私も一緒に！
-
-### "に" + "いい" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これは仕事の一部だと 考えるように いいね？
-  - アラバマのおふくろに いい土産ができたぜ。
-  - ニューオーリンズに いい病院は見つかって？
+  - なぜ あの女に寿司を？
+  - なぜ あの店に？
+  - なぜ あの町へ？
 
 ### "に" + "する" (4 occurrences)
 - Predicted: None
@@ -3094,14 +2694,6 @@ Accuracy: 98.66%
   - 正義の警官に なりたいのか？
   - 独立した女性に なりたいのか？
 
-### "に" + "人" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おまけに 人には喋れなくしてあるね。
-  - こんな盲目の憎悪に 人がどう抗える？
-  - 皆に 人の弱点をさらす 必要があるのですか？
-
 ### "に" + "来て" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3117,14 +2709,6 @@ Accuracy: 98.66%
   - すごい映画の知識ね 名前は？
   - 弟と似てるね 名前はアダマ？
   - 有能な部長さんだね 名前は ?
-
-### "ね" + "私" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不思議ね 私 前ここに来た気がするの。
-  - 妙なものに好かれちゃったね 私について来たんだよ。
-  - 相変わらずのクセっ毛ね 私の子供の頃と そっくり。
 
 ### "ね" + "誰" (4 occurrences)
 - Predicted: None
@@ -3142,21 +2726,13 @@ Accuracy: 98.66%
   - なぜニューオーリンズの ことを？
   - 何の ことだ？
 
-### "の" + "話" (4 occurrences)
+### "は" + "あります" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ずいぶん昔の 話よね？
-  - サソリとカエルの 話をしようか？
-  - マイクロフィルムの 話は？
-
-### "のに" + "どうして" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さっきまで あんなに愛してくれたのに どうして？
-  - ママ 戦争が終わったのに どうしてパパは帰ってこないの？
-  - 科学も ず～っと進んでいたのに どうして…。
+  - お～い！ 何かお手伝いすることは ありますか～！
+  - 仕事は ありますか？
+  - 我らへの ご指示は ありますか？
 
 ### "は" + "いくら" (4 occurrences)
 - Predicted: None
@@ -3166,6 +2742,22 @@ Accuracy: 98.66%
   - 俺には いくら入る?
   - 懸賞金の税金は いくらですか？
 
+### "は" + "これ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お楽しみは これからだ！
+  - そう お礼は これでいい？
+  - それは これのことか？
+
+### "は" + "そう" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたは そう思うのね？
+  - そうするまでは そうだろ？
+  - そう言うてめえは そうじゃねえと言うのか？
+
 ### "は" + "その" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3173,6 +2765,14 @@ Accuracy: 98.66%
   - あなたには その理由が大事？
   - しかし、彼女は その国に属している！
   - どうやってそなたは そのことを知ったのだ？
+
+### "は" + "ただ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おれたちは ただのバンドマンだ！
+  - ビル･カーソンは ただの偽名か？
+  - 奴は ただの書類屋だろ？
 
 ### "は" + "できる" (4 occurrences)
 - Predicted: None
@@ -3182,6 +2782,14 @@ Accuracy: 98.66%
   - 僕は できる。 僕は コートを取り戻せる。
   - 私たちは できることを やる！
 
+### "は" + "とても" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そして私にとっては とても大切な思い出だ。
+  - その子は とても安らかだろ？
+  - それは とても運がいいことなんだよ。
+
 ### "は" + "どういう" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3190,45 +2798,21 @@ Accuracy: 98.66%
   - 一介の野伏ごときが口を挟むとは どういうことだ？
   - 方法は？ 全てを変えたとは どういう意味だ？
 
-### "は" + "ならない" (4 occurrences)
+### "は" + "どうして" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 今夜 同族は全て 去らなくては ならないのよ。
-  - 僕は海賊には ならないよ。
-  - 無理さ。 あの子じゃ 本当の助けには ならない。
+  - その人は どうして 死んだの？
+  - では どうして?
+  - 俺は どうしてここに来た？
 
-### "は" + "もっと" (4 occurrences)
+### "は" + "みんな" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - もう一度 今度は もっと大きな声で！
-  - 何よ薄情者！ 今度は もっとヨボヨボにしてやるから！
-  - 私の状況は もっと複雑だった。
-
-### "は" + "よく" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さっきみたいな質問は よくある?
-  - サリマン 今度の影武者は よく出来てるな。
-  - ヴァリイ おかゆは よく食べる？
-
-### "は" + "人" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その呪いは 人には話せないからね。
-  - まして その石は 人の手が作り出したもの。
-  - 医者は、 時期は 人それぞれだと。
-
-### "は" + "他" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アルファの人は 他に何を教えてくれないの？
-  - 今度の仕事は 他をあたらせてもらうぜ。
-  - 私は他の若者たちとは 他の若者たちとは違っていた。
+  - この映画館は みんなのものだ！
+  - 動ける者は みんな出ろ！
+  - 真っ暗な中にいる人は みんな この光に励まされているわ。
 
 ### "は" + "全て" (4 occurrences)
 - Predicted: None
@@ -3262,14 +2846,6 @@ Accuracy: 98.66%
   - おれたち 死ぬまで ここで石炭焚きを？
   - 出る時まで ここにいる？
 
-### "みんな" + "早く" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そこのみんな 早くしろ！
-  - みんな 早く来て 早くしてくれ！
-  - みんな 早く逃げてちょうだい。
-
 ### "も" + "この" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3277,6 +2853,14 @@ Accuracy: 98.66%
   - お前も この件にカンでいるのか？
   - 家に帰ってきても このザマか！
   - 彼も この話を？
+
+### "も" + "これ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おまえは悪くない。 今までも これからも。
+  - お連れさんも これで?
+  - 君も みんなも これまで よく頑張って来たんだもの。
 
 ### "も" + "それ" (4 occurrences)
 - Predicted: None
@@ -3326,21 +2910,13 @@ Accuracy: 98.66%
   - （清太）節子！ -（節子）イヤや イヤや イヤや！
   - （節子）イヤや イヤや イヤやー！
 
-### "よ" + "あなた" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これが玉座ですって？ ここは お墓よ あなたと私の。
-  - そうよ あなたの名前は?
-  - バカね 暑いからよ あなたは大丈夫？
-
 ### "よ" + "あの" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
+  - そうよ あの子に用でも？
   - なによ あの天気予報は！
   - 何よ あの不気味男！
-  - 見ろよ あの正面にいる子を！
 
 ### "よ" + "お前" (4 occurrences)
 - Predicted: None
@@ -3374,22 +2950,6 @@ Accuracy: 98.66%
   - そんな事するかよ バカじゃないの？
   - タイラー･ダーデンよ バカじゃないの いったい何なのよ？
 
-### "よ" + "僕" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばあちゃん 大丈夫だよ 僕がついてるからね。
-  - 大丈夫だよ 僕が守ってあげるからね。
-  - 心配しなくていいよ 僕が守ってあげるからね。
-
-### "よ" + "（" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ケットのママ）おかしいのよ （ケットのパパ）え？
-  - （治）どうしたんだよ （信代）ん？
-  - （男）やるんなら ほかでやれよ （軍人）なに？
-
 ### "を" + "?" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3397,6 +2957,14 @@ Accuracy: 98.66%
   - なぜ 私にこれを ?
   - マルチェッロが結婚を ?
   - 彼に好意を ?
+
+### "を" + "して" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここで何を しているんだろう？
+  - なぜ悲しそうな顔を しているの？
+  - 彼にピエールの話を してくれますか?
 
 ### "を" + "する" (4 occurrences)
 - Predicted: None
@@ -3429,14 +2997,6 @@ Accuracy: 98.66%
   - あいつがそんなエネルギーを 持ったってのか？
   - それ以後 男性と関係を 持ったか?
   - 修士号や博士号の学位を 持った黒人を何と？
-
-### "を" + "殺す" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それで谷の人たちを 殺すというわけ？
-  - どうだ自分と同類を 殺す気分は？
-  - 僕を 殺すところだった！
 
 ### "を" + "覚えて" (4 occurrences)
 - Predicted: None
@@ -3478,14 +3038,6 @@ Accuracy: 98.66%
   - 今 何て言ったんだ？
   - 今 何て言った？
 
-### "今" + "行く" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ パズー！ シータ！ 今 行く！
-  - シータ 今 行く！
-  - 今 行くわよー！
-
 ### "引け" + "引け" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3494,45 +3046,21 @@ Accuracy: 98.66%
   - 引け 引け 引け!
   - 引け 引け引け 引け!
 
-### "行け" + "行け" (4 occurrences)
+### "早く" + "早く" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 行け 行け 行け！
-  - 行け 行け 行け！
-  - 行け 行け！
+  - 国税局庁舎 - 早く 早く！ 遅れちゃうよ！
+  - 早く 早く 早く！
+  - 早く 早く 早く！
 
-### "！" + "あ" (4 occurrences)
+### "！" + "あんた" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ あ～…。
-  - あ～っ！ あ～っ！
-  - うわ～！ あ～！
-
-### "！" + "あぁ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ～！ あぁ…。
-  - みんな 私が悪いの！ あぁ！
-  - ハッ！ あぁ… ヒィ～！
-
-### "！" + "あなた" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フン！ あなたは サリマンの回し者でしょ。
-  - マルコ！ あなたなの!
-  - 行かない！ あなたも戻っちゃダメ！
-
-### "！" + "あれ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ あれ… 底ぬけだ！
-  - コーベン！ あれじゃ無愛想すぎるわ！
-  - ソフィー！ あれ 敵の飛行軍艦だよ！
+  - お願いだ！ あんたのことは知らない 何も言わないから！
+  - そげな話はしとらんわ！ あんた だいたい学校は？
+  - 離せ！ あんたも死ぬぞ！
 
 ### "！" + "いい" (4 occurrences)
 - Predicted: None
@@ -3542,13 +3070,13 @@ Accuracy: 98.66%
   - ベニート！ アドルフ！ いい子にしてろ！
   - 勇気があるなら 来い！ いいな！
 
-### "！" + "うっ" (4 occurrences)
+### "！" + "おい" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うっ！ うっ！
-  - うわっ！ うっ!
-  - 戻してもらうっ！ うっ！
+  - おい！ おい！
+  - ちょっと！ おい！
+  - マーラ！ マーラ！ おい マーラ 待て！
 
 ### "！" + "おお" (4 occurrences)
 - Predicted: None
@@ -3558,37 +3086,21 @@ Accuracy: 98.66%
   - わかりました！ おお！導師様。 - シヴァ万歳！
   - ゲット…ああ！ おお！
 
-### "！" + "さっさと" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇ！ さっさと失せろ～！
-  - この野朗！ さっさと外せ！
-  - わかったか！ さっさと失せろ！
-
 ### "！" + "そう" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 完全に！ そうなのよ！
-  - 空賊連合にも かませろ！ そうだ！
+  - 皆 ハゲタカだ！ そういう事だ！
   - 要らない！ そうとも！
 
-### "！" + "よく" (4 occurrences)
+### "！" + "みんな" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おばさま！ よく生きてたねぇ。
-  - せん！ よくやったね！ おおもうけだよ！
-  - どうだ！ よく回るだろう！
-
-### "！" + "わし" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ！ わしがラピュタ探索の 指揮官だぞ 忘れるな！
-  - ワッハッハ！ わしが押してやるよ！
-  - 道を空けろ！ わしがぶっ殺してやる！
+  - ああ 頼むよ！ みんなバカなんだ！
+  - もっと大きく！ みんな 祈って！
+  - エールを開けろ！ みんな喉がカラカラだ！
 
 ### "！" + "アチっ" (4 occurrences)
 - Predicted: None
@@ -3598,6 +3110,14 @@ Accuracy: 98.66%
   - アチっ！ アチっ！ アチっ！ アチっ！
   - アチっ！ アチっ！ アチっ！ アチっ！
 
+### "！" + "クソ" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いい加減にしろ！ クソ野郎！
+  - このクソ野郎が！ クソ野郎！こっちへ来い クソガキ！
+  - クソ警察！ クソ警察！
+
 ### "！" + "セルキー" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3606,37 +3126,29 @@ Accuracy: 98.66%
   - すごいぞ！ セルキーのコートを見つけた！
   - 剣を！ セルキーを守れ！
 
-### "！" + "ブタ" (4 occurrences)
+### "！" + "ダメ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - さあ さあ！ ブタが勝つか カーチスか！
-  - すげぇ！ ブタが雲を引いた！
-  - ひねりこみだ！ ブタが後ろをとった。
+  - そう…ダメ！ ダメね！
+  - アルフレド！ ダメだ アルフレド！
+  - シッ！ シッ！ ダメだよ！
 
-### "！" + "一体" (4 occurrences)
+### "！" + "下がれ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた魔法使いみたいやねえ！ 一体どうやったん？
-  - ウォルト！ 一体全体どこだい？
-  - シータ！ 一体どうしたんだ！
+  - これ以上近付くと撃ち殺すぞ！ 下がれ！
+  - 一生 ゴミでも集めてろ！ 下がれ！
+  - 火から離れろ！ 下がれ！
 
-### "！" + "人間" (4 occurrences)
+### "！" + "人" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ 何ということだ！ 人間に化けている！
-  - あなたは人間じゃない！ 人間じゃない！ 人間じゃないわ！
-  - あなたは人間じゃない！ 人間じゃない！ 人間じゃないわ！
-
-### "！" + "今度" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いよいよ決戦だぞ！ 今度こそ叩きのめしてやる！
-  - くそっ！ 今度は被害者づらか！
-  - 何よ薄情者！ 今度は もっとヨボヨボにしてやるから！
+  - ひっ！ 人？
+  - 何をする！ 人が見たら 誤解するじゃないか！
+  - 罰が下るぞ！ 人が持つ物じゃない！
 
 ### "！" + "出て" (4 occurrences)
 - Predicted: None
@@ -3646,13 +3158,21 @@ Accuracy: 98.66%
   - 何処にいる！ 出て来い！
   - 出ろ！ 出てけ！
 
-### "！" + "危ない" (4 occurrences)
+### "！" + "動く" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああっ！ 危ない！
-  - やめなさい！ 危ない！
-  - クリスチャン！ 危ない！ 銃で狙われてる！
+  - さあ、行きましょう！ 動く！
+  - やってみろ！ 動く！
+  - 動く！ 動く！
+
+### "！" + "大丈夫" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あの！ 大丈夫ですか!
+  - 環さん！ 大丈夫!
+  - （軍人たち） 消化器だ 早く早く！ 大丈夫か？
 
 ### "！" + "姫様" (4 occurrences)
 - Predicted: None
@@ -3694,13 +3214,21 @@ Accuracy: 98.66%
   - 殺してやる！ 絶対 殺してやる！
   - 神さま！ 絶対無理です！
 
-### "！" + "行こう" (4 occurrences)
+### "！" + "行け" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そこに行きたいなんて絶対に言わないで！ 行こう。
-  - よ～し！ 行こう 「竜の巣」へ！
-  - ヒン！ 行こう！ ソフィー！
+  - みんな 行け！ 行け！
+  - よし！ 行け！
+  - 行け！ 行け！
+
+### "！" + "足" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こら！ 待て！ ドロボー犬め！ 足をひき千切ってやる！
+  - 子供たち！ 足で踏まないの！
+  - 手 出た！ 足 出た～！
 
 ### "！" + "逃げろ" (4 occurrences)
 - Predicted: None
@@ -3708,7 +3236,7 @@ Accuracy: 98.66%
 - Examples:
   - ここだ！ 逃げろ！
   - 来るぞ！ 逃げろ リサさ～ん！
-  - 面舵！ 逃げろ～！
+  - 逃げろ！ 逃げろ！
 
 ### "！" + "鈴芽" (4 occurrences)
 - Predicted: None
@@ -3726,13 +3254,13 @@ Accuracy: 98.66%
   - やめろ！ 鉄雄 やめるんだ～！
   - 行くぞ！ 鉄雄！
 
-### "！" + "頭" (4 occurrences)
+### "！" + "魔法" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ベルをとめて！ 頭がおかしくなりそう！
-  - 来る！ 来る！ こっちへ来る！ 頭 下げて！
-  - 白い変態野郎！ 頭をぶっ飛ばしてやる！
+  - 魔法！ 魔法！ 魔法！ 魔法！ 魔法！
+  - 魔法！ 魔法！ 魔法！ 魔法！ 魔法！
+  - 魔法！ 魔法！ 魔法！ 魔法！ 魔法！
 
 ### "）" + "あんた" (4 occurrences)
 - Predicted: None
@@ -3749,14 +3277,6 @@ Accuracy: 98.66%
   - （キキ） ねえ ラジオはいいんでしょ？
   - （三葉の声） ねえ あなたは誰？
   - （奥寺） ねえ 本当にこの場所なの？
-
-### "）" + "ソフィー" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） ソフィー イヤだよ 荒地の魔女だぜ。
-  - （ドアが開く音） ソフィー！
-  - （マルクル） ソフィー ビラだよ！ ソフィー！
 
 ### "）" + "何" (4 occurrences)
 - Predicted: None
@@ -3782,45 +3302,29 @@ Accuracy: 98.66%
   - それから？ “レンガの台座”？
   - 何？ “女の短刀”？
 
-### "？" + "あっ" (4 occurrences)
+### "？" + "えっ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ？ あっ！
-  - え？ あっ！
-  - それだけか？ えっ？ あっ いや… その…。
+  - いいのかよ？ えっ？
+  - お父さん お弁当まだぁ？ えっ もう？
+  - 何やってんだ？ えっ？
 
-### "？" + "いい" (4 occurrences)
+### "？" + "じゃあ" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ 環さんデート？ いいよ いいよ ごゆっくり！
-  - ここから すぐ消える どうだ？ いいだろ？
-  - とうとう気が狂ったのかい？ いいから開けるんだよ！
+  - そうなのか？ じゃあどこにいるんだ？
+  - プライドが高い？ じゃあ、ここで暮らせよ！
+  - 廃墟なの？ じゃあそこでいいの お願い！
 
-### "？" + "いや" (4 occurrences)
+### "？" + "それとも" (4 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - それ バイロンかい？ いや 俺だよ またな。
-  - 知識が増えますか？ いや！
-  - 経験？ いや インスピレーションだな。
-
-### "？" + "ううん" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここ？ ううん。
-  - 怖い？ ううん。
-  - 死んじゃった？ ううん 大丈夫。
-
-### "？" + "ええ" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - え？ ええ？
-  - おばあちゃん これは？ ええよ。
-  - お前 プディング作れるか？ ええ。
+  - お茶がいいかな？ それとも もっと強い飲み物かな？
+  - この女をか？ それとも ロケットの女をか？
+  - 口説いていたのは彼？ それとも君？
 
 ### "？" + "どうして" (4 occurrences)
 - Predicted: None
@@ -3830,14 +3334,6 @@ Accuracy: 98.66%
   - 娘さん？ どうして欲しいですか？
   - （捨丸）あれっ？ どうしてお前 この歌知ってるんだ？
 
-### "？" + "また" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なんだ？ また けんかしてんの？
-  - 何なの？ また地雷？
-  - 酔っぱらってるの？ また？
-
 ### "？" + "マジ" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3845,6 +3341,14 @@ Accuracy: 98.66%
   - うぇッ？ マジで!
   - ウソでしょ？ マジ？
   - ツメも？ マジで？
+
+### "？" + "彼" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マーカス？ 彼まで事件に巻き込んだのか？
+  - 何だ？ 彼は何を言ったんだ？
+  - 何のために？ 彼は私を嫌っていました。
 
 ### "-" + "バーフバリ" (3 occurrences)
 - Predicted: None
@@ -3854,14 +3358,6 @@ Accuracy: 98.66%
   - バーフバリ！ - バーフバリ！
   - 動かせ！ - バーフバリ！ バーフバリ！
 
-### "-" + "何" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さんのことを教えて - 何を？
-  - サンガ？ - 何？
-  - 聞いて - 何を？
-
 ### "”" + "って" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3869,38 +3365,6 @@ Accuracy: 98.66%
   - “愛してる” って?
   - ”つなぐ” って？
   - ”シャビ―” って？
-
-### "…" + "あ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん… あ痛たたた…。
-  - えーと、これは… あ、えー、キダ？
-  - 何か手伝おうか… あ～っ！
-
-### "…" + "ああ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ… 目が… ああ～っ！
-  - うっ うう… ああ うわ～っ！
-  - アハハ… ああ！
-
-### "…" + "ありがとう" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ… ありがとう。
-  - そう… ありがとう。
-  - でも仕事中ですから… ありがとう。
-
-### "…" + "あれ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う… あれ？
-  - んん… あれ？
-  - （祥太）あっ… あれ？
 
 ### "…" + "あんた" (3 occurrences)
 - Predicted: None
@@ -3926,30 +3390,6 @@ Accuracy: 98.66%
   - 墓なんか千… いや五千はあるだろ？
   - （将也）あ いや… いや すごいよ！
 
-### "…" + "ううっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う… ううっ 金田く～ん！
-  - 私は… ううっ！
-  - 落ちる… ううっ…。
-
-### "…" + "ええっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ… ええっ？
-  - 耕一？ うん… ええっ!
-  - （芹澤）ああ… ええっ？ -（鈴芽）芹澤さん 出して！
-
-### "…" + "えっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ… えっ？
-  - 就活… えっ この事務所は？
-  - 陽菜さん… えっ！
-
 ### "…" + "この" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3957,22 +3397,6 @@ Accuracy: 98.66%
   - このように… この翁の 手の中にいるではないか！
   - てめえ… この人殺しが！
   - （奥寺）え… この子なの？
-
-### "…" + "そう" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そ… そうなの？
-  - そりゃそうだけどさ… そうかなぁ。
-  - フフっ… そうするわ。
-
-### "…" + "その" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あー… その猫って 鈴芽ちゃんのすか？
-  - それだけか？ えっ？ あっ いや… その…。
-  - なぁ 女の子さん… その…。
 
 ### "…" + "どうして" (3 occurrences)
 - Predicted: None
@@ -3982,6 +3406,14 @@ Accuracy: 98.66%
   - それなら、えー… どうしてここにいるの？
   - 四奥様は 大学を 中退されたとか… どうしてですか？
 
+### "…" + "どこ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ ど… どこへ？
+  - どこだ… どこだ… どこにいる！
+  - どこだ… どこだ… どこにいる！
+
 ### "…" + "はい" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3990,53 +3422,13 @@ Accuracy: 98.66%
   - 早く出ろ！ （赤松）は… はい！ うわあ！
   - 私 草壁サツキです… はい。
 
-### "…" + "また" (3 occurrences)
+### "…" + "今" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - カカシか… また魔女の手下かと思ったよ。
-  - ハハ… またですか？
-  - （鈴芽）え… また地震が起きるってことですか？
-
-### "…" + "よいしょ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あらあら 帽子がこんなとこに… よいしょっと。
-  - あ痛たた… よいしょ…。
-  - どれ… よいしょ…。
-
-### "…" + "ハァ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ん～… ハァ～…。
-  - ハァ… ハァ…。
-  - ハァ… ハァ～。
-
-### "…" + "ハウル" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やめろ… ハウル やめて～！
-  - ハウル… ハウルが来るのかい？
-  - 動いてる… ハウルは生きてるの？
-
-### "…" + "俺" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お… 俺ですか？
-  - 坊ず… 俺達ゃ 戦争やってるんじゃねえんだよ。
-  - （草太）鈴芽さん ああ… 俺は!
-
-### "…" + "目" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ… 目が… ああ～っ！
-  - ああっ 目が… 目が～!
-  - （カルシファー） オイラだけじゃ ダメなんだ… 目とか。
+  - 何不自由ない良家の娘… 今 両親は？
+  - 分かったよ。ぼくは… 今の仕事をやめるよ。
+  - （将也）え… 今 夏休みじゃないの？
 
 ### "、" + "いい" (3 occurrences)
 - Predicted: None
@@ -4078,14 +3470,6 @@ Accuracy: 98.66%
   - なんか変な家族、 誰が誰の父親なの？
   - わからない、 誰がそんなことを？
 
-### "。" + "「" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「われ エンジン不調…」。 「当たり前だろうが」。
-  - 「エンジン不調…」。 「その話は ついてるはずだ」。
-  - 僕は 言ったはずだぞ。 「海に入るな」と。
-
 ### "。" + "あの" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4094,21 +3478,13 @@ Accuracy: 98.66%
   - この貝殻だ。 あの時 ビンを壊せた。
   - 無理さ。 あの子じゃ 本当の助けには ならない。
 
-### "。" + "ありがとう" (3 occurrences)
+### "。" + "いい" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - さぁ おあがり。 ありがとう。
-  - どうぞ。 ありがとう。
-  - タオルもあるから。 ありがとう。
-
-### "。" + "お願い" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなことはしないでください。 お願いします。
-  - はい。 お願いします。
-  - シータ。 お願い… パズーも そうしろって。
+  - いや、 モッシーから行こう。 いいな？
+  - よし、そうだ。 いいぞ、これでいい。
+  - 私にも見しとくれ。 いいよ トキさん。
 
 ### "。" + "ちょっと" (3 occurrences)
 - Predicted: None
@@ -4126,14 +3502,6 @@ Accuracy: 98.66%
   - そうだろう。 まだ全部 回収して無いからな。
   - まだ始まってもいない。 まだ始まってもいない。
 
-### "。" + "コート" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配ないよ セルキー。 コートは ちゃんと ここにある。
-  - 急げ。 コートを取れ。
-  - 知ってるだろう。 コート無しでは 彼女は声を出せない。
-
 ### "。" + "パパ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4141,30 +3509,6 @@ Accuracy: 98.66%
   - お願いだよ。 パパと一緒に居たいんだ！
   - コートは家だよ。 パパが持ってる。
   - パパ、 コートが必要なんだ。 パパ。
-
-### "。" + "フ～ン" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばか者だけさ 信じるのは。 フ～ン。
-  - 自由に生きるのに いるだけ。 フ～ン…。
-  - 黒いのが い～っぱい いたの。 フ～ン。
-
-### "。" + "分かった" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう 無い。 分かったか？
-  - 俺はマジだぜ。 分かったわ。
-  - 分かったと思います。 分かったと思います。
-
-### "。" + "大丈夫" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫だ。 大丈夫。
-  - 彼女はあなたを傷つけたりしません。 大丈夫。
-  - 怖いねぇ。 大丈夫 あんたは狙われないから。
 
 ### "。" + "彼" (3 occurrences)
 - Predicted: None
@@ -4174,13 +3518,21 @@ Accuracy: 98.66%
   - はい、閣下。 彼に伝えます。
   - チケットはキャンセルされた。 彼は行かなかった。
 
-### "。" + "行こう" (3 occurrences)
+### "。" + "後" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありえる。 行こう。
-  - 助けなきゃ。 行こう！
-  - 来て。 行こうよ、グリーニー！
+  - じゃあね～。 後でね。
+  - もういい。 後で話をしよう。
+  - 家に帰ろう。 - どうぞ。 後で行くよ。
+
+### "。" + "（" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あらあら。 （トキ） 宗介ちゃん。
+  - お世話さま。 （保母） ご苦労さま。
+  - （ヨシエ） 早く クジラさんよ。 （ハナ） 立派ねぇ！
 
 ### "ああ" + "あれ" (3 occurrences)
 - Predicted: None
@@ -4246,14 +3598,6 @@ Accuracy: 98.66%
   - わっ あっ ああっ！
   - （鈴芽）はあっ ああっ！
 
-### "あっ" + "ごめん" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ ごめん （秋也）えっ？
-  - あっ ごめん！
-  - あっ！ あっ ごめん！
-
 ### "あっ" + "メイ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4270,22 +3614,6 @@ Accuracy: 98.66%
   - （ケイ）あっ （金田）え？
   - （甲斐）あっ （山形）どうした？
 
-### "あんた" + "誰" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 誰だ?
-  - あんた 誰だ？
-  - あんた 誰？
-
-### "えっ" + "ええっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ ええっ え？
-  - えっ ええっ！ 環さん!
-  - （運転手）えっ ええっ!
-
 ### "えっ" + "ちょっと" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4301,22 +3629,6 @@ Accuracy: 98.66%
   - おい この写真 お前が撮ったのか？
   - おい この間抜け猿！
   - （多襄丸） おい この女を どうするつもりだ？
-
-### "おい" + "起きろ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい 起きろ！
-  - 死んだか？ おい 起きろ！
-  - （ルイ） おい 起きろ。
-
-### "おばあちゃん" + "ここ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばあちゃん ここで待たせてください。
-  - カルちゃん キレイだねぇ。 おばあちゃん ここ。
-  - マルクル！ おばあちゃん ここへ！
 
 ### "お前" + "何か" (3 occurrences)
 - Predicted: None
@@ -4390,6 +3702,14 @@ Accuracy: 98.66%
   - 自分が誰か わからないわ 誰なの？
   - 自分の心に何が起こっているのか わからないのか？
 
+### "か" + "分かってる" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どういう事か 分かってるのか？
+  - どれだけ危険な事か 分かってるのか？
+  - ロイス 何を運んでるか 分かってるのか？
+
 ### "か" + "分かる" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4398,13 +3718,13 @@ Accuracy: 98.66%
   - 俺が何考えてるか 分かるか？
   - 最初の愛 - どんなに素晴らしいか 分かるかい？
 
-### "か" + "知って" (3 occurrences)
+### "か" + "私" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ここが どんな場所か 知っているだろう？
-  - シュタージが何なのか 知っているのか？
-  - 誰が狙ってるんですか 知っている人 ?
+  - いいか 私が犯罪者に見えるか？
+  - 秘密を聞くか 私のように自分で悟るか？
+  - 誰に投票すべきか 私の支持者の票を誰に向けるべきか？
 
 ### "から" + "私" (3 occurrences)
 - Predicted: None
@@ -4414,29 +3734,13 @@ Accuracy: 98.66%
   - だから 私は彼を支持する。
   - 金魚のお守りをもらったから 私達は もう怖くない。
 
-### "が" + "あの" (3 occurrences)
+### "が" + "あった" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前 あいつらが あの子を 生かしておくと思うのかい？
-  - 私のせがれが あの手帳を持ってる？
-  - 誰かが あの橋を 吹っ飛ばしたら どうだ？
-
-### "が" + "あんた" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すまんが あんた誰？
-  - ブタは嫌いだが あんたは好きだ。
-  - 白人が あんたに 何をしてくれた？
-
-### "が" + "あんな" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎どもが あんな所に 道を造っちまいやがって…。
-  - 入り口が あんなに小さいや。
-  - 誰が あんな女を！
+  - 何が あった？
+  - 自殺する理由が あったのでしょうか？
+  - 英国では家にガラス窓が あったのを憶えてる？
 
 ### "が" + "いけない" (3 occurrences)
 - Predicted: None
@@ -4445,6 +3749,14 @@ Accuracy: 98.66%
   - いったいどこが いけない？
   - クミコちゃんが いけないんだよ。
   - モニカに預けるのが いけないの？
+
+### "が" + "こんな" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 小さなリスさんが こんな時間に何してる？
+  - 小さな赤ん坊が こんなにウンコを？
+  - （将也）う～わぁ 誰が こんなことしたの？
 
 ### "が" + "それ" (3 occurrences)
 - Predicted: None
@@ -4462,21 +3774,13 @@ Accuracy: 98.66%
   - 楽しみが ちょっと延びるだけだよ。
   - （奥寺）君は昔 私のことが ちょっと好きだったでしょう？
 
-### "が" + "どんな" (3 occurrences)
+### "が" + "ない" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ここが どんな場所か 知っているだろう？
-  - 年寄りが どんなに大変なのか 分かってるの？
-  - 私が どんな間違いを 犯したと言うのか？
-
-### "が" + "みんな" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハムはポニョが みんな食べちゃったんだよ。
-  - 子供さんが みんな しっかりしとるけ!
-  - 木だ！ あの木が みんな 持ってっちまう！ 追うんだ！
+  - だって 急に ご用が出来たんだから 仕様が ないじゃないの!
+  - だらしが ないわねえ!
+  - みずが ない！！
 
 ### "が" + "レイプ" (3 occurrences)
 - Predicted: None
@@ -4486,14 +3790,6 @@ Accuracy: 98.66%
   - 何で俺が レイプを？
   - 目が レイプ？
 
-### "が" + "僕" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どんなダイニングセットが 僕に相応しいだろう？
-  - 荒地の魔女が 僕の家を捜しているんだ。
-  - 魔法使いのおじが 僕に こっそり残してくれた小屋なんだ。
-
 ### "が" + "分かる" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4501,14 +3797,6 @@ Accuracy: 98.66%
   - “荒らし”の意味が 分かるか？
   - どうしてそんなことが 分かるんだ？
   - 自分を知らずに どうして私のことが 分かるの？
-
-### "が" + "始まる" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そしてある日また殺人が 始まるのか？
-  - 略奪より もっと ひどいことが 始まるよ。
-  - 革命が 始まるぞ！
 
 ### "が" + "死ぬ" (3 occurrences)
 - Predicted: None
@@ -4526,21 +3814,13 @@ Accuracy: 98.66%
   - 白い死神が 誰か知らないのか？
   - 私が 誰に？
 
-### "くれて" + "ありがとう" (3 occurrences)
+### "けど" + "それ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よかった！ 迎えに来てくれて ありがとうね。
-  - ハウルに手紙届けてくれて ありがとう。
-  - 生まれてきてくれて ありがとう。
-
-### "けど" + "どう" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - できると思うけど どうすればいいの？
-  - ラフプランだけど どうかしら？
-  - 残りものだけど どう？
+  - けど それほど 悪くは無いんだよ。
+  - だけど それと君の勉強に 何の関係が？
+  - スィートは優しいけど それは名前じゃない。
 
 ### "けど" + "何" (3 occurrences)
 - Predicted: None
@@ -4573,6 +3853,14 @@ Accuracy: 98.66%
   - つまり お前の話し方がさ そうだろ？
   - またもらえるさ そうだろ？
   - 同じさ そうだろ？
+
+### "さあ" + "みんな" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さあ みんな おウチに帰る時間だ！
+  - さあ みんな しっかり稼ぎな！！
+  - さあ みんな 飲み明かすぞ！
 
 ### "さあ" + "何" (3 occurrences)
 - Predicted: None
@@ -4638,14 +3926,6 @@ Accuracy: 98.66%
   - なぜ 社長を見殺しにした ?
   - なぜ爆破した ?
 
-### "した" + "何" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうした 何か匂うのか？
-  - どうした 何があった おい 内海！
-  - どうした 何があった 大丈夫かい？
-
 ### "したら" + "どう" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4661,6 +3941,14 @@ Accuracy: 98.66%
   - この事は主人に 内緒にして いい？
   - 女房にこんな事して いいと思うのか?
   - 相談して いいかしら？
+
+### "じゃ" + "ダメ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 俺じゃ ダメ？
+  - 最初から完璧じゃ ダメか？
+  - （植野）ノートに書くのじゃ ダメなんですか？
 
 ### "じゃ" + "誰" (3 occurrences)
 - Predicted: None
@@ -4742,14 +4030,6 @@ Accuracy: 98.66%
   - どうやったんだ フランク？
   - 本当は何者だ フランク？
 
-### "だ" + "何か" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どれも赤だ 何か手がかりはないか？
-  - 俺 ヒマなんだ 何か手伝…!
-  - 同意だ 何か問題でも？
-
 ### "だ" + "僕" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4773,14 +4053,6 @@ Accuracy: 98.66%
   - この辺だ 分かるか？
   - ブランドは大事だ 分かるか？
   - 私だ 分かるか？
-
-### "だ" + "早く" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こっちが近道だ 早く来い！
-  - 絶対だ 早く帰れ！ 消えろ この野郎！
-  - （軍人たち） 消化器だ 早く早く！ 大丈夫か？
 
 ### "だ" + "知ってる" (3 occurrences)
 - Predicted: None
@@ -4830,29 +4102,13 @@ Accuracy: 98.66%
   - 俺のバイト先って どこやっけ？
   - 隠れろって どこへ？
 
-### "って" + "ほんと" (3 occurrences)
+### "って" + "どんな" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何をしてもいいって ほんと？
-  - 悪い人がいるって ほんと？
-  - 悪があるって ほんと？
-
-### "って" + "ホント" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジェシカって ホント 綺麗よね？
-  - ソフィーって ホントに魔女じゃないの？
-  - 親が来るって ホントか？
-
-### "って" + "本当" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ポルコって 本当はスパイなの？
-  - 毎朝 氷風呂に入ってるって 本当ですか？
-  - 軍がテジョンに配備されてるって 本当ですか？
+  - 宇宙って どんな生活？
+  - 音って どんな？
+  - （初枝）❝ゆり❞って どんな字 書くの？
 
 ### "って" + "知らない" (3 occurrences)
 - Predicted: None
@@ -4861,38 +4117,6 @@ Accuracy: 98.66%
   - ぼくが生きてるって 知らない？
   - ランチョルダース チャンチャルって 知らない？
   - 叱られたって 知らないから!
-
-### "って" + "言う" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたがそうだって 言うの ジョン？
-  - そんなことして生きてるって 言うのか？
-  - 題名は『アドリア海の花束』って 言うんだ。
-
-### "って" + "言ってる" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「とっても とっても」って 言ってるよ。
-  - あなた達 恥ずかしくないのかって 言ってるの！
-  - 私が昔のこと言いふらしてるって 言ってるの？
-
-### "って" + "誰" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんなって 誰がそんな話をしたの？
-  - ジョニー・マドリードって 誰だ？
-  - 天然痘って 誰が？
-
-### "ついて" + "何" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そのことについて 何て書いてあるの？
-  - ニコ･ラサルテについて 何か知ってる？
-  - 金について 何を聞いた？
 
 ### "で" + "ここ" (3 occurrences)
 - Predicted: None
@@ -4917,14 +4141,6 @@ Accuracy: 98.66%
   - それで どんな気持ちでした？
   - で どんな様子だった？
   - （信代）で どんな人？
-
-### "で" + "よく" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あらあら 宗ちゃんね 真っ暗で よく見えないわ。
-  - この歳で よくわからない。
-  - こんな過激なセッティングで よく水から離れられるわね。
 
 ### "で" + "今" (3 occurrences)
 - Predicted: None
@@ -4990,14 +4206,6 @@ Accuracy: 98.66%
   - 私の足がジョン・レノンと 同じ地面に触れたの！
   - 街のロータリーに 居たのと 同じかな？
 
-### "と" + "思ってる" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こいつ カネで何でも買えると 思ってるのか？
-  - 人を伝言板か何かと 思ってるの！
-  - 弱いフックを使ってると 思ってるのか？
-
 ### "と" + "約束" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5022,14 +4230,6 @@ Accuracy: 98.66%
   - ドン･パブロが子供を食べたと 言うんですか？
   - 今さら どうなると 言うんだ？
 
-### "と" + "言ったろ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 名前を出すなと 言ったろ！
-  - 寝るなと 言ったろ！
-  - 薬を分けてくれると 言ったろ?
-
 ### "と" + "誰" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5053,6 +4253,14 @@ Accuracy: 98.66%
   - おじさん どうして こんなことに？
   - どうして こんな ひどい事をする？
   - どうして こんなに？
+
+### "どこ" + "どこ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どこ どこ!
+  - どこ どこ行った？
+  - どこ どこ？
 
 ### "な" + "どう" (3 occurrences)
 - Predicted: None
@@ -5086,14 +4294,6 @@ Accuracy: 98.66%
   - 何も問題ない 君は凄くハンサムだ！
   - 君の落ち度じゃない 君は犠牲者だよ！
 
-### "ない" + "私" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 妻に言う事じゃない 私に言う事だろ？
-  - 朝の市場なんて素敵じゃない 私 海初めてなの。
-  - 産まれてくる罪のない 私たちの子供のためです！
-
 ### "なぜ" + "あなた" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5101,14 +4301,6 @@ Accuracy: 98.66%
   - なぜ あなたが行くの？
   - なぜ あなたの遺言状と 一緒に？
   - なぜ あなたを探してたか？
-
-### "なぜ" + "あの" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ あの店に？
-  - なぜ あの町へ？
-  - なぜ あの部屋に？
 
 ### "なぜ" + "この" (3 occurrences)
 - Predicted: None
@@ -5150,14 +4342,6 @@ Accuracy: 98.66%
   - なっ 何だ？
   - （男）なっ 何だ？
 
-### "など" + "いかが" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では お茶など いかがでしょう？ お付き合い願えますか？
-  - ドッグらしく 犬の格好など いかが？
-  - フォアグラなど いかが？
-
 ### "なら" + "何" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5173,6 +4357,14 @@ Accuracy: 98.66%
   - これらの贈り物と同様に あなたの善意によって。
   - なぜクマジーノ氏は あんな時間に あなたの家に？
   - なぜ教団の新聞に あなたの名が出ないの！
+
+### "に" + "いい" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - これは仕事の一部だと 考えるように いいね？
+  - ニューオーリンズに いい病院は見つかって？
+  - 隣に いい？
 
 ### "に" + "この" (3 occurrences)
 - Predicted: None
@@ -5246,6 +4438,14 @@ Accuracy: 98.66%
   - すぐに コートを見つける。 それで 治るからね。
   - 彼女に コートを。
 
+### "に" + "人" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こんな盲目の憎悪に 人がどう抗える？
+  - 皆に 人の弱点をさらす 必要があるのですか？
+  - 私に 人の子のことは 分からん。
+
 ### "に" + "仕事" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5286,14 +4486,6 @@ Accuracy: 98.66%
   - どこに 行くの？
   - カトリーナとプロムに 行くってマジ？
 
-### "に" + "行って" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ まだ挨拶に 行っていなかったね。
-  - ソフィーが代わりに 行ってくれればいいんだ！
-  - ニューヨークの空港に 行ってしまったら？
-
 ### "に" + "見える" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5326,14 +4518,6 @@ Accuracy: 98.66%
   - 嫌だね なぜかって？
   - 白い部分ね なぜ?
 
-### "ね" + "今" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 今どこ?
-  - そりゃしたね 今もしてるよ。
-  - 宗介ね 今この家は 嵐の中の灯台なの。
-
 ### "ねえ" + "あなた" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5350,14 +4534,6 @@ Accuracy: 98.66%
   - 洗ってあるわ ねえ これ 持ってく?
   - （祥太）ねえ これ 何？
 
-### "ねえ" + "それ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 言われるまでもねえ それが飛行艇乗りってもんよ。
-  - （信代）ねえ それ食べさせたら返してきなよ？
-  - （祥太）ねえ それだけ？
-
 ### "ねえ" + "ちょっと" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5365,6 +4541,14 @@ Accuracy: 98.66%
   - ねえ ちょっと よってかない？
   - ねえ ちょっとよってかない？
   - ねえ ちょっと？
+
+### "ねえ" + "どこ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ねえ どこで 勉強すンのさァ!
+  - ねえ どこへ行くの？
+  - 瀧くん ねえ どこにいるの？
 
 ### "の" + "あんた" (3 occurrences)
 - Predicted: None
@@ -5406,6 +4590,22 @@ Accuracy: 98.66%
   - 明日の出発が早いの 来る？
   - 週末にチェットの家で パーティなの 来る？
 
+### "の" + "話" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ずいぶん昔の 話よね？
+  - サソリとカエルの 話をしようか？
+  - マイクロフィルムの 話は？
+
+### "のに" + "どうして" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さっきまで あんなに愛してくれたのに どうして？
+  - ママ 戦争が終わったのに どうしてパパは帰ってこないの？
+  - 電話一本ですべてを 終わらせられるのに どうして？
+
 ### "のに" + "何" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5413,6 +4613,14 @@ Accuracy: 98.66%
   - 外で会えたのに 何でここへ？
   - 戻すだけなのに 何がそんなに難しいの？
   - 禁止なのに 何で？
+
+### "は" + "あんた" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やめるのは あんただよ。 どこに居たのさ？
+  - ジャズースだ 捜してるのは あんたじゃ？
+  - （美也子）バカは あんたよ この親不孝者！
 
 ### "は" + "いったい" (3 occurrences)
 - Predicted: None
@@ -5422,22 +4630,6 @@ Accuracy: 98.66%
   - だが 純粋さ 誠実さとは いったい何だ？
   - 僕は いったい 何になる？
 
-### "は" + "いない" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここには もう 他のロボットは いないのかい？
-  - 大丈夫よ かんしゃくで死んだ人は いないわ。
-  - 近頃は こんな仕事をする職人は いないよ。
-
-### "は" + "おめぇ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 彼女は おめぇが来るのをな…。
-  - 次は おめぇだ！
-  - 表のカーチスは おめぇのか？
-
 ### "は" + "おれ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5446,21 +4638,13 @@ Accuracy: 98.66%
   - ゆだんするなよ わかんないことは おれにきけ な？
   - 子供の父親は おれだ！
 
-### "は" + "こっち" (3 occurrences)
+### "は" + "こちら" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前は こっち。 パズー！
-  - 今後 学校からの手紙は こっちに回せ いいな？
-  - 勝負は こっちのもの！
-
-### "は" + "こんな" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ私は こんな映像を 見てしまうの？
-  - なんで うちのご神体は こんなに遠いの？
-  - 近頃は こんな仕事をする職人は いないよ。
+  - ベッカーさんは こちらに？
+  - 今日の映画は こちら！
+  - 聖女さまは こちらに？
 
 ### "は" + "すべて" (3 occurrences)
 - Predicted: None
@@ -5469,14 +4653,6 @@ Accuracy: 98.66%
   - “この世は すべて 持ちつ持たれつ”！
   - これは すべて僕のせいだ！
   - 彼が言ってるのは すべて本当だ！
-
-### "は" + "たくさん" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでも生きているうちは たくさん抱きしめてくれたの？
-  - パパ 運転手でベンツは たくさん運転したわよね？
-  - 仕事は たくさんありそうね。
 
 ### "は" + "だれ" (3 occurrences)
 - Predicted: None
@@ -5502,14 +4678,6 @@ Accuracy: 98.66%
   - おれは どっちだ？
   - 強いのは どっちだ？
 
-### "は" + "どなた" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは どなた？ なぜ 私たちの名前を知ってるの？
-  - あの方は どなた？ あぁ 家主さんね。
-  - お家の方は どなたか いらっしゃいませんか？
-
 ### "は" + "どれ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5518,13 +4686,13 @@ Accuracy: 98.66%
   - 一番 気に入ってるのは どれです？
   - 証言は どれくらい？
 
-### "は" + "なし" (3 occurrences)
+### "は" + "ならない" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ボイラーの火をおとせ 残業は なしだ。
-  - 何でも言ってくれ！ 固定料金 値引きは なしだ！
-  - 目撃者は なしか？
+  - 今夜 同族は全て 去らなくては ならないのよ。
+  - 無理さ。 あの子じゃ 本当の助けには ならない。
+  - 迷子には ならないぞ。
 
 ### "は" + "ほか" (3 occurrences)
 - Predicted: None
@@ -5534,13 +4702,21 @@ Accuracy: 98.66%
   - 息子さんは ほかに家を持ってますか？
   - 捨てた人っていうのは ほかに いるんじゃないですか？
 
-### "は" + "やらねえ" (3 occurrences)
+### "は" + "もっと" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ？ ブタは殺しは やらねえんだ。
-  - フィオは やらねえ！
-  - 安い仕事は やらねえぜ。
+  - もう一度 今度は もっと大きな声で！
+  - 私の状況は もっと複雑だった。
+  - 絞首刑になりゃ 新聞が売れ 奴らは もっと喜ぶ！
+
+### "は" + "よく" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さっきみたいな質問は よくある?
+  - ヴァリイ おかゆは よく食べる？
+  - 私の友人たちは よく知らせてくれた。
 
 ### "は" + "ポニョ" (3 occurrences)
 - Predicted: None
@@ -5550,6 +4726,14 @@ Accuracy: 98.66%
   - リサ このコは ポニョっていうんだよ。
   - 宗介は ポニョと ここにいて。
 
+### "は" + "他" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アルファの人は 他に何を教えてくれないの？
+  - 私は他の若者たちとは 他の若者たちとは違っていた。
+  - 証人は 他には？
+
 ### "は" + "初めて" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5557,14 +4741,6 @@ Accuracy: 98.66%
   - おぬし 薪割りというものを見るのは 初めてかな?
   - ハーフリングは 初めてではないのか？
   - 大臣に会うのは 初めてかね?
-
-### "は" + "外" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの石は 外へ出しちゃ いけないものだったのよ。
-  - この町じゃないよ でも今夜は 外へ出ないほうがいいね。
-  - その土管は 外につながってる。 行け！
 
 ### "は" + "彼ら" (3 occurrences)
 - Predicted: None
@@ -5574,6 +4750,14 @@ Accuracy: 98.66%
   - そなたの剣は 彼ら二人を合わせたよりも速かったのか?
   - 年寄りと子供を働かせないのは 彼らを処分するからよ！
 
+### "は" + "本当に" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああっ！ラピュタは 本当にあったんだね！
+  - カバンにあったのは 本当に音楽なの?
+  - 銭（ツェン）所長夫人としては 本当に似合わないわ！
+
 ### "は" + "気" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5582,13 +4766,13 @@ Accuracy: 98.66%
   - いいけど… 君の恋人は 気にしないだろうね？
   - 人に頼って暮らすのは 気が引けないか？
 
-### "へ" + "行く" (3 occurrences)
+### "は" + "絶対" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いえ チェザーリの店へ 行くだけですから。
-  - どこへ 行くの？
-  - 危険を冒してベルリンへ 行くほど重要なのか？
+  - この落とし前は 絶対つけさせるからな！
+  - 咬むのは 絶対になし！
+  - 夫を甘く見るような妻は 絶対に許さん！
 
 ### "ほら" + "こっち" (3 occurrences)
 - Predicted: None
@@ -5606,13 +4790,13 @@ Accuracy: 98.66%
   - みんな この男を見た？
   - 真っ暗な中にいる人は みんな この光に励まされているわ。
 
-### "みんな" + "無事" (3 occurrences)
+### "みんな" + "早く" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - みんな 無事か？
-  - みんな 無事だった？ 無事なもんかい！
-  - （ナウシカ）みんな 無事？
+  - そこのみんな 早くしろ！
+  - みんな 早く来て 早くしてくれ！
+  - みんな 早く！ 森が燃えてる！
 
 ### "むり" + "-" (3 occurrences)
 - Predicted: None
@@ -5622,21 +4806,13 @@ Accuracy: 98.66%
   - （ダイジン）むり -（草太）なぜだ！
   - （ダイジン）むり -（鈴芽）どうして？
 
-### "も" + "ある" (3 occurrences)
+### "も" + "あなた" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじいさん その島は 今も あるんでしょうか？
-  - 疑う証拠でも あるのか？
-  - 精神医学的な要因も あるとしたら？
-
-### "も" + "お前" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでも お前 男かい えっ!
-  - でも お前が殺した！
-  - 鉄雄を変えたのも お前の仕業だな！
+  - でも あなたの夢は？
+  - でも あなたは”正直”を捨て 全責任を負った？
+  - ペジテをおそわせたのも あなたたちなの？
 
 ### "も" + "きっと" (3 occurrences)
 - Predicted: None
@@ -5646,21 +4822,13 @@ Accuracy: 98.66%
   - リサと同じに ポニョも きっと元気だよ！
   - 耕一も きっと そうしてるわ。
 
-### "も" + "ここ" (3 occurrences)
+### "も" + "できない" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも ここには いられないわね。
-  - 今も ここに？
-  - 何度も ここへ？
-
-### "も" + "こんな" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いくらシカゴでも こんな腐敗は許せん！
-  - でも こんな所に来られたんだから…。
-  - 所詮 貴様の魔術も こんなものか サルマン？
+  - それじゃ 笑うことも できないじゃない！
+  - でも働きすぎで、他に何も できないんじゃない？
+  - 歌えないよ。 話すことも できないんだ。
 
 ### "も" + "どうして" (3 occurrences)
 - Predicted: None
@@ -5686,21 +4854,21 @@ Accuracy: 98.66%
   - 俺の立場なら…お前も 同じ事をしたろ？
   - 自分の子供が生まれても 同じように？
 
+### "も" + "私" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも 私が飲むとオッパイになって 赤ちゃんが飲めるのよ。
+  - カレブを森に連れて行った責任も 私に？
+  - 目を閉じても 私が見えましたね？
+
 ### "も" + "誰" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
+  - そうとも 誰が言ったんだ?
   - それでも 誰も見なかったと？
   - それとも 誰も信じない？
-  - でも 誰も信じなかった。
-
-### "もう" + "いい" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう いいだろ サインしてくれる？
-  - もう いいんだ…。 （おかみ） えっ？
-  - もう いい子じゃないのね？
 
 ### "やあ" + "元気" (3 occurrences)
 - Predicted: None
@@ -5709,14 +4877,6 @@ Accuracy: 98.66%
   - やあ 元気かい？
   - やあ 元気か？
   - やあ 元気？
-
-### "やっぱり" + "この" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さん！ やっぱり この家 何かいる！
-  - やっぱり この道で正しかったんだ。
-  - ヘヘ… やっぱり このせいじゃなかったみたいだ。
 
 ### "やめて" + "お願い" (3 occurrences)
 - Predicted: None
@@ -5734,6 +4894,14 @@ Accuracy: 98.66%
   - やめろ 何も盗んでない！
   - やめろ 何をする！
 
+### "よ" + "あなた" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうよ あなたの名前は?
+  - バカね 暑いからよ あなたは大丈夫？
+  - 映画好きよ あなたは？
+
 ### "よ" + "あんた" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5749,14 +4917,6 @@ Accuracy: 98.66%
   - わかったよ さあ 続けよう！
   - ビデオを奥さんに送るよ さあ どうするんだい？
   - 言わねえよ さあ！
-
-### "よ" + "で" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この町じゃないよ でも今夜は 外へ出ないほうがいいね。
-  - そんなの知ってるよ でも どう測るの？
-  - 違うよ でも変だろ？
 
 ### "よ" + "もう" (3 occurrences)
 - Predicted: None
@@ -5774,13 +4934,21 @@ Accuracy: 98.66%
   - やった！ やったよ シアーシャ！
   - 見ろよ シアーシャ。
 
-### "よ" + "ママ" (3 occurrences)
+### "よ" + "俺" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - なんだよ ママ！
-  - 船へ帰ろうよ ママ。
-  - 行けよ ママより怖いんだ 気ぃつけろ。
+  - 何だよ 俺への仕返しか！
+  - 何だよ 俺達は無視か？
+  - 誤解だよ 俺達はホビットだ！
+
+### "よ" + "僕" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 大丈夫だよ 僕が守ってあげるからね。
+  - 心配しなくていいよ 僕が守ってあげるからね。
+  - 狂ってるよ 僕に殴られたいのか？
 
 ### "よ" + "絶対" (3 occurrences)
 - Predicted: None
@@ -5814,6 +4982,22 @@ Accuracy: 98.66%
   - 仕事中の息子さんを ご覧になったことは？
   - 決める前に私の顔を ご覧になりたい？
 
+### "を" + "してた" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママが あなたのお話を してたよ。
+  - 何を してた?
+  - 僕は…すごく変な振る舞いを してただろ？
+
+### "を" + "してる" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うん！ きっと大事なことを してる！ 私もそう思うよ！
+  - どうして悲しい顔を してるんです？
+  - 何を してる？
+
 ### "を" + "その" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5830,14 +5014,6 @@ Accuracy: 98.66%
   - ロングビーチで地道に港湾労働者を やるってのはどうだ？
   - 私たちは できることを やる！
 
-### "を" + "俺" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クリスタルのありかを 俺に教えるんだ。
-  - 気がついたら 海面スレスレを 俺だけ独りで飛んでいた。
-  - 自分の村を 土地を 俺たちとの約束を覚えているのか？
-
 ### "を" + "持って" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5845,22 +5021,6 @@ Accuracy: 98.66%
   - 何年も前にその包みを 持ってきたんだ。
   - 根源的な力を 持っていたのか？
   - 誰がそんなタイプライターを 持っているんだ？
-
-### "を" + "見せて" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかあ様に そなたの正体を 見せてあげよう。
-  - お仕事を 見せていただけるのよね？
-  - 諸君にラピュタの力を 見せてやろうと思ってね。
-
-### "を" + "見つけて" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きっと僕がラピュタを 見つけてみせる。
-  - カブ 大丈夫？ すぐ新しい棒を 見つけてあげるね。
-  - クー、 僕らを 見つけてくれたね！
 
 ### "を" + "見て" (3 occurrences)
 - Predicted: None
@@ -5901,6 +5061,14 @@ Accuracy: 98.66%
   - スモーク スモーク 中に入れろ！
   - スモーク 中に入れろ！ スモーク 中に入れろ！
   - スモーク 中に入れろ！ スモーク 中に入れろ！
+
+### "ママ" + "どこ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママ どこ?
+  - ママ どこだい？
+  - ママ どこに行くの？
 
 ### "メイ" + "怖くない" (3 occurrences)
 - Predicted: None
@@ -5990,6 +5158,14 @@ Accuracy: 98.66%
   - 彼女 どうです？
   - 彼女 どう？
 
+### "待て" + "どこ" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい待て どこ行くんだ？
+  - ちょっと待て どこ行くんや？
+  - ベルリーニ 待て どこへ行く！
+
 ### "後" + "誰" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6006,29 +5182,13 @@ Accuracy: 98.66%
   - 何 枚 くらい？
   - 年賀状 は 何 枚 くらい 書く の？
 
-### "私" + "あなた" (3 occurrences)
+### "行け" + "行け" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - だって私 あなたを愛してるの！
-  - 私 あなたの そういうバカっぽいところ好き。
-  - 私 あなたを助けたい。
-
-### "私" + "ポルコ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 ポルコ 好きだもの。
-  - 私 ポルコが 生きて帰って来てくれて嬉しい。
-  - 私 ポルコを信じてる。
-
-### "違う" + "違う" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 違う 違うったら…！
-  - 違う 違う！
-  - 違う 違う！ ご主人さま！
+  - 行け 行け 行け！
+  - 行け 行け 行け！
+  - 行け 行け！
 
 ### "！" + "ああ" (3 occurrences)
 - Predicted: None
@@ -6038,45 +5198,29 @@ Accuracy: 98.66%
   - ダメだ ダメだ ダメだ！ ああ やめてくれ！
   - （翁）うわ！ ああ！
 
-### "！" + "あそこ" (3 occurrences)
+### "！" + "あれ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あそこ！ あそこだ！
-  - パズー！ あそこ！ ハッ！
-  - 見ろ！ あそこに銃が！
+  - あっ！ あれ… 底ぬけだ！
+  - コーベン！ あれじゃ無愛想すぎるわ！
+  - 痛い！ あれ～？
 
-### "！" + "ありがとう" (3 occurrences)
+### "！" + "うっ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ ありがとう！
-  - ありがとう！ ありがとう！
-  - やらせてもらえるのね！ ありがとう 一生懸命やるわ！
+  - うっ！ うっ！
+  - 戻してもらうっ！ うっ！
+  - （草太）どこだっ！ うっ！
 
-### "！" + "うん" (3 occurrences)
+### "！" + "うわっ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 乗れるよ！ うん 立派だね。
-  - 分かった！ カマたき手伝え！ うん！
-  - 宗介 行くよ！ うん！
-
-### "！" + "えっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ ソフィー 私 再婚したの！ えっ！
-  - ん！ えっ？
-  - シータ 海だ！ えっ？
-
-### "！" + "おばあちゃん" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル！ おばあちゃん ここへ！
-  - メイ！ おばあちゃんとこにいな！
-  - 死んじゃう！ おばあちゃん！
+  - ああーっ！ うわっ！
+  - うわっ！ うわっ！ うわ～っ！ うえいっ！
+  - ポニョ こっち！ うわっ！
 
 ### "！" + "お母さん" (3 occurrences)
 - Predicted: None
@@ -6102,14 +5246,6 @@ Accuracy: 98.66%
   - やめて下さい！ お願いだ！ やめて！
   - 待って、ママ！ お願い！
 
-### "！" + "きっと" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うん！ きっと大事なことを してる！ 私もそう思うよ！
-  - うん！ きっと大事なことをしてる！
-  - やるぞ～！ きっとラピュタを見つけてやる！
-
 ### "！" + "きんだ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6118,13 +5254,13 @@ Accuracy: 98.66%
   - さきんだ！ きんだ！ きんだ！
   - さきんだ！ きんだ！ きんだ！
 
-### "！" + "こら" (3 occurrences)
+### "！" + "こいつ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - メイ！ こら 起きろ！
-  - ロルフィ！ こら！
-  - 小隊 集まれ！ こら！ 早くしろ！
+  - いた！ こいつだ！！
+  - ほらっ ダイジン！ こいつ何がしたいの!
+  - ウワー！ こいつは機械だ！
 
 ### "！" + "ごめん" (3 occurrences)
 - Predicted: None
@@ -6142,21 +5278,13 @@ Accuracy: 98.66%
   - やめて！ すぐやめて お願い！
   - （リサ） 宗介！ すぐ戻るのよ！
 
-### "！" + "そんな" (3 occurrences)
+### "！" + "なん" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハハハ…！ そんな物が届くか ハイヨ～ シルバー。
-  - 違う！ そんなことするもんか！
-  - 馬鹿野郎！ そんなに死にてえか！
-
-### "！" + "で" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいわ！ でも 私 もう決めたから。
-  - そうか！ で 誰が書いたんだ？
-  - ん！ でも…。
+  - はぁっ… あんたっ！ なんのつもり？
+  - 大佐！ なんだ！
+  - 賄賂を渡し臣民を買ったな！ なんという陰謀だ。
 
 ### "！" + "なんて" (3 occurrences)
 - Predicted: None
@@ -6166,37 +5294,53 @@ Accuracy: 98.66%
   - なんてことだ！ なんてことだ！
   - なんてこと！ なんてことだ！
 
-### "！" + "はい" (3 occurrences)
+### "！" + "まだ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うわー！ はい。
-  - カマたき頼む！ はい！
-  - 先生！ はい サツキさん。
+  - ええ！ まだいくの！
+  - アチっ！ まだ熱いや。
+  - 駄目です！ まだ友だちが乗ってません！
 
-### "！" + "また" (3 occurrences)
+### "！" + "よく" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ここでＣＭタイムだよ！ また来週 バイバイ！
-  - フィオさ～ん 待ってますよ～！ また お会いしましょう！
-  - 見ろよ！ また滑り落ちてくるよ。
+  - せん！ よくやったね！ おおもうけだよ！
+  - よくやった アーチ！ よくやった！
+  - 放っといて！ よくもまあ そんなことができるわね！
 
-### "！" + "よかった" (3 occurrences)
+### "！" + "わかる" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お～い！ ヤッホ～！ よかった～！
-  - ついたわ！ よかった。
-  - ハウル大好き！ よかった！ 痛っ！
+  - ち！ わかる！？ ち！！
+  - 正すことは何もない！ わかるか？
+  - 見てみろ！ わかる？ 悪くないだろ？
+
+### "！" + "わし" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ワッハッハ！ わしが押してやるよ！
+  - 道を空けろ！ わしがぶっ殺してやる！
+  - 馬鹿もの！ わしを騙そうとするとは！
 
 ### "！" + "わっ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いいよ～！ わっ！
-  - シータ！ わっ！
+  - わわ！ わっ！
   - リサ！ ポニョが女の子になって 戻って来た！ わっ！
+
+### "！" + "ん" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もおお～！ ん！
+  - （環）んぐっ！ ん！ ん！
+  - （環）んぐっ！ ん！ ん！
 
 ### "！" + "エイサっ" (3 occurrences)
 - Predicted: None
@@ -6206,14 +5350,6 @@ Accuracy: 98.66%
   - エイサっ！ エイサっ！ エイサっ！ エイサっ！
   - エイサっ！ エイサっ！ エイサっ！ エイサっ！
 
-### "！" + "カルシファー" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - は～い！ カルシファー もっと口開けて！
-  - カルシファー！ カルシファー！
-  - ハウル！ カルシファー！
-
 ### "！" + "ジョウジョ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6221,22 +5357,6 @@ Accuracy: 98.66%
   - ジョウジョ！ ジョウジョ！ ジョウジョ！ ジョウジョ！
   - ジョウジョ！ ジョウジョ！ ジョウジョ！ ジョウジョ！
   - ジョウジョ！ ジョウジョ！ ジョウジョ！ ジョウジョ！
-
-### "！" + "ジーナ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ((ベルリーニ！ 行くな！ ジーナをどうする気だ!
-  - セブン！ ジーナ ダメだよ。
-  - 俺はマジだぜ！ ジーナを必ず 大統領夫人にしてみせる！
-
-### "！" + "ハッ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー！ あそこ！ ハッ！
-  - ブレーキ！ ハッ！
-  - （クミコ） 宗介！ ハッ！ クミコちゃん！
 
 ### "！" + "バカ" (3 occurrences)
 - Predicted: None
@@ -6246,29 +5366,13 @@ Accuracy: 98.66%
   - クソッ！ バカ！ このクソ頭！
   - 止せ！ 止せ！ バカ野朗！
 
-### "！" + "パズー" (3 occurrences)
+### "！" + "一体" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ！ パズー！
-  - パズー！ パズー！ パズー！
-  - パズー！ パズー！ パズー！
-
-### "！" + "ポルコ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そんなはずはないわ！ ポルコは いい人だもの！
-  - やった～！ ポルコ～！
-  - ポルコ～！ ポルコ ありがとう！
-
-### "！" + "ママ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～っ！ ママ 落ちる あぁ…。
-  - ママ！ ママ！
-  - 痛い！ ママ やめて！
+  - あんた魔法使いみたいやねえ！ 一体どうやったん？
+  - ウォルト！ 一体全体どこだい？
+  - ネバネバする・・！ 一体これは？
 
 ### "！" + "一緒" (3 occurrences)
 - Predicted: None
@@ -6278,14 +5382,6 @@ Accuracy: 98.66%
   - シー！ 一緒に来て。
   - 一緒しろ！ 一緒しろ！
 
-### "！" + "下がれ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 一生 ゴミでも集めてろ！ 下がれ！
-  - 火から離れろ！ 下がれ！
-  - 金なんかもう役に立たん！ 下がれ！
-
 ### "！" + "他" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6293,22 +5389,6 @@ Accuracy: 98.66%
   - なぜ僕だけ呼ばれる！ 他にもウェイターはいるでしょ？
   - もう見せた！ 他に何が欲しいんだ？
   - 彼女じゃない！ 他のドーラは？
-
-### "！" + "動く" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ、行きましょう！ 動く！
-  - やってみろ！ 動く！
-  - 動く！ 動く！
-
-### "！" + "勝手" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや どこにいるのかは教えない！ 勝手にしろ！
-  - おれは降りる！ 勝手にしろ！
-  - お前なんか！ 勝手にしろ！
 
 ### "！" + "同じ" (3 occurrences)
 - Predicted: None
@@ -6325,14 +5405,6 @@ Accuracy: 98.66%
   - そうです！ 彼はそれを送り返した！
   - やめろ！ 彼に触るな！
   - 切られっぱなしだ！ 彼は私を切断し続けた!
-
-### "！" + "待て" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああっ こらっ 逃げるな！ 待て おいっ！
-  - おめぇ その顔！ 待てよ おい！
-  - こら！ 待て！ ドロボー犬め！ 足をひき千切ってやる！
 
 ### "！" + "手" (3 occurrences)
 - Predicted: None
@@ -6398,14 +5470,6 @@ Accuracy: 98.66%
   - 離して 野蛮人！ 汚い手で触らないで！
   - （フジモト） 汚い！ 汚いぞ！
 
-### "！" + "沈没" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わあ～！ 沈没する～！
-  - キャ～！ 落ちた！ 沈没する～！ 沈没する～！
-  - キャ～！ 落ちた！ 沈没する～！ 沈没する～！
-
 ### "！" + "津波" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6413,6 +5477,14 @@ Accuracy: 98.66%
   - あ～～！ 津波だ！ 津波が来た～！
   - あ～～！ 津波だ！ 津波が来た～！
   - 早く海に戻しとくれ！ 津波を呼ぶよ～！
+
+### "！" + "熱い" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 最高のお茶！ 熱いお茶だよ！
+  - 本物の湧き水だよ！ 熱いお茶！
+  - 熱いお茶！ 熱いお茶！
 
 ### "！" + "目" (3 occurrences)
 - Predicted: None
@@ -6454,37 +5526,21 @@ Accuracy: 98.66%
   - おい！ 起きろ。
   - やあばあさん！ 起きろ！
 
-### "！" + "逃がす" (3 occurrences)
+### "！" + "頭" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ムスカ なぜ追わん！ 逃がすと やっかいだぞ。
-  - 撃て！ 逃がすな！
-  - 追え！ 逃がすな！
+  - ベルをとめて！ 頭がおかしくなりそう！
+  - 白い変態野郎！ 頭をぶっ飛ばしてやる！
+  - 銃を床に置け！ 頭は手の上に！ その場に伏せるんだ！
 
-### "！" + "黙れ" (3 occurrences)
+### "）" + "えっ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うるさい！ 黙れ！ どうやったんだ？
-  - うるさ～い！ 黙れ～っ！
-  - ちょっとそのまま うるさい！ 黙れ！
-
-### "）" + "あれ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （トルメキア兵） あれはペジテのガンシップです！
-  - （マルクル） あれ？ 誰だろう？ （カルシファー） 港町！
-  - （三葉） あれって私のことだよね？
-
-### "）" + "うわっ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） うわっ！ うわっ！
-  - （何かが飛び出す音） うわっ！
-  - （軍人たち） うわっ 何だ～！
+  - （勅使河原･早耶香） えっ！
+  - （千果） えっ？ 猫を探して九州から？
+  - （鈴芽） えっ そんなこと言われたって！
 
 ### "）" + "お～い" (3 occurrences)
 - Predicted: None
@@ -6494,6 +5550,14 @@ Accuracy: 98.66%
   - （青年） お～い！
   - （青年） お～い！ 船だ！
 
+### "）" + "この" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （川田） この島出たら どないする？
+  - （草太） この土地の後ろ戸が開いたんだ！
+  - （野田聡美） この人たち 誰なんですか？
+
 ### "）" + "それ" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6502,14 +5566,6 @@ Accuracy: 98.66%
   - （信代） それはクビってことですか？
   - （大佐） それがアキラだ 鉄雄！
 
-### "）" + "どう" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （大佐） どうだ あれが見えるか？
-  - （技師） どうかね？
-  - （泣き声） どうしたの？
-
 ### "）" + "どうして" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6517,30 +5573,6 @@ Accuracy: 98.66%
   - （キキ） どうしても食べなきゃダメ？
   - （秋也） どうして助けてくれた？
   - （織田） どうして？ 俺が一体 何やった？
-
-### "）" + "また" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） また いつもの まじないじゃな。
-  - （玄関のベル） また 港町！
-  - （老婦人） またケーキを焼けるでしょ？
-
-### "）" + "オイラ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） オイラだけじゃ ダメなんだ… 目とか。
-  - （カルシファー） オイラをいじめたんだ！
-  - （カルシファー） オイラをじっと見てるよ。
-
-### "）" + "早く" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 飛べるよ！ （ルイ） 早く逃げようよ！
-  - （ベッシー） 早くして！
-  - （ボス） 早くおいで！ 忙しいんだから もう！
 
 ### "）" + "私" (3 occurrences)
 - Predicted: None
@@ -6558,45 +5590,29 @@ Accuracy: 98.66%
   - ん？ ああ？
   - 聞こえているか？ ああ？
 
-### "？" + "それとも" (3 occurrences)
+### "？" + "ええ" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お茶がいいかな？ それとも もっと強い飲み物かな？
-  - この女をか？ それとも ロケットの女をか？
-  - 口説いていたのは彼？ それとも君？
+  - え？ ええ？
+  - おばあちゃん これは？ ええよ。
+  - ぼう あなた ひとりで たてるように なったの？ ええ！！？
 
-### "？" + "だから" (3 occurrences)
+### "？" + "みんな" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ここで何してるの？ だから忙しいの。
-  - で？ だから？
-  - 壊すのね？ だから その…。
+  - 何が？ みんなが 来たことがか？
+  - 何してんの？ みんな兄弟？
+  - 何だって？ みんなのかい？ ドイツ人の心も？
 
-### "？" + "どっち" (3 occurrences)
+### "？" + "何か" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 乗せるの？ 乗せないの？ どっちかにして！
-  - 奴がお前を組み込んでいるのか？ どっちだ？
-  - 見たのか見なかったのか！？ どっちだ？
-
-### "？" + "よく" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうです？ よくなりましたか？
-  - 空賊って言うのよね？ よく知ってるね。
-  - 鼻の下ですか？ よくも そんなことができるね？
-
-### "？" + "ポルコ" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ジーナさんて どんな人？ ポルコも恋したの？
-  - カジはどう？ ポルコ！
-  - 本当？ ポルコ。
+  - あれ？ 何か悪い？
+  - どうにかならないの？ 何か方法は？
+  - 何を食べたい？ 何か軽いもの？
 
 ### "？" + "元気" (3 occurrences)
 - Predicted: None
@@ -6622,13 +5638,13 @@ Accuracy: 98.66%
   - 男か？ 女か？
   - 男？ 女？
 
-### "？" + "彼" (3 occurrences)
+### "？" + "彼女" (3 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マーカス？ 彼まで事件に巻き込んだのか？
-  - 何だ？ 彼は何を言ったんだ？
-  - 私の体？ 彼を誰だと思ってます？
+  - ないのか？ 彼女のは？
+  - 何があったんだ？ 彼女の名前は？
+  - 何のために？ 彼女が戻って くるのを 待つのか？
 
 ### "？" + "本当に" (3 occurrences)
 - Predicted: None
@@ -6686,6 +5702,14 @@ Accuracy: 98.66%
   - 奴はどこだ？ 言え！
   - 誰のお陰かな？ 言えよ、誰のお陰だ？
 
+### "？" + "金" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だからなんだ？ 金さえ貰えばいいだろ。
+  - トレイと知り合いか？ 金を借りてるのか？
+  - 殺られたいのか？ 金は？
+
 ### "？" + "－" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6700,6 +5724,13 @@ Accuracy: 98.66%
 - Examples:
   - あ, あんた!
   - ちょっと, あんた.
+
+### "," + "この" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それに, この怪我人は早くしないと手おくれになるぞ.
+  - 大和との戰に破れ, この地にひそんでから五百余年.
 
 ### "," + "これ" (2 occurrences)
 - Predicted: None
@@ -6736,6 +5767,13 @@ Accuracy: 98.66%
   - 一番, 放って!
   - 二番, 放って!
 
+### "," + "森" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - われらは人間を殺し, 森守るために來た.
+  - 山犬の姬, 森へ歸れ!
+
 ### "," + "火" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6763,6 +5801,13 @@ Accuracy: 98.66%
 - Examples:
   - ラウフ！ - シャヒダか？
   - 彼女を止めろ - シャヒダ！
+
+### "-" + "シヴァ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お殿様は・それを・続けてください。 - シヴァ神万歳！
+  - わかりました！ おお！導師様。 - シヴァ万歳！
 
 ### "-" + "今" (2 occurrences)
 - Predicted: None
@@ -6827,33 +5872,47 @@ Accuracy: 98.66%
   - 奥さんは… ?
   - 私たちは女だからね、感情的で… ?
 
-### "…" + "あなた" (2 occurrences)
+### "…" + "ああ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何です？ 今頃 連絡して来て… あなた 何をやってたの？
-  - 待って！ 行く前に名前を… あなたの名前は？
+  - うっ うう… ああ うわ～っ！
+  - アハハ… ああ！
 
-### "…" + "あら" (2 occurrences)
+### "…" + "あれ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - じゃあね… あら トシちゃん。
-  - 君 離したまえ！ ちょっと… あら！
+  - う… あれ？
+  - （祥太）あっ… あれ？
 
-### "…" + "うわっ" (2 occurrences)
+### "…" + "ううっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ううっ… うわっ！
-  - わっ… うわっ！
+  - う… ううっ 金田く～ん！
+  - 私は… ううっ！
 
-### "…" + "おい" (2 occurrences)
+### "…" + "うっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お… おい！
-  - もしもし もしもし… おい どうした！
+  - うっ… うっ！
+  - （女童）あ… うっ！
+
+### "…" + "えっ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 就活… えっ この事務所は？
+  - 陽菜さん… えっ！
+
+### "…" + "おっ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - しょうこになにか… おっ！
+  - 殿下… おっ 殿下だ！
 
 ### "…" + "お前" (2 occurrences)
 - Predicted: None
@@ -6861,20 +5920,6 @@ Accuracy: 98.66%
 - Examples:
   - お… お前は鬼か！
   - タケノコ… お前 また大きくなってないか？
-
-### "…" + "ここ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いけない人… ここはプライベートな庭よ。
-  - え… ここがきれい？
-
-### "…" + "ちょっと" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた… ちょっと… 待ちなさいよ。
-  - （鈴芽） え… ちょっと草太さんっ？
 
 ### "…" + "とても" (2 occurrences)
 - Predicted: None
@@ -6890,6 +5935,13 @@ Accuracy: 98.66%
   - はあ… どうしたの 大丈夫？
   - 大佐は… どうですか？
 
+### "…" + "な" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そう… なの？
+  - な… なんだ あれは？
+
 ### "…" + "ない" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6904,13 +5956,6 @@ Accuracy: 98.66%
   - え… なにっ 実験体？
   - （初枝）ふふふっ 横… なに 横乳？
 
-### "…" + "なの" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そう… なの？
-  - ととさま… なの？
-
 ### "…" + "はっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6918,12 +5963,12 @@ Accuracy: 98.66%
   - あ… はっ！
   - （鈴芽）んん… はっ！
 
-### "…" + "まだ" (2 occurrences)
+### "…" + "また" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハァ… まだ いくらも来てないわね。
-  - （三葉）今夜… まだ間に合う！
+  - ハハ… またですか？
+  - （鈴芽）え… また地震が起きるってことですか？
 
 ### "…" + "みんな" (2 occurrences)
 - Predicted: None
@@ -6932,20 +5977,6 @@ Accuracy: 98.66%
   - どうして… みんな銃を持ってるの？
   - やあ、こんにちは… みんな聞えるかな？
 
-### "…" + "もう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おいで ハウル… もう！
-  - 痛たた… もう こんな家 出てってやる！
-
-### "…" + "よかった" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ アハハ… よかった。
-  - そう… よかった。
-
 ### "…" + "んっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6953,33 +5984,12 @@ Accuracy: 98.66%
   - んんっ… んっ！
   - （草太）あ… んっ！
 
-### "…" + "ソフィー" (2 occurrences)
+### "…" + "俺" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あ～あ… ソフィーは みんな連れて来ちゃったな。
-  - 落ちる… 危ない… ソフィー 早く！
-
-### "…" + "ハハハハ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… ハハハハ…。 バカ野郎 笑ってる時か！
-  - フフフ… ハハハハ…！
-
-### "…" + "マルクル" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あらあら… マルクル 手を貸して。
-  - フ～ン… マルクル 皿！
-
-### "…" + "危ない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ… 危ない…。
-  - 落ちる… 危ない… ソフィー 早く！
+  - お… 俺ですか？
+  - （草太）鈴芽さん ああ… 俺は!
 
 ### "…" + "宗介" (2 occurrences)
 - Predicted: None
@@ -6988,12 +5998,12 @@ Accuracy: 98.66%
   - あ… 宗介 ごめん。
   - ソウスケ… 宗介という子なのね。
 
-### "…" + "気" (2 occurrences)
+### "…" + "彼" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - その… 気になってのう…。
-  - ソフィーの部屋に どうかなぁって… 気に入った？
+  - そじゃないよ、それが… 彼の名前なんだ。
+  - マジな話… 彼の言うとおりした方がいいよ。
 
 ### "…" + "誰" (2 occurrences)
 - Predicted: None
@@ -7107,6 +6117,13 @@ Accuracy: 98.66%
   - そう、 邪悪なやつだ。
   - 初めて、 邪悪な気分だ。
 
+### "。" + "あっ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - は～い。 あっ メイも！
+  - 今日 田植え休みなの。 あっ そうか。
+
 ### "。" + "いって" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7114,33 +6131,12 @@ Accuracy: 98.66%
   - いってらっしゃい。 いってきま～す。
   - いってらっしゃ～い。 いってらっしゃ～い。
 
-### "。" + "え" (2 occurrences)
+### "。" + "お願い" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 君だ。 え？
-  - 手が離せねえ お前やれ。 え？
-
-### "。" + "おはよう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう。 おはよう 早く行こう。
-  - おはよう。 おはよう。
-
-### "。" + "かわいい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あら きれい。 かわいいねぇ。
-  - 女のコだぞ！ 女のコ 乗せてんだ。 かわいい！
-
-### "。" + "ごめん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばさま 痛い…。 ごめんよ。
-  - お母さん…。 ごめんね。
+  - こんなことはしないでください。 お願いします。
+  - はい。 お願いします。
 
 ### "。" + "さあ" (2 occurrences)
 - Predicted: None
@@ -7163,33 +6159,12 @@ Accuracy: 98.66%
   - 噂の広がりは早い。 すぐに広まる。
   - 大変だ。 すぐに ここを出なきゃ。
 
-### "。" + "で" (2 occurrences)
+### "。" + "どこ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 歌の事も。 でも 妹は消えちゃった。
-  - 相手は武器を持ってんだよ。 でも！
-
-### "。" + "ほぉ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕達 海賊に追われてるんだ。 ほぉ…。
-  - 軍隊にも追われてるんだ。 ほぉ ホッホッホッ…。
-
-### "。" + "また" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さようなら～。 また遊んでね～！
-  - バイバ～イ。 またね。
-
-### "。" + "みんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いっぱい いるな…。 みんな 逃げるよ！
-  - シアーシャが助けるよ。 みんなの事も。
+  - やめるのは あんただよ。 どこに居たのさ？
+  - 頑固な子だこと。 どこ行くの？
 
 ### "。" + "もう" (2 occurrences)
 - Predicted: None
@@ -7198,33 +6173,12 @@ Accuracy: 98.66%
   - ううん。 もうじきだよ。
   - 移動しましょう。 もう出発しなければなりません。
 
-### "。" + "わし" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ！ おじいちゃん。 わしの孫だ うまくやるさ。
-  - （魚屋） そいつは うめぇぞ。 わしは魚 嫌いじゃ。
-
 ### "。" + "シアーシャ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 歌おう。 シアーシャ。
   - 目を覚まして。 シアーシャ、 お願いだから。
-
-### "。" + "ヒン" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お言葉ですが…。 ヒン！
-  - ワンちゃん。 ヒン！
-
-### "。" + "フフフ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ…。 フフフ…。
-  - フフフ…。 フフフ…。
 
 ### "。" + "ベン" (2 occurrences)
 - Predicted: None
@@ -7261,12 +6215,26 @@ Accuracy: 98.66%
   - すみません。 何をしていると思いますか？
   - 待って。 何？
 
+### "。" + "僕" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 僕は できる。 僕は コートを取り戻せる。
+  - （カレン） 宗介 遊ぼう。 僕 今 忙しいから いい。
+
 ### "。" + "全員" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お知らせします。 全員進水エリアに。
   - 連絡します。 全員、出発エリアに。
+
+### "。" + "分かった" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もう 無い。 分かったか？
+  - 分かったと思います。 分かったと思います。
 
 ### "。" + "君" (2 occurrences)
 - Predicted: None
@@ -7275,26 +6243,19 @@ Accuracy: 98.66%
   - どっさり 大量の髪だ。 君と同じ！
   - もう済んでる。 君は今日の午後、退職したんだ。
 
+### "。" + "大丈夫" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 大丈夫だ。 大丈夫。
+  - 彼女はあなたを傷つけたりしません。 大丈夫。
+
 ### "。" + "失礼" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうですね。 失礼しました。
   - もう一度言うよ、ジョー。 失礼しました。
-
-### "。" + "後" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もういい。 後で話をしよう。
-  - 家に帰ろう。 - どうぞ。 後で行くよ。
-
-### "。" + "気" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ ご婦人方 どうぞ。 気をつけてね。
-  - そんなこと忘れてよ。 気にしないで！
 
 ### "。" + "流し" (2 occurrences)
 - Predicted: None
@@ -7324,19 +6285,19 @@ Accuracy: 98.66%
   - その土管は 外につながってる。 行け！
   - 共に運べ、 全ての妖精の 希望を。 行け、 夜明けへ！
 
+### "。" + "行こう" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ありえる。 行こう。
+  - 来て。 行こうよ、グリーニー！
+
 ### "。" + "誰" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼は誰も信用していなかった。 誰も信用していなかった。
   - 教科書用のやつだ。 誰も用いたことがありませんよ。
-
-### "。" + "邪魔" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 当たらないね。 邪魔だなぁ…。
-  - 彼女にまかせて。 邪魔はよそうや。
 
 ### "。" + "間違いない" (2 occurrences)
 - Predicted: None
@@ -7352,13 +6313,6 @@ Accuracy: 98.66%
   - アンブラーン・ダスカ、カルダペス。」 -ああ。
   - ラフフェナト。」 -何をしているのですか？
 
-### "」" + "って" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「リバイアサンの巣に入る」 ってことだな。
-  - アジアじゃ「ブッダに教えを説く」 って言うんだよ。
-
 ### "」" + "と" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7372,6 +6326,13 @@ Accuracy: 98.66%
 - Examples:
   - あ あの… しらない町に すみつくって大変ですか？
   - （鈴芽）あ あの… あの席に… -（ミキ）ん？ え？
+
+### "あ" + "そう" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あ そう?
+  - あ そうだ！ポットかけっぱなしだった！
 
 ### "あ" + "はい" (2 occurrences)
 - Predicted: None
@@ -7450,13 +6411,6 @@ Accuracy: 98.66%
   - お母ちゃんのおべべ あかん あかん あかん！
   - お母ちゃんのおべべ あかん あかん あかん！
 
-### "あっ" + "あっ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ あっ… ああっ！
-  - 津波が来た！ あっ あっ 津波～！
-
 ### "あっ" + "いた" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7464,19 +6418,12 @@ Accuracy: 98.66%
   - あっ いた！
   - あっ いた！ 今日の主役 発見！
 
-### "あっ" + "いや" (2 occurrences)
+### "あっ" + "ごめん" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - それだけか？ えっ？ あっ いや… その…。
-  - （金田） あっ いや… （男）早くしろ！
-
-### "あっ" + "そう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ そうだ ポットかけっぱなしだった。
-  - 今日 田植え休みなの。 あっ そうか。
+  - あっ ごめん （秋也）えっ？
+  - あっ ごめん！
 
 ### "あっ" + "ねえ" (2 occurrences)
 - Predicted: None
@@ -7484,13 +6431,6 @@ Accuracy: 98.66%
 - Examples:
   - あっ ねえ こないだのあの子 どうした？
   - あはっ… あっ ねえ 次私もっ！
-
-### "あっ" + "パズー" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ パズー！
-  - あっ パズー！ シータ！ 今 行く！
 
 ### "あっ" + "兄ちゃん" (2 occurrences)
 - Predicted: None
@@ -7517,8 +6457,8 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
+  - あっ 見て 赤いヒコーキ！
   - あっ 見て！
-  - きれいね～ あっ 見て！ 赤い飛行機！
 
 ### "あの" + "この" (2 occurrences)
 - Predicted: None
@@ -7541,40 +6481,12 @@ Accuracy: 98.66%
   - ありがたや ありがたや！
   - ありがたや ありがたや！ 姫！ 姫様！
 
-### "ありがとう" + "あなた" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう あなたも… ミスター カーチス。
-  - ありがとう あなたも！
-
-### "ありがとう" + "ソフィー" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう ソフィーもね。
-  - （カブ） ありがとう ソフィー。
-
-### "あんた" + "ちょっと" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた ちょっと下りて ハァ ハァ…。
-  - 鈴芽 あんた ちょっと大丈夫？
-
 ### "あんた" + "どこ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あんた どこ行く気だ？
   - （二ノ宮ルミ） あんた どこまで行くん？
-
-### "あんた" + "何" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 何すんの！
-  - ところで あんた 何で王様の所へ行くのよ？
 
 ### "あんた" + "名前" (2 occurrences)
 - Predicted: None
@@ -7618,13 +6530,6 @@ Accuracy: 98.66%
   - インドのスパイはバスにいます - どのバスだ？
   - 僕は動揺しています -もっと大声で！
 
-### "いや" + "俺" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや 俺は･･･ 何だ?
-  - それ バイロンかい？ いや 俺だよ またな。
-
 ### "いや" + "君" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7638,13 +6543,6 @@ Accuracy: 98.66%
 - Examples:
   - うわっ ああ～！
   - （金田）うわっ ああ～っ！ （ケイ）あっ あ～っ キャー！
-
-### "う～" + "寒い" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ 寒い。
-  - （ルイ） う～ 寒い！ お前 上だ。 うん。
 
 ### "え" + "え" (2 occurrences)
 - Predicted: None
@@ -7674,26 +6572,12 @@ Accuracy: 98.66%
   - ええ どうしてそう思うの？
   - ええ どうして？
 
-### "えっ" + "それ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ それ お前 怒らんないの？
-  - （カルシファー） えっ それもかよ！
-
 ### "えっ" + "どう" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - えっ どうやって？
   - （鈴芽）ああっ -（草太）えっ どうした!
-
-### "えっ" + "また" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ またかよ…。
-  - （児相職員Ｂ）えっ また面会希望？
 
 ### "えっ" + "私" (2 occurrences)
 - Predicted: None
@@ -7800,19 +6684,19 @@ Accuracy: 98.66%
   - おう いいか？
   - おう いいぞ！
 
+### "おとうさん" + "おかあさん" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おとうさん おかあさん どこ？
+  - おとうさん おかあさん わたしよ！
+
 ### "おばあさん" + "寝ない" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おばあさん 寝ないと ハスター が来るよ！
   - おばあさん 寝ないの？
-
-### "おばさん" + "僕" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばさん 僕を仲間に入れてくれないか？
-  - おばさん 僕達を船に乗せてください。
 
 ### "お前" + "また" (2 occurrences)
 - Predicted: None
@@ -7834,20 +6718,6 @@ Accuracy: 98.66%
 - Examples:
   - あの時分は お父さん 何 してらしったんです?
   - お父さん 何してるの？
-
-### "お願い" + "あなた" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願い あなた！
-  - カルシファー お願い あなたにしかできないの。
-
-### "か" + "あ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 届くものか あ 痛っ！ アハハハハ…！
-  - （治）コレか あ？
 
 ### "か" + "あった" (2 occurrences)
 - Predicted: None
@@ -7884,33 +6754,12 @@ Accuracy: 98.66%
   - バカか お前は！
   - 殴られたいのか お前は 殴られたいのかよッ！
 
-### "か" + "お探し" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 何か お探しかな？ 子ネズミちゃん。
-  - 何か お探しで？
-
 ### "か" + "この" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - どなたか この女性を 知りませんか？
   - 放火でもする気か このライターでどうだ？
-
-### "か" + "ご用" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何か ご用でも？
-  - 何か ご用は？
-
-### "か" + "どっち" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジーナかフィオか どっちかにしろ！
-  - 娼婦か 小柄か どっちがいい？
 
 ### "か" + "まだ" (2 occurrences)
 - Predicted: None
@@ -7939,13 +6788,6 @@ Accuracy: 98.66%
 - Examples:
   - まだいるのか クソ野郎共!
   - 分かったか クソ野郎！
-
-### "か" + "マッチ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 誰か マッチある？
-  - 誰か マッチ持ってない？
 
 ### "か" + "ライザセック" (2 occurrences)
 - Predicted: None
@@ -7995,13 +6837,6 @@ Accuracy: 98.66%
 - Examples:
   - われわれが どう思うか 想像できるか？
   - 父が何をするか 想像してくれれば！
-
-### "か" + "持って" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シャバから何か 持ってきたか？
-  - 何か 持って行くんですか？
 
 ### "か" + "知らん" (2 occurrences)
 - Predicted: None
@@ -8073,13 +6908,6 @@ Accuracy: 98.66%
   - そっちのほうは泥が深いから その先！
   - やめて お願いだから その子に触れないで!
 
-### "から" + "もう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから もう時間がないんです！
-  - （ボス） 早くおいで！ 忙しいんだから もう！
-
 ### "から" + "誰" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8108,12 +6936,19 @@ Accuracy: 98.66%
   - ケンドリックが “コードＲ”を出したのか？
   - 大佐殿 あなたが “コードＲ”の命令を？
 
-### "が" + "いじめた" (2 occurrences)
+### "が" + "あの" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィーが いじめた！ あたいのだ～！
-  - 俺たちが いじめたから 行っちゃうのか？
+  - 私のせがれが あの手帳を持ってる？
+  - 誰かが あの橋を 吹っ飛ばしたら どうだ？
+
+### "が" + "あんた" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - すまんが あんた誰？
+  - 白人が あんたに 何をしてくれた？
 
 ### "が" + "お望み" (2 occurrences)
 - Predicted: None
@@ -8122,33 +6957,12 @@ Accuracy: 98.66%
   - こんなのが お望みかね？
   - 何が お望み？
 
-### "が" + "して" (2 occurrences)
+### "が" + "かわいい" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたが してくれてるの？
-  - 絶対うまく行かないって気が して来た。
-
-### "が" + "たくさん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また 汚ねぇのが たくさん出て来やがったな。
-  - ボイラーの世話が たくさん必要になるからね。
-
-### "が" + "ちっと" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかしいわ カルシファーが ちっとも燃えない。
-  - 金が ちっと足りないが 昔のよしみだ。
-
-### "が" + "できた" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう友達が できたのかい？ 「サ～ツキちゃ～ん」だって。
-  - ようやく守らなければ ならないものが できたんだ。
+  - 変なの！ デブだし ウチの金魚のほうが かわいい。
+  - 親よりネコが かわいいの？
 
 ### "が" + "できる" (2 occurrences)
 - Predicted: None
@@ -8157,12 +6971,19 @@ Accuracy: 98.66%
   - そんな もったいないことが できるか！
   - 何かを理解することが できるのか！
 
-### "が" + "どうか" (2 occurrences)
+### "が" + "どれ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 君の気持は分かるが どうか手を引いてほしい。
-  - 石田くんが どうかしたのか？
+  - 人間をやめるために 私が どれほど…。
+  - 自分が どれだけ無理強いしたか わからないの？
+
+### "が" + "どんな" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここが どんな場所か 知っているだろう？
+  - 私が どんな間違いを 犯したと言うのか？
 
 ### "が" + "ぼく" (2 occurrences)
 - Predicted: None
@@ -8170,6 +6991,13 @@ Accuracy: 98.66%
 - Examples:
   - そうすることが ぼくの仕事なんだよ。
   - それでお爺さんが ぼくを引き取った。
+
+### "が" + "みんな" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ハムはポニョが みんな食べちゃったんだよ。
+  - 子供さんが みんな しっかりしとるけ!
 
 ### "が" + "もう" (2 occurrences)
 - Predicted: None
@@ -8206,6 +7034,13 @@ Accuracy: 98.66%
   - なぜアルベルトが 一人でいるんだ？
   - 生徒が 一人だけ？
 
+### "が" + "今" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あがなうときが 今 来たのであ～る！
+  - ダメです レフェリーが 今 試合終了を宣言！
+
 ### "が" + "信じられる" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8213,12 +7048,26 @@ Accuracy: 98.66%
   - ロクでなしが 信じられる？
   - 現実が 信じられる？
 
+### "が" + "入る" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - セルロイドの人形に魂が 入ることだってあるんだぜ。
+  - 俺とお前が 入ると思ってた！
+
 ### "が" + "分る" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私の気持ちが 分る？
   - 重要なのが 分るか？
+
+### "が" + "始まる" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そしてある日また殺人が 始まるのか？
+  - 革命が 始まるぞ！
 
 ### "が" + "強盗" (2 occurrences)
 - Predicted: None
@@ -8262,12 +7111,12 @@ Accuracy: 98.66%
   - そうか いい方法があるが 気に入るかな？
   - それが 気に障るの？
 
-### "が" + "生きて" (2 occurrences)
+### "が" + "犠牲" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ロボットが… ロボットが 生きています！ もしもし！
-  - 私 ポルコが 生きて帰って来てくれて嬉しい。
+  - エジプト人が 犠牲になる事はない!
+  - 多くの市民が 犠牲になったのに？
 
 ### "が" + "目的" (2 occurrences)
 - Predicted: None
@@ -8296,13 +7145,6 @@ Accuracy: 98.66%
 - Examples:
   - マイケル ヘリコプターが 見えるだろ？
   - 見通しのいい場所から 目印の山が 見えるはずさ。
-
-### "が" + "言う" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そのほうが 娘が 言うこと聞くかもしれないね…。
-  - カルシファーが 言うことを聞いた…。
 
 ### "が" + "言った" (2 occurrences)
 - Predicted: None
@@ -8374,19 +7216,12 @@ Accuracy: 98.66%
   - 失礼だけど あなたどなた？
   - 私には悪くなかったけど あなたは良かった？
 
-### "けど" + "いい" (2 occurrences)
+### "けど" + "どう" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんたはカブだけど いいカブだったよ！ 幸せにね！
-  - わからないけど いいの？
-
-### "けど" + "それ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - けど それほど 悪くは無いんだよ。
-  - スィートは優しいけど それは名前じゃない。
+  - できると思うけど どうすればいいの？
+  - 残りものだけど どう？
 
 ### "けど" + "私" (2 occurrences)
 - Predicted: None
@@ -8434,8 +7269,15 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
+  - こら 待て 待てったら！
   - こら 待て！
-  - やぁ 気分はどう？ わっ こら 待て 待てったら…。
+
+### "これ" + "これ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - これ これ モランジュ君は？
+  - なあに これ これでお城なの？
 
 ### "これ" + "どこ" (2 occurrences)
 - Predicted: None
@@ -8451,19 +7293,19 @@ Accuracy: 98.66%
   - これ 誰のです？
   - これ 誰？
 
+### "さ" + "この" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なにが言いたいのさ このクソジジイ！
+  - 帆高はさ この雨が止んでほしいって思う？
+
 ### "さ" + "君" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 似合うさ 君は僕の妻になるんだよ！
   - 台湾育ちさ 君は？
-
-### "さあ" + "みんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ みんな おウチに帰る時間だ！
-  - さあ みんな 飲み明かすぞ！
 
 ### "さあ" + "来い" (2 occurrences)
 - Predicted: None
@@ -8511,7 +7353,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハウルさん この犬 飼っていいでしょ？
+  - ハウルさん この犬飼っていいでしょ？
   - 運転手さん この道も光州へ？
 
 ### "さん" + "そこ" (2 occurrences)
@@ -8549,13 +7391,6 @@ Accuracy: 98.66%
   - 川田さん （川田）ん？
   - （店長）はるみさん （はるみ）私？
 
-### "しか" + "できない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クンクン鳴くぐらいしか できない。
-  - 私 キレイでもないし 掃除ぐらいしか できないから…。
-
 ### "しか" + "ない" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8576,6 +7411,13 @@ Accuracy: 98.66%
 - Examples:
   - しかし 私に嘘をついてはいけません 理解していますか？
   - しかし 私はまだ何も達成していない!
+
+### "した" + "何" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どうした 何があった おい 内海！
+  - どうした 何があった 大丈夫かい？
 
 ### "した" + "大丈夫" (2 occurrences)
 - Predicted: None
@@ -8598,26 +7440,12 @@ Accuracy: 98.66%
   - そんなしょげた顔して どうしたのだ？
   - 小さな女の子が手錠をして どうするの？
 
-### "して" + "中" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 後にして 中で魔女が暴れとるんじゃ。
-  - 濡れるなよ。 苦労して 中に 入ったんだからな。
-
 ### "して" + "私" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 一度だけよ 執着して 私を苦しませる！
   - 金メダルは別として 私への賞品は？
-
-### "しないで" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配しないで 私達 スイミングクラブの子だから。
-  - 邪魔しないで 私は 女なのよ！
 
 ### "しろ" + "いい" (2 occurrences)
 - Predicted: None
@@ -8689,7 +7517,7 @@ Accuracy: 98.66%
   - そう どんなやつ？
   - そう どんな人に嫁ぐつもり？
 
-### "そこ" + "あんじゃない" (2 occurrences)
+### "そこ" + "あんじゃ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -8794,6 +7622,13 @@ Accuracy: 98.66%
   - 何だ こいつら？
   - 何言ってんだ こいつ？
 
+### "だ" + "ここ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうだ ここは国境かね？
+  - 逃げよう 逃げるんだ ここから！
+
 ### "だ" + "こっち" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8801,12 +7636,12 @@ Accuracy: 98.66%
   - いた？ ダメだ こっちも？
   - 警備員 こっちだ こっち！
 
-### "だ" + "その" (2 occurrences)
+### "だ" + "こりゃ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何だ その目は？
-  - 何だ その面は あ?
+  - 何だ こりゃ?
+  - 何だ こりゃ？
 
 ### "だ" + "だめ" (2 occurrences)
 - Predicted: None
@@ -8843,6 +7678,13 @@ Accuracy: 98.66%
   - そして、私たちは聞くんだ わかったか？
   - 後だ わかったか？
 
+### "だ" + "わかる" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ディーゼルを排除したいんだ わかるか？
+  - 俺の仕事もなくなるんだ わかるか？
+
 ### "だ" + "ん" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8856,13 +7698,6 @@ Accuracy: 98.66%
 - Examples:
   - ちくしょう！ どうしたんだ スモーク？
   - 外で妙なことが 起きてるんだ スモーク！
-
-### "だ" + "ブタ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 生きる値打ちもない奴だ ブタめ！
-  - （ラジオ） 繰り返します 「次は お前だ ブタ出て来い」。
 
 ### "だ" + "ブレーキ" (2 occurrences)
 - Predicted: None
@@ -8892,6 +7727,20 @@ Accuracy: 98.66%
   - 大変だ 今の何？
   - 時計が止まったんだ 今 何時？
 
+### "だ" + "何か" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どれも赤だ 何か手がかりはないか？
+  - 同意だ 何か問題でも？
+
+### "だ" + "具合" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どうしたんだ 具合でも悪いのか？
+  - どうだ 具合は？
+
 ### "だ" + "彼" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8918,7 +7767,7 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - だめだ だめだ 行こう！
-  - 大丈夫だ 行こう。
+  - 大丈夫だ 行こう！
 
 ### "だ" + "言って" (2 occurrences)
 - Predicted: None
@@ -8933,6 +7782,13 @@ Accuracy: 98.66%
 - Examples:
   - スポック、そこから出るんだ 頼むからそこから出てくれ！
   - 助けてくれ 急患だ 頼む！
+
+### "だ" + "（" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （捨丸）これは みんなの分だ （ヒメ）ん？
+  - （金田）邪魔だ （タカシ）うわ！
 
 ### "だめ" + "だめ" (2 occurrences)
 - Predicted: None
@@ -8983,26 +7839,26 @@ Accuracy: 98.66%
   - どこへ行くって いうんだ？
   - 彼に何をしてあげたって いうんだ？
 
-### "って" + "どんな" (2 occurrences)
+### "って" + "ホント" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 宇宙って どんな生活？
-  - 音って どんな？
+  - ジェシカって ホント 綺麗よね？
+  - 親が来るって ホントか？
 
-### "って" + "私" (2 occurrences)
+### "って" + "本当" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも 飛行石を取り戻したって 私 どうしたらよいか…。
-  - 壊すって 私が造った艇を壊す気？
+  - 毎朝 氷風呂に入ってるって 本当ですか？
+  - 軍がテジョンに配備されてるって 本当ですか？
 
-### "って" + "聞いた" (2 occurrences)
+### "って" + "言う" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - だから みんな連れて行くのかって 聞いたのに…。
-  - 臨終の“喉鳴り”って 聞いた事ある？
+  - あなたがそうだって 言うの ジョン？
+  - そんなことして生きてるって 言うのか？
 
 ### "って" + "言って" (2 occurrences)
 - Predicted: None
@@ -9011,12 +7867,12 @@ Accuracy: 98.66%
   - ちょっと待ってって 言ってんだろ！
   - パパ！ 僕は行かないって 言って！
 
-### "って" + "言われた" (2 occurrences)
+### "って" + "言ってる" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そうして独りで飛んでいろ」って 言われた気がしたがね。
-  - その金で手を引けって 言われたんだろうが。
+  - 「とっても とっても」って 言ってるよ。
+  - 私が昔のこと言いふらしてるって 言ってるの？
 
 ### "ついて" + "何か" (2 occurrences)
 - Predicted: None
@@ -9043,15 +7899,8 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おかしいわね 何で あんな元気なの？
+  - 何で あんな元気なの？
   - 何で あんな酷い真似を するんだよ？
-
-### "で" + "この" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何で この俺が？
-  - 荒地で この日が来るのを ず～っと待ってたんだ…。
 
 ### "で" + "そう" (2 occurrences)
 - Predicted: None
@@ -9067,6 +7916,13 @@ Accuracy: 98.66%
   - 初めてで なぜ分かる？
   - 学長の年で なぜこれほど多くの 強姦を行えるのか？
 
+### "で" + "よく" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あらあら 宗ちゃんね 真っ暗で よく見えないわ。
+  - この歳で よくわからない。
+
 ### "で" + "一人" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9080,6 +7936,13 @@ Accuracy: 98.66%
 - Examples:
   - お母さん メイのお布団で 一緒に寝たいって。
   - なあ鈴芽 うちもここで 一緒に食べたらいけん？
+
+### "で" + "事故" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マルホランド·ドライブで 事故か何か?
+  - 夫人がその船で 事故にあったことは？
 
 ### "で" + "二人" (2 occurrences)
 - Predicted: None
@@ -9095,12 +7958,12 @@ Accuracy: 98.66%
   - このクラブ以外で 仕事は？
   - そんな所で 仕事になるのか？
 
-### "で" + "僕" (2 occurrences)
+### "で" + "勉強" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そいつで 僕とシータをしばって。 はい！
-  - 違うよ あの石のおかげで 僕はシータに会えたんだもの。
+  - じゃ 僕 どこで 勉強するんだい!
+  - ねえ どこで 勉強すンのさァ!
 
 ### "で" + "十分" (2 occurrences)
 - Predicted: None
@@ -9122,6 +7985,13 @@ Accuracy: 98.66%
 - Examples:
   - 何で 後ろに乗るの？
   - 荷落ちで 後ろの車が大事故になる。
+
+### "で" + "我々" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まずい陣形のせいで 我々の兄弟が死ぬ恐れは?
+  - セルキーが その歌で 我々を 故郷に送る。
 
 ### "で" + "自分" (2 occurrences)
 - Predicted: None
@@ -9193,13 +8063,6 @@ Accuracy: 98.66%
   - そうです どう手続きすれば？
   - 地元記者のチェです どうやって？
 
-### "です" + "もう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - チェックインは締め切りです もう一人のお客さまは？
-  - 本当の年に戻してあげただけです もう魔力はありません。
-
 ### "です" + "サー" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9213,13 +8076,6 @@ Accuracy: 98.66%
 - Examples:
   - 酷い臭いです 何でしょう？
   - （かぐや姫）もう遅いのです 何もかも！
-
-### "でも" + "あの" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも あの ひんとか なにか もらえませんか？
-  - でも あの人は真っすぐよ 自由に生きたいだけ。
 
 ### "でも" + "なぜ" (2 occurrences)
 - Predicted: None
@@ -9333,6 +8189,13 @@ Accuracy: 98.66%
   - 父親に会えると 思ってたのか？
   - 警察に捕まったと 思ってたぜ！
 
+### "と" + "思ってる" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こいつ カネで何でも買えると 思ってるのか？
+  - 弱いフックを使ってると 思ってるのか？
+
 ### "と" + "言いたい" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9340,12 +8203,26 @@ Accuracy: 98.66%
   - あっちがアメリカ政府と 言いたいのか？
   - 彼が人間じゃなかったと 言いたいのか？
 
+### "と" + "言ったろ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 名前を出すなと 言ったろ！
+  - 寝るなと 言ったろ！
+
 ### "と" + "言って" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ルチアニが一対一で話したいと 言ってくれ わかったか？
   - 資本主義的冒険と 言って欲しいね。
+
+### "と" + "言ってた" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ウイルスは非現実的な設計だと 言ってたぞ 飛ぶのか？
+  - ベルの地図は信用できないと 言ってただろ？
 
 ### "と" + "言われた" (2 occurrences)
 - Predicted: None
@@ -9368,20 +8245,6 @@ Accuracy: 98.66%
   - どう ?
   - 今夜どう ?
 
-### "どうして" + "それ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうして それを…。
-  - （瀧）お前… ど ど どうして それを？
-
-### "どこ" + "行った" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さん どこ 行ったの?
-  - どこ？ どこ 行った？ あ～ 隠れてる～！
-
 ### "な" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9396,6 +8259,13 @@ Accuracy: 98.66%
   - いい加減なこと ぬかすな お前 あの世を見て来たのか あん?
   - 図に乗るな お前がボ ビを守るだと?
 
+### "な" + "なぜ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前の歯型を取り寄せなきゃな なぜか分かるか？
+  - こりゃすごい高さだな なぜあんなに高い？
+
 ### "な" + "バカ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9409,20 +8279,6 @@ Accuracy: 98.66%
 - Examples:
   - 何も買うな 分かったな？
   - 家には絶対入れないからな 分かったか？
-
-### "な" + "息子" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 殺したな 息子を殺したな!
-  - 母親を身代わりにするような 息子です。
-
-### "な" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - せっかくだがな 私は 魔法で戦に勝とうとは思わんのだ。
-  - 愚かな 私の本を読んだか？
 
 ### "な" + "言葉" (2 occurrences)
 - Predicted: None
@@ -9472,6 +8328,13 @@ Accuracy: 98.66%
 - Examples:
   - いや、彼女は全く問題ない では、あなたの体調が悪いの？
   - 私じゃない でもだれのため？
+
+### "ない" + "私" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 妻に言う事じゃない 私に言う事だろ？
+  - 産まれてくる罪のない 私たちの子供のためです！
 
 ### "なかった" + "そう" (2 occurrences)
 - Predicted: None
@@ -9543,6 +8406,13 @@ Accuracy: 98.66%
   - 君が大学生になったら 私のバンドに演奏しにくるか？
   - 大きくなったら 私の髪も お母さんのようになる？
 
+### "など" + "いかが" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ドッグらしく 犬の格好など いかが？
+  - フォアグラなど いかが？
+
 ### "なに" + "してる" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9550,26 +8420,19 @@ Accuracy: 98.66%
   - なに してるの？
   - イヴァス なに してるの？
 
-### "なら" + "いい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたの腕なら いい金出すだろうに。
-  - 脚ぐらいなら いいだろ？
-
-### "なら" + "この" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この俺が鬼なら このガキの親は何だ？
-  - 聞くなら この人に聞いて。
-
 ### "なら" + "これ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なら これが助けに？
   - なら これは何だ？
+
+### "なら" + "もう" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ウソなら もうちっとマシなウソを つくんだね！
+  - 何なら もう一度 作ってあげましょうかねぇ？
 
 ### "なら" + "やって" (2 occurrences)
 - Predicted: None
@@ -9592,12 +8455,12 @@ Accuracy: 98.66%
   - お前等皆が逆らうなら 俺に何が出来る？
   - そんなに俺が好きなら 俺の彼女を殺さなきゃな、ああ？
 
-### "なんか" + "しなくて" (2 occurrences)
+### "なら" + "私" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 恩返しなんか しなくていいから！
-  - （ハニー） ねっ 掃除婦なんか しなくていいのよ。
+  - 死ぬなら 私も一緒に！
+  - 私の提案を拒否されるなら 私は…うわー！
 
 ### "なんて" + "信じられる" (2 occurrences)
 - Predicted: None
@@ -9648,19 +8511,12 @@ Accuracy: 98.66%
   - ダメだもん！ お母さんに あげるんだもん！
   - メイが取ったトウモコロシ お母さんに あげるの。
 
-### "に" + "おばあちゃん" (2 occurrences)
+### "に" + "いた" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - まぁ こんなに おばあちゃんに なっちゃって！
-  - 夕方までに おばあちゃんと 一緒に町から出て！
-
-### "に" + "こっそり" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボスに こっそり 取り入ったわけ？
-  - 魔法使いのおじが 僕に こっそり残してくれた小屋なんだ。
+  - こんなとこに いたほうが びょうきになるよ！
+  - 故郷の保養地に いたのでは？
 
 ### "に" + "これ" (2 occurrences)
 - Predicted: None
@@ -9689,13 +8545,6 @@ Accuracy: 98.66%
 - Examples:
   - いかん！ 君達に それは強すぎる！
   - ソ連崩壊後のロシア経済に それは どう適用される？
-
-### "に" + "ついて" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はぐれないように ついて来てね！
-  - 丁重に扱えよ 借金取りに ついて来ちまったんだからな。
 
 ### "に" + "できる" (2 occurrences)
 - Predicted: None
@@ -9732,20 +8581,6 @@ Accuracy: 98.66%
   - お母さん お着更えに なったら?
   - もしケツが敗血症かなんかに なったらどうするんだ？
 
-### "に" + "なっちゃう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ… 今にローストポークに なっちゃうから。
-  - （ジーナ） 今にローストポークに なっちゃうから。
-
-### "に" + "なっちゃった" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな変な色に なっちゃったじゃないか!
-  - もう あなただけに なっちゃったわね 古い仲間は。
-
 ### "に" + "ならない" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -9773,6 +8608,13 @@ Accuracy: 98.66%
 - Examples:
   - じきに よるになる そのまえに はやくもどれ！
   - 赤ちゃんに はやく会いたい。
+
+### "に" + "ほしい" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれ あたし 形見に ほしいの いい?
+  - そんなに ほしいのかい?
 
 ### "に" + "また" (2 occurrences)
 - Predicted: None
@@ -9809,12 +8651,12 @@ Accuracy: 98.66%
   - なぜ怖がるの そんなに パパが期待してたの？
   - 失われた時間の穴埋めに パパと鬼ごっこか？
 
-### "に" + "ラピュタ" (2 occurrences)
+### "に" + "一体" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの光の指す方向に ラピュタがあるのだ。
-  - 岩達が騒ぐのは 鉱山の上に ラピュタが来とるからだとな。
+  - お父さんが反対なのに 一体どうやって？
+  - こんなところに 一体どんな軍勢が居るのだ？
 
 ### "に" + "世界" (2 occurrences)
 - Predicted: None
@@ -9956,6 +8798,13 @@ Accuracy: 98.66%
   - ラーラー・ラージパト・ライに 自由を！
   - 悪女ヴェルマ･ケリーに 自由を与える取り引きをした！
 
+### "に" + "行って" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さあ まだ挨拶に 行っていなかったね。
+  - ニューヨークの空港に 行ってしまったら？
+
 ### "に" + "言われた" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10012,13 +8861,6 @@ Accuracy: 98.66%
   - みたいね それで曲名は？
   - 驚きね それでも海軍なの？
 
-### "ね" + "ちゃん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまし糧！ 久しぶりですね ちゃんとした朝ご飯なんて。
-  - 誕生日の子供にはね ちゃんとした格好させないと。
-
 ### "ね" + "どう" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10040,6 +8882,13 @@ Accuracy: 98.66%
   - 呼んでみるわね リサさ～ん！
   - 誰かと思ったら宗ちゃんね リサさんとこの。
 
+### "ね" + "今" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうね 今どこ?
+  - 宗介ね 今この家は 嵐の中の灯台なの。
+
 ### "ね" + "今度" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10054,6 +8903,13 @@ Accuracy: 98.66%
   - 必ず定時に署を出てね 分かった？
   - 銃で撃ってやるとね 分かった？
 
+### "ね" + "私" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 相変わらずのクセっ毛ね 私の子供の頃と そっくり。
+  - 鄺裕民（クォン・ユミン）ね 私を知っているの？
+
 ### "ね" + "（" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10061,26 +8917,12 @@ Accuracy: 98.66%
   - （オキノ）しっかりね （キキ）いってきます！
   - （三葉）放送はサヤちん担当ね （早耶香）なんでよ！
 
-### "ねぇ" + "あなた" (2 occurrences)
+### "ねぇ" + "何" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ねぇ あなた ポニョを 人間にしてしまえばいいのよ。
-  - 珍しいわねぇ あなたが逃げないなんて。
-
-### "ねぇ" + "ハウル" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ハウル 王様に会いに行きなさいよ。
-  - ねぇ ハウルは どうして 荒地の魔女に狙われてるの？
-
-### "ねぇ" + "君" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ 君いくつ？ この町のコ？
-  - （草太）ねぇ 君 -（鈴芽）はっ！
+  - ねぇ 何ボサッとしてる？
+  - クシャクシャだねぇ 何だい？ これ。
 
 ### "ねえ" + "この" (2 occurrences)
 - Predicted: None
@@ -10089,12 +8931,12 @@ Accuracy: 98.66%
   - ねえ この子のお顔ってここ？
   - ねえ この意味分かる？
 
-### "ねえ" + "どこ" (2 occurrences)
+### "ねえ" + "それ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ねえ どこへ行くの？
-  - 瀧くん ねえ どこにいるの？
+  - （信代）ねえ それ食べさせたら返してきなよ？
+  - （祥太）ねえ それだけ？
 
 ### "ねえ" + "大丈夫" (2 occurrences)
 - Predicted: None
@@ -10152,13 +8994,6 @@ Accuracy: 98.66%
   - うちらの おうちにしてええのん？
   - 赤ちゃんの おうち？
 
-### "の" + "おばあちゃん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの人は弱虫がいいの おばあちゃん 立って。
-  - お泊まりの おばあちゃん達がいるわ！
-
 ### "の" + "お願い" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10166,19 +9001,19 @@ Accuracy: 98.66%
   - 廃墟なの？ じゃあそこでいいの お願い！
   - 引っ張るだけでいいの お願い！ 私も乗りたいの！
 
-### "の" + "これ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ど どうするの これ？
-  - 選んで！ 汚れてないの これしかないんだ。
-
 ### "の" + "ご到着" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - マダムの ご到着だ！
   - 司令官の ご到着！
+
+### "の" + "どっち" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 乗せるの 乗せないの どっちかにして！
+  - 前を失礼 ケツとムスコの どっちを向ける？
 
 ### "の" + "どの" (2 occurrences)
 - Predicted: None
@@ -10193,13 +9028,6 @@ Accuracy: 98.66%
 - Examples:
   - （初枝）オリンピックっていうの なかった？
   - （初枝）ポンポンダリアっていうの なかった？
-
-### "の" + "まじない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このガラクタは 全部 魔女よけの まじないなんだよ。
-  - （マルクル） また いつもの まじないじゃな。
 
 ### "の" + "わかった" (2 occurrences)
 - Predicted: None
@@ -10236,6 +9064,13 @@ Accuracy: 98.66%
   - この物語の 最悪な事は？
   - 見なさい。 お前たちの 最悪の気持ちが 私を変えたんだ。
 
+### "の" + "来て" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - コーラスの発表会があるの 来てくれる？
+  - 壊されたの 来て！
+
 ### "の" + "母親" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10249,13 +9084,6 @@ Accuracy: 98.66%
 - Examples:
   - ヒロシマへの 水爆の投下は？
   - 趣味の 水爆にか？
-
-### "の" + "生徒" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカンスツアーの女学校の 生徒達が乗ってるんだ。
-  - 相手は同じ学校の 生徒なんだね？
 
 ### "の" + "緑" (2 occurrences)
 - Predicted: None
@@ -10306,13 +9134,6 @@ Accuracy: 98.66%
   - つまり あなたは ”ひねくれ者の犠牲者”と？
   - 島は ”マクリール” と呼ばれてる。
 
-### "は" + "あそこ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それは あそこへ行く ということか？
-  - 破壊しました 娘は あそこです。
-
 ### "は" + "あたし" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10320,12 +9141,12 @@ Accuracy: 98.66%
   - そうするわ 新聞は あたしの味方よ！
   - ヘンリーは あたしの夫よ 自分の男をお探し！
 
-### "は" + "あんた" (2 occurrences)
+### "は" + "ありません" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ジャズースだ 捜してるのは あんたじゃ？
-  - （美也子）バカは あんたよ この親不孝者！
+  - いい仕事は ありませんか？
+  - 何かお手伝いできる事は ありませんか？
 
 ### "は" + "あんな" (2 occurrences)
 - Predicted: None
@@ -10333,13 +9154,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜクマジーノ氏は あんな時間に あなたの家に？
   - なぜ私は あんな男たちと結婚を？
-
-### "は" + "いけない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここへきては いけない！ すぐもどれ！
-  - ちょっとだけだぞ ホントは いけないんだから…。
 
 ### "は" + "いらっしゃいます" (2 occurrences)
 - Predicted: None
@@ -10376,13 +9190,6 @@ Accuracy: 98.66%
   - あの時分は お父さん 何 してらしったんです?
   - おまえは お父さんの悪口言うの？
 
-### "は" + "お茶" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では お茶など いかがでしょう？ お付き合い願えますか？
-  - 小間使いは お茶を？
-
 ### "は" + "が" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10390,19 +9197,19 @@ Accuracy: 98.66%
   - そしておそらく、彼の判断は が影響を受けている。
   - 姉妹の幸福は が私の責任です。
 
-### "は" + "きっと" (2 occurrences)
+### "は" + "こっち" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - メイは きっと この森の主に会ったんだ。
-  - 悪魔とのことは きっと自分で何とかします。
+  - 今後 学校からの手紙は こっちに回せ いいな？
+  - 勝負は こっちのもの！
 
-### "は" + "きれい" (2 occurrences)
+### "は" + "こんな" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ちっとは きれいになるでしょう。
-  - イヤなこった！ 俺は きれい好きなんだ。
+  - なぜ私は こんな映像を 見てしまうの？
+  - なんで うちのご神体は こんなに遠いの？
 
 ### "は" + "ご存知" (2 occurrences)
 - Predicted: None
@@ -10418,13 +9225,6 @@ Accuracy: 98.66%
   - これだよ！ もう子守りは しないぞ。
   - 君は しないだろ？
 
-### "は" + "そういう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私のやってる事は そういう事さ。
-  - 魔法とは そういうものだ なぁ サリマン。
-
 ### "は" + "そこ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10432,33 +9232,19 @@ Accuracy: 98.66%
   - メイは そこで待ってな。
   - 彼は そこに？
 
-### "は" + "たっぷり" (2 occurrences)
+### "は" + "たくさん" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前らには たっぷりナワをくれてやるわい。
-  - てめぇには たっぷり借りがあるんだ。
+  - それでも生きているうちは たくさん抱きしめてくれたの？
+  - パパ 運転手でベンツは たくさん運転したわよね？
 
-### "は" + "ちょっと" (2 occurrences)
+### "は" + "どなた" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたは ちょっと待ってから出なさい。
-  - 私を幸せにするには ちょっとしたことでいいのよ？
-
-### "は" + "てめぇ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジーナは てめぇにホレてんだ～！
-  - 色魔は てめぇだ～！
-
-### "は" + "どうせ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー 来ちゃダメ！ この人は どうせ私達を殺す気よ！
-  - 今夜は どうせ 私達 お泊まりだから。
+  - あなたは どなた？ なぜ 私たちの名前を知ってるの？
+  - お家の方は どなたか いらっしゃいませんか？
 
 ### "は" + "なかった" (2 occurrences)
 - Predicted: None
@@ -10467,19 +9253,19 @@ Accuracy: 98.66%
   - 純粋な行ないのためでは なかったのか？
   - 金銭的な問題は なかったでしょう？
 
+### "は" + "なし" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何でも言ってくれ！ 固定料金 値引きは なしだ！
+  - 目撃者は なしか？
+
 ### "は" + "ぼく" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お屋敷の隠された宝は ぼくたちのものでしょ？
   - 彼は ぼくのところで 育てようか？
-
-### "は" + "また" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では また。
-  - 今日は また どうしたよ？
 
 ### "は" + "わかって" (2 occurrences)
 - Predicted: None
@@ -10495,26 +9281,12 @@ Accuracy: 98.66%
   - この意味は わかるか？
   - 頭の後ろに二発目 ここに 二発目の理由は わかる？
 
-### "は" + "ウソつき" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - けど 僕の父さんは ウソつきじゃないよ。
-  - シータ！ 父さんは ウソつきじゃなかったんだ！
-
 ### "は" + "コート" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - セルキーは コートを着ていたか？
   - 僕は できる。 僕は コートを取り戻せる。
-
-### "は" + "サリマン" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フン！ あなたは サリマンの回し者でしょ。
-  - マダム それは サリマン先生のプレゼントですね。
 
 ### "は" + "ジェイク・ケイヒル" (2 occurrences)
 - Predicted: None
@@ -10558,20 +9330,6 @@ Accuracy: 98.66%
   - こんな学校を作れるのは ランチョーくらいだ！
   - すかしっ屁は ランチョーの 住所をどこで？
 
-### "は" + "一体" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは 一体 誰？
-  - 大佐 ここは 一体…。
-
-### "は" + "不思議" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この石には 不思議な力があるんです。
-  - サミュエル・マレスキーは 不思議な存在？
-
 ### "は" + "世界" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10593,6 +9351,13 @@ Accuracy: 98.66%
   - トムバッドには 二度と戻れないぞ！
   - 殺してやる！ トムバッドには 二度と戻れないぞ！
 
+### "は" + "人" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 医者は、 時期は 人それぞれだと。
+  - 高貴の姫君は 人ではないのね！
+
 ### "は" + "人生" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10606,13 +9371,6 @@ Accuracy: 98.66%
 - Examples:
   - けれど シアーシャ、 あなたは 人間でもあるの。
   - 私は 人間よ！
-
-### "は" + "今" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おじいさん その島は 今も あるんでしょうか？
-  - 兄さんは 今も生きていた そうでしょ パパ！
 
 ### "は" + "何て" (2 occurrences)
 - Predicted: None
@@ -10740,13 +9498,6 @@ Accuracy: 98.66%
   - ママが話してくれた物語は 本当の事だったんだ。
   - 彼と婚約をしたというのは 本当ですか?
 
-### "は" + "本当に" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カバンにあったのは 本当に音楽なの?
-  - 銭（ツェン）所長夫人としては 本当に似合わないわ！
-
 ### "は" + "楽しかった" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10796,27 +9547,6 @@ Accuracy: 98.66%
   - なぜ私は 監視されて なかったんですか？
   - 僕の家は 監視されていない！
 
-### "は" + "知らなかった" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも食べ物にアレルギーがあるのは 知らなかったでしょ？
-  - 奮戦してくれたとは 知らなかったんだ。
-
-### "は" + "禁じられて" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お手をお貸しすることは 禁じられております。
-  - 奥様 これより先は 禁じられております！
-
-### "は" + "絶対" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 咬むのは 絶対になし！
-  - 夫を甘く見るような妻は 絶対に許さん！
-
 ### "は" + "聞いた" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10838,6 +9568,13 @@ Accuracy: 98.66%
   - それは 計画の一員か？
   - ローク、こんなのは 計画になかったぞ。
 
+### "は" + "語り部" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたは 語り部のシャーナキー？
+  - ほら クー、 これは 語り部のシャーナキー。
+
 ### "は" + "適格" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10858,13 +9595,6 @@ Accuracy: 98.66%
 - Examples:
   - はぁ はぁ はぁ ゆるせん！
   - はぁ はぁ はぁ ゆるせん！
-
-### "はい" + "ありがとう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい ありがとう。
-  - はい、はい ありがとうね。
 
 ### "はい" + "どなた" (2 occurrences)
 - Predicted: None
@@ -10894,6 +9624,13 @@ Accuracy: 98.66%
   - おめえ ゆばーばのとこへ つれてってもらえねえか？
   - 何処かへ つれてって やってくれない?
 
+### "へ" + "行く" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どこへ 行くの？
+  - 危険を冒してベルリンへ 行くほど重要なのか？
+
 ### "へ" + "行って" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10901,19 +9638,19 @@ Accuracy: 98.66%
   - あっちへ 行ってらっしゃい!
   - 俺 代わりに七国山へ 行ってやるから お前は家に戻れ。
 
-### "へ" + "連れて" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこへ 連れてくの？
-  - 私をカルシファーの所へ 連れて行って。
-
 ### "ほい" + "ほい" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （来客の合いの手や手拍子） ほい ほい ほい！
   - （来客の合いの手や手拍子） ほい ほい ほい！
+
+### "ほら" + "クー" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ほら クー、 これは 語り部のシャーナキー。
+  - ほら クー、 見なよ。
 
 ### "ほら" + "言った" (2 occurrences)
 - Predicted: None
@@ -10950,13 +9687,6 @@ Accuracy: 98.66%
   - そう、まさに その通りだ。
   - まさに その通りだ。
 
-### "また" + "そんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また そんな…。
-  - また そんな嘘を！
-
 ### "まで" + "どれ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10975,7 +9705,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - さぁ みんな しっかり稼ぎな！
+  - さあ みんな しっかり稼ぎな！！
   - 子供さんが みんな しっかりしとるけ!
 
 ### "みんな" + "そう" (2 occurrences)
@@ -10996,15 +9726,22 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - みんな 元気で。
+  - みんな 元気で…?
   - みんな 元気にやってるか？
 
-### "も" + "あなた" (2 occurrences)
+### "みんな" + "無事" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも あなたの夢は？
-  - ペジテをおそわせたのも あなたたちなの？
+  - みんな 無事か？
+  - （ナウシカ）みんな 無事？
+
+### "も" + "ある" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 疑う証拠でも あるのか？
+  - 精神医学的な要因も あるとしたら？
 
 ### "も" + "いる" (2 occurrences)
 - Predicted: None
@@ -11013,19 +9750,33 @@ Accuracy: 98.66%
   - リス…でも いるのかな？
   - 僕の妹も いるんだろ？ 返せ！
 
-### "も" + "かわいい" (2 occurrences)
+### "も" + "お前" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - それでも かわいいと 思ってくれる？
-  - 怒ったとこも かわいいじゃないか。
+  - でも お前が殺した！
+  - 鉄雄を変えたのも お前の仕業だな！
 
-### "も" + "こいつ" (2 occurrences)
+### "も" + "ここ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - どいつも こいつも ひとをバカにして！
-  - 地球温暖化も こいつのせいだ！ これは たまらん！
+  - 今も ここに？
+  - 何度も ここへ？
+
+### "も" + "こんな" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いくらシカゴでも こんな腐敗は許せん！
+  - 所詮 貴様の魔術も こんなものか サルマン？
+
+### "も" + "その" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それとも その恰好の話か？
+  - でも その前に 発電機を回さなきゃね。
 
 ### "も" + "そんな" (2 occurrences)
 - Predicted: None
@@ -11033,13 +9784,6 @@ Accuracy: 98.66%
 - Examples:
   - 貴女も そんな子供じみたことをするつもり？
   - 鼻の下ですか？ よくも そんなことができるね？
-
-### "も" + "できない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも働きすぎで、他に何も できないんじゃない？
-  - 歌えないよ。 話すことも できないんだ。
 
 ### "も" + "どこ" (2 occurrences)
 - Predicted: None
@@ -11111,6 +9855,20 @@ Accuracy: 98.66%
   - でも 我々の中で 人の殺し方を 知っている者が居るか？
   - 一晩だけでも 我々みんなで 家族になれないものかね？
 
+### "も" + "構わない" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 入らせてもらっても 構わないかね？
+  - 古い友人に挨拶しても 構わないか？
+
+### "も" + "男" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前も 男じゃない！
+  - でも 男が家に帰らないのは 良い事でしょう？
+
 ### "も" + "行かん" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11118,26 +9876,19 @@ Accuracy: 98.66%
   - さ 行きましょ 実さんも 行かんの?
   - 実さんも 行かん?
 
+### "もう" + "いい" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もう いいだろ サインしてくれる？
+  - もう いい子じゃないのね？
+
 ### "もう" + "おしまい" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 才能もひらめきもなく もう おしまいだとしたら？
   - （信代）もう おしまい？
-
-### "もう" + "この" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに俺はもう この連中の用心棒じゃねえ。
-  - もう この城は 眠りから さめてるんだ。
-
-### "もう" + "こんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう こんなのを映すな！
-  - 痛たた… もう こんな家 出てってやる！
 
 ### "もう" + "何" (2 occurrences)
 - Predicted: None
@@ -11195,6 +9946,13 @@ Accuracy: 98.66%
   - あるわ。どうやって ここに来る道を見つけたの？
   - どうやって ここに入り込んだんだ？！
 
+### "やっぱり" + "この" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん！ やっぱり この家 何かいる！
+  - やっぱり この道で正しかったんだ。
+
 ### "やめて" + "あなた" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11251,13 +10009,6 @@ Accuracy: 98.66%
   - シルヴィアだよ あれを見て！
   - （鈴芽）何よ あれ！
 
-### "よ" + "いつ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 出かけるよ いつまで食べてるんだい！
-  - 来いよ いつヤーマスへ？
-
 ### "よ" + "いつも" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11272,18 +10023,11 @@ Accuracy: 98.66%
   - それは…それは少し そのエケチットですよ え?
   - 鉄雄のバカは事故っちまうしよ え～？
 
-### "よ" + "おい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おめぇ その顔！ 待てよ おい！
-  - ドーラ一家だよ。 海賊かよ おい！
-
 ### "よ" + "きっと" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - これなんだよ きっと。
+  - いえいえ これからが大変ですよ きっと ねっ？
   - （ナオミ） 平気よ ちょっと遅れてるだけよ きっと。
 
 ### "よ" + "こっち" (2 occurrences)
@@ -11300,20 +10044,6 @@ Accuracy: 98.66%
   - 降ろしてよ このクソハゲ！
   - （美也子）バカは あんたよ この親不孝者！
 
-### "よ" + "こんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - へぇ あの子が？ ヤダよ こんなボロ傘。
-  - 無理だよ こんなに乗ってるんだもの。
-
-### "よ" + "すぐ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じっとしてるんだよ すぐ戻って来るからね。
-  - 灰をかくのよ すぐだからね。
-
 ### "よ" + "そう" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11321,19 +10051,12 @@ Accuracy: 98.66%
   - それでも私の肌はきれいよ そうでしょ？
   - フランシは誉めてばかりよ そうよね?
 
-### "よ" + "そんな" (2 occurrences)
+### "よ" + "で" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - できないわよ そんなこと。
-  - 私 イヤよ そんなお葬式。
-
-### "よ" + "だから" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うちのは混ぜもの なしなんだよ だから女はイヤなんだ。
-  - そうよ だから何なの？
+  - そんなの知ってるよ でも どう測るの？
+  - 違うよ でも変だろ？
 
 ### "よ" + "どこ" (2 occurrences)
 - Predicted: None
@@ -11363,20 +10086,6 @@ Accuracy: 98.66%
   - ポニョ お家が見えるよ ほら！
   - 笑ってるよ ほら！
 
-### "よ" + "また" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それ バイロンかい？ いや 俺だよ またな。
-  - 女の子が来てるよ また追い返そうか？
-
-### "よ" + "もっと" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうよ もっと！ もっと！
-  - メソメソするんじゃないよ もっといい船 造りゃいいんだ！
-
 ### "よ" + "やめて" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11391,13 +10100,6 @@ Accuracy: 98.66%
   - 何をしたかはわからん ただアレしたんだよ わかるか？
   - 空から気球に乗ってよ わかる？
 
-### "よ" + "エンジン" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうそう いいコだよ エンジンちゃん。
-  - ミラノまで持ってくれよ エンジンちゃん。
-
 ### "よ" + "ガンダルフ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11405,33 +10107,12 @@ Accuracy: 98.66%
   - また会えてうれしいよ ガンダルフ！
   - 花火を見せてよ ガンダルフ！
 
-### "よ" + "ハウル" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫よ ハウルは美人しか狙わないもの。
-  - 欲しいよ ハウルの心臓 欲しいよ…。
-
-### "よ" + "フィオ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ファシストの秘密警察だよ フィオをつけていたのさ。
-  - 払ってやれよ フィオ。
-
 ### "よ" + "一人" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ないから楽しいんだよ 一人で行くの？
   - 内緒だよ 一人じゃないのか？
-
-### "よ" + "今" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも本当なのよ 今どこ?
-  - なぁ マルコ 空軍に戻れよ 今なら俺達の力で何とかする。
 
 ### "よ" + "今日" (2 occurrences)
 - Predicted: None
@@ -11503,13 +10184,6 @@ Accuracy: 98.66%
   - ウチ等は助けが要る者達よ 自分の事を考えな Ｏ・Ｋ？
   - ヘンリーは あたしの夫よ 自分の男をお探し！
 
-### "よ" + "荒地" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺じゃないよ 荒地から勝手に入って来たんだよ。
-  - （カルシファー） ソフィー イヤだよ 荒地の魔女だぜ。
-
 ### "よ" + "行く" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11551,13 +10225,6 @@ Accuracy: 98.66%
 - Examples:
   - せんぐり 命がよみがえる （翁･媼）ヒメ！ ヒメ！
   - せんぐり命がよみがえる （翁･媼）ヒメ！
-
-### "より" + "もっと" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 世界には料理より もっと興味深い事があるだろ？
-  - 略奪より もっと ひどいことが 始まるよ。
 
 ### "わ" + "あなた" (2 occurrences)
 - Predicted: None
@@ -11622,13 +10289,6 @@ Accuracy: 98.66%
   - ーママとパパにもバレるわ ー何が？
   - ー森で迷うわ ー見つけるさ！
 
-### "わ" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうだわ 私 どうして助かったのかしら。
-  - もちろん寂しいわ 私の愛しい子！
-
 ### "わ" + "行きましょう" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11636,12 +10296,12 @@ Accuracy: 98.66%
   - ああ もういいわ 行きましょう！
   - よくわかったわ 行きましょうか?
 
-### "われ" + "エンジン" (2 occurrences)
+### "を" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 「われ エンジン不調 援護する 先にかかれ」。
-  - 「われ エンジン不調…」。 「当たり前だろうが」。
+  - 幸運を !
+  - 独身者に乾杯を !
 
 ### "を" + "お見せ" (2 occurrences)
 - Predicted: None
@@ -11678,33 +10338,12 @@ Accuracy: 98.66%
   - なぜ俺たちを ここへ呼んだ？
   - 本当に奥さんを ここに残して行くのか？
 
-### "を" + "この" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ウイルスを この世から消し去りたまえ！
-  - ラピュタの本当の姿を この目で確かめたいんです。
-
 ### "を" + "ご存知" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ドラッグの“チーズ”を ご存知？
   - 居所を ご存知では？
-
-### "を" + "してた" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママが あなたのお話を してたよ。
-  - 何を してた?
-
-### "を" + "してる" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うん！ きっと大事なことを してる！ 私もそう思うよ！
-  - どうして悲しい顔を してるんです？
 
 ### "を" + "そんな" (2 occurrences)
 - Predicted: None
@@ -11726,13 +10365,6 @@ Accuracy: 98.66%
 - Examples:
   - 先生に教わったことを みんなにも教えるのよね?
   - 転属の訴えを みんな無視･･･ 聞いてる？
-
-### "を" + "よそ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - リビング･セットを よその庭に移したこと？
-  - 手伝うか？ ヤツらを よそに引っ張って行くんだ。
 
 ### "を" + "作った" (2 occurrences)
 - Predicted: None
@@ -11762,12 +10394,19 @@ Accuracy: 98.66%
   - どうして お前を 信用できる？
   - アイツら本当に私書箱を 信用したのか？
 
-### "を" + "全部" (2 occurrences)
+### "を" + "俺" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - アメリカ人について知ってることを 全部話せ さあ！
-  - 何だと！ ムスカが無線機を 全部 ぶっ壊しただと!
+  - クリスタルのありかを 俺に教えるんだ。
+  - 自分の村を 土地を 俺たちとの約束を覚えているのか？
+
+### "を" + "傷つける" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 彼女が僕らを 傷つける？
+  - 私を誰より 愛してくれる人を 傷つけると思う？
 
 ### "を" + "助けて" (2 occurrences)
 - Predicted: None
@@ -11789,13 +10428,6 @@ Accuracy: 98.66%
 - Examples:
   - 武器は出くわした障害を 取り除くためのものです。
   - 船のフロント部分を 取り除くのか？
-
-### "を" + "受けて" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さんは 僕たちが監査を 受けていることを知ってる？
-  - 私が政府の密命を 受けていることも お忘れなく。
 
 ### "を" + "台無し" (2 occurrences)
 - Predicted: None
@@ -11895,6 +10527,20 @@ Accuracy: 98.66%
   - あんたはキャンビーって名を 聞いたことあるか？
   - 君は本当に中尉の命令を 聞いたのか？
 
+### "を" + "見つける" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 失われたアトランティス大陸を 見つける鍵なんだ。
+  - 彼女を 見つける事なんて あるのでしょうか？
+
+### "を" + "見てる" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なぜ彼は 僕たちを 見てるんだろう？
+  - 君も俺と同じものを 見てるか？
+
 ### "を" + "言って" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11923,33 +10569,12 @@ Accuracy: 98.66%
   - オズダスト ボールルーム?
   - オズダスト ボールルームに行ったことがある？
 
-### "カルシファー" + "お願い" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ カルシファー お願いしますよ。
-  - カルシファー お願い あなたにしかできないの。
-
-### "カルシファー" + "よく" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファー よく城の中に入れたね。
-  - カルシファー よく言うことを聞いてるね。
-
 ### "クソ" + "何" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - クソ 何だと？
   - クソ 何て言うんだ？
-
-### "ゴホっ" + "ゴホっ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゴホっ ゴホっ…。
-  - 催涙ガスだ！ ゴホっ ゴホっ…。
 
 ### "ゴーゴー" + "キキ" (2 occurrences)
 - Predicted: None
@@ -11958,40 +10583,12 @@ Accuracy: 98.66%
   - （少女たち） ゴーゴー キキ！ ゴーゴー キキ！
   - （少女たち） ゴーゴー キキ！ ゴーゴー キキ！
 
-### "シネマボーイ" + "加藤清史郎" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんばんは シネマボーイ 加藤清史郎です。
-  - 映画で楽しく冒険だ！ シネマボーイ 加藤清史郎です。
-
-### "シータ" + "いい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ いい名前だね。
-  - シータ いい子だったのに…。
-
 ### "スアン" + "大丈夫" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - スアン 大丈夫かい？
   - スアン 大丈夫だった？ 恐くなかった？
-
-### "ソフィー" + "こっち" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー こっちに来て！ 早く！
-  - ソフィー こっちへ来て！ ソフィー！
-
-### "ダメ" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でもダメ 私 今 賭けをしてるから。
-  - ダメ 私達がここにいる限り ハウルは戦うわ。
 
 ### "ニ" + "イチ" (2 occurrences)
 - Predicted: None
@@ -12020,13 +10617,6 @@ Accuracy: 98.66%
 - Examples:
   - おばあさん 寝ないと ハスター が来るよ！
   - 寝ないと ハスター が来るよ！
-
-### "ヒッ" + "ヒッ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒッ ヒッ ヒッ。
-  - ヒッ ヒッ ヒッ。
 
 ### "フッ" + "何" (2 occurrences)
 - Predicted: None
@@ -12084,13 +10674,6 @@ Accuracy: 98.66%
   - ポニョ 宗介 好き！
   - （ポニョ） ポニョ 宗介 好き！
 
-### "ママ" + "どこ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ どこ?
-  - ママ どこに行くの？
-
 ### "ママ" + "なぜ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12098,26 +10681,12 @@ Accuracy: 98.66%
   - ママ なぜクメイルが？
   - ママ なぜ家を閉め切ってるの？
 
-### "ママ" + "落ちる" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～っ！ ママ 落ちる あぁ…。
-  - ママ 落ちる～！
-
 ### "マリア" + "鍵" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - マリア 鍵だ！
   - マリア 鍵を！
-
-### "マルクル" + "おばあちゃん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル おばあちゃんをお願い お店 見て来る。
-  - マルクル おばあちゃんをお願い！ （マルクル） うん。
 
 ### "マルチェロ" + "何" (2 occurrences)
 - Predicted: None
@@ -12147,12 +10716,12 @@ Accuracy: 98.66%
   - あっ メイ 戻っておいで！
   - メイ 戻って来た？
 
-### "ランチョルダース" + "チャンチャル" (2 occurrences)
+### "ラズル" + "ダズル" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ランチョルダース チャンチャルって 知らない？
-  - ランチョルダース チャンチャル！
+  - “ラズル ダズル”！
+  - だけど“ラズル ダズル” 誰にもバレやしない！
 
 ### "リサ" + "「" (2 occurrences)
 - Predicted: None
@@ -12224,6 +10793,13 @@ Accuracy: 98.66%
   - 今 汽車に乗ってるのですか？
   - 今 汽車に乗ってるんですか？
 
+### "今" + "行く" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今 行くわよー！
+  - 母さん 今 行くよ！
+
 ### "今夜" + "僕" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12245,13 +10821,6 @@ Accuracy: 98.66%
   - あの方のお孫さんに会えて うれしいですな。
   - また会えて うれしいぞ、 小さなお仲間！
 
-### "何" + "これ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ 腹？ 腹… 時計？ 何 これ？
-  - 何 これ… これで お城なの？
-
 ### "何" + "見てやがる" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12272,6 +10841,20 @@ Accuracy: 98.66%
 - Examples:
   - “何 話してたか”って？
   - 何 話してた？
+
+### "何か" + "ご用" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何か ご用は？
+  - 何か ご用？
+
+### "何か" + "持って" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前 何か 持って来なかったか？
+  - シャバから何か 持ってきたか？
 
 ### "先生" + "ダメ" (2 occurrences)
 - Predicted: None
@@ -12336,13 +10919,6 @@ Accuracy: 98.66%
   - あの子 何て言ったの？
   - あの子 何を知ってる？
 
-### "守らなければ" + "ならない" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ようやく守らなければ ならないものが できたんだ。
-  - ようやく守らなければ ならないものができたんだ。
-
 ### "宗介" + "好き" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12363,13 +10939,6 @@ Accuracy: 98.66%
 - Examples:
   - しかし その後 彼は武器を手に入れたのですか？
   - その後 彼とは？
-
-### "手" + "出す" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手 出すなよ。
-  - 手 出すなよ。 えっ…!
 
 ### "手紙" + "?" (2 occurrences)
 - Predicted: None
@@ -12392,13 +10961,6 @@ Accuracy: 98.66%
   - 敵が我らを包囲した時 ゴンドールはどこに居た？
   - 西の谷が落ちた時 ゴンドールはどこに居た？
 
-### "時" + "私" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたが私を見る時 私は？
-  - 母が死ぬ時 私にくれたの。
-
 ### "書く" + "の" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12412,13 +10974,6 @@ Accuracy: 98.66%
 - Examples:
   - 最近 誰か 見かけませんでしたか？
   - 最近 誰か殺したか？
-
-### "本当に" + "きれい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ… やけに静かでな 空が本当に きれいなんだ。
-  - きれい… 世界って本当に きれい。
 
 ### "本当に" + "そう" (2 occurrences)
 - Predicted: None
@@ -12511,27 +11066,6 @@ Accuracy: 98.66%
   - “皆で祈ろう 雪が降ることを” オエッ～！
   - 皆で祈ろう 雪の降ることを！
 
-### "私" + "どう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 飛行石を取り戻したって 私 どうしたらよいか…。
-  - 私 どうしてた？
-
-### "私" + "ハウル" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 ハウルが怪物だって平気よ。
-  - 私 ハウルの力になりたいの。
-
-### "私" + "今" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 私 今の暮らしが気に入ってるから。
-  - でもダメ 私 今 賭けをしてるから。
-
 ### "私" + "絶対" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12567,13 +11101,6 @@ Accuracy: 98.66%
   - 早く行け 早く！
   - 行け 早く！
 
-### "行こう" + "おばさん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行こう おばさん 父さんの行った道だ！
-  - 行こう おばさん！ 船長とお呼び！
-
 ### "見て" + "見て" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12602,19 +11129,19 @@ Accuracy: 98.66%
   - さっきの耳の話 本当なのか？
   - （美也子）先生の話 本当なの？
 
-### "達" + "海賊" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの人達 海賊よ。 えっ？
-  - 僕達 海賊に追われてるんだ。 ほぉ…。
-
 ### "違う" + "本当に" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 違う 本当に壊れたんだ！
   - 違う 本当に？
+
+### "違う" + "違う" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 違う 違う！
+  - 違う 違う！ ご主人さま！
 
 ### "降りろ" + "!" (2 occurrences)
 - Predicted: None
@@ -12644,12 +11171,40 @@ Accuracy: 98.66%
   - こりゃ参った！ “スイート･ウオーター”！
   - （男子生徒Ａ）質問！ “かたわれ時”やなくて？
 
+### "！" + "あ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ あ～…。
+  - あ～っ！ あ～っ！
+
+### "！" + "あっ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - わあ！ あっ！
+  - 津波が来た！ あっ あっ 津波～！
+
 ### "！" + "あった" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あった！ あったぞ！
   - やった！ あったぞ！
+
+### "！" + "あなた" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 行かない！ あなたも戻っちゃダメ！
+  - 銃を置いて！ あなたの娘よ！
+
+### "！" + "ありがとう" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ ありがとう！
+  - ありがとう！ ありがとう！
 
 ### "！" + "いい加減" (2 occurrences)
 - Predicted: None
@@ -12665,19 +11220,19 @@ Accuracy: 98.66%
   - いとしい！ いとしい！ いとしい！ 指輪！
   - いとしい！ いとしい！ いとしい！ 指輪！
 
-### "！" + "いや" (2 occurrences)
+### "！" + "うわ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何だって！ いや ほら 王手だな。
-  - （ヒメ）いやいや！ いやよ！
+  - あっ！ うわ！
+  - うわっ！ うわっ！ うわ～っ！ うえいっ！
 
-### "！" + "うわぁ" (2 occurrences)
+### "！" + "うん" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああっ！ うわぁ…。
-  - あ～っ！ うわぁ～！
+  - 乗れるよ！ うん 立派だね。
+  - 宗介 行くよ！ うん！
 
 ### "！" + "え" (2 occurrences)
 - Predicted: None
@@ -12685,20 +11240,6 @@ Accuracy: 98.66%
 - Examples:
   - 警報が止まった！ え どういうこと!
   - （鈴芽） 呪いって！ え… 大丈夫？
-
-### "！" + "ええ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ あの空！ ええ。
-  - 行くよ シータ！ ええ！
-
-### "！" + "お" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ ヤバい！ お… 落ちる…。
-  - （デモ参加者たち） アキラ様ばんざ～い！ お～！
 
 ### "！" + "おおっ" (2 occurrences)
 - Predicted: None
@@ -12721,19 +11262,26 @@ Accuracy: 98.66%
   - 出てけ！ お前ら！ 早く！
   - 食器棚！ お前ら 日本人は “棺桶”に食器をしまうのか！
 
-### "！" + "お姉ちゃん" (2 occurrences)
+### "！" + "きっと" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 痛い目に合わせてやるから！ お姉ちゃんでしょ？
-  - 買った奴は替われよ！ お姉ちゃんが!
+  - うん！ きっと大事なことを してる！ 私もそう思うよ！
+  - うん！ きっと大事なことをしてる！
+
+### "！" + "こら" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - メイ！ こら 起きろ！
+  - ロルフィ！ こら！
 
 ### "！" + "こんな" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あっ！ こんなとこにキノコ！
-  - 用心棒を連れてやがった！ こんな話 聞いてねえぞ！
+  - えー！ こんなにわかくて かわいいのに？
 
 ### "！" + "ご主人様" (2 occurrences)
 - Predicted: None
@@ -12742,12 +11290,12 @@ Accuracy: 98.66%
   - ダメよ！ ご主人様！
   - 注意して！ ご主人様 気を付けて！
 
-### "！" + "ご無事" (2 occurrences)
+### "！" + "さっさと" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 奥様！ お電話です！ ご無事です 生きておられました！
-  - （サイトウ） 皆さ～ん！ ご無事でしたか！
+  - この野朗！ さっさと外せ！
+  - わかったか！ さっさと失せろ！
 
 ### "！" + "さもなくば" (2 occurrences)
 - Predicted: None
@@ -12770,27 +11318,6 @@ Accuracy: 98.66%
   - それでいい！ ハイル・ヒトラー！ しっかり行ってこい！
   - はく！ しっかり！ こっちよ！
 
-### "！" + "そういう" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎！ そういうものは 一番大事な時に とっとけ！
-  - 皆 ハゲタカだ！ そういう事だ！
-
-### "！" + "そっち" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジュニア！ そっちの手を！
-  - 違う！ そっちじゃないよ～！
-
-### "！" + "そろそろ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゲホっ！ そろそろオーバーホール しなきゃいかんな。
-  - （千果） 鈴芽！ そろそろ出るんやろ？
-
 ### "！" + "たいへん" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12805,12 +11332,12 @@ Accuracy: 98.66%
   - こら ちびども！ ただのすすに もどりてえのか？
   - 絶対プレゼントは無し！ ただ来て 食べて 飲むだけでね！
 
-### "！" + "ちぇっ" (2 occurrences)
+### "！" + "ちょっと" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うっ… ちぇっ！ ちぇっ！
-  - ちぇっ！ ちぇっ！ ベーコンなんか焦げちまえ！
+  - フランク！ ちょっと見て！
+  - （鈴芽：小声）ああっ… 草太さん！ ちょっと見て！
 
 ### "！" + "つまらん" (2 occurrences)
 - Predicted: None
@@ -12819,12 +11346,12 @@ Accuracy: 98.66%
   - つまらん！ つまらん！ つまらん！
   - つまらん！ つまらん！ つまらん！
 
-### "！" + "てめぇ" (2 occurrences)
+### "！" + "で" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ガハハ！ てめぇもローン持ちか ザマ～みろ！
-  - 手当たり次第に口説きやがって！ てめぇこそ！
+  - そうか！ で 誰が書いたんだ？
+  - ん！ でも…。
 
 ### "！" + "でかい" (2 occurrences)
 - Predicted: None
@@ -12847,20 +11374,6 @@ Accuracy: 98.66%
   - 当たり！ なぜ打たなかった？
   - 血が沸騰し、魂が痛い！ なぜだ？
 
-### "！" + "なん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はぁっ… あんたっ！ なんのつもり？
-  - 賄賂を渡し臣民を買ったな！ なんという陰謀だ。
-
-### "！" + "なんだ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ドアを閉めろ！ なんだよ？なんだよ？
-  - 大佐！ なんだ！
-
 ### "！" + "なんで" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12868,12 +11381,12 @@ Accuracy: 98.66%
   - そうなんだ！ なんで聞かなかったんだろう？
   - ちくしょう！ なんでそんなことしやがった！
 
-### "！" + "ねえ" (2 occurrences)
+### "！" + "はい" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そうだ！ その通りだ！ ねえちゃん いいぞ～！
-  - （萌花）パパ！ ねえ お外見た？
+  - うわー！ はい。
+  - 先生！ はい サツキさん。
 
 ### "！" + "はく" (2 occurrences)
 - Predicted: None
@@ -12882,13 +11395,6 @@ Accuracy: 98.66%
   - しずかにして！！ はく！
   - はく！ はく！
 
-### "！" + "ばあちゃん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばあちゃん！ ばあちゃん！
-  - ポルチェリーノ！ ばあちゃん！
-
 ### "！" + "ひゃああっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -12896,12 +11402,12 @@ Accuracy: 98.66%
   - ああっ！ ひゃああっ！
   - （鈴芽）あっ えいっ！ ひゃああっ！
 
-### "！" + "まだ" (2 occurrences)
+### "！" + "また" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ええ！ まだいくの！
-  - 駄目です！ まだ友だちが乗ってません！
+  - ここでＣＭタイムだよ！ また来週 バイバイ！
+  - 見ろよ！ また滑り落ちてくるよ。
 
 ### "！" + "まるで" (2 occurrences)
 - Predicted: None
@@ -12938,19 +11444,12 @@ Accuracy: 98.66%
   - おやめ！ やめるのよ！
   - 銃を捨てろ！ やめるんだ！
 
-### "！" + "やめろ" (2 occurrences)
+### "！" + "よかった" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やめろ！ やめろってば！ やめて～！
-  - よせ！ やめろ！
-
-### "！" + "やりやがった" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - くそ！ やりやがったな！
-  - このチキン野郎！ やりやがったな！
+  - ついたわ！ よかった。
+  - ハウル大好き！ よかった！
 
 ### "！" + "ろく" (2 occurrences)
 - Predicted: None
@@ -12959,12 +11458,12 @@ Accuracy: 98.66%
   - 犯罪者！ ろくでなし！ 一生 医者通いになるぞ！
   - 馬鹿！ 畜生！ ろくでなし！
 
-### "！" + "わかる" (2 occurrences)
+### "！" + "アメリカ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 正すことは何もない！ わかるか？
-  - 見てみろ！ わかる？ 悪くないだろ？
+  - おい 後ろどうだ！ アメリカやろう来てるか？
+  - 運が開けた！ アメリカで百万長者になる！
 
 ### "！" + "イップ" (2 occurrences)
 - Predicted: None
@@ -12980,20 +11479,6 @@ Accuracy: 98.66%
   - イップ･マン！ イップ･マン！ イップ･マン！
   - イップ･マン！ イップ･マン！ イップ･マン！
 
-### "！" + "イヤ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこへ走れ！ イヤ～ 離さないで！
-  - 来い！ イヤ～！
-
-### "！" + "オイラ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やだね！ オイラは悪魔だ 誰の指図も受けないよ～。
-  - （カルシファー） 生きてる！ オイラ 自由だ～！
-
 ### "！" + "カオリ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13008,33 +11493,12 @@ Accuracy: 98.66%
   - オーケー！ カット！
   - カット！ カットしろ！ あの馬鹿を入れたのは誰だ？
 
-### "！" + "キャ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わっ！ キャ～！
-  - 下りろ！ キャ～！
-
 ### "！" + "キー" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ステファン！ キー！
   - 車のキーを！ キーを！
-
-### "！" + "クソったれ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前はクソ能無しだ！ クソったれ!
-  - フ～っ！ クソったれめ！
-
-### "！" + "グズグズ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わっ！ グズグズしねえで 狭いんだから。
-  - 黙れ～！ グズグズ言うヤツは ぶち殺すぞ！
 
 ### "！" + "コイツ" (2 occurrences)
 - Predicted: None
@@ -13078,6 +11542,13 @@ Accuracy: 98.66%
   - あ！ ダイジンは!
   - （鈴芽）ひゃあっ！ ダイジン あんたのせいで！
 
+### "！" + "ハハハ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ポニョだ！ ハハハ！ ハハハ！
+  - ポニョだ！ ハハハ！ ハハハ！
+
 ### "！" + "バーフバリ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13085,26 +11556,12 @@ Accuracy: 98.66%
   - バーフバリ！ バーフバリ！
   - 動かせ！ - バーフバリ！ バーフバリ！
 
-### "！" + "ヒャ～" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここ濡れてるよ！ ヒャ～！
-  - ヤバい！ ヤバいよ！ ヒャ～ 危ない！
-
 ### "！" + "ヒーメ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ヒーメ おいで！ ヒーメ おいで！
   - （翁）ヒーメ おいで！ ヒーメ おいで！
-
-### "！" + "ブロック" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アッパー！ アッパー！ ブロック！ ブロック！
-  - アッパー！ アッパー！ ブロック！ ブロック！
 
 ### "！" + "ベン" (2 occurrences)
 - Predicted: None
@@ -13134,6 +11591,13 @@ Accuracy: 98.66%
   - え！ マジで!
   - やめます すいません！ マジで！
 
+### "！" + "ママ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママ！ ママ！
+  - 痛い！ ママ やめて！
+
 ### "！" + "マーラ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13141,33 +11605,19 @@ Accuracy: 98.66%
   - おい マーラ！ マーラ！
   - マーラ！ マーラ！ おい マーラ 待て！
 
-### "！" + "ムスカ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だと！ ムスカが無線機を 全部 ぶっ壊しただと!
-  - 早く これを！ ムスカが… 急いで！
-
-### "！" + "ラピュタ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フン！ ラピュタの宝だ 無理もするさ。
-  - ブリッジ！ ラピュタは この中だ！
-
-### "！" + "下がって" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～！ 下がって！
-  - ダメ！ 下がって 下がって！
-
 ### "！" + "中" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おとなしく！ 中に入ってろ！
   - 中に入ってください！ 中に入ってください！
+
+### "！" + "乱暴" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何すんの！ 乱暴ね！
+  - 君しか世界は救えないんだ！ 乱暴は したくない。
 
 ### "！" + "今夜" (2 occurrences)
 - Predicted: None
@@ -13232,6 +11682,20 @@ Accuracy: 98.66%
   - 出る！ 出る！
   - 行け！ 出るんだ！
 
+### "！" + "勝手" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いや どこにいるのかは教えない！ 勝手にしろ！
+  - おれは降りる！ 勝手にしろ！
+
+### "！" + "危ない" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - クリスチャン！ 危ない！ 銃で狙われてる！
+  - 何するんだ！ 危ないじゃないか！
+
 ### "！" + "口" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13245,13 +11709,6 @@ Accuracy: 98.66%
 - Examples:
   - 僕に近づくな！ 向こうへ行け！
   - 祝えるときに祝いましょ！ 向こうに男が見える？
-
-### "！" + "女" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇ！ 女がどうした！ 世界の半分は女だ。
-  - 女のコだぞ！ 女のコ 乗せてんだ。 かわいい！
 
 ### "！" + "子供" (2 occurrences)
 - Predicted: None
@@ -13281,12 +11738,12 @@ Accuracy: 98.66%
   - ギムリ！ 彼らを見つけたぞ！
   - 転送は罠だった！ 彼ら 僕のすべてのデータを持ってる！
 
-### "！" + "待ってろ" (2 occurrences)
+### "！" + "待て" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よ～し！ 待ってろ！
-  - シータ！ 待ってろ！
+  - ああっ こらっ 逃げるな！ 待て おいっ！
+  - こら！ 待て！ ドロボー犬め！ 足をひき千切ってやる！
 
 ### "！" + "待てえー" (2 occurrences)
 - Predicted: None
@@ -13323,13 +11780,6 @@ Accuracy: 98.66%
   - おい！ 戻ってこい！ 戻れ！
   - 上がれ！ 上がれ！ 戻れ！
 
-### "！" + "掃除" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やった～！ 掃除 洗濯しなくてすむぞ！
-  - 私は掃除婦なの！ 掃除をするのが仕事なの！
-
 ### "！" + "撃つ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13357,13 +11807,6 @@ Accuracy: 98.66%
 - Examples:
   - キダ！放っておくのよ！ 時間がないわ！
   - 分かりました 早く！ 時間がありません！
-
-### "！" + "最後" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇ！ 来やがれ ブタ野郎！ 最後の勝負だ！
-  - 戦え！ 最後の一人になろうとも！
 
 ### "！" + "朝食" (2 occurrences)
 - Predicted: None
@@ -13435,19 +11878,19 @@ Accuracy: 98.66%
   - こっちへ早く！ 水がいる！
   - まさか！ 水の山を見なよ！
 
+### "！" + "沈没" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ワーッ！ 沈没するーっ！
+  - 沈没するーっ！ 沈没するーっ！
+
 ### "！" + "海" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - どこに行こうか お姫様？ 海へ！ 海は好きかい？
   - 見て！ 海だ！
-
-### "！" + "海賊" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなに遅くなりやがって！ 海賊のクズども！
-  - さらわれる～！ 海賊だ！
 
 ### "！" + "消えろ" (2 occurrences)
 - Predicted: None
@@ -13469,13 +11912,6 @@ Accuracy: 98.66%
 - Examples:
   - フィーニャ… フィーニャ！ 犬を放せ！
   - 俺は戦場に行くんだぞ！ 犬ころめ！
-
-### "！" + "生きてる" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なめた！ 生きてる！
-  - 動いた！ 生きてる！
 
 ### "！" + "畜生" (2 occurrences)
 - Predicted: None
@@ -13504,6 +11940,13 @@ Accuracy: 98.66%
 - Examples:
   - 動くな！ 船は頂いた！
   - （青年） お～い！ 船だ！
+
+### "！" + "行こう" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そこに行きたいなんて絶対に言わないで！ 行こう。
+  - 逃げろ！ 行こう！
 
 ### "！" + "行って" (2 occurrences)
 - Predicted: None
@@ -13575,12 +12018,12 @@ Accuracy: 98.66%
   - ちくしょう！ 車から降りるんだ！
   - 家の鍵じゃない！ 車のだ！
 
-### "！" + "逃げる" (2 occurrences)
+### "！" + "逃がす" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よせ！ 逃げるんだ！
-  - ブタ野郎！ 逃げるなよ～！
+  - 撃て！ 逃がすな！
+  - 追え！ 逃がすな！
 
 ### "！" + "進め" (2 occurrences)
 - Predicted: None
@@ -13595,13 +12038,6 @@ Accuracy: 98.66%
 - Examples:
   - 宗介！ 遅刻しちゃうよ！
   - 早くしなさい！ 遅刻するよ！
-
-### "！" + "金" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 人さらい～っ！ 金払え～！
-  - 売らない！ 金はどうする！
 
 ### "！" + "金魚" (2 occurrences)
 - Predicted: None
@@ -13624,20 +12060,6 @@ Accuracy: 98.66%
   - 陽菜さん！ 陽菜さん！
   - （帆高）陽菜さん！ 陽菜さん！
 
-### "！" + "離さないで" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～っ！ 離さないで！
-  - もっと強く抱いて！ 離さないで！
-
-### "！" + "離して" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー！ 離して！
-  - 熱い！ 熱い！ 離して！
-
 ### "！" + "電話" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13645,26 +12067,19 @@ Accuracy: 98.66%
   - ファイ！ 電話だぞ！
   - 言い考えね！ 電話してくれる？
 
+### "！" + "静か" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ロルフィ！ 静かに！
+  - 黙れ！ 静かにしろ！
+
 ### "！" + "順番" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - メイも！ メイも！ 順番！
   - 列に並んで！ 順番を守って！
-
-### "！" + "頑張って" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ 姉さん いきんで！ 頑張って！
-  - ポルコ～！ 頑張って～！
-
-### "！" + "頑張れ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しっかりな！ 頑張れ！
-  - 頑張れ！ 頑張れ～！
 
 ### "！" + "頼む" (2 occurrences)
 - Predicted: None
@@ -13679,13 +12094,6 @@ Accuracy: 98.66%
 - Examples:
   - やめて！ 飛び降りるわよ！
   - 降りろ！ 飛び降りるんだ！
-
-### "！" + "飛行石" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しまった！ 飛行石が！
-  - 見な！ 飛行石の力だよ！
 
 ### "！" + "食器棚" (2 occurrences)
 - Predicted: None
@@ -13708,6 +12116,13 @@ Accuracy: 98.66%
   - 上げなおせ！ 駄目です！
   - 全速力だ！ 駄目です！
 
+### "！" + "黙れ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うるさい！ 黙れ！ どうやったんだ？
+  - ちょっとそのまま うるさい！ 黙れ！
+
 ### "）" + "“" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13715,33 +12130,19 @@ Accuracy: 98.66%
   - （下人） “死んだ男の話”？
   - （北の方） “ここではないどこか”ですか？
 
-### "）" + "あなた" (2 occurrences)
+### "）" + "あれ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （三葉の声） あなた バイト入れすぎ！
-  - （女の子） あなた達 悪人さん？ そうさ。
+  - （トルメキア兵） あれはペジテのガンシップです！
+  - （三葉） あれって私のことだよね？
 
-### "）" + "ありがとう" (2 occurrences)
+### "）" + "うわっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （カブ） ありがとう ソフィー。
-  - （レティー） ありがとう。 レティーっていうチョコは？
-
-### "）" + "いつ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） いつ入ったのかなぁ。
-  - （司） いつの時代の人だよ お前は？
-
-### "）" + "いや" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （サリマン） 王陛下。 （国王） いや そのまま。
-  - （看護師） いや お母ちゃん 待ちはった？
+  - （何かが飛び出す音） うわっ！
+  - （軍人たち） うわっ 何だ～！
 
 ### "）" + "おはよう" (2 occurrences)
 - Predicted: None
@@ -13764,6 +12165,20 @@ Accuracy: 98.66%
   - （サツキ） お父さん キャラメル。
   - （子ども） お父さん また連れてきてな？
 
+### "）" + "こっち" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （団員） こっちに来るなぁー ウアーッ！
+  - （空賊連合ボスＧ） こっちに来るなーっ カーチス！
+
+### "）" + "こんな" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （幸枝） こんな食中毒ってある？
+  - （空賊連合ボスＦ） こんな話 聞いてねえぞ！
+
 ### "）" + "ご苦労さま" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13778,26 +12193,12 @@ Accuracy: 98.66%
   - （光子） そのスタンガンで 私 殺す気だったの？
   - （奥寺） その子との連絡も取れない？
 
-### "）" + "そんな" (2 occurrences)
+### "）" + "どう" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 重い！ みんな降りな！ （ルイ） そんなムチャな。
-  - （小声） そんなこと言ったって草太さん！
-
-### "）" + "ねっ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハニー） ねっ 掃除婦なんか しなくていいのよ。
-  - （鈴芽：小声） ねっ 草太さんも一緒に！
-
-### "）" + "はい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル。 （マルクル） はい。
-  - （新井） はい！
+  - （大佐） どうだ あれが見えるか？
+  - （泣き声） どうしたの？
 
 ### "）" + "わあ" (2 occurrences)
 - Predicted: None
@@ -13813,55 +12214,6 @@ Accuracy: 98.66%
   - （デモ参加者たち） アキラ様ばんざ～い！ お～！
   - （男の子の声） アキラ！
 
-### "）" + "アニキ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） アニキ～！
-  - （ルイ） アニキ～！ そいつだ！
-
-### "）" + "ダメ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） ダメだ ママ 真っ暗で何も分からないよ。
-  - （鉱夫） ダメでさぁ 銀どころか錫さえ ねえ。
-
-### "）" + "ハウル" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （サリマン） ハウルのお母様だそうですね。
-  - （マルクル） ハウルさん 絶対 食べないと思うよ。
-
-### "）" + "ハハハ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） ハハハ… 私と戦うつもりか。
-  - （機関士） ハハハ… そ～れ つっ走れ！
-
-### "）" + "バカ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （フェラーリン） バカが！ 何で戻って来たんだ。
-  - （ムスカ） バカどもには ちょうどいい目くらましだ。
-
-### "）" + "パズー" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （機関士） パズー 仕事さぼってデートか？
-  - （親方） パズー！ そのオンボロに油さしとけよ。
-
-### "）" + "ママ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） ママ ダメだ 吸い込まれる！
-  - （ルイ） ママ！ 『ゴリアテ』が動き始めた！
-
 ### "）" + "リサ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13875,13 +12227,6 @@ Accuracy: 98.66%
 - Examples:
   - （ハン） 人に どうやって接するか。
   - （瀧の声） 人の金を無駄遣いすんな！
-
-### "）" + "今" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （グランマンマーレ） 今は静かにおやすみ 子供達。
-  - （ジーナ） 今にローストポークに なっちゃうから。
 
 ### "）" + "今日" (2 occurrences)
 - Predicted: None
@@ -13897,26 +12242,12 @@ Accuracy: 98.66%
   - （宗介） 僕が守ってあげるからね。
   - （祥太） 僕を置いて逃げようとしたの？
 
-### "）" + "兄ちゃん" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （アンリ） 兄ちゃん やっちゃえ！
-  - （節子） 兄ちゃん 兄ちゃん 兄ちゃん！
-
 ### "）" + "君" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （前園） 君は どこで生活してたの？
   - （草太） 君は死ぬのが怖くないのか!
-
-### "）" + "子供" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 子供の時のまんまだからさ。
-  - （少年Ｄ） 子供がおるんや なんやぁ？
 
 ### "）" + "宗" (2 occurrences)
 - Predicted: None
@@ -13931,20 +12262,6 @@ Accuracy: 98.66%
 - Examples:
   - うわ～！ （メイ） 待って！
   - （鈴芽） 待って その体じゃ無理だよ！
-
-### "）" + "落ちる" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （アンリ） 落ちるぞ！ 静かに！ よ～く見てな！
-  - （三葉） 落ちる この目で見たの！
-
-### "）" + "見せて" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 見せてあげよう ラピュタの雷を。
-  - （ヨシエ：のり子） 見せて。 うん！
 
 ### "）" + "鉄雄" (2 occurrences)
 - Predicted: None
@@ -13967,13 +12284,6 @@ Accuracy: 98.66%
   - 「メン」から電話？ 「メイ」だろ？
   - もう友達が できたのかい？ 「サ～ツキちゃ～ん」だって。
 
-### "？" + "あぁ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの方は どなた？ あぁ 家主さんね。
-  - 真っ白？ あぁ 光の中と言ったほうがいい。
-
 ### "？" + "ああっ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -13995,6 +12305,13 @@ Accuracy: 98.66%
   - どこへ？ あそこ？
   - 古い扉があるよな？ あそこだ。
 
+### "？" + "あっ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ？ あっ！
+  - え？ あっ！
+
 ### "？" + "いま" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14002,12 +12319,26 @@ Accuracy: 98.66%
   - え？ いま何時だ？
   - 大丈夫？ いま行くから！
 
+### "？" + "いや" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 知識が増えますか？ いや！
+  - （翁）え？ いや その しかし 不思議すぎやしないか？
+
 ### "？" + "いる" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ハッシシ欲しいか？ いるのか いらんのか？
   - ラース？ いるの？
+
+### "？" + "ううん" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここ？ ううん。
+  - 良子ちゃん 気がついた？ ううん。
 
 ### "？" + "おれ" (2 occurrences)
 - Predicted: None
@@ -14023,33 +12354,12 @@ Accuracy: 98.66%
   - よう 調子はどうだ？ お前ら 出かけるのか？
   - 何 考えてるんだ？ お前ら警官だろ！
 
-### "？" + "こいつ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 新造したほうが早くないかい？ こいつは残してぇんだ。
-  - 月末だぜ 誰が金をくれるんだ？ こいつの母親か？
-
 ### "？" + "ご主人" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - それでも人間なの？ ご主人が溺れているのよ！
   - 誰と住んでる？ ご主人？ 恋人？
-
-### "？" + "じゃ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かるわよね？ じゃ！
-  - 素敵じゃない。 本当？ じゃ 決まりだな。
-
-### "？" + "すぐ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほんとう？ すぐいきます！
-  - カブ 大丈夫？ すぐ新しい棒を 見つけてあげるね。
 
 ### "？" + "そいつ" (2 occurrences)
 - Predicted: None
@@ -14072,12 +12382,12 @@ Accuracy: 98.66%
   - 一人殺すといくらになるの？ ただの兵隊じゃない！
   - 心が通じない？ ただの言い訳？
 
-### "？" + "だって" (2 occurrences)
+### "？" + "だから" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ？ だって女の子はあそこに。
-  - シータ 本当？ だって…。
+  - ここで何してるの？ だから忙しいの。
+  - で？ だから？
 
 ### "？" + "だれ" (2 occurrences)
 - Predicted: None
@@ -14086,12 +12396,12 @@ Accuracy: 98.66%
   - ん？ だれか来る！
   - 涙の訳は知ってるの？ だれのため？
 
-### "？" + "で" (2 occurrences)
+### "？" + "どっち" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ？ でもなんで？
-  - 双方 文句はねえな？ では 始める前に握手でもしな！
+  - 奴がお前を組み込んでいるのか？ どっちだ？
+  - 見たのか見なかったのか！？ どっちだ？
 
 ### "？" + "なんだって" (2 occurrences)
 - Predicted: None
@@ -14107,40 +12417,12 @@ Accuracy: 98.66%
   - ねえ？ ねえ？
   - （信代）あれ？ ねえ 亜紀は？
 
-### "？" + "はい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何か古い？ はい。
-  - 将軍達は集まったか？ はい。
-
-### "？" + "ひどい" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫だ 君は？ ひどいこと されなかった？
-  - 大丈夫？ ひどい事されたの？
-
-### "？" + "ほら" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこどこ？ ほら あんなに近くに！
-  - ほらね？ ほらね？
-
 ### "？" + "まったく" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 一体いつの間に覚えたんだ？ まったく信じられん！
   - 論理だと？ まったく、こんな時に論理だと？
-
-### "？" + "みんな" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何が？ みんなが 来たことがか？
-  - 何だって？ みんなのかい？ ドイツ人の心も？
 
 ### "？" + "もしもし" (2 occurrences)
 - Predicted: None
@@ -14163,19 +12445,19 @@ Accuracy: 98.66%
   - あした行っちゃうの？ もっといればいいのに.
   - それとも何？ もっといい方法が？
 
+### "？" + "よく" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どうです？ よくなりましたか？
+  - 鼻の下ですか？ よくも そんなことができるね？
+
 ### "？" + "アイルランド" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ユダヤ？ アイルランド系？ イタリアか？
   - 出身はどこ？ アイルランド系？
-
-### "？" + "アメリカ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい！ 後ろ どうだ？ アメリカ野郎は来てるか？
-  - ご両親が？ アメリカから？
 
 ### "？" + "イタリア" (2 occurrences)
 - Predicted: None
@@ -14233,6 +12515,13 @@ Accuracy: 98.66%
   - いた？ ダメだ こっちも？
   - どうした？ ダメなのか？
 
+### "？" + "チャウ" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だれを？ チャウ･モウワン？
+  - ピン 戻ったの？ チャウさんに？
+
 ### "？" + "トトロ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14247,26 +12536,12 @@ Accuracy: 98.66%
   - どういう意味だ？ ハウザーは何を使っているんだ？
   - ゲオルク？ ハウザーのこと聞いた？
 
-### "？" + "ハハハハ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まだ お迎えが来ねえのか？ ハハハハ…！
-  - ん？ ハハハハ！
-
 ### "？" + "バカ" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何？ バカじゃねーの？
   - 外すのか？ バカな！
-
-### "？" + "フィオ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ 設計は誰がやるんだよ？ フィオがやるよ。
-  - どうしたんだ？ 具合でも悪いのか？ フィオ…？
 
 ### "？" + "ベーッ" (2 occurrences)
 - Predicted: None
@@ -14373,13 +12648,6 @@ Accuracy: 98.66%
   - どう思う？ 少し息抜きさせたら？
   - なぜその酸っぱい顔？ 少し笑ってくれませんか？
 
-### "？" + "彼女" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何があったんだ？ 彼女の名前は？
-  - 何のために？ 彼女が戻って くるのを 待つのか？
-
 ### "？" + "急げ" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14415,26 +12683,12 @@ Accuracy: 98.66%
   - どうするつもり？ 探したの？
   - どこにいたんだ？ 探したぞ！
 
-### "？" + "攻撃" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ なに？ 攻撃？
-  - 追っ手かしら？ 攻撃にしちゃ様子が違う。
-
 ### "？" + "教えて" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じゃあ何？ 教えて！
   - 何を考えているんだい？ 教えてください。
-
-### "？" + "教えろ" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どんな呪文だ？ 教えろ その言葉を。
-  - 誰が作った？ 教えろ！
 
 ### "？" + "普通" (2 occurrences)
 - Predicted: None
@@ -14457,13 +12711,6 @@ Accuracy: 98.66%
   - 大丈夫？ 気分が悪いの？
   - 天気が荒れてるから？ 気分が高揚してるから？
 
-### "？" + "無理" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 今日は やめといたら？ 無理だよ。
-  - もっとスピード出ない？ 無理です エンジンが燃えちまう。
-
 ### "？" + "猫" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14471,19 +12718,19 @@ Accuracy: 98.66%
   - なぜ？ 猫に舌を抜かれた？
   - （千果） えっ？ 猫を探して九州から？
 
-### "？" + "町" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 肉を食うゾンビ？ 町にゾンビが？
-  - 軍艦？ 町や人を焼きに行くのさ。
-
 ### "？" + "病院" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - どちらに？ 病院ですか？
   - タイムスリップ？ 病院を脱走とか？
+
+### "？" + "知ってる" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - リング・トリックは？ 知ってる？
+  - 何者なんだ？ 知ってる奴か？
 
 ### "？" + "腹" (2 occurrences)
 - Predicted: None
@@ -14512,13 +12759,6 @@ Accuracy: 98.66%
 - Examples:
   - あれ、子供のころに仲良かった人？ 車の人？
   - 何なんだ？ 車で誰か ひいたか？
-
-### "？" + "金" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だからなんだ？ 金さえ貰えばいいだろ。
-  - トレイと知り合いか？ 金を借りてるのか？
 
 ### "？" + "鈴芽" (2 occurrences)
 - Predicted: None
@@ -14629,12 +12869,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - アシタカ, ここに留まり力をつくさぬか.
-
-### "," + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに, この怪我人は早くしないと手おくれになるぞ.
 
 ### "," + "こめ" (1 occurrences)
 - Predicted: None
@@ -14774,6 +13008,12 @@ Accuracy: 98.66%
 - Examples:
   - は, よほど追い詰められたと見えます.
 
+### "," + "わ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だが, わが一族の血もまた衰えた.
+
 ### "," + "われら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14888,6 +13128,12 @@ Accuracy: 98.66%
 - Examples:
   - じいさん, 口から飯が出てるよ.
 
+### "," + "呪う" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 愚かないのししめ, 呪うなら私を呪えばいい.
+
 ### "," + "困った" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -14971,12 +13217,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そんなに力むとつづかないよ, 旅人さん.
-
-### "," + "森" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - われらは人間を殺し, 森守るために來た.
 
 ### "," + "死" (1 occurrences)
 - Predicted: None
@@ -15229,12 +13469,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 離せ！ - ショーン、そこにいるのは俺の娘か！？
-
-### "-" + "シヴァ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わかりました！ おお！導師様。 - シヴァ万歳！
 
 ### "-" + "セレステ・ボイル" (1 occurrences)
 - Predicted: None
@@ -15500,6 +13734,12 @@ Accuracy: 98.66%
 - Examples:
   - “アルマシー伯爵” この名に覚えはないか？
 
+### "”" + "すごい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - “ズドーン！” すごい！
+
 ### "”" + "そう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -15572,6 +13812,12 @@ Accuracy: 98.66%
 - Examples:
   - “タンケ地区 警察分署” 計画だと?
 
+### "”" + "誰" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だけど“ラズル ダズル” 誰にもバレやしない！
+
 ### "…" + "“" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -15583,6 +13829,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - や… 「やーしょー」？
+
+### "…" + "あ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えーと、これは… あ、えー、キダ？
 
 ### "…" + "あうあうあう" (1 occurrences)
 - Predicted: None
@@ -15596,11 +13848,23 @@ Accuracy: 98.66%
 - Examples:
   - あ… あった！
 
-### "…" + "ありがとさん" (1 occurrences)
+### "…" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 払って… ありがとさん。
+  - 待って！ 行く前に名前を… あなたの名前は？
+
+### "…" + "あら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - じゃあね… あら トシちゃん。
+
+### "…" + "ありがとう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そう… ありがとう。
 
 ### "…" + "ある" (1 occurrences)
 - Predicted: None
@@ -15620,17 +13884,17 @@ Accuracy: 98.66%
 - Examples:
   - ふふふ… いいかげん子離れしてほしいよ！
 
+### "…" + "いえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 私に… いえ ご用？
+
 ### "…" + "いつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あれは… いつだっけ？
-
-### "…" + "いつも" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ずるい人… いつも そうするのね。
 
 ### "…" + "いま" (1 occurrences)
 - Predicted: None
@@ -15686,12 +13950,6 @@ Accuracy: 98.66%
 - Examples:
   - （ナウシカ）ヨーイ… うて！
 
-### "…" + "うまい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまい… うまい うまい…。
-
 ### "…" + "うわああ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -15728,6 +13986,12 @@ Accuracy: 98.66%
 - Examples:
   - ハッ… えッ？
 
+### "…" + "おい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お… おい！
+
 ### "…" + "おうち" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -15739,18 +14003,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おっ… おおっ… やめなさい！
-
-### "…" + "おかわり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの… おかわりあるから。
-
-### "…" + "おっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 殿下… おっ 殿下だ！
 
 ### "…" + "おっと" (1 occurrences)
 - Predicted: None
@@ -15776,23 +14028,17 @@ Accuracy: 98.66%
 - Examples:
   - どんなって… お前ら医者だろうが？
 
-### "…" + "お墓" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ… お墓に供える花を つんで来てくれたの？
-
 ### "…" + "お姉ちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - うわ～ん… お姉ちゃんのバカ～！
 
-### "…" + "お店" (1 occurrences)
+### "…" + "かけって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの… お店は おしまいなんです。
+  - まさか… かけって あのやろうのことなのか？
 
 ### "…" + "かな" (1 occurrences)
 - Predicted: None
@@ -15836,11 +14082,11 @@ Accuracy: 98.66%
 - Examples:
   - ううっ… ぐっ！
 
-### "…" + "こういう" (1 occurrences)
+### "…" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 静かすぎる… こういう時は動かないほうがいい。
+  - え… ここがきれい？
 
 ### "…" + "こら" (1 occurrences)
 - Predicted: None
@@ -15853,18 +14099,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - うん… こりゃ ススワタリが出たな。
-
-### "…" + "こりゃあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがなぁ… こりゃあ 高くつくぜ。
-
-### "…" + "ご" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いえ あの… ご心配なく。
 
 ### "…" + "ごめん" (1 occurrences)
 - Predicted: None
@@ -15889,18 +14123,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さっき… さっき どこあったっけ？
-
-### "…" + "さっさと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハ… さっさと逃げればいいものを。
-
-### "…" + "しっかり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ナメやがって… しっかりついて来い ブタ野郎！
 
 ### "…" + "しとらん" (1 occurrences)
 - Predicted: None
@@ -15944,23 +14166,23 @@ Accuracy: 98.66%
 - Examples:
   - あ… そ？
 
-### "…" + "そりゃあ" (1 occurrences)
+### "…" + "そう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - フフフ… そりゃあ よかったわね。
+  - そ… そうなの？
+
+### "…" + "その" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あー… その猫って 鈴芽ちゃんのすか？
 
 ### "…" + "そんげ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なして… そんげ実家に行きたいと？
-
-### "…" + "そ～れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （機関士） ハハハ… そ～れ つっ走れ！
 
 ### "…" + "だ" (1 occurrences)
 - Predicted: None
@@ -15974,11 +14196,11 @@ Accuracy: 98.66%
 - Examples:
   - トンボ… だいじょうぶ？
 
-### "…" + "ちぇっ" (1 occurrences)
+### "…" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うっ… ちぇっ！ ちぇっ！
+  - （鈴芽） え… ちょっと草太さんっ？
 
 ### "…" + "っぽくない" (1 occurrences)
 - Predicted: None
@@ -16022,29 +14244,23 @@ Accuracy: 98.66%
 - Examples:
   - （姉）よーい… どんっ！
 
-### "…" + "な" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - な… なんだ あれは？
-
 ### "…" + "なくなってる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - でも… なくなってるページだ。
 
-### "…" + "なぜ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここ… なぜ？
-
 ### "…" + "なたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （硝子）ごめん… なたい！
+
+### "…" + "なの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ととさま… なの？
 
 ### "…" + "なら" (1 occurrences)
 - Predicted: None
@@ -16070,12 +14286,6 @@ Accuracy: 98.66%
 - Examples:
   - （はるか） 死んでる… なんで？
 
-### "…" + "なんと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - な… なんと…。
-
 ### "…" + "に" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16100,6 +14310,12 @@ Accuracy: 98.66%
 - Examples:
   - えっ… ひゃあ！
 
+### "…" + "へぇ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いたいた… へぇ すごいね 秘密基地みたいだな。
+
 ### "…" + "ほら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16112,17 +14328,17 @@ Accuracy: 98.66%
 - Examples:
   - えっ… ほんとに!
 
-### "…" + "まさか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの言葉って… 亡びの… まさか！
-
 ### "…" + "ました" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （小声） 喋って… ましたよね やっぱ！
+
+### "…" + "まだ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （三葉）今夜… まだ間に合う！
 
 ### "…" + "まるで" (1 occurrences)
 - Predicted: None
@@ -16142,18 +14358,6 @@ Accuracy: 98.66%
 - Examples:
   - はあっ… もぉおー！
 
-### "…" + "やけに" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ… やけに静かでな 空が本当に きれいなんだ。
-
-### "…" + "やっぱり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヘヘ… やっぱり このせいじゃなかったみたいだ。
-
 ### "…" + "やめなさい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16171,6 +14375,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ゆる… ゆるんでるな…。
+
+### "…" + "よかった" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ アハハ… よかった。
 
 ### "…" + "んん" (1 occurrences)
 - Predicted: None
@@ -16250,12 +14460,6 @@ Accuracy: 98.66%
 - Examples:
   - これを見ろよ… シナモン、オレガノ、シラントロ。
 
-### "…" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まさか… シータ 約束したじゃないか！
-
 ### "…" + "スマホ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16280,41 +14484,11 @@ Accuracy: 98.66%
 - Examples:
   - あ… デート！
 
-### "…" + "ト" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ト… ト… ロ～！
-
-### "…" + "トエル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - リュシータ… トエル・ウル・ラピュタ。
-
 ### "…" + "トビー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - トビー… トビーって誰だ？
-
-### "…" + "トホホホ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わしのかわいいボロ船が… トホホホ…。
-
-### "…" + "ハッ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ん… ハッ！
-
-### "…" + "ハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺がスパイか… ハハハ…。
 
 ### "…" + "ハム" (1 occurrences)
 - Predicted: None
@@ -16334,12 +14508,6 @@ Accuracy: 98.66%
 - Examples:
   - どうしてママは… パパの親友と再婚なんて！
 
-### "…" + "ヒィ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハッ！ あぁ… ヒィ～！
-
 ### "…" + "ヒック" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16352,35 +14520,11 @@ Accuracy: 98.66%
 - Examples:
   - ヒョンソ… ヒョンソか？
 
-### "…" + "ヒン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 歩くよ… ヒン 歩くから。
-
 ### "…" + "フィーニャ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フィーニャ… フィーニャ！ 犬を放せ！
-
-### "…" + "フェラーリン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ｆ… フェラーリンだわ！
-
-### "…" + "フフフ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まあ… フフフ。
-
-### "…" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううう… ブタ野郎が…！
 
 ### "…" + "ブリッジ" (1 occurrences)
 - Predicted: None
@@ -16405,12 +14549,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あんた… ベイカーの手下か？
-
-### "…" + "ボク" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボ… ボク!
 
 ### "…" + "ポ" (1 occurrences)
 - Predicted: None
@@ -16442,18 +14580,6 @@ Accuracy: 98.66%
 - Examples:
   - これは… マズイ！
 
-### "…" + "ママ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヤツらだ… ママ どうしよう？
-
-### "…" + "ミスター" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう あなたも… ミスター カーチス。
-
 ### "…" + "ミス･ケリー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16472,6 +14598,12 @@ Accuracy: 98.66%
 - Examples:
   - もしかして… ミミズ？
 
+### "…" + "メイ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - メイ… メイ。
+
 ### "…" + "メール" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16484,35 +14616,11 @@ Accuracy: 98.66%
 - Examples:
   - これこれ… ヨッ！ オ～ オット～。
 
-### "…" + "ロボット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ロボットが… ロボットが 生きています！ もしもし！
-
-### "…" + "ロ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ト… ト… ロ～！
-
 ### "…" + "三奥" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 三奥様が歌っている… 三奥様の歌声ですよ！
-
-### "…" + "世界" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きれい… 世界って本当に きれい。
-
-### "…" + "亡び" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの言葉って… 亡びの… まさか！
 
 ### "…" + "人権" (1 occurrences)
 - Predicted: None
@@ -16526,17 +14634,17 @@ Accuracy: 98.66%
 - Examples:
   - （のぶよ）ん… 今頃 せいせいしんてんじゃないの？
 
-### "…" + "仲直り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね… 仲直りできて よかった。
-
 ### "…" + "元気そう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あ、そう、んー… 元気そうだね。
+
+### "…" + "入れない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ… 入れない!
 
 ### "…" + "冗談" (1 occurrences)
 - Predicted: None
@@ -16562,12 +14670,6 @@ Accuracy: 98.66%
 - Examples:
   - 金田… 助けて！
 
-### "…" + "動いた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う… 動いた！
-
 ### "…" + "単頭筋" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16580,23 +14682,11 @@ Accuracy: 98.66%
 - Examples:
   - ああ… 取れた！
 
-### "…" + "取引" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かったわ… 取引ね…。
-
 ### "…" + "名前" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - その完璧な女… 名前はあるのか？
-
-### "…" + "呪い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何よ… 呪いの解き方でも 思い出したの？
 
 ### "…" + "地下施設" (1 occurrences)
 - Predicted: None
@@ -16610,17 +14700,11 @@ Accuracy: 98.66%
 - Examples:
   - マイロ、モールが言ってる… 壁が爆発しそうだって！
 
-### "…" + "大急ぎ" (1 occurrences)
+### "…" + "壊れた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとう… 大急ぎで作ったの ほら！
-
-### "…" + "好き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かった そんな目で ひとを見るな… 好きにやれよ。
+  - 崩れかけた建物だった… 壊れた焼き物のね。
 
 ### "…" + "妄想" (1 occurrences)
 - Predicted: None
@@ -16652,12 +14736,6 @@ Accuracy: 98.66%
 - Examples:
   - あっ！ あれ… 底ぬけだ！
 
-### "…" + "彼" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マジな話… 彼の言うとおりした方がいいよ。
-
 ### "…" + "彼女" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16670,17 +14748,11 @@ Accuracy: 98.66%
 - Examples:
   - え？ 何それ千果… 彼氏？
 
-### "…" + "待ちなさい" (1 occurrences)
+### "…" + "後釜" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた… ちょっと… 待ちなさいよ。
-
-### "…" + "急いで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 早く これを！ ムスカが… 急いで！
+  - 課長がもし… 後釜は?
 
 ### "…" + "恥ずかしくない" (1 occurrences)
 - Predicted: None
@@ -16693,12 +14765,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おい これは… 悪い冗談か？
-
-### "…" + "懐かしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カーチスか… 懐かしいなぁ。
 
 ### "…" + "戦争" (1 occurrences)
 - Predicted: None
@@ -16717,12 +14783,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さあ行こう… 時間がもったいない。
-
-### "…" + "暗号" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒヒヒ… 暗号を変えたってムダだよ。
 
 ### "…" + "最悪" (1 occurrences)
 - Predicted: None
@@ -16747,12 +14807,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ハハ… 楽しそうだ君たち いくつなの？
-
-### "…" + "次" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 着替えも買っといたから 後で見て… 次だ！
 
 ### "…" + "正式" (1 occurrences)
 - Predicted: None
@@ -16796,29 +14850,11 @@ Accuracy: 98.66%
 - Examples:
   - ん？ あんたちょっと… 泣いとん？
 
-### "…" + "消えて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ… 消えてく…。
-
-### "…" + "港" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ… 港で手下を見かけたわ。
-
 ### "…" + "牡丹" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （治）あの でっかいの あれ あれは何… 牡丹？
-
-### "…" + "生き物" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 臭い… 生き物と鉄の焼けるにおいだ。
 
 ### "…" + "番傘" (1 occurrences)
 - Predicted: None
@@ -16838,23 +14874,11 @@ Accuracy: 98.66%
 - Examples:
   - （キキ）あの… 直ります？
 
-### "…" + "知らない" (1 occurrences)
+### "…" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - だから… それは… 知らないの。
-
-### "…" + "石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ホッホッホッ… 石達の声は小さいのでな。
-
-### "…" + "確かに" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フッフフ… 確かに。
+  - 財宝が… 私の財宝が燃えてしまう！
 
 ### "…" + "竜" (1 occurrences)
 - Predicted: None
@@ -16867,12 +14891,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （金田）アハッ き… 聞こえてた？
-
-### "…" + "腹" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… 腹を立てたら 元気が出たみたいね。
 
 ### "…" + "自動" (1 occurrences)
 - Predicted: None
@@ -16904,24 +14922,6 @@ Accuracy: 98.66%
 - Examples:
   - 父を… あの… 草壁をお願いします。
 
-### "…" + "落ちる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ ヤバい！ お… 落ちる…。
-
-### "…" + "落ち着かなきゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 落ち着かなきゃ… 落ち着かなきゃ…。
-
-### "…" + "血" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… 血が騒ぐなぁ！
-
 ### "…" + "行かなきゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -16934,11 +14934,11 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽）どこっ… 行くのよっ！
 
-### "…" + "行って" (1 occurrences)
+### "…" + "街" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - すまねえ… 行ってくれ。
+  - ミミズが… 街を覆っていく！
 
 ### "…" + "西宮" (1 occurrences)
 - Predicted: None
@@ -16951,12 +14951,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （鈴芽）あそこ… 見て！
-
-### "…" + "見ろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ… 見ろ！ 人がゴミのようだ！
 
 ### "…" + "触って" (1 occurrences)
 - Predicted: None
@@ -16999,12 +14993,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そう…、ぼくは… 資金を調達するんだ。
-
-### "…" + "賭け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まさか… 賭けって あの野郎のことなのか!
 
 ### "…" + "赤" (1 occurrences)
 - Predicted: None
@@ -17072,18 +15060,6 @@ Accuracy: 98.66%
 - Examples:
   - コラ コラ… 雨戸が開けられないじゃないか。
 
-### "…" + "頑固" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ… 頑固な枝ねぇ。
-
-### "…" + "風呂" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まぁね… 風呂にお湯を送ってくれ。
-
 ### "…" + "馬" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -17096,17 +15072,17 @@ Accuracy: 98.66%
 - Examples:
   - これよ！…… これは何！
 
-### "≫" + "えっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ≫ えっ!
-
 ### "≫" + "ん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （トキ） ≪宗介～！≫ ん!
+
+### "▤" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ▤ ?
 
 ### "、" + "”" (1 occurrences)
 - Predicted: None
@@ -17191,6 +15167,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 両手を上げて、 こっちに来い！
+
+### "、" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ほら クー、 これは 語り部のシャーナキー。
 
 ### "、" + "さぞかし" (1 occurrences)
 - Predicted: None
@@ -17395,6 +15377,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それにパッカード、 タバコはやめて。
+
+### "、" + "チャンド" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 出た もしもし、 チャンド兄さん 大丈夫？
 
 ### "、" + "トレンブレー" (1 occurrences)
 - Predicted: None
@@ -17612,6 +15600,12 @@ Accuracy: 98.66%
 - Examples:
   - 彼女について何か違ったこと、 変わったことは？
 
+### "、" + "外務省" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この件は、 外務省を通じて正式に抗議するからな！
+
 ### "、" + "夜明け" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -17756,6 +15750,12 @@ Accuracy: 98.66%
 - Examples:
   - 医者は、 時期は 人それぞれだと。
 
+### "、" + "本当" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 戻ってきたら悲しい、 本当だ。
+
 ### "、" + "本当に" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -17791,6 +15791,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さて、失礼しますが、 横になる必要があります。
+
+### "、" + "汚い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よせよ、 汚いなぁ！
 
 ### "、" + "波" (1 occurrences)
 - Predicted: None
@@ -18104,23 +16110,23 @@ Accuracy: 98.66%
 - Examples:
   - 分からない。 …聞えなかった。
 
+### "。" + "「" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 僕は 言ったはずだぞ。 「海に入るな」と。
+
 ### "。" + "『" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 『ひまわり』へ行ったの。 『ひまわり』に？
 
-### "。" + "あ" (1 occurrences)
+### "。" + "ああ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 行くわよ。 あ～ 待って！
-
-### "。" + "ああっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ…。 ああっ…。
+  - お母さん 元気そうだったね。 ああ そうだね。
 
 ### "。" + "あっち" (1 occurrences)
 - Predicted: None
@@ -18140,11 +16146,11 @@ Accuracy: 98.66%
 - Examples:
   - それは不可能だと思う。 あり得ないと思う。
 
-### "。" + "ありがてぇ" (1 occurrences)
+### "。" + "ありがとう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 交代だよ。 ありがてぇ。
+  - 気をつけて。 ありがとうね。
 
 ### "。" + "ありがとうございました" (1 occurrences)
 - Predicted: None
@@ -18176,71 +16182,23 @@ Accuracy: 98.66%
 - Examples:
   - こんにちは。 いらっしゃい。
 
-### "。" + "う" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カッコいいですね～。 う～む。
-
-### "。" + "ううん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕がやる。 ううん やらして。
-
-### "。" + "う～ん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ ハァ…。 う～ん う～ん よいしょ…。
-
-### "。" + "ええ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行くよ。 ええ。
-
-### "。" + "おう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔法使いハウルの母君です。 おう。
-
 ### "。" + "おかえり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ただいま。 おかえり。
 
-### "。" + "おそれいります" (1 occurrences)
+### "。" + "おはよう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よい知らせを待て。 おそれいります。
-
-### "。" + "おだまり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほっ 泣かせる～。 おだまり！
-
-### "。" + "おばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルちゃん キレイだねぇ。 おばあちゃん ここ。
+  - おはよう。 おはよう 早く行こう。
 
 ### "。" + "おまえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ママは僕にくれたんだ。 おまえじゃない！
-
-### "。" + "おやすみ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー おやすみ。 おやすみ。
 
 ### "。" + "お先" (1 occurrences)
 - Predicted: None
@@ -18278,6 +16236,12 @@ Accuracy: 98.66%
 - Examples:
   - お邪魔してすみません。 お邪魔しました。
 
+### "。" + "かわいい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あら きれい。 かわいいねぇ。
+
 ### "。" + "かわいそう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18302,12 +16266,6 @@ Accuracy: 98.66%
 - Examples:
   - 座標と道順。 ここにあるんだ。
 
-### "。" + "こっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺も そっちが欲しいな。 こっち向いて！
-
 ### "。" + "こんにちは" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18319,12 +16277,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - バカ メイ。 ごめんなさい！
-
-### "。" + "ご苦労さま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ レティー。 ご苦労さま。
 
 ### "。" + "さて" (1 occurrences)
 - Predicted: None
@@ -18344,12 +16296,6 @@ Accuracy: 98.66%
 - Examples:
   - 泣き虫はやめるんだな。 じっとしてな。
 
-### "。" + "すまねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （おかみ） 出来たよ。 すまねえ。
-
 ### "。" + "そして" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18368,35 +16314,17 @@ Accuracy: 98.66%
 - Examples:
   - 私は理解している。 その理由は理解している。
 
-### "。" + "ただ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒビひとつ入ってないぞ。 ただの石じゃないな。
-
-### "。" + "たまんねぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ うめぇな ホントによ。 たまんねぇな。
-
-### "。" + "つながりました" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ。 つながりました！
-
 ### "。" + "つまんない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - メイ みんな逃げちゃうってさ。 つまんない。
 
-### "。" + "てこずらせた" (1 occurrences)
+### "。" + "で" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 収容しました。 てこずらせたな。
+  - 歌の事も。 でも 妹は消えちゃった。
 
 ### "。" + "と" (1 occurrences)
 - Predicted: None
@@ -18428,29 +16356,11 @@ Accuracy: 98.66%
 - Examples:
   - ニンジンだ。 どうしていつもニンジンなんだ？
 
-### "。" + "どこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 頑固な子だこと。 どこ行くの？
-
-### "。" + "ねっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん 確かに いいアイデアだ。 ねっ！ だから お願い！
-
 ### "。" + "は" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼は私に言った。 は揺らいだ。
-
-### "。" + "はぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このまま進め。 はぁ？
 
 ### "。" + "はじめまして" (1 occurrences)
 - Predicted: None
@@ -18458,23 +16368,11 @@ Accuracy: 98.66%
 - Examples:
   - プレストン・ウィットモアだ。 はじめまして、マイロ。
 
-### "。" + "ほら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うん。 ほら。
-
 ### "。" + "ぼく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そう、そう。そうだよ。 ぼくのアクセントはどう？
-
-### "。" + "まぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほら。 まぁ！
 
 ### "。" + "まあ" (1 occurrences)
 - Predicted: None
@@ -18482,17 +16380,23 @@ Accuracy: 98.66%
 - Examples:
   - ちがうよ、スィートだよ。 まあ、優しいとも言えるね。
 
-### "。" + "まいど" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - またな。 まいど！
-
 ### "。" + "まず" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - よせよ、 スプード。 まずは ムードを高めよう。
+
+### "。" + "また" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - バイバ～イ。 またね。
+
+### "。" + "みんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - シアーシャが助けるよ。 みんなの事も。
 
 ### "。" + "もっと" (1 occurrences)
 - Predicted: None
@@ -18506,35 +16410,11 @@ Accuracy: 98.66%
 - Examples:
   - ああ、ネッサ。 やっと。
 
-### "。" + "やり直す" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっちは昔の穴だらけだ。 やり直すしか ねえですね。
-
-### "。" + "よろしく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 次は姪のモニカ 製図をやる。 よろしく。
-
-### "。" + "よ～し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 愛する者のためだ 喜んで戦うぜ。 よ～し！
-
 ### "。" + "わかります" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私はここにいなかった。 わかりますか？
-
-### "。" + "ん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 似てねえな。 ん？
 
 ### "。" + "アザラシ" (1 occurrences)
 - Predicted: None
@@ -18560,12 +16440,6 @@ Accuracy: 98.66%
 - Examples:
   - 彼はとても愛着を持っていた。 アンゴラからの贈り物。
 
-### "。" + "イヤ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前はジーナの艇に乗るんだ。 イヤよ！
-
 ### "。" + "イラクサ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18578,35 +16452,11 @@ Accuracy: 98.66%
 - Examples:
   - メイ。 ウソじゃないもん。
 
-### "。" + "ウフっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ニヒっ。 ウフっ。
-
-### "。" + "ウム" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしたの？ じいさん。 ウム…。
-
 ### "。" + "オイオイ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - させてあげるつもりよ。 オイオイ…。
-
-### "。" + "カッコつけやがって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - イヤな面だぜ。 カッコつけやがって。
-
-### "。" + "キャ～～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～～っ…。 キャ～～…。
 
 ### "。" + "クー" (1 occurrences)
 - Predicted: None
@@ -18656,12 +16506,6 @@ Accuracy: 98.66%
 - Examples:
   - 辿って行け。 トンネルを 抜けられるだろう。
 
-### "。" + "ドーラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 海賊か。 ドーラ一家だ。
-
 ### "。" + "ハックシュン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18673,12 +16517,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - メイ 怖くないもん。 ハッハッハッハッ！
-
-### "。" + "ハハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハハ…。 ハハハハ…。
 
 ### "。" + "ハーコート事務所" (1 occurrences)
 - Predicted: None
@@ -18692,23 +16530,11 @@ Accuracy: 98.66%
 - Examples:
   - またね～。 バイバイ。
 
-### "。" + "バカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… ハハハハ…。 バカ野郎 笑ってる時か！
-
 ### "。" + "バス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何する気だよ。 バスは走ってるんだぞ！
-
-### "。" + "パズー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前は こっち。 パズー！
 
 ### "。" + "ビン" (1 occurrences)
 - Predicted: None
@@ -18716,23 +16542,17 @@ Accuracy: 98.66%
 - Examples:
   - ここを進め。 ビンに用心しろよ。
 
-### "。" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シッ！ 大きな声出しちゃダメよ。 フィオ あのな…！
-
 ### "。" + "フクロウ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 急げ、 人の子よ。 フクロウが 戻ってくる前に。
 
-### "。" + "ヘヘヘヘ" (1 occurrences)
+### "。" + "フ～ン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ヘヘヘ…。 ヘヘヘヘ…。
+  - 黒いのが い～っぱい いたの。 フ～ン。
 
 ### "。" + "マハ" (1 occurrences)
 - Predicted: None
@@ -18746,12 +16566,6 @@ Accuracy: 98.66%
 - Examples:
   - シアーシャ。 ママから聞いたお話さ。
 
-### "。" + "マンマユート" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マンマユート団が出たんだ。 マンマユート？
-
 ### "。" + "リサ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -18763,12 +16577,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お父さん ここに何かいるよ。 リスかい？
-
-### "。" + "レティー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （レティー） ありがとう。 レティーっていうチョコは？
 
 ### "。" + "ヴェネツィア" (1 occurrences)
 - Predicted: None
@@ -18818,11 +16626,11 @@ Accuracy: 98.66%
 - Examples:
   - そして何かが斜めです。 何か斜めのものが必要です。
 
-### "。" + "俺" (1 occurrences)
+### "。" + "作り話" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 契約切れてたんだよな。 俺は恥ずかしい…。
+  - 本当に居たんだ。 作り話かと思ってた。
 
 ### "。" + "偉大" (1 occurrences)
 - Predicted: None
@@ -18853,12 +16661,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そのガキを俺によこせ。 出てこい！
-
-### "。" + "分かってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 二度と ここへは帰れなくなるよ。 分かってる。
 
 ### "。" + "前進" (1 occurrences)
 - Predicted: None
@@ -18998,6 +16800,12 @@ Accuracy: 98.66%
 - Examples:
   - ゆっくりしてください。 急いで、ダーリン。
 
+### "。" + "急ぐ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 彼女の言ったの聞えたろ。 急ぐんだ！
+
 ### "。" + "恨み" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19034,12 +16842,6 @@ Accuracy: 98.66%
 - Examples:
   - いいわ。 最初の質問は何なの？
 
-### "。" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 素敵じゃない。 本当？ じゃ 決まりだな。
-
 ### "。" + "本当に" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19051,12 +16853,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 良いタオルは使わないでね。 来客用だから。
-
-### "。" + "格安" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちっと高いぜ この請求書。 格安よ。
 
 ### "。" + "橋" (1 occurrences)
 - Predicted: None
@@ -19076,23 +16872,17 @@ Accuracy: 98.66%
 - Examples:
   - デーヴァセーナに向かっている。 止めるぞ。
 
-### "。" + "死んじゃった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 派手ねぇ。 死んじゃったかな。
-
 ### "。" + "殺せ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 罠だ。 殺せ！
 
-### "。" + "気ぃ" (1 occurrences)
+### "。" + "気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじいさん ありがとう。 気ぃつけてなぁ。
+  - そんなこと忘れてよ。 気にしないで！
 
 ### "。" + "水" (1 occurrences)
 - Predicted: None
@@ -19111,12 +16901,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 下がって。 海に 落ちちゃうよ。
-
-### "。" + "海賊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ドーラ一家だよ。 海賊かよ おい！
 
 ### "。" + "激しすぎる" (1 occurrences)
 - Predicted: None
@@ -19142,17 +16926,17 @@ Accuracy: 98.66%
 - Examples:
   - 上には 何もないよ。 無駄なことさ。
 
-### "。" + "燃えて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奥さん 後にして。 燃えているらしいの。
-
 ### "。" + "用心" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フクロウの魔女だ。 用心を！
+
+### "。" + "目的" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それも直ぐ捕まる様なやり方でな。 目的はなんだ？
 
 ### "。" + "真っ黒" (1 occurrences)
 - Predicted: None
@@ -19190,23 +16974,11 @@ Accuracy: 98.66%
 - Examples:
   - 私たちは平和的な冒険家です。 科学者の一行です。
 
-### "。" + "空襲" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何かしら…。 空襲警報だね。
-
 ### "。" + "立ち去りなさい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたはこの名誉にふさわしくない。 立ち去りなさい。。
-
-### "。" + "立て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 気を失ってるだけだ。 立て！
 
 ### "。" + "簡単" (1 occurrences)
 - Predicted: None
@@ -19267,12 +17039,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 濡れるなよ。 苦労して 中に 入ったんだからな。
-
-### "。" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 同業者に襲われたよ。 荒地の魔女か？
 
 ### "。" + "落ち着く" (1 occurrences)
 - Predicted: None
@@ -19346,6 +17112,12 @@ Accuracy: 98.66%
 - Examples:
   - 私の息子も 誰かを失った。 遠い遠い 昔の事さ。
 
+### "。" + "邪魔" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 彼女にまかせて。 邪魔はよそうや。
+
 ### "。" + "釣り" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19357,24 +17129,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 間抜けなシアーシャ。 間抜けなお誕生日。
-
-### "。" + "関根麻里" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハリー杉山です。 関根麻里です。
-
-### "。" + "雲" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いないわ。 雲の中へ もぐってるんだ。
-
-### "。" + "風呂" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お写真をご一緒に…。 風呂に入って来ました！
 
 ### "。" + "魔法" (1 occurrences)
 - Predicted: None
@@ -19394,6 +17148,12 @@ Accuracy: 98.66%
 - Examples:
   - 昔から「長男は母に似る」 「長女は父に似る」ってな。
 
+### "」" + "って" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 「リバイアサンの巣に入る」 ってことだな。
+
 ### "」" + "もの" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19406,23 +17166,11 @@ Accuracy: 98.66%
 - Examples:
   - 「ご・め・ん」 リサ 「ごめん」って言ってるよ。
 
-### "』" + "この" (1 occurrences)
+### "』" + "…" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 『紅の豚』 この後 みんなも 入り込んで楽しんで！
-
-### "』" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 『ハウルの動く城』 みんな 入り込んで！
-
-### "』" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～ 『ゴリアテ』 何をしてる！
+  - トエルは『真』 …?
 
 ### "〝" + "同志" (1 occurrences)
 - Predicted: None
@@ -19454,6 +17202,12 @@ Accuracy: 98.66%
 - Examples:
   - 〝腹ぼてワンコ〟 結果は－か？ ＋か？
 
+### "ぁ" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おれねえ えっと ええとねーぇ ぁ 何でも食う！！
+
 ### "あ" + "あぶねえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19484,12 +17238,6 @@ Accuracy: 98.66%
 - Examples:
   - あ ここ！ ここが気になって！
 
-### "あ" + "そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ そう?
-
 ### "あ" + "ちょいと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19508,11 +17256,11 @@ Accuracy: 98.66%
 - Examples:
   - （将也）あ わわ… 割引券 使います （植野）マジで？
 
-### "あ" + "取り乱しちゃって" (1 occurrences)
+### "あ" + "パズー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あ～あ 取り乱しちゃって まぁ…。
+  - あ パズー！
 
 ### "あ" + "奥寺" (1 occurrences)
 - Predicted: None
@@ -19531,12 +17279,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （通行人Ｄ）あらあら！ -（通行人Ｅ）あ 猫！
-
-### "あ" + "痛っ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 届くものか あ 痛っ！ アハハハハ…！
 
 ### "あ" + "私" (1 occurrences)
 - Predicted: None
@@ -19574,23 +17316,17 @@ Accuracy: 98.66%
 - Examples:
   - あぁ あの人に会えるかと思うと 胸が苦しくなって来た！
 
-### "あぁ" + "ありがとう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ ありがとう もう戻らなきゃね。
-
 ### "あぁ" + "おいしかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あぁ おいしかった。
 
-### "あぁ" + "そこ" (1 occurrences)
+### "あぁ" + "ごめん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ そこ引っ張っちゃダメだよ 壊れる！
+  - あぁ ごめんね 赤ちゃんは まだスープを飲めないの。
 
 ### "あぁ" + "クソ" (1 occurrences)
 - Predicted: None
@@ -19598,53 +17334,23 @@ Accuracy: 98.66%
 - Examples:
   - あぁ クソ！
 
-### "あぁ" + "ソフィー" (1 occurrences)
+### "あぁぁ" + "待って" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ ソフィー 私 再婚したの！ えっ！
-
-### "あぁ" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル… あぁ ハウル。
-
-### "あぁ" + "ヤバイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ ヤバイよ やり過ぎだよ。
-
-### "あぁ" + "光" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 真っ白？ あぁ 光の中と言ったほうがいい。
-
-### "あぁ" + "名声" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ 名声と金を運んで来る 幸運のガラガラ蛇さ。
-
-### "あぁ" + "家主" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの方は どなた？ あぁ 家主さんね。
-
-### "あぁ" + "椅子" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ 椅子…。
+  - あぁぁ 待ってくれ！
 
 ### "あぁっ" + "寒い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （治）あぁっ 寒い！
+
+### "ああ" + "「" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ 「斥候」はどう?
 
 ### "ああ" + "あ～" (1 occurrences)
 - Predicted: None
@@ -19682,11 +17388,23 @@ Accuracy: 98.66%
 - Examples:
   - ああ かぐや姫のことで ございますな！
 
+### "ああ" + "くそ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ くそ！
+
 ### "ああ" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ああ ここへ 今 開けます。
+
+### "ああ" + "ごめん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ ごめん！
 
 ### "ああ" + "ごめんなさい" (1 occurrences)
 - Predicted: None
@@ -19820,6 +17538,12 @@ Accuracy: 98.66%
 - Examples:
   - ああ ボック 本当？
 
+### "ああ" + "ママ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ ママ 落ちる！
+
 ### "ああ" + "ルー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19843,6 +17567,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ああ 何て事ねえ！
+
+### "ああ" + "例" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （司）ああ 例の？ いいね 瀧は？
+
+### "ああ" + "兄弟" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ 兄弟！ お前は上手くやったよ！
 
 ### "ああ" + "削り過ぎないで" (1 occurrences)
 - Predicted: None
@@ -19903,6 +17639,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ああ 次に何が起きる？
+
+### "ああ" + "熱い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ 熱い！
+
+### "ああ" + "笑わせて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ 笑わせて貰ったわ！
 
 ### "ああ" + "脳卒中" (1 occurrences)
 - Predicted: None
@@ -19974,7 +17722,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああっ いけねえ！ 止まっちゃった！
+  - ああっ いけねえ！
 
 ### "ああっ" + "う" (1 occurrences)
 - Predicted: None
@@ -20029,12 +17777,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （金田）ああっ 待て！
-
-### "ああっ" + "目" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああっ 目が… 目が～!
 
 ### "ああっ" + "草太" (1 occurrences)
 - Predicted: None
@@ -20144,29 +17886,17 @@ Accuracy: 98.66%
 - Examples:
   - カンタ 本家へ連れてってあげな 電話 貸してもらえ。
 
-### "あげなさい" + "気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 許してあげなさい 気は いい連中です。
-
-### "あげます" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 石が欲しいなら あげます 私達をほっといて…。
-
 ### "あげよう" + "おいで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 乗せてあげよう おいで！
 
-### "あげよう" + "ラピュタ" (1 occurrences)
+### "あげろ" + "追いつかれる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ムスカ） 見せてあげよう ラピュタの雷を。
+  - 蒸気をあげろ 追いつかれるぞ！！
 
 ### "あす" + "バスケット" (1 occurrences)
 - Predicted: None
@@ -20192,6 +17922,12 @@ Accuracy: 98.66%
 - Examples:
   - あれ あたし 形見に ほしいの いい?
 
+### "あたし" + "無関係" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あたし 無関係！
+
 ### "あたしたち" + "二人" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20204,11 +17940,23 @@ Accuracy: 98.66%
 - Examples:
   - （瀬戸豊）あっ あいた！
 
+### "あっ" + "あっ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 津波が来た！ あっ あっ 津波～！
+
 ### "あっ" + "いけない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そ～お？ あっ いけない！
+  - あっ いけない！
+
+### "あっ" + "いや" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （金田） あっ いや… （男）早くしろ！
 
 ### "あっ" + "うわ" (1 occurrences)
 - Predicted: None
@@ -20240,6 +17988,12 @@ Accuracy: 98.66%
 - Examples:
   - （シオリ） あっ おじさん 電話でも息しないでくれる？
 
+### "あっ" + "おりて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ おりてくる！
+
 ### "あっ" + "お母ちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20257,6 +18011,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あっ ずるい！ あ～！
+
+### "あっ" + "そう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今日 田植え休みなの。 あっ そうか。
 
 ### "あっ" + "それ" (1 occurrences)
 - Predicted: None
@@ -20306,12 +18066,6 @@ Accuracy: 98.66%
 - Examples:
   - あっ アスベル マスクをつけて！
 
-### "あっ" + "ウフフ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わっ！ あっ ウフフ…。
-
 ### "あっ" + "オッパイ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20323,12 +18077,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あっ キジだ！
-
-### "あっ" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ シータ！
 
 ### "あっ" + "テッシー" (1 occurrences)
 - Predicted: None
@@ -20342,23 +18090,11 @@ Accuracy: 98.66%
 - Examples:
   - あっ ホーキを！
 
-### "あっ" + "ヤバい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ ヤバい！ お… 落ちる…。
-
 ### "あっ" + "リサ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あっ リサだ！ 宗介もいる！
-
-### "あっ" + "下りて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だか様子が変だぞ。 あっ 下りて来る！
 
 ### "あっ" + "分かる" (1 occurrences)
 - Predicted: None
@@ -20407,12 +18143,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 津波が来た！ あっ あっ 津波～！
-
-### "あっ" + "焼きついた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ 焼きついた！ ハウルさん これ…！
 
 ### "あっ" + "蛍" (1 occurrences)
 - Predicted: None
@@ -20498,6 +18228,12 @@ Accuracy: 98.66%
 - Examples:
   - （早耶香）あっち 何かあるの？
 
+### "あっち" + "行け" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっち 行け！
+
 ### "あっち" + "行って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20528,11 +18264,11 @@ Accuracy: 98.66%
 - Examples:
   - （内麻呂）離せ！ どうあっても この書状を！
 
-### "あと" + "お願い" (1 occurrences)
+### "あつまれ" + "どうぶつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル あと お願いね。 （マルクル） うん。
+  - トムって「あつまれ どうぶつの森」をやるのかな？
 
 ### "あと" + "バッテリー" (1 occurrences)
 - Predicted: None
@@ -20545,12 +18281,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そのあと 何があったの？
-
-### "あとは" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あとは このまま進めていい。
 
 ### "あなた" + "あなた" (1 occurrences)
 - Predicted: None
@@ -20586,7 +18316,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなた どこ行ってたの!
+  - あなた どこ行ってたの！
 
 ### "あなた" + "なにか" (1 occurrences)
 - Predicted: None
@@ -20611,6 +18341,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなた またお父さんのラジオ 持ちだしたの？
+
+### "あなた" + "もう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなた もう一人 女の子を 不幸にする気なの？
 
 ### "あなた" + "わかる" (1 occurrences)
 - Predicted: None
@@ -20653,12 +18389,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなた 何者なの？
-
-### "あなた" + "元気そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた 元気そうだし 服も前より似合ってるわ。
 
 ### "あなた" + "刑事" (1 occurrences)
 - Predicted: None
@@ -20750,12 +18480,6 @@ Accuracy: 98.66%
 - Examples:
   - あの かまじいさん ですか？
 
-### "あの" + "かわいこちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 誰だ？ あの かわいこちゃんは。
-
 ### "あの" + "こういう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20779,12 +18503,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ああ あの すみません！
-
-### "あの" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの その犬は…。
 
 ### "あの" + "でっかい" (1 occurrences)
 - Predicted: None
@@ -20888,18 +18606,6 @@ Accuracy: 98.66%
 - Examples:
   - あはっ うそみたい！ できた！ やったあ！
 
-### "あばよ" + "戦友" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あばよ 戦友。
-
-### "あまり" + "いじめないで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 友人を あまり いじめないでくれないか。
-
 ### "あら" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20911,12 +18617,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あら あんた タバコあんのかい？
-
-### "あら" + "おばさま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あら おばさまも女よ それに私 山育ちで目はいいの。
 
 ### "あら" + "お友だち" (1 occurrences)
 - Predicted: None
@@ -20972,23 +18672,11 @@ Accuracy: 98.66%
 - Examples:
   - あら ジョー ここで何してるの？
 
-### "あら" + "ダメ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あら ダメよ。
-
 ### "あら" + "トシちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じゃあね… あら トシちゃん。
-
-### "あら" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あら ハウルじゃない？
 
 ### "あら" + "私" (1 occurrences)
 - Predicted: None
@@ -21019,12 +18707,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あらあら 宗介ちゃんがいる！
-
-### "あらあら" + "帽子" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あらあら 帽子がこんなとこに… よいしょっと。
 
 ### "あらそう" + "死んだら" (1 occurrences)
 - Predicted: None
@@ -21068,11 +18750,17 @@ Accuracy: 98.66%
 - Examples:
   - （耕一） ありがてぇ これで針路がとれるぞ！
 
-### "ありがとう" + "いつも" (1 occurrences)
+### "ありがと" + "大急ぎ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルコ ありがとう いつも そばにいてくれて。
+  - ありがと 大急ぎで作ったの ほらっ！
+
+### "ありがとう" + "あなた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ありがとう あなたも！
 
 ### "ありがとう" + "きっと" (1 occurrences)
 - Predicted: None
@@ -21090,7 +18778,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - まあ ありがとう じゃ そのお皿 しまってくださる？
+  - ありがとう じゃ そのお皿しまってくださる？
 
 ### "ありがとう" + "で" (1 occurrences)
 - Predicted: None
@@ -21103,24 +18791,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ありがとう みんなで応援してください。
-
-### "ありがとう" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ ありがとう もう戻らなきゃね。
-
-### "ありがとう" + "カブ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう カブ あなたは優しいカカシね。
-
-### "ありがとう" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう カルシファー。
 
 ### "ありがとう" + "ダイジン" (1 occurrences)
 - Predicted: None
@@ -21140,12 +18810,6 @@ Accuracy: 98.66%
 - Examples:
   - どうもありがとう ナマステ！
 
-### "ありがとう" + "パズー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう パズーのこと忘れない。
-
 ### "ありがとう" + "ポニョ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21158,35 +18822,17 @@ Accuracy: 98.66%
 - Examples:
   - 音楽をありがとう マエストロ！
 
-### "ありがとう" + "マルクル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう マルクル。
-
 ### "ありがとう" + "ライナー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ありがとう ライナー！
 
-### "ありがとう" + "一生懸命" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やらせてもらえるのね！ ありがとう 一生懸命やるわ！
-
 ### "ありがとう" + "他" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ありがとう 他にリクエストは？
-
-### "ありがとう" + "助けて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう 助けてくれて 私 シータっていうの。
 
 ### "ありがとう" + "夏美" (1 occurrences)
 - Predicted: None
@@ -21223,12 +18869,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 銀行にしかありません -彼の家のそばには 無いのか？
-
-### "ありません" + "母" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 先生と戦いたくはありません 母を連れて行きます。
 
 ### "ありません" + "申し訳" (1 occurrences)
 - Predicted: None
@@ -21368,12 +19008,6 @@ Accuracy: 98.66%
 - Examples:
   - あるいは 理解できなかったのか？
 
-### "あるまいし" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 子供じゃあるまいし 何だこれは？
-
 ### "あるらしい" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21422,12 +19056,6 @@ Accuracy: 98.66%
 - Examples:
   - こまかい 絣の上布 あれ まだある?
 
-### "あれ" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カブ頭 あれ ハウルの城じゃない？
-
 ### "あれ" + "ボトリオレピス" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21446,12 +19074,6 @@ Accuracy: 98.66%
 - Examples:
   - （ミキ）あれ 地震ちゃう？
 
-### "あれ" + "敵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー！ あれ 敵の飛行軍艦だよ！
-
 ### "あれ" + "木" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21463,6 +19085,24 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あれ 石田くん？
+
+### "あれっ" + "あれっ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれっ あれっ？
+
+### "あれっ" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれっ 何だ?
+
+### "あれっ" + "誰" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれっ 誰だろう？
 
 ### "あれば" + "いい" (1 occurrences)
 - Predicted: None
@@ -21481,12 +19121,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もっと時間があれば 全部やり直せると思います？
-
-### "あんた" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 「家を連れて来い」って 言ったけど まさか…！
 
 ### "あんた" + "ある" (1 occurrences)
 - Predicted: None
@@ -21518,35 +19152,29 @@ Accuracy: 98.66%
 - Examples:
   - あんた これ以上 こん子に近づかんで！
 
-### "あんた" + "さっき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた さっきから ため息ばっかりついてるよ。
-
-### "あんた" + "そりゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた そりゃ飛行石の結晶じゃ！
-
-### "あんた" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた それ約束できるの？
-
 ### "あんた" + "だいたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そげな話はしとらんわ！ あんた だいたい学校は？
 
+### "あんた" + "ちょっと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 鈴芽 あんた ちょっと大丈夫？
+
+### "あんた" + "てつやした" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんた てつやしたのか？
+
 ### "あんた" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた どうしちゃったの!
+  - あんた どうしちゃったの？
 
 ### "あんた" + "なんか" (1 occurrences)
 - Predicted: None
@@ -21560,17 +19188,11 @@ Accuracy: 98.66%
 - Examples:
   - （中年女性）あんた ひとりだけ？
 
-### "あんた" + "ひまない" (1 occurrences)
+### "あんた" + "ひま" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 明日どお あんた ひまないかしら?
-
-### "あんた" + "まさか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル？ あんた まさか ハウルじゃないでしょうね？
 
 ### "あんた" + "また" (1 occurrences)
 - Predicted: None
@@ -21608,17 +19230,23 @@ Accuracy: 98.66%
 - Examples:
   - あら あんた タバコあんのかい？
 
+### "あんた" + "ハウル" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あんた ハウルじゃないでしょうね？
+
 ### "あんた" + "今夜" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あんた 今夜どこん泊まると？
 
-### "あんた" + "今日" (1 occurrences)
+### "あんた" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた 今日は やめといたら？ 無理だよ。
+  - あんた 何すんの！
 
 ### "あんた" + "何歳" (1 occurrences)
 - Predicted: None
@@ -21643,12 +19271,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あんた 女優か？
-
-### "あんた" + "徹夜" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう 眠れた？ あんた 徹夜したのか？
 
 ### "あんた" + "急" (1 occurrences)
 - Predicted: None
@@ -21691,12 +19313,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あんた 警備員だろ？
-
-### "あんた" + "逆さ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 逆さになるのが好きだねぇ。
 
 ### "あんた" + "部屋" (1 occurrences)
 - Predicted: None
@@ -21746,18 +19362,6 @@ Accuracy: 98.66%
 - Examples:
   - 俺のこと書いてあんだろ 何だって?
 
-### "あんな" + "お化け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな お化け 他の人には見えないのかしら。
-
-### "あんな" + "きれい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな きれいな艇を オノで壊すって言うの!
-
 ### "あんな" + "もうろく" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21775,12 +19379,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここはあんまり いいところじゃないぜ。
-
-### "あんまり" + "ウロウロ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばあちゃん あんまり ウロウロするなよ。
 
 ### "あゝ" + "そりゃいけん" (1 occurrences)
 - Predicted: None
@@ -21896,24 +19494,6 @@ Accuracy: 98.66%
 - Examples:
   - あ～ ついてる。
 
-### "あ～" + "やめろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） あ～ やめろ～!
-
-### "あ～" + "夢" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～ 夢のような時間だったな。
-
-### "あ～" + "待って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～ 待ってくれ！
-
 ### "あ～" + "服" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -21926,23 +19506,11 @@ Accuracy: 98.66%
 - Examples:
   - あ～ 私のも真っ黒。
 
-### "あ～" + "隠れてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこ？ どこ 行った？ あ～ 隠れてる～！
-
 ### "ぃ" + "元気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （植野）西宮さん 久しぶりぃ 元気だったぁ？
-
-### "い" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見て あれ！ どうしたんだい 『ゴリアテ』かい!
 
 ### "い" + "この" (1 occurrences)
 - Predicted: None
@@ -21950,11 +19518,17 @@ Accuracy: 98.66%
 - Examples:
   - ピア 何だい この悪趣味は？
 
-### "い" + "ちっと" (1 occurrences)
+### "い" + "こりゃあ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何してるんだい ちっとも のぼらないじゃないか！
+  - 何だい こりゃあ?
+
+### "い" + "まぁるで" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どーしたんだい まぁるで戦だよ！
 
 ### "い" + "（" (1 occurrences)
 - Predicted: None
@@ -22022,6 +19596,12 @@ Accuracy: 98.66%
 - Examples:
   - もういい 君は何をしてる マルティネス？
 
+### "いい" + "実行" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そりゃいい 実行するなら どうすればいい？
+
 ### "いい" + "考えた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22045,12 +19625,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もういい 金は返ってこない！
-
-### "いい" + "飯代" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここに泊まりゃいい 飯代込みで安くしとくよ。
 
 ### "いいえ" + "-" (1 occurrences)
 - Predicted: None
@@ -22196,23 +19770,17 @@ Accuracy: 98.66%
 - Examples:
   - 奇跡が存在するという 証拠があるか？
 
-### "いえ" + "あの" (1 occurrences)
+### "いう" + "証明" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いえ あの… ご心配なく。
+  - あれがお客様の車だという 証明はありますか？
 
-### "いえ" + "いらない" (1 occurrences)
+### "いえ" + "ご用" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いえ いらないわ。
-
-### "いえ" + "チェザーリ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いえ チェザーリの店へ 行くだけですから。
+  - 私に… いえ ご用？
 
 ### "いえ" + "素晴らしい" (1 occurrences)
 - Predicted: None
@@ -22225,6 +19793,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いえ 説明するのは 君のほうですよ！
+
+### "いえいえ" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いえいえ これからが大変ですよ きっと ねっ？
 
 ### "いえば" + "どこ" (1 occurrences)
 - Predicted: None
@@ -22274,12 +19848,6 @@ Accuracy: 98.66%
 - Examples:
   - いくつ ある中で？
 
-### "いくつ" + "名前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルって 一体いくつ 名前があるの？
-
 ### "いくつ" + "欲しい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22297,6 +19865,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それで 彼にいくら 払うって話なの？
+
+### "いけ" + "そこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （観客）いいぞ！ （観客）いけ そこだ！
 
 ### "いけ" + "よそ者" (1 occurrences)
 - Predicted: None
@@ -22322,12 +19896,6 @@ Accuracy: 98.66%
 - Examples:
   - この子をここに置いてはいけない - なぜいけない？
 
-### "いけね" + "折れちまいやがった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いけね 折れちまいやがった フィオの尻のせいだ。
-
 ### "いけません" + "理解" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22345,18 +19913,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いざ 行かん 劇場へ！
-
-### "いじけて" + "のこのこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - …で いじけて のこのこ 帰って来たわけかい。
-
-### "いじった" + "落としやしない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと いじった 落としやしないよ。
 
 ### "いた" + "-" (1 occurrences)
 - Predicted: None
@@ -22387,12 +19943,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 昨夜ここにいた 覚えてるだろ？
-
-### "いた" + "許して" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズーくん 君を誤解していた 許してくれたまえ。
 
 ### "いたい" + "いたい" (1 occurrences)
 - Predicted: None
@@ -22441,18 +19991,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （客Ａ）もう一杯いただきます -（客たち）かんぱーい！
-
-### "いただこう" + "うまし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 諸君 いただこう うまし糧を。
-
-### "いたら" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここにいたら すぐサリマン先生に 見つかっちゃうからね。
 
 ### "いたら" + "何" (1 occurrences)
 - Predicted: None
@@ -22525,12 +20063,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 俺はイイ線いってる お前は？
-
-### "いっぱい" + "いる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いっぱい いるな…。 みんな 逃げるよ！
 
 ### "いつ" + "こんな" (1 occurrences)
 - Predicted: None
@@ -22610,11 +20142,11 @@ Accuracy: 98.66%
 - Examples:
   - この友情はいつか 裏切りという形で壊れるのでは？
 
-### "いつか" + "誰か" (1 occurrences)
+### "いつも" + "ああ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いつか 誰かに見つかっちゃう。
+  - いつも ああなの？
 
 ### "いつも" + "あなた" (1 occurrences)
 - Predicted: None
@@ -22627,18 +20159,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いつも お前たちがいる 仕事しないのか？
-
-### "いつも" + "そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ずるい人… いつも そうするのね。
-
-### "いつも" + "そば" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ ありがとう いつも そばにいてくれて。
 
 ### "いつも" + "ハラペコ" (1 occurrences)
 - Predicted: None
@@ -22670,11 +20190,11 @@ Accuracy: 98.66%
 - Examples:
   - 奴らは笑っていて お前は何か言ったよな？ 何と言った？
 
-### "いて" + "操縦" (1 occurrences)
+### "いて" + "楽しかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 俺は疲れきっていて 操縦する気力も残っていなかった。
+  - シャーロットがいて 楽しかったか？
 
 ### "いて" + "突風" (1 occurrences)
 - Predicted: None
@@ -22736,18 +20256,6 @@ Accuracy: 98.66%
 - Examples:
   - 私がいなくなったら 誰が一緒にいてくれるの？
 
-### "いなければ" + "杖" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう！ あんたがいなければ 杖で殴ってやったのに！
-
-### "いなければ" + "火" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルさんがいなければ 火は使えないんです。
-
 ### "いなさい" + "長く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22765,12 +20273,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （草太）いま 俺に何かした？
-
-### "います" + "けれども" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空中海賊が本船を狙っています けれども ご安心ください。
 
 ### "います" + "スコッティ" (1 occurrences)
 - Predicted: None
@@ -22814,12 +20316,6 @@ Accuracy: 98.66%
 - Examples:
   - （看護師） いや お母ちゃん 待ちはった？
 
-### "いや" + "こりゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや こりゃ おったまげた 軍隊のおでましだ。
-
 ### "いや" + "これ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22843,12 +20339,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （翁）え？ いや その しかし 不思議すぎやしないか？
-
-### "いや" + "そのまま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （サリマン） 王陛下。 （国王） いや そのまま。
 
 ### "いや" + "そんな" (1 occurrences)
 - Predicted: None
@@ -22880,23 +20370,11 @@ Accuracy: 98.66%
 - Examples:
   - あなたは聞いたの ジム？ -いや なに？
 
-### "いや" + "ほら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だって！ いや ほら 王手だな。
-
 ### "いや" + "わからない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いや わからないか？
-
-### "いや" + "インスピレーション" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 経験？ いや インスピレーションだな。
 
 ### "いや" + "オレ" (1 occurrences)
 - Predicted: None
@@ -22910,23 +20388,11 @@ Accuracy: 98.66%
 - Examples:
   - いや スリム！
 
-### "いや" + "パッツ" (1 occurrences)
+### "いや" + "パッツ人" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いや パッツ人だ お前は？
-
-### "いや" + "ヒマ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いやいや ヒマだから 何か手伝おうかな なんてな…。
-
-### "いや" + "三下" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや 三下だが 怪物に変身していた。
 
 ### "いや" + "何" (1 occurrences)
 - Predicted: None
@@ -22939,6 +20405,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いや 何事だ？
+
+### "いや" + "俺" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いや 俺は･･･ 何だ?
 
 ### "いや" + "元気" (1 occurrences)
 - Predicted: None
@@ -23024,18 +20496,6 @@ Accuracy: 98.66%
 - Examples:
   - いやだ いやだ！ 酔ってないもん！
 
-### "いよいよ" + "いかんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ いよいよ いかんな。
-
-### "いらっしゃい" + "ポルコ・ロッソ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いらっしゃい ポルコ・ロッソさん 出来てますよ。
-
 ### "いらっしゃい" + "久し振り" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23048,17 +20508,17 @@ Accuracy: 98.66%
 - Examples:
   - いらっしゃい 帆高迷ったでしょ？
 
-### "いらない" + "お願い" (1 occurrences)
+### "いらっしゃい" + "連れ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ラピュタの宝なんか いらない お願いだ…。
+  - いらっしゃい 連れはいないの？
 
-### "いらねえ" + "飛行石" (1 occurrences)
+### "いらねぇ" + "飛行石" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 嫁は いらねえ 飛行石さ。
+  - 嫁はいらねぇ 飛行石さ！
 
 ### "いらんだろう" + "どう" (1 occurrences)
 - Predicted: None
@@ -23150,12 +20610,6 @@ Accuracy: 98.66%
 - Examples:
   - 私は告白の封印に縛られている 告白の印に縛られている。
 
-### "いる" + "囲まれてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこにハウルがいる 囲まれてるわ！
-
 ### "いる" + "彼" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23216,12 +20670,6 @@ Accuracy: 98.66%
 - Examples:
   - 脱出ポッドは全て揃っている 転送室はどこだ？
 
-### "いれば" + "オイラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから あっちにいれば オイラとハウルで守れたんだよ。
-
 ### "いれば" + "解決" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23233,12 +20681,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここにいろ さもないと首を切るぞ！
-
-### "いろ" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーは ここにいろ カルシファーが守ってくれる。
 
 ### "いろ" + "外" (1 occurrences)
 - Predicted: None
@@ -23276,47 +20718,11 @@ Accuracy: 98.66%
 - Examples:
   - う… ううっ 金田く～ん！
 
-### "ううん" + "やらして" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕がやる。 ううん やらして。
-
-### "ううん" + "僕" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううん 僕の頭は 親方のゲンコツより固いんだ。
-
-### "ううん" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううん 君が空から降りて来た時 ドキドキしたんだ。
-
-### "ううん" + "大丈夫" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 死んじゃった？ ううん 大丈夫。
-
-### "ううん" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううん 私はポルコの人質になるの。
-
 ### "うえー" + "－" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - －うえー －エスカルゴが欲しかったんだ。
-
-### "うぉ～" + "やった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うぉ～ やったぞ！
 
 ### "うせやがれ" + "何" (1 occurrences)
 - Predicted: None
@@ -23402,17 +20808,17 @@ Accuracy: 98.66%
 - Examples:
   - （ミキ）うっわ ヤッバ！
 
+### "うて" + "うてっ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うて うてっ！ うちまくれ！
+
 ### "うぬぼれないで" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - うぬぼれないで 私も助けたわよ！
-
-### "うまい" + "うまい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまい… うまい うまい…。
 
 ### "うまい" + "難しくない" (1 occurrences)
 - Predicted: None
@@ -23425,12 +20831,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （一葉）うむ （四葉）えっ 名前ついとるの？
-
-### "うめぇ" + "うめぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うめぇ うめぇ…。
 
 ### "うるさい" + "あっち" (1 occurrences)
 - Predicted: None
@@ -23474,11 +20874,29 @@ Accuracy: 98.66%
 - Examples:
   - うるせえ 黙ってろ！
 
+### "うるせえ" + "黙れ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うるせえ 黙れ！
+
+### "うるせー" + "だまれー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うるせー だまれー！
+
 ### "うるせー" + "オカマ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - うるせー オカマ！
+
+### "うるせーっ" + "さっさと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うるせーっ さっさとうせろ！
 
 ### "うれしくて" + "たまんねえ" (1 occurrences)
 - Predicted: None
@@ -23618,12 +21036,6 @@ Accuracy: 98.66%
 - Examples:
   - うわあ うわ～ ああ～！
 
-### "うわ～" + "きれい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うわ～ きれい！
-
 ### "うん" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23688,7 +21100,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 大丈夫？ うん シータは？
+  - うん シータは？
 
 ### "うん" + "トトロ" (1 occurrences)
 - Predicted: None
@@ -23707,12 +21119,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - うん リサに代わるよ。
-
-### "うん" + "今日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うん 今日は ひさしぶりに忙しいんだ。
 
 ### "うん" + "何" (1 occurrences)
 - Predicted: None
@@ -23786,29 +21192,11 @@ Accuracy: 98.66%
 - Examples:
   - （姫）うーん （媼）はっ！
 
-### "う～ん" + "う～ん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ ハァ…。 う～ん う～ん よいしょ…。
-
-### "う～ん" + "よいしょ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ ハァ…。 う～ん う～ん よいしょ…。
-
 ### "う～ん" + "ポニョ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - う～ん ポニョに聞いてみないと 分からない。
-
-### "う～ん" + "確かに" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん 確かに いいアイデアだ。 ねっ！ だから お願い！
 
 ### "え" + "ああっ" (1 occurrences)
 - Predicted: None
@@ -23912,6 +21300,12 @@ Accuracy: 98.66%
 - Examples:
   - えぇ 宰相殿!
 
+### "ええ" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ええ -それで？
+
 ### "ええ" + "いい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23990,6 +21384,12 @@ Accuracy: 98.66%
 - Examples:
   - ええ 買い物？
 
+### "ええい" + "じゃまだて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （内麻呂） ええい じゃまだてするな！
+
 ### "ええい" + "行きます" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24037,6 +21437,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （通行人Ｆ）なんだ？ -（通行人Ｇ）ええっ 椅子!
+
+### "ええっ" + "遠っ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （芹澤）えっ ええっ 遠っ！
 
 ### "ええと" + "あなた" (1 occurrences)
 - Predicted: None
@@ -24104,6 +21510,12 @@ Accuracy: 98.66%
 - Examples:
   - 就活… えっ この事務所は？
 
+### "えっ" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ それ お前 怒らんないの？
+
 ### "えっ" + "そんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24163,6 +21575,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - えっ ほんとだ！
+
+### "えっ" + "また" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （児相職員Ｂ）えっ また面会希望？
 
 ### "えっ" + "もう" (1 occurrences)
 - Predicted: None
@@ -24260,6 +21678,12 @@ Accuracy: 98.66%
 - Examples:
   - えっけん この私に謁見?
 
+### "えっと" + "ええと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おれねえ えっと ええとねーぇ ぁ 何でも食う！！
+
 ### "えッ" + "くれる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24295,6 +21719,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （真柴）えッ 西宮さんを？
+
+### "えー" + "ご質問" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - みなさん、えー ご質問をお受けします。
 
 ### "えー" + "ちょっと" (1 occurrences)
 - Predicted: None
@@ -24362,12 +21792,6 @@ Accuracy: 98.66%
 - Examples:
   - え～い さっさと歩かんかい ブタ箱入りじゃ！
 
-### "え～い" + "行け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - え～い 行け行け行け！
-
 ### "え～っ" + "いわない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24379,12 +21803,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - え～っと あそこのケーブル交換 来週じゃなかったのか？
-
-### "え～っと" + "え～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺ね え～っと え～っとね… 何でも食う！
 
 ### "お" + "お巡りさん" (1 occurrences)
 - Predicted: None
@@ -24728,6 +22146,12 @@ Accuracy: 98.66%
 - Examples:
   - おい 何で逃がしたんだ？
 
+### "おい" + "何回" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい 何回なんだ？
+
 ### "おい" + "俺" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24812,6 +22236,12 @@ Accuracy: 98.66%
 - Examples:
   - おい 少年！
 
+### "おい" + "後ろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい 後ろどうだ！ アメリカやろう来てるか？
+
 ### "おい" + "戻れ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24890,6 +22320,12 @@ Accuracy: 98.66%
 - Examples:
   - おい 言葉に気をつけろ！
 
+### "おい" + "起きろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おい 起きろ！
+
 ### "おい" + "開けて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -24913,12 +22349,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おい 静かにしろ！
-
-### "おい" + "預かっとれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい 預かっとれ。
 
 ### "おい" + "預言者" (1 occurrences)
 - Predicted: None
@@ -24956,17 +22386,17 @@ Accuracy: 98.66%
 - Examples:
   - おいしい 何を入れた？
 
+### "おいで" + "どう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おいで どうなったんだ？
+
 ### "おいで" + "ぶつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ドメニコ おいで ぶつよ 早く！
-
-### "おいで" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おいで ハウル… もう！
 
 ### "おいで" + "奥さん" (1 occurrences)
 - Predicted: None
@@ -24974,7 +22404,13 @@ Accuracy: 98.66%
 - Examples:
   - おいで 奥さんはゲリラ入隊だな！
 
-### "おう" + "橋" (1 occurrences)
+### "おいら" + "自由" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おいら 自由だ！
+
+### "おう" + "橋向こう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -24985,6 +22421,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おうち どう？
+
+### "おぉい" + "起きろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おぉい 起きろ！！
 
 ### "おお" + "少年" (1 occurrences)
 - Predicted: None
@@ -25058,23 +22500,23 @@ Accuracy: 98.66%
 - Examples:
   - おとうさん おかあさん どこ？
 
-### "おかあ様" + "ハウル" (1 occurrences)
+### "おかあさん" + "わたし" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おかあ様 ハウルに恋してるのね。
-
-### "おかえりなさい" + "王様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルさん おかえりなさい 王様から手紙が来てますよ。
+  - おとうさん おかあさん わたしよ！
 
 ### "おかねえ" + "くたばり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ただじゃおかねえ くたばり損ない！
+
+### "おかわり" + "おかわり" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おかわり おかわり！！
 
 ### "おきゃくさま" + "これ" (1 occurrences)
 - Predicted: None
@@ -25112,23 +22554,23 @@ Accuracy: 98.66%
 - Examples:
   - いい加減におし 皆を寝かせない気かい？
 
-### "おじいさん" + "ありがとう" (1 occurrences)
+### "おしっこ" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじいさん ありがとう。 気ぃつけてなぁ。
+  - （女の子）おしっこ （ポルコ）なに おしっこ？
 
-### "おじいさん" + "ず～っと" (1 occurrences)
+### "おじいさん" + "ずうっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじいさん ず～っと地下で暮らしてるの？
+  - おじいさん ずうっと地下で暮らしてるの？
 
 ### "おじいさん" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじいさん その島は 今も あるんでしょうか？
+  - おじいさん その島は今もあるんでしょうか？
 
 ### "おじさん" + "-" (1 occurrences)
 - Predicted: None
@@ -25182,7 +22624,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おじさん もっとスピード出ない？
+  - おじさん もっとスピードでない？
 
 ### "おじさん" + "スパイ" (1 occurrences)
 - Predicted: None
@@ -25268,11 +22710,11 @@ Accuracy: 98.66%
 - Examples:
   - おっし 少年採用！
 
-### "おったまげた" + "軍隊" (1 occurrences)
+### "おっと" + "英語" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いや こりゃ おったまげた 軍隊のおでましだ。
+  - おっと 英語か!
 
 ### "おっと" + "－" (1 occurrences)
 - Predicted: None
@@ -25280,35 +22722,17 @@ Accuracy: 98.66%
 - Examples:
   - －おっと －いいだろう？
 
-### "おっとっと" + "気づかれた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おっとっと 気づかれたかな。
-
 ### "おっぱい" + "ズレてない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おっぱい ズレてない？
 
-### "おとうさん" + "おかあさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おとうさん おかあさん どこ？
-
 ### "おとうさん" + "だいじょうぶ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おとうさん だいじょうぶ？
-
-### "おとせ" + "残業" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボイラーの火をおとせ 残業は なしだ。
 
 ### "おなか" + "すいた" (1 occurrences)
 - Predicted: None
@@ -25321,12 +22745,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おなか すかない？
-
-### "おなか" + "へってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おなか へってるだろ？ ごはんにしよう。
 
 ### "おぬし" + "薪割り" (1 occurrences)
 - Predicted: None
@@ -25364,12 +22782,6 @@ Accuracy: 98.66%
 - Examples:
   - （おソノ） おはよう よくねむれた？
 
-### "おはよう" + "カブ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう カブ 勇気を出さなくちゃね。
-
 ### "おはよう" + "ガーデニング" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -25398,7 +22810,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おはよう 眠れた？ あんた 徹夜したのか？
+  - おはよう 眠れた？
 
 ### "おばあさん" + "今日" (1 occurrences)
 - Predicted: None
@@ -25424,17 +22836,17 @@ Accuracy: 98.66%
 - Examples:
   - （米山）おばあちゃん います？
 
-### "おばあちゃん" + "おばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばあちゃん おばあちゃんも魔女？
-
 ### "おばあちゃん" + "お父さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おばあちゃん お父さん 夕方まで帰らないの。
+
+### "おばあちゃん" + "ここ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おばあちゃん ここで待たせてください。
 
 ### "おばあちゃん" + "これ" (1 occurrences)
 - Predicted: None
@@ -25446,7 +22858,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おばあちゃん それ やめてくれない？
+  - おばあちゃん それやめてくれない?
 
 ### "おばあちゃん" + "どう" (1 occurrences)
 - Predicted: None
@@ -25484,12 +22896,6 @@ Accuracy: 98.66%
 - Examples:
   - おばあちゃん 出た～！
 
-### "おばあちゃん" + "大丈夫" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばあちゃん 大丈夫だよ 僕がついてるからね。
-
 ### "おばあちゃん" + "好き" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -25520,35 +22926,23 @@ Accuracy: 98.66%
 - Examples:
   - おばあちゃん 昨日のお魚出す？
 
-### "おばあちゃん" + "立って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの人は弱虫がいいの おばあちゃん 立って。
-
-### "おばさま" + "痛い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばさま 痛い…。 ごめんよ。
-
 ### "おばさん" + "あの" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おばさん あの子しってるの？
 
+### "おばさん" + "ぼく" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おばさん ぼくを仲間に入れてくれないか？！
+
 ### "おばさん" + "もっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おばさん もっと寄せて！
-
-### "おばさん" + "父さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行こう おばさん 父さんの行った道だ！
 
 ### "おべべ" + "あかん" (1 occurrences)
 - Predicted: None
@@ -25585,18 +22979,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おまちどおさま いつものね？
-
-### "おめぇ" + "さっき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おめぇ さっき腹が痛ぇって…。
-
-### "おめぇ" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おめぇ その顔！ 待てよ おい！
 
 ### "おめえ" + "あそこ" (1 occurrences)
 - Predicted: None
@@ -25657,12 +23039,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 糞ったれおやじ 聞き込みでもやれって言うのかよ？
-
-### "おやすい" + "ご" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おやすい ご…!
 
 ### "おやすみ" + "子供" (1 occurrences)
 - Predicted: None
@@ -25772,6 +23148,12 @@ Accuracy: 98.66%
 - Examples:
   - おーい 誰か！ 助けてくれ！
 
+### "おーし" + "豚" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （マンマユート･ボス） おーし 豚が後ろをとったぞ！
+
 ### "おーっし" + "いく" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -25783,12 +23165,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おーほ おっほほー!
-
-### "お久しぶり" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お久しぶり あの時の帽子屋さんでしょ？
 
 ### "お互い" + "ここ" (1 occurrences)
 - Predicted: None
@@ -25819,12 +23195,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - オィヨイヨ オィヨィヨィヨ お利口さん いいでしょ？
-
-### "お前" + "あいつら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前 あいつらが あの子を 生かしておくと思うのかい？
 
 ### "お前" + "あっち" (1 occurrences)
 - Predicted: None
@@ -25916,12 +23286,6 @@ Accuracy: 98.66%
 - Examples:
   - お前 ブーランの息子か？
 
-### "お前" + "プディング" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前 プディング作れるか？ ええ。
-
 ### "お前" + "マット" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -25945,12 +23309,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ニガー お前 一体どうしたんだ？
-
-### "お前" + "上" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） う～ 寒い！ お前 上だ。 うん。
 
 ### "お前" + "世直し" (1 occurrences)
 - Predicted: None
@@ -26048,12 +23406,6 @@ Accuracy: 98.66%
 - Examples:
   - お前 来てくれたのか！
 
-### "お前" + "男" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでも お前 男かい えっ!
-
 ### "お前" + "育ち" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -26089,6 +23441,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お前 黙ってられないのか？
+
+### "お前ら" + "…んママ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前ら …んママに知らせろ！！
 
 ### "お前ら" + "これ" (1 occurrences)
 - Predicted: None
@@ -26150,12 +23508,6 @@ Accuracy: 98.66%
 - Examples:
   - あんた お勤め おくれやせんな?
 
-### "お化け" + "他" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな お化け 他の人には見えないのかしら。
-
 ### "お化け屋敷" + "好き" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -26168,11 +23520,11 @@ Accuracy: 98.66%
 - Examples:
   - お地蔵さま ちょっと 雨宿りさせてください。
 
-### "お城" + "空っぽ" (1 occurrences)
+### "お天道さま" + "いっぱい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お城 空っぽだね。
+  - お天道さま いっぱい浴びてっから 体にもいいんだぁ。
 
 ### "お姉ちゃん" + "すぐ" (1 occurrences)
 - Predicted: None
@@ -26204,35 +23556,11 @@ Accuracy: 98.66%
 - Examples:
   - （宮水四葉） お姉ちゃん 何しとるの？
 
-### "お姉ちゃん" + "心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それで お姉ちゃん 心を取られちゃったってわけ？
-
-### "お姉ちゃん" + "心臓" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お姉ちゃん 心臓 食べられちゃってるよ。
-
-### "お姉ちゃん" + "本当に" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ お姉ちゃん 本当に一生 あのお店に いるつもりなの？
-
 ### "お姉ちゃん" + "東京" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - え？ お姉ちゃん 東京にカレシおったの？
-
-### "お姉ちゃん" + "自分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お姉ちゃん 自分のことは 自分で決めなきゃダメよ！
 
 ### "お姉ちゃん" + "遅い" (1 occurrences)
 - Predicted: None
@@ -26240,11 +23568,11 @@ Accuracy: 98.66%
 - Examples:
   - お姉ちゃん 遅い！
 
-### "お嬢さん" + "これ" (1 occurrences)
+### "お姉様" + "屋上" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お嬢さん これには深い訳があるんだ。
+  - お姉様 屋上の小さな部屋は 何かしら？
 
 ### "お嬢さん" + "どちら" (1 occurrences)
 - Predicted: None
@@ -26264,17 +23592,17 @@ Accuracy: 98.66%
 - Examples:
   - お嬢様 申し訳ありません！
 
+### "お嬢様" + "知らない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お嬢様 知らないことは気にしない？
+
 ### "お孝ちゃん" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お母さん お孝ちゃん どうしてます?
-
-### "お守り" + "無事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お守り 無事に行って帰れるように。
 
 ### "お客様" + "チェックアウト" (1 occurrences)
 - Predicted: None
@@ -26282,17 +23610,17 @@ Accuracy: 98.66%
 - Examples:
   - お客様 チェックアウトですか？
 
+### "お家" + "ボロ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん お家 ボロだから つぶれちゃうよ。
+
 ### "お帰り" + "消灯" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 旦那様がお帰り 消灯！
-
-### "お店" + "見て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル おばあちゃんをお願い お店 見て来る。
 
 ### "お座りなさい" + "ロベルト" (1 occurrences)
 - Predicted: None
@@ -26384,17 +23712,17 @@ Accuracy: 98.66%
 - Examples:
   - お母さん だ～い好き！
 
-### "お母さん" + "と" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ペンドラゴンのお母さん ということでさ。
-
 ### "お母さん" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お父さん お母さん どうしてる?
+
+### "お母さん" + "どういう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お母さん どういうこと？
 
 ### "お母さん" + "どない" (1 occurrences)
 - Predicted: None
@@ -26449,12 +23777,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今度の土曜日 お母さん 帰って来んの。
-
-### "お母さん" + "幸せ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お母さん 幸せになってね。
 
 ### "お母さん" + "怖い" (1 occurrences)
 - Predicted: None
@@ -26528,6 +23850,12 @@ Accuracy: 98.66%
 - Examples:
   - （清太） あっ お母ちゃん 薬 持った？
 
+### "お母はん" + "来たん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父ッさん お母はん 来たんやて?
+
 ### "お父さん" + "あの" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -26539,6 +23867,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お父さん あれも！ 忘れんと はよう！
+
+### "お父さん" + "お家" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん お家 ボロだから つぶれちゃうよ。
 
 ### "お父さん" + "お弁当" (1 occurrences)
 - Predicted: None
@@ -26672,6 +24006,12 @@ Accuracy: 98.66%
 - Examples:
   - お父さん 大丈夫？
 
+### "お父さん" + "帰ってらしたら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん 帰ってらしたら そう 云うわよ!
+
 ### "お父さん" + "引っ越す" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -26708,17 +24048,23 @@ Accuracy: 98.66%
 - Examples:
   - お父さん 道 間違えちゃったんだよ。
 
+### "お父さん" + "遠足" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん 遠足行くの？
+
+### "お父ッさん" + "お母はん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父ッさん お母はん 来たんやて?
+
 ### "お父様" + "一緒" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ダメよ お父様 一緒に来て！
-
-### "お皿" + "しまって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まあ ありがとう じゃ そのお皿 しまってくださる？
 
 ### "お祖母さん" + "まだ" (1 occurrences)
 - Predicted: None
@@ -26762,29 +24108,23 @@ Accuracy: 98.66%
 - Examples:
   - そのお話 知ってる。
 
-### "お話" + "聞かせて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ お話 聞かせて。
-
 ### "お金" + "借りられる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お金 借りられる？
 
+### "お願い" + "あなた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お願い あなた！
+
 ### "お願い" + "いくら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お願い いくら？
-
-### "お願い" + "お店" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル おばあちゃんをお願い お店 見て来る。
 
 ### "お願い" + "お酒" (1 occurrences)
 - Predicted: None
@@ -26797,12 +24137,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お願い ここから出てって！
-
-### "お願い" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願い それを壊さないで それがないと帰れなくなるの。
 
 ### "お願い" + "ちょっと" (1 occurrences)
 - Predicted: None
@@ -26845,12 +24179,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ニコ お願い 待って！
-
-### "お願い" + "戻って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー お願い 戻って来て！ ハウルさんが大変なんだ！
 
 ### "お願い" + "撃たないで" (1 occurrences)
 - Predicted: None
@@ -26936,6 +24264,12 @@ Accuracy: 98.66%
 - Examples:
   - お～い 金田～！
 
+### "お～い" + "鈴芽" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お～い 鈴芽ちゃーん！
+
 ### "お～い" + "間違い" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -26953,6 +24287,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - この野郎 信じられないぜ 元気だったか 「つまようじ」？
+
+### "か" + "あ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （治）コレか あ？
 
 ### "か" + "ああ" (1 occurrences)
 - Predicted: None
@@ -27014,6 +24354,12 @@ Accuracy: 98.66%
 - Examples:
   - ハッシシ欲しいか？ いるのか いらんのか？
 
+### "か" + "うって" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - テメエ おちょくる気か うってこい！
+
 ### "か" + "うれしい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27043,12 +24389,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もっと教えましょうか お嬢様？
-
-### "か" + "お話" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何か お話して そしたら寝るから。
 
 ### "か" + "こいつ" (1 occurrences)
 - Predicted: None
@@ -27086,6 +24426,12 @@ Accuracy: 98.66%
 - Examples:
   - 何のことか ご存じですか？
 
+### "か" + "ご用" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何か ご用でも？
+
 ### "か" + "しっかり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27104,17 +24450,17 @@ Accuracy: 98.66%
 - Examples:
   - 連中 まだ何か たくらんでるのかな？
 
-### "か" + "つっこめ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 装甲列車だ！ かまうもんか つっこめ！
-
 ### "か" + "どうして" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたの話が本当なのか どうして私に分かるの？
+
+### "か" + "どっち" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 娼婦か 小柄か どっちがいい？
 
 ### "か" + "どの" (1 occurrences)
 - Predicted: None
@@ -27146,23 +24492,17 @@ Accuracy: 98.66%
 - Examples:
   - おじけづいたか みんな?
 
-### "か" + "やった" (1 occurrences)
+### "か" + "やってる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィー 何か やったの？
+  - カーチェイスとか やってるのね？
 
 ### "か" + "やらかした" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フォックス君も何か やらかしたのか？
-
-### "か" + "やらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やるのか やらないのか!
 
 ### "か" + "よく" (1 occurrences)
 - Predicted: None
@@ -27181,6 +24521,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何を言ってるか わかってますか？
+
+### "か" + "わかってる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前 何を言ってるのか わかってるのか！
 
 ### "か" + "わかってん" (1 occurrences)
 - Predicted: None
@@ -27206,23 +24552,17 @@ Accuracy: 98.66%
 - Examples:
   - 元気か アンドリュー？
 
-### "か" + "オイラ" (1 occurrences)
+### "か" + "イテッ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何が起こるか オイラにも分からないんだ。
+  - （ポルコ） ハハ 届くものか イテッ！
 
 ### "か" + "カム" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 大丈夫か カム師匠？
-
-### "か" + "カーチス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ さあ！ ブタが勝つか カーチスか！
 
 ### "か" + "ガンダルフ" (1 occurrences)
 - Predicted: None
@@ -27242,23 +24582,17 @@ Accuracy: 98.66%
 - Examples:
   - （美也子）おいッ！ 聞いてんのか コラ！
 
-### "か" + "ゴミ" (1 occurrences)
+### "か" + "ゴング" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やるじゃねえか ゴミ野郎が。
+  - ゴングはねえか ゴング！
 
 ### "か" + "サルマン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 所詮 貴様の魔術も こんなものか サルマン？
-
-### "か" + "ザマ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ガハハ！ てめぇもローン持ちか ザマ～みろ！
 
 ### "か" + "シャカウスキー" (1 occurrences)
 - Predicted: None
@@ -27332,12 +24666,6 @@ Accuracy: 98.66%
 - Examples:
   - 夢でも見ているのか ドラマじゃないんだぞ！
 
-### "か" + "ハイヨ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ…！ そんな物が届くか ハイヨ～ シルバー。
-
 ### "か" + "ハッサン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27361,12 +24689,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ゲオルクか パパと同じ いいな！
-
-### "か" + "ビビる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから団体を組んだんじゃねえか ビビるな！
 
 ### "か" + "フアヴェル" (1 occurrences)
 - Predicted: None
@@ -27415,6 +24737,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 厄介事か マチュー?
+
+### "か" + "マッチ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誰か マッチある？
 
 ### "か" + "ママ" (1 occurrences)
 - Predicted: None
@@ -27536,12 +24864,6 @@ Accuracy: 98.66%
 - Examples:
   - さあ どなたか 入札される方は？
 
-### "か" + "出世" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 少佐か 出世したな フェラーリン。
-
 ### "か" + "分かってた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27636,7 +24958,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いい子じゃないか 守っておやり。
+  - いい子じゃないか 守っておやり！
 
 ### "か" + "宣伝ポスター" (1 occurrences)
 - Predicted: None
@@ -27662,12 +24984,6 @@ Accuracy: 98.66%
 - Examples:
   - 彼を 誰か 彼を助けて！
 
-### "か" + "徹甲弾" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 高性能焼夷弾とか 徹甲弾も入荷してますよ。
-
 ### "か" + "必要な" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27679,12 +24995,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - メルセデス、何か 忘れてないか?
-
-### "か" + "恐れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの良い士気で何か 恐れるものがあるだろうか?
 
 ### "か" + "恨み" (1 occurrences)
 - Predicted: None
@@ -27722,6 +25032,12 @@ Accuracy: 98.66%
 - Examples:
   - 誰か 払ってよ！
 
+### "か" + "持って" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何か 持って行くんですか？
+
 ### "か" + "捨てる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27734,6 +25050,12 @@ Accuracy: 98.66%
 - Examples:
   - それで 脅しているつもりか 撃てよ！
 
+### "か" + "故郷" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 知るか 故郷へでも送り返せ！
+
 ### "か" + "救急車" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27745,6 +25067,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 負けたって本当ですか 日本が？ 大日本帝国が？
+
+### "か" + "暴力的" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誰か 暴力的になっているのですか？
 
 ### "か" + "最悪" (1 occurrences)
 - Predicted: None
@@ -27781,12 +25109,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どちらが成功しているか 比べようじゃないか！
-
-### "か" + "気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ雲が晴れたのか 気になってたんだ。
 
 ### "か" + "決めなくて" (1 occurrences)
 - Predicted: None
@@ -27836,6 +25158,12 @@ Accuracy: 98.66%
 - Examples:
   - 誰か 発砲したのか？
 
+### "か" + "知らねえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 親父が誰か 知らねえだろ？
+
 ### "か" + "知りたくなった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27847,6 +25175,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - やはり戻るのか 石頭シートウが恋しいんだろ？
+
+### "か" + "突っ込め" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - かまうもんか 突っ込めーー！！
 
 ### "か" + "笛" (1 occurrences)
 - Predicted: None
@@ -27878,7 +25212,7 @@ Accuracy: 98.66%
 - Examples:
   - 何か 聞いたか？
 
-### "か" + "聞いちゃいけない" (1 occurrences)
+### "か" + "聞いちゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -27907,6 +25241,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 喋ったのか 裏切ったな！
+
+### "か" + "要る" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何か 要る？
 
 ### "か" + "見かけませんでした" (1 occurrences)
 - Predicted: None
@@ -27998,12 +25338,6 @@ Accuracy: 98.66%
 - Examples:
   - 痛みに悲鳴を上げるのか 鞭で皮膚を裂かれたら？
 
-### "か" + "食べた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何か 食べたか？
-
 ### "か" + "馬鹿" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28015,6 +25349,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （治）いいか （祥太）ん？
+
+### "かぁ" + "ハイヨー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そんなものが届くかぁ ハイヨー シルバー！
 
 ### "かあさん" + "水" (1 occurrences)
 - Predicted: None
@@ -28034,35 +25374,17 @@ Accuracy: 98.66%
 - Examples:
   - そうかい いよいよ退院か。
 
-### "かい" + "えっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでも お前 男かい えっ!
-
 ### "かい" + "お父上" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - マレーナ 元気かい お父上はどうしてる？
 
-### "かい" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このまま引き下がれるかい すぐ出発だ！
-
 ### "かい" + "エディス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - だから みんな 老けてるのかい エディス？
-
-### "かい" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - のぞき虫かい サリマンも古いてを使うね。
 
 ### "かい" + "ジョジョ" (1 occurrences)
 - Predicted: None
@@ -28124,12 +25446,6 @@ Accuracy: 98.66%
 - Examples:
   - 犯人の自殺を防げず うつ病にかかって ここへ？
 
-### "かぎつけた" + "バカ騒ぎ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「空軍が かぎつけた バカ騒ぎをやめろ」。
-
 ### "かく" + "準備" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28141,6 +25457,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 眼鏡をかけた 白人のチビをみなかった？
+
+### "かけって" + "あの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まさか… かけって あのやろうのことなのか？
 
 ### "かけて" + "時間" (1 occurrences)
 - Predicted: None
@@ -28171,12 +25493,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そうかしら どんな意味？
-
-### "かしら" + "親方さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ひどい目にあってないかしら 親方さんや機関士さん達。
 
 ### "かしら" + "道" (1 occurrences)
 - Predicted: None
@@ -28226,12 +25542,6 @@ Accuracy: 98.66%
 - Examples:
   - いつから あそこに？
 
-### "から" + "あっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから あっちにいれば オイラとハウルで守れたんだよ。
-
 ### "から" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28268,6 +25578,12 @@ Accuracy: 98.66%
 - Examples:
   - 聞こえないから うなずけ！ コイツを知ってるな？
 
+### "から" + "おい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何でもするから おい！
+
 ### "から" + "おじちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28285,12 +25601,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今から おばあちゃん家 行く？
-
-### "から" + "おやすみなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - タオル 置いてあるから おやすみなさい！
 
 ### "から" + "お礼" (1 occurrences)
 - Predicted: None
@@ -28322,18 +25632,6 @@ Accuracy: 98.66%
 - Examples:
   - これから ご飯を食べるよ！
 
-### "から" + "さぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 返したまえ いい子だから さぁ！
-
-### "から" + "さめてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう この城は 眠りから さめてるんだ。
-
 ### "から" + "ずっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28358,12 +25656,6 @@ Accuracy: 98.66%
 - Examples:
   - 二つ共 良い事だ - そうか？ いつから そんな風に？
 
-### "から" + "ため息" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた さっきから ため息ばっかりついてるよ。
-
 ### "から" + "ちゃんと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28376,23 +25668,17 @@ Accuracy: 98.66%
 - Examples:
   - 家庭生活が不幸だったから つい不倫に走った？
 
-### "から" + "とっくに" (1 occurrences)
+### "から" + "つぶれちゃう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 裏口から とっくに逃げたよ 出しな！
+  - お父さん お家 ボロだから つぶれちゃうよ。
 
 ### "から" + "とっとと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そのドアから とっとと出てって！
-
-### "から" + "とても" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その時から とても上手だったって。
 
 ### "から" + "どこ" (1 occurrences)
 - Predicted: None
@@ -28418,12 +25704,6 @@ Accuracy: 98.66%
 - Examples:
   - サツキなんか聞き分けがいいから なおのこと かわいそう。
 
-### "から" + "なんて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これから なんて呼ぼうか ?
-
 ### "から" + "ね" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28436,17 +25716,11 @@ Accuracy: 98.66%
 - Examples:
   - はるかと知里が お昼ご飯 作ってくれてるから ねっ？
 
-### "から" + "ひも" (1 occurrences)
+### "から" + "もう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ 僕のカバンから ひもを出して。
-
-### "から" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから みんな連れて行くのかって 聞いたのに…。
+  - だから もう時間がないんです！
 
 ### "から" + "ゆっくり" (1 occurrences)
 - Predicted: None
@@ -28465,12 +25739,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いつから ウエイターに？
-
-### "から" + "カブ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 小さい時から カブは嫌いなの。
 
 ### "から" + "クリスタル" (1 occurrences)
 - Predicted: None
@@ -28520,12 +25788,6 @@ Accuracy: 98.66%
 - Examples:
   - 逃げられたから ムリか？
 
-### "から" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの子達は バカどもから ラピュタを守ったんだよ。
-
 ### "から" + "ロックジョー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28537,12 +25799,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 絶対的から 不確実な記憶に？
-
-### "から" + "中折れ谷" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これから 中折れ谷へ行くの？
 
 ### "から" + "乗り物酔い" (1 occurrences)
 - Predicted: None
@@ -28586,18 +25842,6 @@ Accuracy: 98.66%
 - Examples:
   - 親じゃないから 入れるわ！
 
-### "から" + "再び" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ブタから 再び通信！
-
-### "から" + "冷めない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここに置いておくから 冷めないうちに飲みなさいね。
-
 ### "から" + "出して" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28610,17 +25854,17 @@ Accuracy: 98.66%
 - Examples:
   - おい 誰がゴミ箱から 出ていいって言った？
 
-### "から" + "出る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは ここから 出ることもできずに 私と死ぬの。
-
 ### "から" + "出会い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - シャノンから 出会いを聞いたか？
+
+### "から" + "出直し" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - しょうがない 明るくなってから 出直しだ！
 
 ### "から" + "別々" (1 occurrences)
 - Predicted: None
@@ -28676,18 +25920,6 @@ Accuracy: 98.66%
 - Examples:
   - よく見るから 待ってろ。
 
-### "から" + "後" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 着替えも買っといたから 後で見て… 次だ！
-
-### "から" + "後ろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 時間がねえんだ そこの窓から 後ろを見てみな そっとだ。
-
 ### "から" + "急" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28718,23 +25950,11 @@ Accuracy: 98.66%
 - Examples:
   - トミーは悪党だから 撃ち殺せと？
 
-### "から" + "撮った" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それ 父さんが飛行船から 撮った写真なんだ。
-
 ### "から" + "新車" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ギャラクシーを修理したから 新車みたいだ！
-
-### "から" + "日の出" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私のいた塔から 日の出が見えました。
 
 ### "から" + "早く" (1 occurrences)
 - Predicted: None
@@ -28772,7 +25992,7 @@ Accuracy: 98.66%
 - Examples:
   - 昼間から 男子会なんてどう？
 
-### "から" + "町" (1 occurrences)
+### "から" + "町中" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -28844,12 +26064,6 @@ Accuracy: 98.66%
 - Examples:
   - ナカトミ・ビルから 自動小銃で撃ってくる !
 
-### "から" + "艇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これから 艇を直しに ミラノへ行って来る。
-
 ### "から" + "行く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28861,12 +26075,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 俺が抑えとくから 行け！
-
-### "から" + "行けた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーがいると思うから 行けたんだ。
 
 ### "から" + "行っちゃう" (1 occurrences)
 - Predicted: None
@@ -28897,12 +26105,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 奴らの手に渡したくないから 送ったんだぞ！
-
-### "から" + "逃げて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ナワを切るから 逃げて。
 
 ### "から" + "逃亡" (1 occurrences)
 - Predicted: None
@@ -28982,18 +26184,6 @@ Accuracy: 98.66%
 - Examples:
   - 何が ”やあ” だ この野郎！
 
-### "が" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 神様が 「まだ来るな」って言ったのね。
-
-### "が" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 楽しめちゃうのが 『ハリー・ポッター』なんです。
-
 ### "が" + "あいつら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29011,12 +26201,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - が あっさり打ち負かしたとか？ 本当か？
-
-### "が" + "あら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 去年を軽く超えると思われますが あら！ ちょっと…。
 
 ### "が" + "あります" (1 occurrences)
 - Predicted: None
@@ -29036,11 +26220,23 @@ Accuracy: 98.66%
 - Examples:
   - わたしが あんたらを撃つとでも？
 
+### "が" + "あんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誰が あんな女を！
+
 ### "が" + "いけなかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 連れて来たのが いけなかったのだ。
+
+### "が" + "いじめた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 俺たちが いじめたから 行っちゃうのか？
 
 ### "が" + "いっぱい" (1 occurrences)
 - Predicted: None
@@ -29053,12 +26249,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - とうちゃんが戻るまで ばあちゃんが いてやっから なっ。
-
-### "が" + "いなくなっちゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 待ちな！ 景品が いなくなっちゃダメだよ。
 
 ### "が" + "いません" (1 occurrences)
 - Predicted: None
@@ -29138,12 +26328,6 @@ Accuracy: 98.66%
 - Examples:
   - メイが お化けのトトロに 出会いました」。
 
-### "が" + "お城" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うわっ！ これが お城!
-
 ### "が" + "お昼ご飯" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29156,53 +26340,17 @@ Accuracy: 98.66%
 - Examples:
   - それが お父さんを見た最後？
 
-### "が" + "お祭り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカどもが お祭り騒ぎに しちまいやがって…。
-
-### "が" + "お部屋" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それが お部屋に入ったきりなんだよ。
-
 ### "が" + "お魚" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたは ポニョが お魚だったのを知っていますか？
 
-### "が" + "かかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 随分 時間が かかったよ。
-
-### "が" + "かかってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フ～ン 君にも ややこしい呪いが かかってるね。
-
 ### "が" + "かかります" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - まだお時間が かかります？
-
-### "が" + "かぎつけた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「空軍が かぎつけた バカ騒ぎをやめろ」。
-
-### "が" + "かさみました" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 仕方ねえっすよ 修理代が かさみましたからね。
 
 ### "が" + "かつて" (1 occurrences)
 - Predicted: None
@@ -29215,12 +26363,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君が かなえたい夢は？
-
-### "が" + "かわいい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 親よりネコが かわいいの？
 
 ### "が" + "が" (1 occurrences)
 - Predicted: None
@@ -29252,6 +26394,12 @@ Accuracy: 98.66%
 - Examples:
   - 王蟲だ 王蟲の群れが こっちへ来るぞ！
 
+### "が" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 連中のひとりが これを？
+
 ### "が" + "ご命令" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29269,12 +26417,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何が さあ なんだ？
-
-### "が" + "ざわめく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 岩が ざわめくの？
 
 ### "が" + "じかん" (1 occurrences)
 - Predicted: None
@@ -29299,6 +26441,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 交渉役が そっちへ行く！
+
+### "が" + "たくさん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ボイラーの世話が たくさん必要になるからね。
 
 ### "が" + "だと" (1 occurrences)
 - Predicted: None
@@ -29330,6 +26478,12 @@ Accuracy: 98.66%
 - Examples:
   - 役者が つべこべ言うな！
 
+### "が" + "できた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もう友達が できたのかい？ 「サ～ツキちゃ～ん」だって。
+
 ### "が" + "できたろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29341,6 +26495,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おぼえてる事が できないんだ。
+
+### "が" + "どうか" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 石田くんが どうかしたのか？
 
 ### "が" + "どうして" (1 occurrences)
 - Predicted: None
@@ -29354,17 +26514,17 @@ Accuracy: 98.66%
 - Examples:
   - 次の日曜日だが どのコースがいい？
 
-### "が" + "どれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 自分が どれだけ無理強いしたか わからないの？
-
 ### "が" + "なかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - チョコレート分が なかった と？
+
+### "が" + "なかねえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 仕様が なかねえやい!
 
 ### "が" + "なくなっちゃった" (1 occurrences)
 - Predicted: None
@@ -29444,12 +26604,6 @@ Accuracy: 98.66%
 - Examples:
   - いいか これは全部が ばか話だ！
 
-### "が" + "ひと筋" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ず～っと高い所を不思議な雲が ひと筋 流れていてな。
-
 ### "が" + "びょうき" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29468,18 +26622,6 @@ Accuracy: 98.66%
 - Examples:
   - “泉の娘”が ふと登場する意味とは？
 
-### "が" + "ふるえて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手が ふるえて…。
-
-### "が" + "ますます" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヘヘヘ… これで俺の名声が ますます上がるってもんよ。
-
 ### "が" + "また" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29497,12 +26639,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （媼）この子が もののけに見えますか？
-
-### "が" + "やった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 止まっちゃった ハウルが やったの？
 
 ### "が" + "やられる" (1 occurrences)
 - Predicted: None
@@ -29527,12 +26663,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 看板にも人が よじ登り 町は興奮のるつぼ！
-
-### "が" + "よっぽど" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 髪の毛を切られるほうが よっぽど つらいさ。
 
 ### "が" + "わかる" (1 occurrences)
 - Predicted: None
@@ -29570,12 +26700,6 @@ Accuracy: 98.66%
 - Examples:
   - あんたが アルメニアのクソ野郎？
 
-### "が" + "イカレやがった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さては マシンガンが イカレやがったな？
-
 ### "が" + "イシルドゥア" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29588,11 +26712,11 @@ Accuracy: 98.66%
 - Examples:
   - あらっ 私が ウソついたことあった？
 
-### "が" + "オイラ" (1 occurrences)
+### "が" + "ウソン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そのばあちゃんが オイラに 変なものを食わせたんだ。
+  - つまり、誰が ウソンを救おうとしてる？
 
 ### "が" + "オカマ" (1 occurrences)
 - Predicted: None
@@ -29611,6 +26735,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君の客が カネを払わなかったら？
+
+### "が" + "ガッカリ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 食べないと奥様が ガッカリする 違います？
 
 ### "が" + "キジ" (1 occurrences)
 - Predicted: None
@@ -29732,6 +26862,12 @@ Accuracy: 98.66%
 - Examples:
   - 弟が ババ!
 
+### "が" + "バンピー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - フランクが バンピーの跡を継いだと？
+
 ### "が" + "ピザ屋" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29774,12 +26910,6 @@ Accuracy: 98.66%
 - Examples:
   - すみませんが ミルクを売っているところは？
 
-### "が" + "ヤツら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それは海と空の両方が ヤツらの心を洗うからだって。
-
 ### "が" + "リサ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -29797,6 +26927,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 年上の僕が ルールなんだぞ。
+
+### "が" + "ロボット" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ロボットが ロボットが生きてますぅっ！もしもし！
 
 ### "が" + "一度" (1 occurrences)
 - Predicted: None
@@ -29851,18 +26987,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 自分の生活が 人の興味を引くと？
-
-### "が" + "今" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ダメです レフェリーが 今 試合終了を宣言！
-
-### "が" + "今回" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ネプチューン社の特派員ですが 今回もお手柄でしたねぇ。
 
 ### "が" + "今日" (1 occurrences)
 - Predicted: None
@@ -29960,29 +27084,23 @@ Accuracy: 98.66%
 - Examples:
   - 人生で一番大切な人が 側にいるのがわからないの？
 
-### "が" + "備えて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 本船には優秀な戦闘艇が 備えてあります。
-
 ### "が" + "傷つかねえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （植野）なんで石田が 傷つかねえといけねえんだよッ！
 
+### "が" + "僕" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どんなダイニングセットが 僕に相応しいだろう？
+
 ### "が" + "先生" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ニールの死が 先生の責任だと？
-
-### "が" + "入る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺とお前が 入ると思ってた！
 
 ### "が" + "全て" (1 occurrences)
 - Predicted: None
@@ -30008,6 +27126,12 @@ Accuracy: 98.66%
 - Examples:
   - オッペンハイマーの件が 出たら？
 
+### "が" + "出て" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まだ 言葉が 出てこないの？
+
 ### "が" + "分かった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30025,6 +27149,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何が 分ったってんだ！
+
+### "が" + "切り札" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それが 切り札か？
 
 ### "が" + "動いて" (1 occurrences)
 - Predicted: None
@@ -30060,7 +27190,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この決闘は わがマンマユート団が 取り仕切るぞ！
+  - この決とうはわがマンマユート団が 取り仕切るぞ！
 
 ### "が" + "叫び声" (1 occurrences)
 - Predicted: None
@@ -30122,24 +27252,6 @@ Accuracy: 98.66%
 - Examples:
   - ドイツ軍のお尋ね者が 奴らの本拠地ベルリンへ？
 
-### "が" + "妙に" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゆうべから石達が 妙に騒ぎおってな。
-
-### "が" + "始まった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きっとステキなことが 始まったんだって。
-
-### "が" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そのほうが 娘が 言うこと聞くかもしれないね…。
-
 ### "が" + "嬉しい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30181,6 +27293,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 歴史を見て見ろ 女の子が 安全だったことなんてあったか？
+
+### "が" + "実質的" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 法的にはまだだが 実質的には僕の妻だ！
 
 ### "が" + "実際" (1 occurrences)
 - Predicted: None
@@ -30248,12 +27366,6 @@ Accuracy: 98.66%
 - Examples:
   - 僕が 弱いと思ってるんだろ？
 
-### "が" + "弱くなってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルちゃんの力が 弱くなってるからね。
-
 ### "が" + "強い" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30284,12 +27396,6 @@ Accuracy: 98.66%
 - Examples:
   - どんな結末が 待っているのかしら？
 
-### "が" + "心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これは わずかだが 心ばかりのお礼だ。
-
 ### "が" + "心配" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30313,12 +27419,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もう 俺が 怖くないと？
-
-### "が" + "怪物" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや 三下だが 怪物に変身していた。
 
 ### "が" + "恐ろしくない" (1 occurrences)
 - Predicted: None
@@ -30356,12 +27456,6 @@ Accuracy: 98.66%
 - Examples:
   - あなたが 抗うつ薬を処方した？
 
-### "が" + "撃ちにくい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 水面スレスレのほうが 撃ちにくいんだ。
-
 ### "が" + "撮影" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30385,12 +27479,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今夜はあるかもしれないが 明日の夜はあるのか？
-
-### "が" + "昔" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 金が ちっと足りないが 昔のよしみだ。
 
 ### "が" + "暴力" (1 occurrences)
 - Predicted: None
@@ -30457,6 +27545,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何が？ みんなが 来たことがか？
+
+### "が" + "来る" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何が 来るの？
 
 ### "が" + "案内" (1 occurrences)
 - Predicted: None
@@ -30590,23 +27684,11 @@ Accuracy: 98.66%
 - Examples:
   - だが 父親が怖くて手紙を出せない！
 
-### "が" + "犠牲" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - エジプト人が 犠牲になる事はない!
-
 ### "が" + "犯人" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何故 お前らが 犯人を捜したんだ？
-
-### "が" + "狙われてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヴェニスからのチャーター船が 狙われてる。
 
 ### "が" + "独り" (1 occurrences)
 - Predicted: None
@@ -30631,12 +27713,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もしも 皆が平等なら では 誰が 王になるのか？
-
-### "が" + "王様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんなのこと考えるのが 王様でしょ。
 
 ### "が" + "理解" (1 occurrences)
 - Predicted: None
@@ -30673,12 +27749,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おばあさんが 目を覚ましたら どうなるの？
-
-### "が" + "真っ白" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その時だ 突然 目の前が 真っ白になっちまった。
 
 ### "が" + "着替え" (1 occurrences)
 - Predicted: None
@@ -30794,12 +27864,6 @@ Accuracy: 98.66%
 - Examples:
   - 君には音楽が 聴こえるか？
 
-### "が" + "脚" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 『ゴリアテ』のほうが 脚が速いよ どうするの？
-
 ### "が" + "脱落" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30828,7 +27892,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 小汚ねえ賞金稼ぎが 英雄 気取りやがって！
+  - クソーッ こきたねえ賞金かせぎが 英雄 気どりやがって！
 
 ### "が" + "薬" (1 occurrences)
 - Predicted: None
@@ -30866,12 +27930,6 @@ Accuracy: 98.66%
 - Examples:
   - まだあいつらが 見つからないのか?
 
-### "が" + "解けた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファーの魔法が 解けたんだ！
-
 ### "が" + "言いたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30907,12 +27965,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - シェパードが 説明していたことだ。
-
-### "が" + "読める" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほってある字が 読めるといいんだけど。
 
 ### "が" + "貴様" (1 occurrences)
 - Predicted: None
@@ -31142,6 +28194,12 @@ Accuracy: 98.66%
 - Examples:
   - バビウがアイスを持ってきた 食べる？
 
+### "きたら" + "戸" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でももし 今 パクが入ってきたら 戸を開けて？
+
 ### "きたら" + "誰" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31172,11 +28230,11 @@ Accuracy: 98.66%
 - Examples:
   - 今頃 きっと どこかで泣いてるわ。
 
-### "きっと" + "ゴンドア" (1 occurrences)
+### "きっと" + "ねっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 全部 片づいたら きっと ゴンドアへ送って行ってあげる。
+  - いえいえ これからが大変ですよ きっと ねっ？
 
 ### "きっと" + "効く" (1 occurrences)
 - Predicted: None
@@ -31208,6 +28266,12 @@ Accuracy: 98.66%
 - Examples:
   - 入ってきなさい クソ野郎ども！
 
+### "きのうー" + "来た" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - きのうー 来たかな？
+
 ### "きみ" + "きみ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31219,12 +28283,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - きみ 魔女だろ？
-
-### "くい止めろ" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） くい止めろ 君は床に伏せていたまえ。
 
 ### "くそ" + "この" (1 occurrences)
 - Predicted: None
@@ -31243,6 +28301,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - くそ ロシアめ！
+
+### "くそぉ" + "ゴリアテ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - くそぉ ゴリアテ 何をしてる！！
+
+### "くそぉ" + "特務" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - くそぉ 特務の青二才がぁっ！
 
 ### "くそっ" + "オレンジ" (1 occurrences)
 - Predicted: None
@@ -31346,18 +28416,6 @@ Accuracy: 98.66%
 - Examples:
   - 受け取ってください ガンダルフ！
 
-### "ください" + "中" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごらんください 中は宝の山です。
-
-### "ください" + "怒ります" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） いいかげんにしてください 怒りますよ！
-
 ### "ください" + "約束" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31435,6 +28493,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ナカトミ・ビルから 自動小銃で撃ってくる !
+
+### "くる" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （草太）行ってくる -（鈴芽）え？
 
 ### "くる" + "?" (1 occurrences)
 - Predicted: None
@@ -31634,11 +28698,11 @@ Accuracy: 98.66%
 - Examples:
   - 陽菜ちゃん 今日はお天気にしてくれて ありがと！
 
-### "くれて" + "私" (1 occurrences)
+### "くれて" + "ありがとう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとう 助けてくれて 私 シータっていうの。
+  - 生まれてきてくれて ありがとう。
 
 ### "くれてた" + "ほう" (1 occurrences)
 - Predicted: None
@@ -31651,12 +28715,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - いつも電話に出てくれる あの女性は誰だ？
-
-### "くれれば" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 目か心臓をくれれば もっとすごいぞ！
 
 ### "くわ" + "いい" (1 occurrences)
 - Predicted: None
@@ -31730,12 +28788,6 @@ Accuracy: 98.66%
 - Examples:
   - 宗介くん 使い残りなんだけど これ いるかな？
 
-### "くん" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズーくん 君を誤解していた 許してくれたまえ。
-
 ### "くん" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31765,6 +28817,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こんな船に乗るぐらい 軽いこった！
+
+### "ぐんかん" + "軍艦" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ぐんかん 軍艦？
+
+### "けど" + "いい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - わからないけど いいの？
 
 ### "けど" + "お前" (1 occurrences)
 - Predicted: None
@@ -31808,17 +28872,11 @@ Accuracy: 98.66%
 - Examples:
   - 俺もクズだけど なんで女は そんなクズと寝るんだ？
 
-### "けど" + "ばあちゃん" (1 occurrences)
+### "けど" + "ぼく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 構わねえけど ばあちゃん どこへ行くの？
-
-### "けど" + "まさか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 「家を連れて来い」って 言ったけど まさか…！
+  - …けど ぼくの父さんはうそつきじゃないよ！
 
 ### "けど" + "もし" (1 occurrences)
 - Predicted: None
@@ -31873,12 +28931,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - パパは手押し車を押したけど 使い方がわからなかった！
-
-### "けど" + "僕" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - けど 僕の父さんは ウソつきじゃないよ。
 
 ### "けど" + "出来る" (1 occurrences)
 - Predicted: None
@@ -31964,12 +29016,6 @@ Accuracy: 98.66%
 - Examples:
   - あの女性が ドライブに誘ってるけど 行っていい？
 
-### "けど" + "解けない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私は呪いは かけられるけど 解けない魔女なの。
-
 ### "けど" + "話" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32005,12 +29051,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - けれど 歯で噛みつくことはできない！
-
-### "けれども" + "ご安心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空中海賊が本船を狙っています けれども ご安心ください。
 
 ### "こ" + "どう" (1 occurrences)
 - Predicted: None
@@ -32066,6 +29106,12 @@ Accuracy: 98.66%
 - Examples:
   - こいつ セルキーなんだ。
 
+### "こいつ" + "何か" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こいつ 何か失礼な事を？
+
 ### "こいつ" + "海" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32077,12 +29123,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こいつ 誰？
-
-### "こいつ" + "金貨" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何っ！ こいつ 金貨なんか持ってら。
 
 ### "こいつら" + "何者" (1 occurrences)
 - Predicted: None
@@ -32125,6 +29165,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここ どうしたの？
+
+### "ここ" + "なぜ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここ なぜ?
 
 ### "ここ" + "ゆれない" (1 occurrences)
 - Predicted: None
@@ -32180,12 +29226,6 @@ Accuracy: 98.66%
 - Examples:
   - 君こそ この前のとき 退屈そうにしてただろ？
 
-### "こそ" + "さよなら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今度こそ さよなら！
-
 ### "こそ" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32210,18 +29250,6 @@ Accuracy: 98.66%
 - Examples:
   - その通り！ それこそ ボヘミアン革命の魂だ！
 
-### "こそ" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これこそ ラピュタの力の根源なのだ。
-
-### "こそ" + "人類" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラピュタの力こそ 人類の夢だからだ。
-
 ### "こそ" + "怒ってるみたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32238,7 +29266,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 古文書にあった通りだ この光こそ 聖なる光だ。
+  - この光こそ 聖なる光だ！
 
 ### "こっそり" + "ベル" (1 occurrences)
 - Predicted: None
@@ -32318,11 +29346,11 @@ Accuracy: 98.66%
 - Examples:
   - あなたと ここにいること あなたは？
 
-### "こと" + "ある" (1 occurrences)
+### "こと" + "ありません" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 前も何日もいなかったこと あるから。
+  - 他になにかお手伝いすること ありませんか？
 
 ### "こと" + "あんなら" (1 occurrences)
 - Predicted: None
@@ -32335,18 +29363,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - サツキなんか聞き分けがいいから なおのこと かわいそう。
-
-### "こと" + "されなかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫だ 君は？ ひどいこと されなかった？
-
-### "こと" + "たくさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 マルコ・パゴット大尉のこと たくさん知ってるの。
 
 ### "こと" + "って" (1 occurrences)
 - Predicted: None
@@ -32492,6 +29508,12 @@ Accuracy: 98.66%
 - Examples:
   - 僕のこと 話した？
 
+### "ことわ" + "王様" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ことわ 王様の話 断れないの？
+
 ### "こないで" + "ねえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32521,12 +29543,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - この ならず者！ 何なのよ？
-
-### "この" + "ばかげた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この ばかげた戦争を 終わらせましょう。
 
 ### "この" + "セルキー" (1 occurrences)
 - Predicted: None
@@ -32636,36 +29652,6 @@ Accuracy: 98.66%
 - Examples:
   - ああっ こらっ 逃げるな！ 待て おいっ！
 
-### "こりゃ" + "あんまり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ あんまり時間がねえな…。
-
-### "こりゃ" + "いよいよ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ いよいよ いかんな。
-
-### "こりゃ" + "うめぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ うめぇな ホントによ。 たまんねぇな。
-
-### "こりゃ" + "おったまげた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや こりゃ おったまげた 軍隊のおでましだ。
-
-### "こりゃ" + "とんだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ とんだイタリア空軍の お出ましだぜ。
-
 ### "こりゃ" + "びっくり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32684,29 +29670,11 @@ Accuracy: 98.66%
 - Examples:
   - やばいなこりゃ 予備はある？
 
-### "こりゃあ" + "たまげた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃあ たまげた！
-
-### "こりゃあ" + "一方的" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃあ 一方的な展開に なって来たぞ。
-
 ### "こりゃあ" + "真っ黒" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - こりゃあ 真っ黒クロスケだな。
-
-### "こりゃあ" + "高く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがなぁ… こりゃあ 高くつくぜ。
 
 ### "これ" + "❝" (1 occurrences)
 - Predicted: None
@@ -32720,6 +29688,12 @@ Accuracy: 98.66%
 - Examples:
   - あのね これ あげる。
 
+### "これ" + "あなた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （高井たかい）これ あなたですよね（木村）はあ？
+
 ### "これ" + "いる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32730,7 +29704,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - これ おかしくない？ ねぇ 見て！ ハウルの城が来てる。
+  - これ おかしくない？
 
 ### "これ" + "お前" (1 occurrences)
 - Predicted: None
@@ -32744,23 +29718,11 @@ Accuracy: 98.66%
 - Examples:
   - ダメだよ！ これ お母さんのトウモロコシだよ！
 
-### "これ" + "これ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これ これ モランジュ君は？
-
 ### "これ" + "すげえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （治）ちょっとこれ すげえな！
-
-### "これ" + "ちょっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ… あっ！ これ ちょっと…。
 
 ### "これ" + "どう" (1 occurrences)
 - Predicted: None
@@ -32809,12 +29771,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - これ これ モランジュ君は？
-
-### "これ" + "仕上げちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ソフィー） これ 仕上げちゃう 楽しんで来て。
 
 ### "これ" + "余韻" (1 occurrences)
 - Predicted: None
@@ -32922,7 +29878,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - これ 絶対 イケると思わない？
+  - これ 絶対いけると思わない？
 
 ### "これ" + "見た" (1 occurrences)
 - Predicted: None
@@ -32972,6 +29928,12 @@ Accuracy: 98.66%
 - Examples:
   - これから なにする？
 
+### "これから" + "なんて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - これから なんて呼ぼうか ?
+
 ### "これる" + "一緒" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -32989,12 +29951,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こんな くだらないもの！
-
-### "こんな" + "ばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな ばあちゃん 入れるんじゃなかった！
 
 ### "こんな" + "ひどい" (1 occurrences)
 - Predicted: None
@@ -33092,6 +30048,12 @@ Accuracy: 98.66%
 - Examples:
   - はい こんにちは 賢そうな子だよぉ。
 
+### "こんの" + "いっちまえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こんの いっちまえ！
+
 ### "こんばんは" + "お一人" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -33115,12 +30077,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こんばんは ご用は ?
-
-### "こんばんは" + "シネマボーイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんばんは シネマボーイ 加藤清史郎です。
 
 ### "こんばんは" + "ロドルフォ" (1 occurrences)
 - Predicted: None
@@ -33170,23 +30126,11 @@ Accuracy: 98.66%
 - Examples:
   - お早うございます 我がソートー！
 
-### "ごはん" + "まだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごめんなさい ごはん まだなんです。
-
 ### "ごまかせ" + "と" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ごまかせ と言うのか？
-
-### "ごめん" + "ごめん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハウル） やぁ ごめん ごめん 捜したよ。
 
 ### "ごめん" + "すまん" (1 occurrences)
 - Predicted: None
@@ -33206,23 +30150,11 @@ Accuracy: 98.66%
 - Examples:
   - もちろんっ！ ああ… でもごめん 一瞬待って！
 
-### "ごめん" + "巻き込んじゃった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごめん 巻き込んじゃったね。
-
 ### "ごめん" + "待った" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フフフ ごめん 待った？
-
-### "ごめん" + "捜した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハウル） やぁ ごめん ごめん 捜したよ。
 
 ### "ごめん" + "気づかなかった" (1 occurrences)
 - Predicted: None
@@ -33240,7 +30172,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 平気 ごめん 痛かった？
+  - ごめん 痛かった？
 
 ### "ごめん" + "私" (1 occurrences)
 - Predicted: None
@@ -33253,18 +30185,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あっ ごめん （秋也）えっ？
-
-### "ごめんなさい" + "いろいろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごめんなさい いろいろ迷惑かけて。
-
-### "ごめんなさい" + "ごはん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごめんなさい ごはん まだなんです。
 
 ### "ごめんなさい" + "その" (1 occurrences)
 - Predicted: None
@@ -33307,18 +30227,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ああ ご免 聞こえるだろ？
-
-### "ご婦人方" + "どうぞ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ ご婦人方 どうぞ。 気をつけてね。
-
-### "ご覧" + "あんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ご覧 あんなに爆弾をくっつけてる。
 
 ### "ご静聴" + "ご静聴" (1 occurrences)
 - Predicted: None
@@ -33367,12 +30275,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ただのガス銃で空包さ おしゃれだろ？
-
-### "さ" + "ここ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でもさ ここには煙突もないし 湿ってるし…。
 
 ### "さ" + "すぐ" (1 occurrences)
 - Predicted: None
@@ -33470,12 +30372,6 @@ Accuracy: 98.66%
 - Examples:
   - ところでさ マジで どっちが美人なの？
 
-### "さ" + "信じる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばか者だけさ 信じるのは。 フ～ン。
-
 ### "さ" + "偉そう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -33506,12 +30402,6 @@ Accuracy: 98.66%
 - Examples:
   - 友人だからさ 彼女が嫌い?
 
-### "さ" + "料理" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） そうさ 料理なんか やんないよ！
-
 ### "さ" + "映画" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -33529,12 +30419,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 答えてやるさ 聞きたいか？
-
-### "さ" + "花屋さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここの花を摘んでさ 花屋さんを あの店で できないかな？
 
 ### "さ" + "行きましょ" (1 occurrences)
 - Predicted: None
@@ -33566,47 +30450,17 @@ Accuracy: 98.66%
 - Examples:
   - 今日さ 飛行船から手をふったの 見えた？
 
-### "さぁ" + "おあがり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ おあがり。 ありがとう。
-
 ### "さぁ" + "これ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - さぁ これを食べなさい コレっ！
 
-### "さぁ" + "ご婦人方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ ご婦人方 どうぞ。 気をつけてね。
-
 ### "さぁ" + "ご飯" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - さぁ ご飯食べよう！ 耕一の分も食べちゃお～っと！
-
-### "さぁ" + "どう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ どうする？
-
-### "さぁ" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ みんな しっかり稼ぎな！
-
-### "さぁ" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ カルシファー お願いしますよ。
 
 ### "さぁ" + "名前" (1 occurrences)
 - Predicted: None
@@ -33632,41 +30486,17 @@ Accuracy: 98.66%
 - Examples:
   - さぁ 水が出るかなぁ？
 
-### "さぁ" + "行きたまえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ 行きたまえ！
-
-### "さぁ" + "行こう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ 行こう 出口を探さなきゃ。
-
 ### "さぁ" + "跳べ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうだ さぁ 跳べ！
 
-### "さぁ" + "銀" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （鉱夫） ダメでさぁ 銀どころか錫さえ ねえ。
-
 ### "さぁーて" + "猫" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - さぁーて 猫をどうやって探しましょうか！
-
-### "さあ" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ いいコだから寝てくれ。
 
 ### "さあ" + "いけ" (1 occurrences)
 - Predicted: None
@@ -33692,23 +30522,11 @@ Accuracy: 98.66%
 - Examples:
   - さあ お礼を言って戻ろう お弁当 食べなきゃ。
 
-### "さあ" + "お話" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ お話は終わりだ 寝てくれ。
-
 ### "さあ" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 早く行きなさい 女たち. さあ こっちです！
-
-### "さあ" + "さあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ さあ！ ブタが勝つか カーチスか！
 
 ### "さあ" + "どうか" (1 occurrences)
 - Predicted: None
@@ -33824,11 +30642,11 @@ Accuracy: 98.66%
 - Examples:
   - さあ 姉さん いきんで！ 頑張って！
 
-### "さあ" + "忙しく" (1 occurrences)
+### "さあ" + "急いで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - さあ 忙しくなるぜ。
+  - さあ 急いで！
 
 ### "さあ" + "感じて" (1 occurrences)
 - Predicted: None
@@ -33908,6 +30726,12 @@ Accuracy: 98.66%
 - Examples:
   - わかったよ さあ 続けよう！
 
+### "さあ" + "行こう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さあ 行こう！
+
 ### "さあ" + "行って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -33944,12 +30768,6 @@ Accuracy: 98.66%
 - Examples:
   - さあ 食べて食べて！
 
-### "さえ" + "ねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （鉱夫） ダメでさぁ 銀どころか錫さえ ねえ。
-
 ### "さえ" + "信用" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -33985,12 +30803,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 取引させる つもり？
-
-### "さぞ" + "お喜び" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい サリマン先生も さぞ お喜びでしょう。
 
 ### "さっき" + "お洒落" (1 occurrences)
 - Predicted: None
@@ -34052,6 +30864,12 @@ Accuracy: 98.66%
 - Examples:
   - さっさと 失せろ！
 
+### "さっさと" + "蹴破らない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さっさと 蹴破らないか！
+
 ### "さっさと" + "開けろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34070,12 +30888,6 @@ Accuracy: 98.66%
 - Examples:
   - さて そっちは？
 
-### "さて" + "今日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さて 今日は忙しいぞ 引っ越しだ！
-
 ### "さて" + "君" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34093,12 +30905,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さて 車をリコールすべきだろうか？
-
-### "さね" + "海賊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 当たり前さね 海賊が財宝を狙って どこが悪い！
 
 ### "さま" + "探す" (1 occurrences)
 - Predicted: None
@@ -34172,17 +30978,17 @@ Accuracy: 98.66%
 - Examples:
   - 皆に 人の弱点をさらす 必要があるのですか？
 
+### "さらに" + "さん然" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - さらにさらに さん然と光り輝く宝物よ！
+
 ### "さらに" + "ツァンジェン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なぜさらに ツァンジェンとフェイシエを探した?
-
-### "さらば" + "アドリア海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「さらば アドリア海の 自由と放埓の日々よ」ってわけだ。
 
 ### "さらば" + "灰色" (1 occurrences)
 - Predicted: None
@@ -34256,12 +31062,6 @@ Accuracy: 98.66%
 - Examples:
   - 存在を否定されて 捨てられたんだろ？
 
-### "されて" + "死んじゃった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 父さんはサギ師あつかいされて 死んじゃった。
-
 ### "されてる" + "隣" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34322,18 +31122,6 @@ Accuracy: 98.66%
 - Examples:
   - ピアさん いらっしゃいますか？
 
-### "さん" + "おかえりなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルさん おかえりなさい 王様から手紙が来てますよ。
-
-### "さん" + "おかしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あのアメリカさん おかしいの。
-
 ### "さん" + "お出かけ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34358,11 +31146,11 @@ Accuracy: 98.66%
 - Examples:
   - 鬼さん こっち!
 
-### "さん" + "これ" (1 occurrences)
+### "さん" + "ごめん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あっ 焼きついた！ ハウルさん これ…！
+  - ごめんね アライグマさん ごめんね！
 
 ### "さん" + "その" (1 occurrences)
 - Predicted: None
@@ -34454,23 +31242,11 @@ Accuracy: 98.66%
 - Examples:
   - （芹澤）ああ… ええっ？ -（鈴芽）芹澤さん 出して！
 
-### "さん" + "出来てます" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いらっしゃい ポルコ・ロッソさん 出来てますよ。
-
 ### "さん" + "助け" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - シンガーさん 助けに来ました！
-
-### "さん" + "取り消す" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオさん 取り消すなら今のうちですよ。
 
 ### "さん" + "君" (1 occurrences)
 - Predicted: None
@@ -34550,12 +31326,6 @@ Accuracy: 98.66%
 - Examples:
   - ケルナーさん 結婚生活はうまくいってますか？
 
-### "さん" + "絶対" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） ハウルさん 絶対 食べないと思うよ。
-
 ### "さん" + "草太" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34592,17 +31362,17 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽） 草太さんっ 起きてよおっ！
 
-### "さ～ん" + "待って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオさ～ん 待ってますよ～！ また お会いしましょう！
-
 ### "さ～ん" + "電報" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 草壁さ～ん 電報で～す！
+
+### "し" + "ウチ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 変なの！ デブだし ウチの金魚のほうが かわいい。
 
 ### "し" + "スモッグ" (1 occurrences)
 - Predicted: None
@@ -34610,17 +31380,11 @@ Accuracy: 98.66%
 - Examples:
   - 今日は青空だし スモッグもないし！
 
-### "し" + "ブタ" (1 occurrences)
+### "し" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よ～し ブタが後ろをとったぞ！ フィナーレだ！
-
-### "し" + "出来た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よ～し 出来た。
+  - 子供じゃあるまいし 何だこれは？
 
 ### "し" + "堤防" (1 occurrences)
 - Predicted: None
@@ -34634,12 +31398,6 @@ Accuracy: 98.66%
 - Examples:
   - やっと終わったんだし 引退？
 
-### "し" + "掃除" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 キレイでもないし 掃除ぐらいしか できないから…。
-
 ### "し" + "携帯" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34652,35 +31410,11 @@ Accuracy: 98.66%
 - Examples:
   - 試験を切り抜け 勝利し 支配するんです！
 
-### "し" + "服" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた 元気そうだし 服も前より似合ってるわ。
-
-### "し" + "湿ってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でもさ ここには煙突もないし 湿ってるし…。
-
 ### "し" + "目" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 耳も悪いし 目も見えないの？
-
-### "し" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さんが大事にしてたお店だし 私 長女だから…。
-
-### "し" + "粘り強い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配するな 女は いいぞ よく働くし 粘り強いしな。
 
 ### "し" + "胸" (1 occurrences)
 - Predicted: None
@@ -34706,41 +31440,17 @@ Accuracy: 98.66%
 - Examples:
   - （金田）僕らはまだ若いんだし （ケイ）竜！
 
-### "しか" + "お目" (1 occurrences)
+### "しか" + "できない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - こんな空中戦 一生に一度しか お目にかかれねえぞ。
-
-### "しか" + "つけなかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 結婚式にしか つけなかったんだわ。
-
-### "しか" + "ねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっちは昔の穴だらけだ。 やり直すしか ねえですね。
+  - クンクン鳴くぐらいしか できない。
 
 ### "しか" + "保たない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - たった一日しか 保たないんですか？
-
-### "しか" + "考えてない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女を桟橋の金具くらいにしか 考えてないんでしょう！
-
-### "しか" + "聞かない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルさんの言うことしか 聞かないんです。
 
 ### "しか" + "聞こえねえ" (1 occurrences)
 - Predicted: None
@@ -34753,12 +31463,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ただ隠蔽することしか 能がないの？
-
-### "しか" + "見えない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だろねぇ ただのボロ屋にしか 見えないけど…。
 
 ### "しか" + "言ってねえ" (1 occurrences)
 - Predicted: None
@@ -34826,12 +31530,6 @@ Accuracy: 98.66%
 - Examples:
   - 水の飲み方、 息のしかた か？
 
-### "しかたない" + "脱出" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しかたない 脱出！ 急ぎな！
-
 ### "しかも" + "一時的" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34873,12 +31571,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 自動車爆弾が爆発した で爆発した。
-
-### "した" + "どうやら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 安心した どうやら人間みたいだ。
 
 ### "した" + "また" (1 occurrences)
 - Predicted: None
@@ -34946,6 +31638,18 @@ Accuracy: 98.66%
 - Examples:
   - どうした ラモン？
 
+### "した" + "与平" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちくしょう 与平はどうした 与平は!
+
+### "した" + "何か" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どうした 何か匂うのか？
+
 ### "した" + "信じられる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -34998,7 +31702,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 全地上を支配した 恐怖の帝国だったのだ。
+  - 全地上を支配した 恐怖の帝国だったのだ！
 
 ### "した" + "無事" (1 occurrences)
 - Predicted: None
@@ -35048,29 +31752,11 @@ Accuracy: 98.66%
 - Examples:
   - どうしたっ 鈴芽さんっ！
 
-### "したまえ" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 彼なら安心したまえ あの石頭は 私のより頑丈だよ。
-
 ### "したら" + "お母さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もしかしたら お母さん…。
-
-### "したら" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 変なまねしたら すぐ海に たたき込むからね。
-
-### "したら" + "すべて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 一段落したら すべて焼き払ってやる。
 
 ### "したら" + "どんな" (1 occurrences)
 - Predicted: None
@@ -35089,6 +31775,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 結婚したら ピア チャンチャルなんて 想像できない！
+
+### "したら" + "一生" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 結婚したら 一生夢に出てくるぞ 門の前の あの車が！
 
 ### "したら" + "罰" (1 occurrences)
 - Predicted: None
@@ -35114,29 +31806,17 @@ Accuracy: 98.66%
 - Examples:
   - メールしたろ 見てない？
 
-### "したわ" + "夫" (1 occurrences)
+### "しだんだい" + "ゴリアテ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 言われた通りにしたわ 夫の元に帰して。
-
-### "しちゃいます" + "ねっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お届けしちゃいます ねっ ハリー君。
+  - どうしだんだい ゴリアテかい？！！
 
 ### "しちゃって" + "あたし" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ブスっとしちゃって あたしの番組が台無し！
-
-### "しっかり" + "つかまって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しっかり つかまって！
 
 ### "しっかり" + "やんな" (1 occurrences)
 - Predicted: None
@@ -35192,12 +31872,6 @@ Accuracy: 98.66%
 - Examples:
   - この国に生まれた女として これほどの幸せがあろうか！
 
-### "して" + "これっぱかし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さんざん苦労して これっぱかしさ。
-
 ### "して" + "ごまかしてんだろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35215,12 +31889,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 静かにして さっさとおやすみ！
-
-### "して" + "そしたら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何か お話して そしたら寝るから。
 
 ### "して" + "その" (1 occurrences)
 - Predicted: None
@@ -35270,6 +31938,12 @@ Accuracy: 98.66%
 - Examples:
   - 下水をろ過して パパを分離するんだな！
 
+### "して" + "中" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 濡れるなよ。 苦労して 中に 入ったんだからな。
+
 ### "して" + "仕事" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35305,12 +31979,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 静かにして 名前は?
-
-### "して" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 道しるべとして 君に受け継がれたんだ。
 
 ### "して" + "変" (1 occurrences)
 - Predicted: None
@@ -35354,18 +32022,6 @@ Accuracy: 98.66%
 - Examples:
   - 奴を野放しにして 敵に付かれてもいいのか？
 
-### "して" + "新しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平面形は そのままにして 新しい翼断面を使いたいの。
-
-### "して" + "暮らせる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕はソフィー達が安心して 暮らせるようにしたいんだよ。
-
 ### "して" + "渡す" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35383,18 +32039,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 解剖して 確かめてみては？
-
-### "して" + "苦しく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今になって 急に胸がドキドキして 苦しくなっちゃった…。
-
-### "して" + "行方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 無線封鎖して 行方をくらます気だね。
 
 ### "して" + "被害者" (1 occurrences)
 - Predicted: None
@@ -35431,12 +32075,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何をしてた ?
-
-### "してたら" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなことしてたら あの人 戻れなくなっちゃう。
 
 ### "してたら" + "好き" (1 occurrences)
 - Predicted: None
@@ -35480,12 +32118,6 @@ Accuracy: 98.66%
 - Examples:
   - シ～！ おとなしくしてなきゃ ダメでしょ。
 
-### "してやがる" + "メシ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （親方） そこで何してやがる メシはどうした！
-
 ### "してやがる" + "寝ろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35509,12 +32141,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 愛してる なに？
-
-### "してる" + "オイラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 雨漏りしてる オイラ 消えちゃうよ～。
 
 ### "してる" + "バビィ" (1 occurrences)
 - Predicted: None
@@ -35574,7 +32200,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - グズグズしてると 夜が明けっちまうよ！
+  - ぐぅずぐずしてると 夜が明けっちまうよぉー！
 
 ### "してると" + "思った" (1 occurrences)
 - Predicted: None
@@ -35606,24 +32232,6 @@ Accuracy: 98.66%
 - Examples:
   - 電話しとく 茶色のネクタイは？
 
-### "しとけば" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さっきの請求書 水増ししとけば よかった！
-
-### "しとる" + "火" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何をボヤボヤしとる 火を消せ！ 追跡隊を組織しろ！
-
-### "しな" + "こっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 早くしな こっちだよ。
-
 ### "しな" + "宗介" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35642,17 +32250,17 @@ Accuracy: 98.66%
 - Examples:
   - 洗っても色落ちしない 短パン？
 
+### "しない" + "飛行艇" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 沈没しない 飛行艇だぞ！
+
 ### "しないで" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 興奮しないで あなたの仕事は？
-
-### "しないで" + "あんた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なれなれしくしないで あんたは信用してないからね。
 
 ### "しないで" + "いい" (1 occurrences)
 - Predicted: None
@@ -35660,23 +32268,11 @@ Accuracy: 98.66%
 - Examples:
   - パパ 邪魔しないで 口出ししないで いいわね！
 
-### "しないで" + "こいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - グズグズしないで こいつを谷底へ捨てるんだ！
-
 ### "しないで" + "口出し" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - パパ 邪魔しないで 口出ししないで いいわね！
-
-### "しないで" + "引き渡せやしない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - テストもしないで 引き渡せやしないわ！
 
 ### "しないで" + "早く" (1 occurrences)
 - Predicted: None
@@ -35689,6 +32285,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - だから心配しないで 未来なんて怖くない！
+
+### "しないで" + "私" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 邪魔しないで 私は 女なのよ！
 
 ### "しないでしょ" + "ほっといて" (1 occurrences)
 - Predicted: None
@@ -35726,12 +32328,6 @@ Accuracy: 98.66%
 - Examples:
   - ええ、でもそうしなきゃ ならなかったんでしょ？
 
-### "しねえで" + "狭い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わっ！ グズグズしねえで 狭いんだから。
-
 ### "しのぐ" + "科学" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35743,12 +32339,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうか 今しばらく お待ちください。
-
-### "しばらく" + "そこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よし 上出来だ しばらく そこにいてね。
 
 ### "しぼり出して" + "渡せば" (1 occurrences)
 - Predicted: None
@@ -35785,12 +32375,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうしました フロドさん？
-
-### "しました" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 破壊しました 娘は あそこです。
 
 ### "しましょう" + "顔" (1 occurrences)
 - Predicted: None
@@ -35870,12 +32454,6 @@ Accuracy: 98.66%
 - Examples:
   - 銃をしまって もう たくさん！
 
-### "しめあげれば" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな小娘 しめあげれば すぐ口を割るわい。
-
 ### "しめしめ" + "水もれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -35911,12 +32489,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何てことしやがる 何のマネだ 頭は確かか？
-
-### "しやがる" + "撃て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～！ 何てことしやがる 撃て撃て！ 撃ちまくれ！
 
 ### "しょーちゃーん" + "起きなさ" (1 occurrences)
 - Predicted: None
@@ -36002,6 +32574,12 @@ Accuracy: 98.66%
 - Examples:
   - 早くしろ のろまめ！
 
+### "しろ" + "はく手" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - わかったらはく手しろ はく手！
+
 ### "しろ" + "カマ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -36080,23 +32658,17 @@ Accuracy: 98.66%
 - Examples:
   - 協力し合おう いいね？
 
-### "じじい" + "余計" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じじい 余計なことを…。
-
-### "じっちゃん" + "ほら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じっちゃん ほら 欲しがってた助手だ。
-
 ### "じみた" + "マネ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 赤ん坊じみた マネを！
+
+### "じゃ" + "ありません" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マハじゃ ありませんように！
 
 ### "じゃ" + "いい" (1 occurrences)
 - Predicted: None
@@ -36156,7 +32728,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - まあ ありがとう じゃ そのお皿 しまってくださる？
+  - ありがとう じゃ そのお皿しまってくださる？
 
 ### "じゃ" + "どうして" (1 occurrences)
 - Predicted: None
@@ -36182,29 +32754,17 @@ Accuracy: 98.66%
 - Examples:
   - じゃ どんな気分？
 
-### "じゃ" + "なさそう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何もしてないってわけじゃ なさそうね。
-
-### "じゃ" + "ねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パンケーキを作るんじゃ ねえんだからな…。
-
-### "じゃ" + "ひあがっちまう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こう不景気じゃ ひあがっちまう。
-
 ### "じゃ" + "ほか" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じゃ ほかに誰がいる！
+
+### "じゃ" + "やらない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ただじゃ やらないってこと？ じょうけんは？
 
 ### "じゃ" + "やれない" (1 occurrences)
 - Predicted: None
@@ -36218,23 +32778,11 @@ Accuracy: 98.66%
 - Examples:
   - インテリの胸じゃ セクシーさが足りないかしら？
 
-### "じゃ" + "デタラメ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 困るんじゃ デタラメ言いおって。
-
 ### "じゃ" + "トイレ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じゃ トイレいい？
-
-### "じゃ" + "ホレる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配するな おふくろの話じゃ ホレるより慣れだってよ。
 
 ### "じゃ" + "リングイニ" (1 occurrences)
 - Predicted: None
@@ -36308,12 +32856,6 @@ Accuracy: 98.66%
 - Examples:
   - じゃ 本気でマジなの？
 
-### "じゃ" + "決まり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 素敵じゃない。 本当？ じゃ 決まりだな。
-
 ### "じゃ" + "済みません" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -36337,6 +32879,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - じゃ 窓際に座ってた母親は？
+
+### "じゃ" + "笑う" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それじゃ 笑うことも できないじゃない！
 
 ### "じゃ" + "約束" (1 occurrences)
 - Predicted: None
@@ -36362,23 +32910,11 @@ Accuracy: 98.66%
 - Examples:
   - じゃ 行く？
 
-### "じゃ" + "行って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ベッシー） じゃ 行って来ますね。
-
 ### "じゃ" + "裸" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じゃ 裸で寝ろというの？
-
-### "じゃ" + "買い物" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お城だけじゃ 買い物もできませんからね。
 
 ### "じゃ" + "違う" (1 occurrences)
 - Predicted: None
@@ -36403,6 +32939,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - じゃあ お母さんが 死んじゃってもいいのね!
+
+### "じゃあ" + "お茶" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よ～し それじゃあ お茶にしよっか。
 
 ### "じゃあ" + "ここ" (1 occurrences)
 - Predicted: None
@@ -36433,12 +32975,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （帆高）じゃあ アップするよいい？
-
-### "じゃあ" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ ソフィーの何かを くれるかい？
 
 ### "じゃあ" + "ドン" (1 occurrences)
 - Predicted: None
@@ -36506,12 +33042,6 @@ Accuracy: 98.66%
 - Examples:
   - （信代）じゃあ 出る？
 
-### "じゃあ" + "勉強" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ 勉強するのね！
-
 ### "じゃあ" + "君" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -36566,23 +33096,11 @@ Accuracy: 98.66%
 - Examples:
   - じゃあ 考えるべきことは何だ？
 
-### "じゃあ" + "設計" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ 設計は誰がやるんだよ？ フィオがやるよ。
-
 ### "じゃあ" + "踊ろう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうかい？じゃあ 踊ろう！
-
-### "じゃあ" + "頑張りな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃあ 頑張りな。
 
 ### "じゃあ" + "黙って" (1 occurrences)
 - Predicted: None
@@ -36614,12 +33132,6 @@ Accuracy: 98.66%
 - Examples:
   - ありゃ山じゃねえ それに港でもねえ。
 
-### "じゃねえ" + "空中戦" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - スピードだけじゃねえ 空中戦でも強いぜ。
-
 ### "じゃま" + "じゃま" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -36631,12 +33143,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - すごいじゃん テッシー！
-
-### "じゅう" + "空っぽ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな逃げ出して 町じゅう 空っぽになっちゃうわね。
 
 ### "じゅりちゃん" + "昨日" (1 occurrences)
 - Predicted: None
@@ -36650,23 +33156,11 @@ Accuracy: 98.66%
 - Examples:
   - （警察官）すいません 祥太君のお母さんですか？
 
-### "すいません" + "鍵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すいません 鍵をかけたつもり だったんですが…。
-
 ### "すぎる" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - これは厄介だな、厄介すぎる その缶は何だ？
-
-### "すぐ" + "あんた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すぐ あんたの呪いも 解いてやるよ。
 
 ### "すぐ" + "お家" (1 occurrences)
 - Predicted: None
@@ -36679,12 +33173,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - すぐ お電話を！
-
-### "すぐ" + "しばり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 海賊は すぐ しばり首だ。
 
 ### "すぐ" + "そこ" (1 occurrences)
 - Predicted: None
@@ -36800,12 +33288,6 @@ Accuracy: 98.66%
 - Examples:
   - は！ すずめ だいじょうぶ？
 
-### "すばらしい" + "ムスカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すばらしい ムスカ君 君は英雄だ 大変な功績だ。
-
 ### "すべて" + "とても" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -36829,12 +33311,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あ、すまない これは…違うな。
-
-### "すまない" + "今夜" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すまない 今夜は相手が多過ぎた。
 
 ### "すまん" + "つい" (1 occurrences)
 - Predicted: None
@@ -36950,12 +33426,6 @@ Accuracy: 98.66%
 - Examples:
   - ブランド？ 下請けすら 養えないのに！
 
-### "すり抜けながら" + "かっさらえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 最後のチャンスだ すり抜けながら かっさらえ！
-
 ### "する" + "ありがとう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37028,12 +33498,6 @@ Accuracy: 98.66%
 - Examples:
   - 葡萄酒の注文する 価格を見ずに？
 
-### "する" + "先" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「われ エンジン不調 援護する 先にかかれ」。
-
 ### "する" + "勇気" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37045,12 +33509,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 父さんのためなら 何でもする 喜んで 何でもする！
-
-### "する" + "山小屋" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ん？ 煙のにおいがする 山小屋でもあるのかしら…。
 
 ### "する" + "木っ端" (1 occurrences)
 - Predicted: None
@@ -37100,11 +33558,11 @@ Accuracy: 98.66%
 - Examples:
   - かたつむりはどうする 運ぼうか？
 
-### "すると" + "首輪" (1 occurrences)
+### "する" + "違います" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - すると 首輪は警告音を発し ボンッ！
+  - 食べないと奥様が ガッカリする 違います？
 
 ### "すれば" + "よかった" (1 occurrences)
 - Predicted: None
@@ -37214,12 +33672,6 @@ Accuracy: 98.66%
 - Examples:
   - おまえはずっと 旅行に行きたいと言ってたろ！
 
-### "ず～っと" + "待ってて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルは ず～っと 待っててくれたのに。
-
 ### "せ" + "“" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37298,12 +33750,6 @@ Accuracy: 98.66%
 - Examples:
   - 行こうぜ ?
 
-### "ぜ" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見えたぜ あの島だ。
-
 ### "ぜ" + "えぇ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37328,47 +33774,17 @@ Accuracy: 98.66%
 - Examples:
   - ペジテの二の舞だぜ おっ？
 
-### "ぜ" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちっと高いぜ この請求書。 格安よ。
-
-### "ぜ" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女々しい野郎だぜ すぐ逃げようとしやがって。
-
 ### "ぜ" + "もう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - みんな心配してたぜ もういいのか？
 
-### "ぜ" + "アメリカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また会おうぜ アメリカ野郎！ ハハハハ…。
-
 ### "ぜ" + "ビンゴ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - やったぜ ビンゴ!
-
-### "ぜ" + "ホテル代" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こいつは滞在費だぜ ホテル代とか飯代とか…。
-
-### "ぜ" + "ヤツら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 間違えちゃいねえぜ ヤツらの手口は分かってる。
 
 ### "ぜ" + "俺" (1 occurrences)
 - Predicted: None
@@ -37406,29 +33822,11 @@ Accuracy: 98.66%
 - Examples:
   - おきゃくさま ぜひ これを！
 
-### "そいつら" + "後" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいつら 後で泣くことになるな まず人間には戻れないよ。
-
-### "そいで" + "でっかい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいで でっかい島を 空に浮かばしたとな。
-
 ### "そう" + "あれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そう あれは ジェイク・ケイヒル！
-
-### "そう" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうそう いいコだよ エンジンちゃん。
 
 ### "そう" + "いつごろ" (1 occurrences)
 - Predicted: None
@@ -37441,12 +33839,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 旦那様がそう おっしゃてるのかい？
-
-### "そう" + "お湯" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル？ そう お湯の使い過ぎだよ。
 
 ### "そう" + "お礼" (1 occurrences)
 - Predicted: None
@@ -37472,17 +33864,11 @@ Accuracy: 98.66%
 - Examples:
   - そう ドカーン！
 
-### "そう" + "大変" (1 occurrences)
+### "そう" + "云う" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そう 大変なのねぇ…。
-
-### "そう" + "家族" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そう 家族よ。
+  - お父さん 帰ってらしたら そう 云うわよ!
 
 ### "そう" + "思わない" (1 occurrences)
 - Predicted: None
@@ -37532,11 +33918,11 @@ Accuracy: 98.66%
 - Examples:
   - そうか トコトン やる気だな？
 
-### "そうそう" + "いい" (1 occurrences)
+### "そうじふ" + "掃除婦" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そうそう いいコねぇ。
+  - そうじふ 掃除婦って 誰が決めたの？
 
 ### "そうそう" + "住吉祭" (1 occurrences)
 - Predicted: None
@@ -37549,12 +33935,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そうだ お前は記者か？
-
-### "そうだ" + "そうだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうだ そうだ～！
 
 ### "そうだ" + "だ" (1 occurrences)
 - Predicted: None
@@ -37585,6 +33965,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そうだろ 違うか?
+
+### "そぉーれ" + "突っ走れぇー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ほへっへっはっはっはー！そぉーれ 突っ走れぇー！
 
 ### "そこ" + "いい" (1 occurrences)
 - Predicted: None
@@ -37627,12 +34013,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そしたら どちらも撃ち殺す いいか？
-
-### "そして" + "お城" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そして お城で暮らす…。
 
 ### "そして" + "すでに" (1 occurrences)
 - Predicted: None
@@ -37712,12 +34092,6 @@ Accuracy: 98.66%
 - Examples:
   - （草太）そっち おさえて！ -（鈴芽）え… ああっ うん！
 
-### "そっちは" + "どう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい答えだ そっちは どうだい？
-
 ### "そなた" + "まさか" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37741,6 +34115,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - その 湧き上がる感情で 私は 病んでしまった。
+
+### "その" + "黒メガネ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - その 黒メガネ達にさらわれてきたの？
 
 ### "そのうえ" + "まだ" (1 occurrences)
 - Predicted: None
@@ -37814,35 +34194,11 @@ Accuracy: 98.66%
 - Examples:
   - そりゃ 持って帰ったっていいっすよ？
 
-### "そりゃ" + "豪儀" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そりゃ 豪儀だなぁ。
-
 ### "そりゃあ" + "にがだんご" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そりゃあ にがだんごか・・・！？？
-
-### "そりゃあ" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… そりゃあ よかったわね。
-
-### "そりゃあ" + "戦争" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ？ そりゃあ 戦争で稼ぐヤツは悪党さ。
-
-### "そりゃあ" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そりゃあ 私さ。
 
 ### "それ" + "おっしゃらなかった" (1 occurrences)
 - Predicted: None
@@ -37868,6 +34224,12 @@ Accuracy: 98.66%
 - Examples:
   - それ どうしたの？
 
+### "それ" + "どこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何それ どこにあるの？
+
 ### "それ" + "なぁに" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -37879,18 +34241,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （亜紀）それ ほんと？
-
-### "それ" + "やめて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おばあちゃん それ やめてくれない？
-
-### "それ" + "バイロン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それ バイロンかい？ いや 俺だよ またな。
 
 ### "それ" + "ミンク" (1 occurrences)
 - Predicted: None
@@ -37927,12 +34277,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それ 本気？
-
-### "それ" + "父さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それ 父さんが飛行船から 撮った写真なんだ。
 
 ### "それ" + "私" (1 occurrences)
 - Predicted: None
@@ -37988,12 +34332,6 @@ Accuracy: 98.66%
 - Examples:
   - （看護師の母） それで お前 元気やったんか？
 
-### "それで" + "お姉ちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それで お姉ちゃん 心を取られちゃったってわけ？
-
 ### "それで" + "つまり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38042,6 +34380,12 @@ Accuracy: 98.66%
 - Examples:
   - それとも お前ら 俺と殺し合えるか？
 
+### "それとも" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それとも これ？
+
 ### "それとも" + "もっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38060,18 +34404,6 @@ Accuracy: 98.66%
 - Examples:
   - それとも 生きて帰れない方を？
 
-### "それに" + "あそこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに あそこは地獄かもしれねえ。
-
-### "それに" + "かわいい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに かわいいからね。
-
 ### "それに" + "とても" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38084,29 +34416,11 @@ Accuracy: 98.66%
 - Examples:
   - それに トトロのくれたお礼も すてきだったの。
 
-### "それに" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに フィオは俺の飛行艇を いじってるからだ。
-
-### "それに" + "一度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに 一度バラして 湖に運ぶだけで 一日かかるもの。
-
 ### "それに" + "長官宅" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - それに 長官宅の ディナーの件も怒ってるわ！
-
-### "それに" + "風呂" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに 風呂に熱いお湯を送ってくれ。
 
 ### "そろいました" + "スカウト" (1 occurrences)
 - Predicted: None
@@ -38132,11 +34446,23 @@ Accuracy: 98.66%
 - Examples:
   - そんな もったいないことが できるか！
 
+### "そんな" + "フロド" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そんな フロド！
+
 ### "そんな" + "ー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ーそんな ーもうけたろ？
+
+### "そんな" + "暇" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そんな 暇が？
 
 ### "そんなら" + "おばさん" (1 occurrences)
 - Predicted: None
@@ -38150,12 +34476,6 @@ Accuracy: 98.66%
 - Examples:
   - そんなら お父ちゃんの巡洋艦も 沈んでしもたんか？
 
-### "そ～れ" + "つっ走れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （機関士） ハハハ… そ～れ つっ走れ！
-
 ### "ぞ" + "〝" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38168,29 +34488,11 @@ Accuracy: 98.66%
 - Examples:
   - いたぞ あいつだ 捕まえろ！
 
-### "ぞ" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 読めたぞ あの野郎 最後まで撃たねえつもりなんだ。
-
-### "ぞ" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ いいぞ～！
-
 ### "ぞ" + "いますぐ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - すでに遅刻してるぞ いますぐにだ！
-
-### "ぞ" + "おしゃべり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 給油に下りるぞ おしゃべりを やめねえと 舌かむからな。
 
 ### "ぞ" + "おまえ" (1 occurrences)
 - Predicted: None
@@ -38246,12 +34548,6 @@ Accuracy: 98.66%
 - Examples:
   - わかり申した なにとぞ なにとぞ お願い申す！
 
-### "ぞ" + "なあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ブタとだって仲良くやってるぞ なあ！
-
 ### "ぞ" + "なのに" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38264,11 +34560,11 @@ Accuracy: 98.66%
 - Examples:
   - あそこは寒いぞ ほっとくのか？
 
-### "ぞ" + "よく" (1 occurrences)
+### "ぞ" + "もう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 心配するな 女は いいぞ よく働くし 粘り強いしな。
+  - さあ、舞台は整ったぞ もう一度、挑戦する気はあるか？
 
 ### "ぞ" + "わかった" (1 occurrences)
 - Predicted: None
@@ -38342,18 +34638,6 @@ Accuracy: 98.66%
 - Examples:
   - いくぞ ファシオラ家！
 
-### "ぞ" + "ホント" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっとだけだぞ ホントは いけないんだから…。
-
-### "ぞ" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すごいぞ ラピュタは本当にあるんだ！
-
 ### "ぞ" + "ラファイエット" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38420,35 +34704,17 @@ Accuracy: 98.66%
 - Examples:
   - 行くぞ 小僧！
 
-### "ぞ" + "引っ越し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さて 今日は忙しいぞ 引っ越しだ！
-
-### "ぞ" + "当たっちゃいねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇの弾なんぞ 当たっちゃいねえ 故障だ！
-
 ### "ぞ" + "彼" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いいぞ 彼は君に何をする？
 
-### "ぞ" + "忘れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ！ わしがラピュタ探索の 指揮官だぞ 忘れるな！
-
 ### "ぞ" + "急" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いいぞ 急に素直になりやがった。
+  - （ポルコ）いいぞ 急に素直になりやがった！
 
 ### "ぞ" + "数百万" (1 occurrences)
 - Predicted: None
@@ -38461,12 +34727,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もう謝ったぞ 更に何が要る？
-
-### "ぞ" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女だぞ 本当か？
 
 ### "ぞ" + "本気" (1 occurrences)
 - Predicted: None
@@ -38498,7 +34758,7 @@ Accuracy: 98.66%
 - Examples:
   - いつか思い知らせてやるぞ 私の名誉にかけて！
 
-### "ぞ" + "育ち" (1 occurrences)
+### "ぞ" + "育ち盛り" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -38534,6 +34794,12 @@ Accuracy: 98.66%
 - Examples:
   - これは凄い映画になるぞ 違うか？
 
+### "ぞ" + "門" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 結婚したら 一生夢に出てくるぞ 門の前の あの車が！
+
 ### "ぞ" + "降りたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38545,6 +34811,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ウイルスは非現実的な設計だと 言ってたぞ 飛ぶのか？
+
+### "ぞぉ" + "ラピュタ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - すごいぞぉ ラピュタは本当にあるんだ！！
+
+### "ぞぉ" + "本当" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 女だぞぉ 本当か？
 
 ### "たくさん" + "時間" (1 occurrences)
 - Predicted: None
@@ -38582,6 +34860,12 @@ Accuracy: 98.66%
 - Examples:
   - 君たち ここで何を？
 
+### "たち" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたたち それでも飛行艇乗りなの？
+
 ### "たち" + "と" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38599,6 +34883,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 下水の掃除をしながら 亡くなるものたち の方が 多いのに.
+
+### "たち" + "みんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この人たち みんな空賊なの？
 
 ### "たち" + "もしかして" (1 occurrences)
 - Predicted: None
@@ -38672,12 +34962,6 @@ Accuracy: 98.66%
 - Examples:
   - （芹澤）あんたたち 車はドアから乗れよおっ！
 
-### "たっぷり" + "しめあげて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - かまわん！ 空中で たっぷり しめあげてやれ。
-
 ### "たてない" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38750,6 +35034,12 @@ Accuracy: 98.66%
 - Examples:
   - 奴は旧市街だ いま何人いる？
 
+### "だ" + "うて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そこだ うて！
+
 ### "だ" + "うてっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38761,12 +35051,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうだ うまいか？
-
-### "だ" + "うまく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ！ おじいちゃん。 わしの孫だ うまくやるさ。
 
 ### "だ" + "うん" (1 occurrences)
 - Predicted: None
@@ -38785,6 +35069,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうしたんだ おい？
+
+### "だ" + "おっきい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちがう そっちの奴だ おっきい奴 おっきい奴！
 
 ### "だ" + "おまえ" (1 occurrences)
 - Predicted: None
@@ -38834,12 +35124,6 @@ Accuracy: 98.66%
 - Examples:
   - 特に秘書だ くたばれ！
 
-### "だ" + "こりゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だ こりゃ?
-
 ### "だ" + "さぁ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38864,18 +35148,6 @@ Accuracy: 98.66%
 - Examples:
   - どうだ しっかりしろ？
 
-### "だ" + "しばらく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よし 上出来だ しばらく そこにいてね。
-
-### "だ" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - テストは抜きだ すぐ飛ばなきゃならねえ。
-
 ### "だ" + "すてき" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38892,7 +35164,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 最後のチャンスだ すり抜けながら かっさらえ！
+  - 最後のチャンスだ すり抜けながらかっさらえーー！
 
 ### "だ" + "ずごい" (1 occurrences)
 - Predicted: None
@@ -38912,12 +35184,6 @@ Accuracy: 98.66%
 - Examples:
   - 無理だ そこからは入れん！
 
-### "だ" + "そこの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 時間がねえんだ そこの窓から 後ろを見てみな そっとだ。
-
 ### "だ" + "そっくり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -38930,29 +35196,11 @@ Accuracy: 98.66%
 - Examples:
   - バッチリだ そっちは？
 
-### "だ" + "そっちは" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい答えだ そっちは どうだい？
-
-### "だ" + "そのまま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな戦車を狙ってるんだ そのまま！
-
 ### "だ" + "そりゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なんだ そりゃ！
-
-### "だ" + "そんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ…！ 西部劇じゃねえんだ そんなもの 当たるかよ。
 
 ### "だ" + "だから" (1 occurrences)
 - Predicted: None
@@ -38989,12 +35237,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 邪魔だ どけ！
-
-### "だ" + "なぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔法とは そういうものだ なぁ サリマン。
 
 ### "だ" + "なあ" (1 occurrences)
 - Predicted: None
@@ -39050,17 +35292,11 @@ Accuracy: 98.66%
 - Examples:
   - 何だ また部屋代の 催促か？
 
-### "だ" + "みっちゃん" (1 occurrences)
+### "だ" + "みっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうだ みっちゃん家に行く約束なんだ。
-
-### "だ" + "めずらしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オートモービルだ めずらしいな。
 
 ### "だ" + "もっと" (1 occurrences)
 - Predicted: None
@@ -39098,12 +35334,6 @@ Accuracy: 98.66%
 - Examples:
   - 最後だ よし降ろせ！
 
-### "だ" + "わかる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺の仕事もなくなるんだ わかるか？
-
 ### "だ" + "アグネス" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39121,6 +35351,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ドーナツみたいに現実だ アホ！
+
+### "だ" + "アルバート" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - “ＢＰＮ”だ アルバートを覚えてるな？
 
 ### "だ" + "アルフレド" (1 occurrences)
 - Predicted: None
@@ -39157,12 +35393,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おい…何様のつもりだ イカれた能なしが！
-
-### "だ" + "イヤッホ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やった～！ これで俺も有名人だ イヤッホ～！
 
 ### "だ" + "ウィル" (1 occurrences)
 - Predicted: None
@@ -39218,12 +35448,6 @@ Accuracy: 98.66%
 - Examples:
   - お前こそ邪魔だ クソ女！
 
-### "だ" + "グジャグジャ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 運命が決まる決闘だ グジャグジャ言わせねえぞ！
-
 ### "だ" + "ケツ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39253,12 +35477,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何を言ってるんだ ザリガニが欲しいのか？
-
-### "だ" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見たいんだ シータの生まれた 古い家や 谷や ヤク達を…。
 
 ### "だ" + "ジドラー" (1 occurrences)
 - Predicted: None
@@ -39416,6 +35634,18 @@ Accuracy: 98.66%
 - Examples:
   - もう十分だ フリン君！
 
+### "だ" + "ブタ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 生きる値打ちもない奴だ ブタめ！
+
+### "だ" + "ブリッジ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうか！ぼくらは東へ進んでいるはずなんだ ブリッジ！！
+
 ### "だ" + "プッ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39433,6 +35663,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私だ プージャ！
+
+### "だ" + "ベツラー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今日は何がしたいんだ ベツラーさん？
 
 ### "だ" + "ペラヨ" (1 occurrences)
 - Predicted: None
@@ -39452,18 +35688,6 @@ Accuracy: 98.66%
 - Examples:
   - どうしたんだ ボーリャ？ 怪我したのか？
 
-### "だ" + "ポット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ そうだ ポットかけっぱなしだった。
-
-### "だ" + "ポルコ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だ ポルコも どっちかへ 売り込んだら いいんだよ。
-
 ### "だ" + "マドモワゼル" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39474,13 +35698,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （シャルル） ダメだ ママ 真っ暗で何も分からないよ。
-
-### "だ" + "マリア" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 息子の嫁達だ マリア ティナ アンナ その妹のミレッタ。
+  - やつらだ ママ どうしよう…?
 
 ### "だ" + "マリソル" (1 occurrences)
 - Predicted: None
@@ -39560,12 +35778,6 @@ Accuracy: 98.66%
 - Examples:
   - 何の話だ レストランか？
 
-### "だ" + "ロボット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私はムスカ大佐だ ロボットにより 通信回路が破壊された。
-
 ### "だ" + "ワトニー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39578,23 +35790,11 @@ Accuracy: 98.66%
 - Examples:
   - 未使用の脳だからだ 一度も使われたことがない！
 
-### "だ" + "一段" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前そっくりのジャジャ馬だ 一段と過激になりやがった！
-
 ### "だ" + "一番" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 嵐が来そうだ 一番近い村までは遠い？
-
-### "だ" + "上" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラピュタの中枢だ 上の城などガラクタにすぎん。
 
 ### "だ" + "不安そう" (1 occurrences)
 - Predicted: None
@@ -39644,29 +35844,23 @@ Accuracy: 98.66%
 - Examples:
   - 近くに住んでいるんだ 今晩にでも寄ってみないか？
 
-### "だ" + "伝承" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 黒い石だ 伝承の通りだ。
-
 ### "だ" + "住所" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 中心街だ 住所は持ってるな？
 
+### "だ" + "何ごと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （男）何だ 何ごとだ！
+
 ### "だ" + "信じられる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ひどいもんだ 信じられるか？
-
-### "だ" + "僕は" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータが捕まったんだ 僕は助けに行く。
 
 ### "だ" + "元気" (1 occurrences)
 - Predicted: None
@@ -39691,12 +35885,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 街に攻め入るのだ 全て蹴散らせ！
-
-### "だ" + "具合" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうだ 具合は？
 
 ### "だ" + "冗談" (1 occurrences)
 - Predicted: None
@@ -39758,6 +35946,12 @@ Accuracy: 98.66%
 - Examples:
   - 警察だ 動くんじゃない！
 
+### "だ" + "勝負" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 一対一だ 勝負しろ！
+
 ### "だ" + "参った" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39800,41 +35994,11 @@ Accuracy: 98.66%
 - Examples:
   - お前は何者だ 名前は？
 
-### "だ" + "向こう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 父さんの言った通りだ 向こうは逆に風が吹いている。
-
-### "だ" + "吸い込まれる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） ママ ダメだ 吸い込まれる！
-
-### "だ" + "喜んで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 愛する者のためだ 喜んで戦うぜ。 よ～し！
-
 ### "だ" + "壁" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうだ 壁が崩壊した！
-
-### "だ" + "夜" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 光の指すほうへ飛べばいいんだ 夜には着く。
-
-### "だ" + "大変" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すばらしい ムスカ君 君は英雄だ 大変な功績だ。
 
 ### "だ" + "天子" (1 occurrences)
 - Predicted: None
@@ -39884,12 +36048,6 @@ Accuracy: 98.66%
 - Examples:
   - 彼から指輪を奪おうとしたんだ 守ると誓いながら！
 
-### "だ" + "寝て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ お話は終わりだ 寝てくれ。
-
 ### "だ" + "小僧" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -39901,12 +36059,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 懲罰だ 小癩シャオ･ライ！
-
-### "だ" + "小鬼" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ポム） 小鬼だ 小鬼がおる。
 
 ### "だ" + "市場" (1 occurrences)
 - Predicted: None
@@ -39973,12 +36125,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 釜山へ直行で向かうんだ 急いで！
-
-### "だ" + "急がない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 娘を乗せて出発する気だ 急がないと手が出せなくなる。
 
 ### "だ" + "悪夢" (1 occurrences)
 - Predicted: None
@@ -40052,12 +36198,6 @@ Accuracy: 98.66%
 - Examples:
   - 東だ 東へ行け!
 
-### "だ" + "欲しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうだ 欲しいか？
-
 ### "だ" + "殴られたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40081,12 +36221,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ＴＶの人だ 民放だよ な？
-
-### "だ" + "気ぃつけろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行けよ ママより怖いんだ 気ぃつけろ。
 
 ### "だ" + "気づかなかった" (1 occurrences)
 - Predicted: None
@@ -40112,23 +36246,11 @@ Accuracy: 98.66%
 - Examples:
   - それだ 注意しろよ！
 
-### "だ" + "流されて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 風が変わったんだ 流されて針路が狂っちまった。
-
 ### "だ" + "涙" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 素晴らしい名前だ そうだ 涙を拭いて！
-
-### "だ" + "無理" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フン！ ラピュタの宝だ 無理もするさ。
 
 ### "だ" + "熱く" (1 occurrences)
 - Predicted: None
@@ -40220,18 +36342,6 @@ Accuracy: 98.66%
 - Examples:
   - 空だ 空にするぞ！
 
-### "だ" + "突然" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その時だ 突然 目の前が 真っ白になっちまった。
-
-### "だ" + "答え" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 時間だ 答えを聞こう！
-
 ### "だ" + "糸守町" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40255,6 +36365,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そうだ 義理の娘の 靴下洗濯だ！
+
+### "だ" + "聖なる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - その光だ 聖なる光でロボットの封印が解けたのだ！
 
 ### "だ" + "自分" (1 occurrences)
 - Predicted: None
@@ -40334,12 +36450,6 @@ Accuracy: 98.66%
 - Examples:
   - 俺のせいだ 許してくれ ！
 
-### "だ" + "話" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ブタから信号！ 「お前の負けだ 話を聞け」。
-
 ### "だ" + "話してない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40369,18 +36479,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 仕事が何だ 財産など関係ない！
-
-### "だ" + "貿易風" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私ら やつの風上にいるんだ 貿易風をつかまえれば…。
-
-### "だ" + "賭け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ！ 賭けだ 賭けができる！ 連合が胴元になるぞ！
 
 ### "だ" + "走る" (1 occurrences)
 - Predicted: None
@@ -40478,29 +36576,11 @@ Accuracy: 98.66%
 - Examples:
   - （アスベル）仲間の船だ 降りるぞ 行こう！
 
-### "だ" + "降参" (1 occurrences)
+### "だ" + "面" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 降参だ 降参だ～！
-
-### "だ" + "雨" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ みんなと いたいんだ 雨も降りそうだしさ。
-
-### "だ" + "頑張れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいコだ 頑張れ！ ほれほれ！
-
-### "だ" + "風" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいつは低気圧の中心だ 風に船を立てな。
+  - 大したものだ 面と向かってバカだって！
 
 ### "だ" + "食う" (1 occurrences)
 - Predicted: None
@@ -40513,12 +36593,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そこだ 黄色の横！
-
-### "だ" + "（" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （捨丸）これは みんなの分だ （ヒメ）ん？
 
 ### "だ" + "－" (1 occurrences)
 - Predicted: None
@@ -40538,23 +36612,11 @@ Accuracy: 98.66%
 - Examples:
   - 旦那、あの子はどこだい - どの子？
 
-### "だい" + "こりゃあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だい こりゃあ?
-
 ### "だい" + "それ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何だい それ？
-
-### "だい" + "まるで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしたんだい まるで戦だよ。
 
 ### "だい" + "もう" (1 occurrences)
 - Predicted: None
@@ -40591,18 +36653,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なぜだか 分る？
-
-### "だから" + "お願い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん 確かに いいアイデアだ。 ねっ！ だから お願い！
-
-### "だから" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 壊すのね？ だから その…。
 
 ### "だから" + "みんな" (1 occurrences)
 - Predicted: None
@@ -40670,12 +36720,6 @@ Accuracy: 98.66%
 - Examples:
   - ちょっとだけ ね？
 
-### "だけ" + "危険" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平和にとって どれだけ 危険なことか君にも分かるだろう。
-
 ### "だけ" + "持たせて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40688,17 +36732,17 @@ Accuracy: 98.66%
 - Examples:
   - それから どれだけ 時間が経った？
 
+### "だけ" + "無駄" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 掘るだけ 無駄か…?
+
 ### "だけ" + "理由" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私だけ 理由は？
-
-### "だけ" + "生きてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 国が亡びたのに 王だけ 生きてるなんて こっけいだわ。
 
 ### "だけ" + "言って" (1 occurrences)
 - Predicted: None
@@ -40772,12 +36816,6 @@ Accuracy: 98.66%
 - Examples:
   - 残念な結果だったら ?
 
-### "だったら" + "いつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 恋だったら いつでも できるけど…。
-
 ### "だったら" + "なぜ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40796,7 +36834,7 @@ Accuracy: 98.66%
 - Examples:
   - だったら 外で待機しろよ！
 
-### "だったら" + "男らしく" (1 occurrences)
+### "だったら" + "男" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -40838,12 +36876,6 @@ Accuracy: 98.66%
 - Examples:
   - だって いつかは 誰にも分からないでしょう？
 
-### "だって" + "おかしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だって おかしいわよ 何もしてないなら。
-
 ### "だって" + "こ～んな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40868,17 +36900,17 @@ Accuracy: 98.66%
 - Examples:
   - 相手が信頼できる人だって どうして分かるの？
 
+### "だって" + "どこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だって どこへ つれてくんだよ！？
+
 ### "だって" + "はっきり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この高校だって はっきり覚えてる！
-
-### "だって" + "ほら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カウントとれよ！ だって ほら 見ろよ！
 
 ### "だって" + "わからない" (1 occurrences)
 - Predicted: None
@@ -40886,11 +36918,11 @@ Accuracy: 98.66%
 - Examples:
   - 彼にだって わからないだろ？
 
-### "だって" + "オイラ" (1 occurrences)
+### "だって" + "女の子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この城だって オイラが動かしてるんだぜ！
+  - ええ？だって 女の子はあすこに…?
 
 ### "だって" + "封灯中" (1 occurrences)
 - Predicted: None
@@ -40928,12 +36960,6 @@ Accuracy: 98.66%
 - Examples:
   - いつだって 行きゃ しないじゃないか!
 
-### "だって" + "言った" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パートナーだって 言ったじゃない！
-
 ### "だって" + "陽菜" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -40957,6 +36983,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 親をだまして どんな欠席届を書かせた？
+
+### "だまれ" + "イモ豚" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （カーチス）だまれ イモ豚！
+
+### "だまれー" + "グズグズ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だまれー グズグズ言うやつはブチ殺すぞ！
 
 ### "だめ" + "スージー" (1 occurrences)
 - Predicted: None
@@ -41042,12 +37080,6 @@ Accuracy: 98.66%
 - Examples:
   - 聞こえてるだろ スモーク！
 
-### "だろ" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すごいだろ ソフィーが置いてくれたんだ。
-
 ### "だろ" + "タターリン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41101,12 +37133,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 左だと言ってるだろ 左だ！
-
-### "だろ" + "泣く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平気だろ 泣くことも忘れるさ。
 
 ### "だろ" + "爺さん" (1 occurrences)
 - Predicted: None
@@ -41180,6 +37206,12 @@ Accuracy: 98.66%
 - Examples:
   - そうだ 人それぞれだろう 君の幸せは？
 
+### "だろう" + "（" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ピッコロのおやじ）いい子だろう （ポルコ）ん？
+
 ### "だんなさん" + "いない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41191,6 +37223,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （石上中納言） ち 血生ぐさい 玉の首なんて！
+
+### "ちがう" + "そっち" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちがう そっちの奴だ おっきい奴 おっきい奴！
 
 ### "ちくしょう" + "おかしくって" (1 occurrences)
 - Predicted: None
@@ -41216,17 +37254,17 @@ Accuracy: 98.66%
 - Examples:
   - やめろ！ ちくしょう グレイス！
 
+### "ちくしょう" + "与平" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちくしょう 与平はどうした 与平は!
+
 ### "ちくしょう" + "何て" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ちくしょう 何てこと言う!
-
-### "ちっとも" + "さみしくない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちっとも さみしくないみたいだね。
 
 ### "ちひろ" + "と" (1 occurrences)
 - Predicted: None
@@ -41239,12 +37277,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あ！ 鈴芽ちゃん あんたどこ行っとったん！
-
-### "ちゃん" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうだ！ その通りだ！ ねえちゃん いいぞ～！
 
 ### "ちゃん" + "おねんね" (1 occurrences)
 - Predicted: None
@@ -41348,12 +37380,6 @@ Accuracy: 98.66%
 - Examples:
   - 心配ないよ セルキー。 コートは ちゃんと ここにある。
 
-### "ちゃんと" + "ガス代" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちゃんと ガス代も 請求書に入れときますからね。
-
 ### "ちゃんと" + "帰って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41420,12 +37446,6 @@ Accuracy: 98.66%
 - Examples:
   - 話してちょうだい どこへ行ってたの？
 
-### "ちょうど" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょうど あのぐらいの年頃でさ…。
-
 ### "ちょちょ" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41456,12 +37476,6 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽）ええ！ -（環）ちょっ 鈴芽！
 
-### "ちょっと" + "あおられた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと あおられただけです。
-
 ### "ちょっと" + "あんた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41473,12 +37487,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ちょっと いいですか？
-
-### "ちょっと" + "いじった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと いじった 落としやしないよ。
 
 ### "ちょっと" + "え" (1 occurrences)
 - Predicted: None
@@ -41552,6 +37560,12 @@ Accuracy: 98.66%
 - Examples:
   - ちょっと 君 どこへ？
 
+### "ちょっと" + "大丈夫" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちょっと 大丈夫？
+
 ### "ちょっと" + "幾何" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41569,12 +37583,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ちょっと 急用って!
-
-### "ちょっと" + "散歩" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君達 ちょっと 散歩して来てくれないか？
 
 ### "ちょっと" + "瀧" (1 occurrences)
 - Predicted: None
@@ -41648,17 +37656,17 @@ Accuracy: 98.66%
 - Examples:
   - 草太さんっ 踏んでもいい？
 
+### "っあ" + "はなしてぇ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - パズー！ っあ はなしてぇーーー！
+
 ### "ったって" + "ダメ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - サインもらおうったって ダメ！
-
-### "ったって" + "中" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お城ったって 中から見ると ガラクタの寄せ集めね。
 
 ### "って" + "?" (1 occurrences)
 - Predicted: None
@@ -41671,12 +37679,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （三葉）“お前は誰だ？”って あなたこそ誰よ？
-
-### "って" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まさか… 賭けって あの野郎のことなのか!
 
 ### "って" + "あれ" (1 occurrences)
 - Predicted: None
@@ -41702,12 +37704,6 @@ Accuracy: 98.66%
 - Examples:
   - すぐって いつ？
 
-### "って" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜって お前は女の子だよ。
-
 ### "って" + "お願い" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -41720,11 +37716,23 @@ Accuracy: 98.66%
 - Examples:
   - 俺たちが消えたって かまわないだろう？
 
+### "って" + "きっぱり" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 興味ないって きっぱり断れば？
+
 ### "って" + "くれる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 連れてって くれる？
+
+### "って" + "ぐん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 飯くれよー 飯くれよーって ぐんじゃない!
 
 ### "って" + "ここ" (1 occurrences)
 - Predicted: None
@@ -41761,12 +37769,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ね 草太さんって ずっとこんなふうに旅をしてるの？
-
-### "って" + "そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 人間も捨てたもんじゃねえって そう思えて来るぜ。
 
 ### "って" + "そんな" (1 occurrences)
 - Predicted: None
@@ -41810,23 +37812,11 @@ Accuracy: 98.66%
 - Examples:
   - 何人も休職って なんで？
 
-### "って" + "まさか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見守るって まさかカラスに 化けてるんじゃないわよね。
-
 ### "って" + "まとも" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - それって まとも？
-
-### "って" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ホントに飛行艇乗りって みんな バカなんだから！
 
 ### "って" + "もしかして" (1 occurrences)
 - Predicted: None
@@ -41839,6 +37829,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 魔法の力って もどるんでしょ？
+
+### "って" + "わたし" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こわすって わたしが作った艇をこわす気？
 
 ### "って" + "オバーザルツバッハ" (1 occurrences)
 - Predicted: None
@@ -41869,18 +37865,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そのクックって ヤツの本名は？
-
-### "って" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 石を捨てたって ラピュタは なくならないよ。
-
-### "って" + "一体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルって 一体いくつ 名前があるの？
 
 ### "って" + "亡くなって" (1 occurrences)
 - Predicted: None
@@ -41924,29 +37908,17 @@ Accuracy: 98.66%
 - Examples:
   - 明日が彼女の誕生日って 分かってる？
 
-### "って" + "初めて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛行船の台所って 初めてで。
-
-### "って" + "動いてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊連合を抱き込もうって 動いてるって話だぜ。
-
-### "って" + "天使" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ベランダに降りて来たって 天使にでも なっちゃったの？
-
 ### "って" + "嫁入り" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ちょ やめろって 嫁入り前の娘が！
+
+### "って" + "宝" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おばあちゃんの畑って 宝の山みたいね。
 
 ### "って" + "専門家" (1 occurrences)
 - Predicted: None
@@ -42056,11 +38028,11 @@ Accuracy: 98.66%
 - Examples:
   - 今夜 晴れるって 絶好の満月だって！
 
-### "って" + "脅したら" (1 occurrences)
+### "って" + "聞いた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんたに水をかけて消すって 脅したら？
+  - 臨終の“喉鳴り”って 聞いた事ある？
 
 ### "って" + "自分" (1 occurrences)
 - Predicted: None
@@ -42110,23 +38082,11 @@ Accuracy: 98.66%
 - Examples:
   - でかけるって 魔女の修業のこと？
 
-### "って" + "魔法" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まあ… パズーのカバンって 魔法のカバンみたいね。
-
 ### "って" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （ジジ）“風がくる”って （キキ）え？
-
-### "っていう" + "空" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「ラピュタ」っていう 空に浮いてる島だよ。
 
 ### "っていうか" + "俺" (1 occurrences)
 - Predicted: None
@@ -42134,11 +38094,11 @@ Accuracy: 98.66%
 - Examples:
   - っていうか 俺のこのバイト知ってたんすか？
 
-### "ついたら" + "海面" (1 occurrences)
+### "っへへ" + "ぺっちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 気がついたら 海面スレスレを 俺だけ独りで飛んでいた。
+  - っへへ ぺっちゃんこだ！
 
 ### "ついて" + "いい" (1 occurrences)
 - Predicted: None
@@ -42170,11 +38130,23 @@ Accuracy: 98.66%
 - Examples:
   - あそこの惑星について 分かることは？
 
+### "ついて" + "手" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 膝をついて 手を前に！
+
 ### "ついて" + "教えて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼について 教えて欲しいのですが？
+
+### "ついて" + "知りたい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ベン・デイは？彼について 知りたいんでしょ？
 
 ### "ついて" + "話して" (1 occurrences)
 - Predicted: None
@@ -42217,24 +38189,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私の手をつかんで さあ！
-
-### "つき" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 緊急事態につき 私が臨時に指揮をとる。
-
-### "つき" + "至急" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「前向きに検討中につき 至急 連絡されたし」。
-
-### "つくっちゃ" + "かわいそう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 仲間はずれをつくっちゃ かわいそうじゃねえか。
 
 ### "つくな" + "デブ" (1 occurrences)
 - Predicted: None
@@ -42302,29 +38256,11 @@ Accuracy: 98.66%
 - Examples:
   - （治）ウソつけよ お前 え？
 
-### "つけろ" + "ヤツら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 気をつけろ ヤツらは ブタを裁判にかける気はないぞ。
-
 ### "つけ加え" + "させて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 素晴らしいな つけ加え させてくれるかね？
-
-### "つつしみたまえ" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 言葉をつつしみたまえ 君はラピュタ王の前にいるのだ。
-
-### "つなぎな" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こいつをベルトにつなぎな お前達は本船でお待ち！
 
 ### "つぶって" + "思わず" (1 occurrences)
 - Predicted: None
@@ -42356,12 +38292,6 @@ Accuracy: 98.66%
 - Examples:
   - 悪をつまみ出し 叩き潰せ！
 
-### "つまらぬ" + "息抜き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 会議は つまらぬ 息抜きに ひと飛びして来たのだ。
-
 ### "つまり" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42391,12 +38321,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それで つまり どう決まったわけ？
-
-### "つまり" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - つまり ハウルは来ないのですね。
 
 ### "つまり" + "今朝" (1 occurrences)
 - Predicted: None
@@ -42428,12 +38352,6 @@ Accuracy: 98.66%
 - Examples:
   - つまり 自殺なのか？
 
-### "つもり" + "だった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すいません 鍵をかけたつもり だったんですが…。
-
 ### "つれてって" + "やって" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42445,12 +38363,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さあて どうする？
-
-### "て" + "どんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ジーナさんて どんな人？ ポルコも恋したの？
 
 ### "て" + "ゆるせぬ" (1 occurrences)
 - Predicted: None
@@ -42470,12 +38382,6 @@ Accuracy: 98.66%
 - Examples:
   - シビンて 小便のことか？
 
-### "て" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーさんて 荒地の魔女の手下なの？
-
 ### "て" + "言ってた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42487,30 +38393,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - てか 石田 マジで久しぶりじゃね？
-
-### "てめぇ" + "おちょくる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇ おちょくる気か!
-
-### "てめぇ" + "ずるい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「てめぇ ずるいぞ！ 決めた通りにしろ！」。
-
-### "てめぇ" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇ それでも祖父か？
-
-### "てめぇ" + "汚ねぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇ 汚ねぇ！
 
 ### "てめえ" + "いつか" (1 occurrences)
 - Predicted: None
@@ -42572,6 +38454,12 @@ Accuracy: 98.66%
 - Examples:
   - 曹操が八十万の兵で あってもどうでようか?
 
+### "で" + "あの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なら何で あの人は ママに会えるの？
+
 ### "で" + "あんた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42589,12 +38477,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それで いくらくらいになんの？
-
-### "で" + "いじけて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - …で いじけて のこのこ 帰って来たわけかい。
 
 ### "で" + "いじめられてた" (1 occurrences)
 - Predicted: None
@@ -42668,12 +38550,6 @@ Accuracy: 98.66%
 - Examples:
   - それで お告げは？
 
-### "で" + "お城" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何 これ… これで お城なの？
-
 ### "で" + "お子さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42691,12 +38567,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 店主が日本で お菓子作りを学んだって本当？
-
-### "で" + "お話し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フロントの電話で お話しください。
 
 ### "で" + "お魚" (1 occurrences)
 - Predicted: None
@@ -42722,29 +38592,23 @@ Accuracy: 98.66%
 - Examples:
   - 何で くっ付いてんだ？
 
+### "で" + "この" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何で この俺が？
+
 ### "で" + "これから" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - で これから？
 
-### "で" + "ございましょう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いっそうの輝きを増すので ございましょう？
-
 ### "で" + "ございます" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ああ かぐや姫のことで ございますな！
-
-### "で" + "さらわれちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな所で遊んでると 団体で さらわれちゃうぜ！
 
 ### "で" + "しばって" (1 occurrences)
 - Predicted: None
@@ -42800,12 +38664,6 @@ Accuracy: 98.66%
 - Examples:
   - 何で そんなこと言うの？
 
-### "で" + "たっぷり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - かまわん！ 空中で たっぷり しめあげてやれ。
-
 ### "で" + "たてる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -42835,12 +38693,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それは イノシシ肉で できてるヤツか？
-
-### "で" + "できない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここの花を摘んでさ 花屋さんを あの店で できないかな？
 
 ### "で" + "ときどき" (1 occurrences)
 - Predicted: None
@@ -42901,18 +38753,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここで はたらきたいんです！
-
-### "で" + "ひと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かった そんな目で ひとを見るな… 好きにやれよ。
-
-### "で" + "ひとり暮らし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕はパズー この小屋で ひとり暮らしをしてるんだ。
 
 ### "で" + "まず" (1 occurrences)
 - Predicted: None
@@ -42992,12 +38832,6 @@ Accuracy: 98.66%
 - Examples:
   - こちらのテーブルで よいでしょうか？
 
-### "で" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 歯だけは 前のまんまで よかったわ。
-
 ### "で" + "よし" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -43028,12 +38862,6 @@ Accuracy: 98.66%
 - Examples:
   - ぼくは自分で アトランティスを見つけるよ。
 
-### "で" + "アドリア海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このまま低空で アドリア海へ抜けろと言ってる。
-
 ### "で" + "アメリカ人" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -43045,18 +38873,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - で インバータはできたの？
-
-### "で" + "キレイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私は それはそれで キレイだと思うけど。
-
-### "で" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そこら中で サリマンの手先が この家を捜し回っているよ。
 
 ### "で" + "サンダル" (1 occurrences)
 - Predicted: None
@@ -43075,12 +38891,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ポツダムで スターリンに説明を？
-
-### "で" + "ステキ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうです！ みんなで ステキな魔法にかかりましょう。
 
 ### "で" + "セルキー" (1 occurrences)
 - Predicted: None
@@ -43172,11 +38982,11 @@ Accuracy: 98.66%
 - Examples:
   - 週末にチェットの家で パーティなの 来る？
 
-### "で" + "ブタ" (1 occurrences)
+### "で" + "ピラミッド" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 飛んだところで ブタはブタだぜ。
+  - 魔法の力で ピラミッドを脱出か?
 
 ### "で" + "ブレコート" (1 occurrences)
 - Predicted: None
@@ -43232,35 +39042,17 @@ Accuracy: 98.66%
 - Examples:
   - それで ヤッたのか？
 
-### "で" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 父さんは「竜の巣」の中で ラピュタを見たんだ！
-
 ### "で" + "ロシア語" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - どこで ロシア語を？
 
-### "で" + "ロボット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その光だ！ 聖なる光で ロボットの封印がとけたのだ！
-
 ### "で" + "ー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ー農園で ー冗談でしょ？
-
-### "で" + "一日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに 一度バラして 湖に運ぶだけで 一日かかるもの。
 
 ### "で" + "一杯" (1 occurrences)
 - Predicted: None
@@ -43273,12 +39065,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なぜです？ クラスで 一番 成績がいいのに？
-
-### "で" + "事故" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 夫人がその船で 事故にあったことは？
 
 ### "で" + "人" (1 occurrences)
 - Predicted: None
@@ -43297,12 +39083,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ちょっとした選択で 人生が変わるって考えたことある？
-
-### "で" + "人間" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お姫様のキッスで 人間に戻るって話 あるじゃない。
 
 ### "で" + "会う" (1 occurrences)
 - Predicted: None
@@ -43327,12 +39107,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 実戦という事態で 使えるのか？
-
-### "で" + "借りて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 明日 艇を湖に運ぶんで 借りて来たの。
 
 ### "で" + "傍観者" (1 occurrences)
 - Predicted: None
@@ -43387,12 +39161,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 人間が皆殺しにされた後で 分け前にありつくのか？
-
-### "で" + "勉強" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃ 僕 どこで 勉強するんだい!
 
 ### "で" + "動揺" (1 occurrences)
 - Predicted: None
@@ -43580,12 +39348,6 @@ Accuracy: 98.66%
 - Examples:
   - 奴らは見るだけで 恐れを感じるんだ。
 
-### "で" + "我々" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - セルキーが その歌で 我々を 故郷に送る。
-
 ### "で" + "戦争" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -43603,12 +39365,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - フォート･クレイグで 捕まったんだな？
-
-### "で" + "捜し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今 船で 捜しに行こうとしていたの。
 
 ### "で" + "捨てて" (1 occurrences)
 - Predicted: None
@@ -43658,12 +39414,6 @@ Accuracy: 98.66%
 - Examples:
   - それでも世界で 最も邪悪な一族の末えいか！
 
-### "で" + "服" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - せっかく魔法で 服をキレイにしたのに。
-
 ### "で" + "木" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -43687,12 +39437,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - とても不思議で不気味で 楽しい一日でした。
-
-### "で" + "残がい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ベンガルの奥地で 残がいが見つかったって。
 
 ### "で" + "殴り殺された" (1 occurrences)
 - Predicted: None
@@ -43735,12 +39479,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - すぐに コートを見つける。 それで 治るからね。
-
-### "で" + "流行り始めた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キングスベリーで 流行り始めたのよ。
 
 ### "で" + "浮気" (1 occurrences)
 - Predicted: None
@@ -43801,6 +39539,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ホントにみんなで 生きて帰れんだな？
+
+### "で" + "生きてろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - オレに不安を抱えたままで 生きてろっていうのか？
 
 ### "で" + "男" (1 occurrences)
 - Predicted: None
@@ -43958,6 +39702,12 @@ Accuracy: 98.66%
 - Examples:
   - 監視カメラで 見てなかったのか？
 
+### "で" + "見てました" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マルセイユのボートショーで 見てました 覚えてます？
+
 ### "で" + "見通し" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44030,12 +39780,6 @@ Accuracy: 98.66%
 - Examples:
   - 先生も もう少しで 退院できるだろうって言ってたよ。
 
-### "で" + "逮捕状" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ワイセツ物陳列で 逮捕状が出される。
-
 ### "で" + "運んだ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44071,12 +39815,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - で 預けたわけ？
-
-### "で" + "顔" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこで 顔 洗えるよ。
 
 ### "で" + "食事" (1 occurrences)
 - Predicted: None
@@ -44137,12 +39875,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - だけどできっこない 金のせいだ！
-
-### "できて" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね… 仲直りできて よかった。
 
 ### "できて" + "嬉しい" (1 occurrences)
 - Predicted: None
@@ -44228,17 +39960,17 @@ Accuracy: 98.66%
 - Examples:
   - その通りでした 最善を尽くします.
 
+### "でした" + "私" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 初めてでした 私はこの靴を履いたことがあります。
+
 ### "でしょ" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 閉じなきゃいけないんでしょ ここ！
-
-### "でしょ" + "どうぞ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お疲れでしょ どうぞ それへ。
 
 ### "でしょ" + "シス" (1 occurrences)
 - Predicted: None
@@ -44288,12 +40020,6 @@ Accuracy: 98.66%
 - Examples:
   - いいでしょ 急いで行ってください いいですか？
 
-### "でしょ" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 当たり前でしょ 私のいた帽子屋の名だもん。
-
 ### "でしょ" + "？" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44324,6 +40050,12 @@ Accuracy: 98.66%
 - Examples:
   - ねえ わかりっこないでしょう ガンダルフ？
 
+### "でしょう" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 予見の力をお持ちでしょう 何を見たのです？
+
 ### "でしょう" + "！" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44347,12 +40079,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 調子いいです あなたは？
-
-### "です" + "いよいよ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 国王陛下からの招請状です いよいよ戦争ですぞ。
 
 ### "です" + "お分かり" (1 occurrences)
 - Predicted: None
@@ -44420,6 +40146,18 @@ Accuracy: 98.66%
 - Examples:
   - 新入生です どんな格好でした？
 
+### "です" + "もう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - チェックインは締め切りです もう一人のお客さまは？
+
+### "です" + "ものすごく" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 雲です ものすごく大きな！
+
 ### "です" + "イタリア料理" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44431,12 +40169,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私もです ウディ･アレン大好き！
-
-### "です" + "エンジン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もっとスピード出ない？ 無理です エンジンが燃えちまう。
 
 ### "です" + "バジュランジ" (1 occurrences)
 - Predicted: None
@@ -44455,12 +40187,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 素晴らしい打球です ボールは境界線を越えた！
-
-### "です" + "マダム" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私もです マダム でも今は時間がありません。
 
 ### "です" + "モートン" (1 occurrences)
 - Predicted: None
@@ -44521,12 +40247,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 僕はハリーの友人です 台詞の調子は？
-
-### "です" + "呪い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私は隣の国の王子です 呪いでカブ頭にされていたのです。
 
 ### "です" + "大尉殿" (1 occurrences)
 - Predicted: None
@@ -44594,11 +40314,11 @@ Accuracy: 98.66%
 - Examples:
   - 訊きたい事があったんです 洋服は届きましたか？
 
-### "です" + "生きて" (1 occurrences)
+### "です" + "美しく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 奥様！ お電話です！ ご無事です 生きておられました！
+  - それが彼女の罪です 美しくあることが！
 
 ### "です" + "聞こえます" (1 occurrences)
 - Predicted: None
@@ -44636,17 +40356,23 @@ Accuracy: 98.66%
 - Examples:
   - そうです 軍法会議に！
 
-### "です" + "退避" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 本艦も危険です 退避します。
-
 ### "です" + "逃げて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （三葉） 山火事です 逃げてください！
+
+### "です" + "（" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ハッキングです （警報音） （安城三尉）どうした？
+
+### "ですって" + "見て" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 沿岸部に上陸ですって 見て！
 
 ### "でない" + "白人" (1 occurrences)
 - Predicted: None
@@ -44714,17 +40440,17 @@ Accuracy: 98.66%
 - Examples:
   - では なぜ研究が遅れた？
 
-### "では" + "双方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では 双方 賭け金を出せ。
-
 ### "では" + "患者" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - では 患者の診断が 全てですか？
+
+### "でも" + "あの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも あの ひんとか なにか もらえませんか？
 
 ### "でも" + "あれ" (1 occurrences)
 - Predicted: None
@@ -44780,17 +40506,29 @@ Accuracy: 98.66%
 - Examples:
   - でも 全て犠牲にしてるんだろ？
 
+### "でも" + "君" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも 君は僕にとって 科学以上の存在なんだ！
+
+### "でも" + "本当" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも 本当じゃないか？
+
 ### "でも" + "率直" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - でも 率直に言って何も感じないの -そうなの？
 
-### "でも" + "着いちまった" (1 occurrences)
+### "でも" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - アメリカにでも 着いちまったんですかねぇ。
+  - でも 私は声を上げ続けます！
 
 ### "でも" + "自信" (1 occurrences)
 - Predicted: None
@@ -44822,6 +40560,12 @@ Accuracy: 98.66%
 - Examples:
   - 野菜と “なれなれしく”するな！
 
+### "と" + "あいつ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - このまま行くと あいつの弾幕に飛びこんじまう！
+
 ### "と" + "あたし" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -44840,17 +40584,17 @@ Accuracy: 98.66%
 - Examples:
   - 僕と あの炎の目との間には ベール一枚すらないんだ！
 
+### "と" + "あんた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何でクリスマスが来ると あんたと話すんだろう？
+
 ### "と" + "いう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - アメリカに持ち込めると いうのか？
-
-### "と" + "いたい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ みんなと いたいんだ 雨も降りそうだしさ。
 
 ### "と" + "おかあさん" (1 occurrences)
 - Predicted: None
@@ -44899,6 +40643,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 自分のことに 専念する時だと これでいいか？
+
+### "と" + "こんくらい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こんなのと こんくらいのと こ～んなに大きいのが寝てた。
+
+### "と" + "こ～んな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - こんなのと こんくらいのと こ～んなに大きいのが寝てた。
 
 ### "と" + "ご一緒" (1 occurrences)
 - Predicted: None
@@ -45014,29 +40770,17 @@ Accuracy: 98.66%
 - Examples:
   - 好い加減にしないと ひどいわよ!
 
-### "と" + "ぶち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 騒ぐと ぶち殺すぞ!
-
 ### "と" + "ぶちのめす" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - しつこくすると ぶちのめすぞ！
 
-### "と" + "やっかい" (1 occurrences)
+### "と" + "ぶち殺す" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ムスカ なぜ追わん！ 逃がすと やっかいだぞ。
-
-### "と" + "ろくな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 慌てると ろくなことないよ ソフィー…。
+  - 騒ぐと ぶち殺すぞ!
 
 ### "と" + "イカれた" (1 occurrences)
 - Predicted: None
@@ -45049,12 +40793,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もっと うまくやらねぇと ウザがられちゃうんじゃねぇの？
-
-### "と" + "ガラクタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お城ったって 中から見ると ガラクタの寄せ集めね。
 
 ### "と" + "キス" (1 occurrences)
 - Predicted: None
@@ -45254,12 +40992,6 @@ Accuracy: 98.66%
 - Examples:
   - 胎児の画像が出せると 偉いわけ？
 
-### "と" + "元" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 事を急ぐと 元も子もなくしますよ 閣下。
-
 ### "と" + "入り込んで" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45355,12 +41087,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 家族が居ないと 嘘を言ったろ？
-
-### "と" + "団体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな所で遊んでると 団体で さらわれちゃうぜ！
 
 ### "と" + "大変" (1 occurrences)
 - Predicted: None
@@ -45512,23 +41238,11 @@ Accuracy: 98.66%
 - Examples:
   - グズグズすると 手遅れになるぞ !
 
-### "と" + "払い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カーチスに勝ってもらわないと 払いが残ってるからな。
-
 ### "と" + "押しくら饅頭" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そら！ そら！ その女と 押しくら饅頭だ！
-
-### "と" + "掃き出しちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 虫ども！ さっさと逃げないと 掃き出しちゃうよ！
 
 ### "と" + "提案" (1 occurrences)
 - Predicted: None
@@ -45590,12 +41304,6 @@ Accuracy: 98.66%
 - Examples:
   - 実業家には向いてないと 気付いたか？
 
-### "と" + "水" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 言うこと聞かないと 水をかけちゃうよ。
-
 ### "と" + "沈む" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45650,6 +41358,12 @@ Accuracy: 98.66%
 - Examples:
   - 俺と 組もうじゃないか？
 
+### "と" + "羊" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 狼が“なぜ私を憎むのか”と 羊に尋ねますか？
+
 ### "と" + "考える" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45668,23 +41382,11 @@ Accuracy: 98.66%
 - Examples:
   - あぁ あの人に会えるかと思うと 胸が苦しくなって来た！
 
-### "と" + "舌" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 給油に下りるぞ おしゃべりを やめねえと 舌かむからな。
-
 ### "と" + "行った" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もう来ないでと 行ったでしょ！
-
-### "と" + "解けない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 愛する者にキスされないと 解けない呪いね。
 
 ### "と" + "言えない" (1 occurrences)
 - Predicted: None
@@ -45697,12 +41399,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 彼は平和になったと 言えるだろうね。
-
-### "と" + "言ってた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ウイルスは非現実的な設計だと 言ってたぞ 飛ぶのか？
 
 ### "と" + "言ってる" (1 occurrences)
 - Predicted: None
@@ -45764,12 +41460,6 @@ Accuracy: 98.66%
 - Examples:
   - 私のやりかたと 違うからね。
 
-### "と" + "違って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前が言うと 違って聞こえて来るぜ。
-
 ### "と" + "関係" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45788,17 +41478,17 @@ Accuracy: 98.66%
 - Examples:
   - 悪夢の沈黙を忘れろと 頼むのか？
 
+### "と" + "首輪" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - すると 首輪は警告音を発し ボンッ！
+
 ### "と" + "駆け落ち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もしお前が俺と 駆け落ちしたとしたら？
-
-### "と" + "鼻" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） 引っ込まないと 鼻がなくなりますよ。
 
 ### "とおり" + "最初" (1 occurrences)
 - Predicted: None
@@ -45829,12 +41519,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 魔女とか呪いとか もうたくさん！
-
-### "とか" + "やってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カーチェイスとか やってるのね？
 
 ### "とか" + "やってん" (1 occurrences)
 - Predicted: None
@@ -45871,6 +41555,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ねえ はじめて空とんだとき どんなんだった？
+
+### "とき" + "彼ら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ぼくが生きてると知ったとき 彼らの反応は？
 
 ### "とき" + "抵抗" (1 occurrences)
 - Predicted: None
@@ -45914,12 +41604,6 @@ Accuracy: 98.66%
 - Examples:
   - あれも ほしいの 仕舞ってあるとこ わかってる?
 
-### "とこ" + "後回し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ 僕んとこ 後回しにして！
-
 ### "とこ" + "東京" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45944,12 +41628,6 @@ Accuracy: 98.66%
 - Examples:
   - ところで あれからどうした?
 
-### "ところで" + "あんた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ところで あんた 何で王様の所へ行くのよ？
-
 ### "ところで" + "おぬし" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -45962,7 +41640,7 @@ Accuracy: 98.66%
 - Examples:
   - ところで お前の趣味は？
 
-### "ところで" + "ご" (1 occurrences)
+### "ところで" + "ご姓名" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -46052,12 +41730,6 @@ Accuracy: 98.66%
 - Examples:
   - あんたにとって それが何か関係あるの？
 
-### "とって" + "どれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平和にとって どれだけ 危険なことか君にも分かるだろう。
-
 ### "とって" + "幸せ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46069,12 +41741,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも 君は僕にとって 科学以上の存在なんだ！
-
-### "とっても" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - とっても いい人だった…。
 
 ### "とっても" + "とっても" (1 occurrences)
 - Predicted: None
@@ -46148,17 +41814,17 @@ Accuracy: 98.66%
 - Examples:
   - とにかく 無事だったろ？
 
+### "とにかく" + "虱" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - とにかく 虱潰しに探せ！
+
 ### "とにかく" + "遺体" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - とにかく 遺体がなぜ あんな格好で？
-
-### "とびっきり" + "でっかい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - とびっきり でっかいやつだよ！
 
 ### "とまった" + "とまりました" (1 occurrences)
 - Predicted: None
@@ -46177,12 +41843,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 下がれ 床に伏せろ 二人とも 今すぐ！
-
-### "ともに" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 夜明けとともに 娘を乗せて出発だ！
 
 ### "とやら" + "できた" (1 occurrences)
 - Predicted: None
@@ -46220,6 +41880,12 @@ Accuracy: 98.66%
 - Examples:
   - （瀧）お前… ど ど どうして それを？
 
+### "どぅあー" + "助けて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どぅあー 助けてくれー！！
+
 ### "どう" + "おかしい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46243,6 +41909,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君の方はどう ボブ？
+
+### "どう" + "ポルコ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （フィオ）かじはどう ポルコ？
 
 ### "どう" + "分った" (1 occurrences)
 - Predicted: None
@@ -46304,12 +41976,6 @@ Accuracy: 98.66%
 - Examples:
   - どういう お知り合い？
 
-### "どうか" + "お歩き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうか お歩きください！
-
 ### "どうか" + "わがまま" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46345,6 +42011,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうして そこにいた？
+
+### "どうして" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （瀧）お前… ど ど どうして それを？
 
 ### "どうして" + "やらない" (1 occurrences)
 - Predicted: None
@@ -46418,12 +42090,6 @@ Accuracy: 98.66%
 - Examples:
   - どうして 汚れた？
 
-### "どうして" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ハウルは どうして 荒地の魔女に狙われてるの？
-
 ### "どうして" + "釈放" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46442,18 +42108,6 @@ Accuracy: 98.66%
 - Examples:
   - どうして 黙るの？
 
-### "どうしても" + "これ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしても これを見てほしくてね。
-
-### "どうしても" + "どかねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしても どかねえか？ 男ならゲンコツで通れ。
-
 ### "どうせ" + "もし" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46471,12 +42125,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今夜は どうせ 私達 お泊まりだから。
-
-### "どうぞ" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お疲れでしょ どうぞ それへ。
 
 ### "どうぞ" + "とんだ" (1 occurrences)
 - Predicted: None
@@ -46520,12 +42168,6 @@ Accuracy: 98.66%
 - Examples:
   - どうやら もはやお気に入りはいない。
 
-### "どうやら" + "礼" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうやら 礼を言わなきゃ ならねえらしいな。
-
 ### "どお" + "あんた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46556,12 +42198,6 @@ Accuracy: 98.66%
 - Examples:
   - どけどけどけ 抜け作め!
 
-### "どこ" + "どこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこ どこ!
-
 ### "どこ" + "に" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46573,6 +42209,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ミルトン 今どこ 兵舎？
+
+### "どこ" + "行った" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さん どこ 行ったの?
 
 ### "どこか" + "寄る" (1 occurrences)
 - Predicted: None
@@ -46610,12 +42252,6 @@ Accuracy: 98.66%
 - Examples:
   - おい バカ野郎ども !
 
-### "ども" + "さっさと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このバカども さっさと仕事をしないか！
-
 ### "ども" + "はやく" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46640,23 +42276,17 @@ Accuracy: 98.66%
 - Examples:
   - 捕虜ども 前へ！
 
-### "ども" + "引き揚げ" (1 occurrences)
+### "ども" + "引きあげ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - わあ～！ 野郎ども 引き揚げだ！
+  - やろうども 引きあげだ！
 
 ### "ども" + "詩" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 敵は学者ども 詩を数値で測るとは！
-
-### "どれ" + "見せて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どれ 見せてやるかな。
 
 ### "どれだけ" + "墓" (1 occurrences)
 - Predicted: None
@@ -46736,12 +42366,6 @@ Accuracy: 98.66%
 - Examples:
   - 驚いたな “シャルドネ”と？
 
-### "な" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕の大好きな 『スタジオジブリ』作品！
-
 ### "な" + "あいつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46790,12 +42414,6 @@ Accuracy: 98.66%
 - Examples:
   - すごい雪だな おい？
 
-### "な" + "おふくろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配するな おふくろの話じゃ ホレるより慣れだってよ。
-
 ### "な" + "おやじ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46820,12 +42438,6 @@ Accuracy: 98.66%
 - Examples:
   - いつも同じ服着てるな ここに友達は？ 誰もいないのか？
 
-### "な" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かんねえな このバカが…。
-
 ### "な" + "これ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -46843,12 +42455,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 恥でも何でもないからな そうだろ？
-
-### "な" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがな その若ぇのはアメリカ人だろ？
 
 ### "な" + "それ" (1 occurrences)
 - Predicted: None
@@ -46880,47 +42486,17 @@ Accuracy: 98.66%
 - Examples:
   - 素晴らしいな つけ加え させてくれるかね？
 
-### "な" + "な" (1 occurrences)
+### "な" + "なにごと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - な なにごとじゃい！！
-
-### "な" + "なぜ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前の歯型を取り寄せなきゃな なぜか分かるか？
 
 ### "な" + "なまり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - キュートな なまり！
-
-### "な" + "なんて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いやいや ヒマだから 何か手伝おうかな なんてな…。
-
-### "な" + "まず" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいつら 後で泣くことになるな まず人間には戻れないよ。
-
-### "な" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 目まで くらんで来やがってな もうダメだって思った。
-
-### "な" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - スパイなんてものはな もっと勤勉な野郎がやることさ。
 
 ### "な" + "もの" (1 occurrences)
 - Predicted: None
@@ -46963,12 +42539,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 来るな クララ！
-
-### "な" + "ケジメ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇな ケジメだよ ケジメ。
 
 ### "な" + "コート" (1 occurrences)
 - Predicted: None
@@ -47042,30 +42612,6 @@ Accuracy: 98.66%
 - Examples:
   - 強烈だな ヒゲはチクチクしないか?
 
-### "な" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 年は若いがな フィオには 息子どもに ないものがあるよ。
-
-### "な" + "フェラーリン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 少佐か 出世したな フェラーリン。
-
-### "な" + "フフフフ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうか！ その手もあったな フフフフ…。
-
-### "な" + "ホント" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ うめぇな ホントによ。 たまんねぇな。
-
 ### "な" + "ボヘミアン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47083,18 +42629,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それはあまり礼儀正しくない だろうな ミス・アニー？
-
-### "な" + "ミンスミートパイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺な ミンスミートパイが 好きなんだ。
-
-### "な" + "ヤッホ～イ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - イモの皮むきもな ヤッホ～イ！
 
 ### "な" + "ロンドン" (1 occurrences)
 - Predicted: None
@@ -47126,12 +42660,6 @@ Accuracy: 98.66%
 - Examples:
   - イカれた服だな 一体 どこで？
 
-### "な" + "一度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがな 一度は ついた勝負だ。
-
 ### "な" + "世界" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47143,12 +42671,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 撃つな 人質だ！
-
-### "な" + "人間" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そういうことはな 人間同士でやんな。
 
 ### "な" + "今日" (1 occurrences)
 - Predicted: None
@@ -47228,12 +42750,6 @@ Accuracy: 98.66%
 - Examples:
   - 幸福な 大家族さ。
 
-### "な" + "女" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配するな 女は いいぞ よく働くし 粘り強いしな。
-
 ### "な" + "女優" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47306,12 +42822,6 @@ Accuracy: 98.66%
 - Examples:
   - やあ ゴージャスだな 待たせたかい？
 
-### "な" + "待て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しょうがねえな 待てよ！ てめぇら！
-
 ### "な" + "必ず" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47324,35 +42834,23 @@ Accuracy: 98.66%
 - Examples:
   - 開けてみな 急ぎだといけねえから。
 
+### "な" + "息子" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 殺したな 息子を殺したな!
+
 ### "な" + "悪い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ディオンドラみたいな 悪い女だった？
 
-### "な" + "戦い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今度の戦争は それだけ大掛かりな 戦いになるってことさ。
-
-### "な" + "捕らえろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 撃つな 捕らえろ！
-
 ### "な" + "提案" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたに最も魅力的な 提案があるわ。
-
-### "な" + "敵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ビラを拾うな 敵のビラを拾うな。
 
 ### "な" + "早く" (1 occurrences)
 - Predicted: None
@@ -47372,12 +42870,6 @@ Accuracy: 98.66%
 - Examples:
   - 本当に優秀だな 本当に勉強してないのか？
 
-### "な" + "札束" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 近頃はな 札束が紙クズ並の 値打ちしかないんだよ。
-
 ### "な" + "止まれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47395,12 +42887,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ふざけるな 気がふれたか？
-
-### "な" + "気持" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不思議ねぇ こんなに穏やかな 気持になれたの初めて…。
 
 ### "な" + "消えて" (1 occurrences)
 - Predicted: None
@@ -47462,23 +42948,17 @@ Accuracy: 98.66%
 - Examples:
   - なんて悪趣味な 着信音なんだ？
 
-### "な" + "睡眠不足" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 徹夜はするな 睡眠不足は いい仕事の敵だ。
-
 ### "な" + "瞬間" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 最も恥辱的な 瞬間になるのか？
 
-### "な" + "空" (1 occurrences)
+### "な" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああ… やけに静かでな 空が本当に きれいなんだ。
+  - 愚かな 私の本を読んだか？
 
 ### "な" + "笑い者" (1 occurrences)
 - Predicted: None
@@ -47496,7 +42976,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 行くのかな 行かないのかな？ 俺だって見たいのに。
+  - 行くのかな 行かないのかなぁ？
 
 ### "な" + "行け" (1 occurrences)
 - Predicted: None
@@ -47510,23 +42990,11 @@ Accuracy: 98.66%
 - Examples:
   - その詳細を知りたいな 被害者のスカウトはいるか？
 
-### "な" + "裏" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがな 裏のドブ川から飛ぶんだぞ。
-
 ### "な" + "見違えちまう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 驚いたな 見違えちまう 調子はどうだ？
-
-### "な" + "親方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 昨日 来たかな 親方んとこのチビのマッジが。
 
 ### "な" + "読む" (1 occurrences)
 - Predicted: None
@@ -47562,7 +43030,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 息子どもの姿が見えねえな 達者なのか？
+  - 息子どものすがたが見えねえな 達者なのか？
 
 ### "な" + "遠い" (1 occurrences)
 - Predicted: None
@@ -47594,23 +43062,11 @@ Accuracy: 98.66%
 - Examples:
   - どうです 見事な 髪飾りでしょう？
 
-### "なぁ" + "あんたら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃ 何だなぁ あんたらも じきに非合法になるな。
-
 ### "なぁ" + "どこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おかしいなぁ どこさ行っちゃったもんだか。
-
-### "なぁ" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔法とは そういうものだ なぁ サリマン。
 
 ### "なぁ" + "トトロ" (1 occurrences)
 - Predicted: None
@@ -47618,35 +43074,17 @@ Accuracy: 98.66%
 - Examples:
   - そうだなぁ トトロなら 知っているんだろうけどなぁ。
 
-### "なぁ" + "マルコ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぁ マルコ 空軍に戻れよ 今なら俺達の力で何とかする。
-
-### "なぁ" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるさいなぁ 何の騒ぎ？
-
-### "なぁ" + "女の子" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぁ 女の子さん… その…。
-
-### "なぁ" + "当たり前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるさいなぁ 当たり前じゃないか。
-
 ### "なぁ" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （川井）怖いかなぁ （真柴）ん？
+
+### "なぁー" + "ウアーッ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （団員） こっちに来るなぁー ウアーッ！
 
 ### "なあ" + "ここ" (1 occurrences)
 - Predicted: None
@@ -47708,6 +43146,24 @@ Accuracy: 98.66%
 - Examples:
   - （将也）なあ 今日 西宮は？
 
+### "なあ" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うるさいなあ 何の騒ぎ？
+
+### "なあ" + "失恋" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （勅使河原）やっぱ 男関係なんかなあ 失恋とか？
+
+### "なあ" + "梅" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なあ 梅は全ての恨みを 晴らすべきじゃないのか？
+
 ### "なあ" + "西宮" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47732,6 +43188,12 @@ Accuracy: 98.66%
 - Examples:
   - なあに このたてもの？
 
+### "なあに" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なあに これ これでお城なの？
+
 ### "ない" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47755,12 +43217,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 理由なんかない お前 喧嘩した事ないのか？
-
-### "ない" + "こいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おびえることはない こいつは初めから死んでいる。
 
 ### "ない" + "こう" (1 occurrences)
 - Predicted: None
@@ -47798,6 +43254,12 @@ Accuracy: 98.66%
 - Examples:
   - やっぱ 会いに行くべきじゃない ってこと？
 
+### "ない" + "と" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 金庫に手も触れたない とはどういうわけだ？
+
 ### "ない" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47822,12 +43284,6 @@ Accuracy: 98.66%
 - Examples:
   - これはげ… 芸術じゃない ね?
 
-### "ない" + "ねっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 髪なら染め直せばいいじゃない ねっ。
-
 ### "ない" + "はしろう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -47839,12 +43295,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ダニエルも関係ない もう黙って！
-
-### "ない" + "よく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー 時間がない よく聞きな。
 
 ### "ない" + "サツ" (1 occurrences)
 - Predicted: None
@@ -47870,17 +43320,17 @@ Accuracy: 98.66%
 - Examples:
   - 上手く行く筈ない ヒトラーをプライムタイムに？
 
-### "ない" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何でもない 何でもない…。
-
 ### "ない" + "俺" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 敬意がない 俺たちは犬か？
+
+### "ない" + "借金" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 家も無いしカネもない 借金だけだよ！
 
 ### "ない" + "出て" (1 occurrences)
 - Predicted: None
@@ -47898,13 +43348,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 油断するんじゃない 前にいるとは限らないよ。
+  - 油断するんじゃない 前にいるとは限らないよ！
 
-### "ない" + "名誉" (1 occurrences)
+### "ない" + "子ども" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 彼らの一番大事なものは 金でも女でもない 名誉だって。
+  - できたじゃない 子どもの時！
 
 ### "ない" + "常識" (1 occurrences)
 - Predicted: None
@@ -47946,7 +43396,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - しょうがない 明るくなってから出直しだ。
+  - しょうがない 明るくなってから 出直しだ！
 
 ### "ない" + "本当に" (1 occurrences)
 - Predicted: None
@@ -47965,6 +43415,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私がここを選んだ わけじゃない 無関係よ！
+
+### "ない" + "物" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 必要のない 物さ。
 
 ### "ない" + "白状" (1 occurrences)
 - Predicted: None
@@ -48037,6 +43493,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 父親ではなく あなたに届けた理由は？
+
+### "なく" + "あの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 判事でなく あの人？
 
 ### "なく" + "なぜ" (1 occurrences)
 - Predicted: None
@@ -48128,12 +43590,6 @@ Accuracy: 98.66%
 - Examples:
   - それは愛じゃなくて 堕落だ！
 
-### "なくて" + "正式" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 次は賭けじゃなくて 正式に申し込みに行くぜ。
-
 ### "なくて" + "韓国" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48169,6 +43625,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私は老人でもなければ 手負いの捕虜でもない!
+
+### "なさい" + "あなた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 御覧なさい あなたが同僚に見せようとした写真だ。
 
 ### "なし" + "大した" (1 occurrences)
 - Predicted: None
@@ -48313,12 +43775,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なぜ イヤなんだ？
-
-### "なぜ" + "コソコソ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ コソコソ 娘をさらったりするんだ？
 
 ### "なぜ" + "サンティアゴ" (1 occurrences)
 - Predicted: None
@@ -48500,6 +43956,12 @@ Accuracy: 98.66%
 - Examples:
   - なぜ 続ける？
 
+### "なぜ" + "藪" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なぜ 藪をつついて蛇を出す？
+
 ### "なぜ" + "行かなきゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48578,23 +44040,11 @@ Accuracy: 98.66%
 - Examples:
   - しかし下着を忘れるなぞ あり得るか？
 
-### "なぞ" + "金" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊の用心棒なぞ 金と名声の ほんのワンステップさ。
-
 ### "なった" + "わけ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 俺たちが嫌になった わけじゃないよな？
-
-### "なった" + "隙" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はっ！ 艦内が手うすになった 隙をつかれました。
 
 ### "なったら" + "あんた" (1 occurrences)
 - Predicted: None
@@ -48679,12 +44129,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 赤ちゃんみたいになって 床で寝てるの？
-
-### "なって" + "急" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今になって 急に胸がドキドキして 苦しくなっちゃった…。
 
 ### "なって" + "戻って" (1 occurrences)
 - Predicted: None
@@ -48788,6 +44232,12 @@ Accuracy: 98.66%
 - Examples:
   - なに おこってんの？
 
+### "なに" + "おしっこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （女の子）おしっこ （ポルコ）なに おしっこ？
+
 ### "なに" + "してん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -48805,6 +44255,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （初枝）なに どっかの不動産屋に頼まれたの？
+
+### "なに" + "どんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （信代）なに どんな男？
 
 ### "なに" + "拙者" (1 occurrences)
 - Predicted: None
@@ -48890,17 +44346,17 @@ Accuracy: 98.66%
 - Examples:
   - なら “やめろ”と言ってよ！
 
-### "なら" + "あげます" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 石が欲しいなら あげます 私達をほっといて…。
-
 ### "なら" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お酒のことなら あなたは瓶詰め仕事に戻ったの？
+
+### "なら" + "いい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 脚ぐらいなら いいだろ？
 
 ### "なら" + "いつ" (1 occurrences)
 - Predicted: None
@@ -48908,17 +44364,17 @@ Accuracy: 98.66%
 - Examples:
   - それなら いつ頼めるんだ？
 
-### "なら" + "うまく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねっ！ ソフィーなら うまくやれるよ。
-
 ### "なら" + "え" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - へっ 馬小屋も悪くねえな 女房と一緒なら え?
+
+### "なら" + "ききわけたまえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 君も男なら ききわけたまえ！！
 
 ### "なら" + "こう" (1 occurrences)
 - Predicted: None
@@ -48931,6 +44387,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 警察に行くなら ここに連れて来い いいな？
+
+### "なら" + "この" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - この俺が鬼なら このガキの親は何だ？
 
 ### "なら" + "ご案内" (1 occurrences)
 - Predicted: None
@@ -48961,6 +44423,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そんなに病院がイヤなら せめて応急処置！
+
+### "なら" + "そいつ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうなら そいつは どんな男だ？
 
 ### "なら" + "そう" (1 occurrences)
 - Predicted: None
@@ -49004,12 +44472,6 @@ Accuracy: 98.66%
 - Examples:
   - もしここに住むなら どの部屋が欲しい？
 
-### "なら" + "どんと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 男なら どんとやれ！
-
 ### "なら" + "どんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49022,29 +44484,17 @@ Accuracy: 98.66%
 - Examples:
   - （男）やるんなら ほかでやれよ （軍人）なに？
 
+### "なら" + "まだ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ジジ）今なら まだ間に合うよ！
+
 ### "なら" + "みんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お祝いなら みんなも呼んでいいでしょう？
-
-### "なら" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何なら もう一度 作ってあげましょうかねぇ？
-
-### "なら" + "もうちっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ウソなら もうちっとマシなウソを つくんだね！
-
-### "なら" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルなら もっと派手なものに化けるわね。
 
 ### "なら" + "やっぱり" (1 occurrences)
 - Predicted: None
@@ -49148,23 +44598,11 @@ Accuracy: 98.66%
 - Examples:
   - 勇気があるなら 来い！ いいな！
 
-### "なら" + "気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊どもと手を組むんなら 気をつけろよ 若ぇの。
-
 ### "なら" + "濡れない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あそこなら 濡れないよ。 がんばって、 クー。
-
-### "なら" + "火事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そんな暇があるなら 火事を消しなさい！
 
 ### "なら" + "知って" (1 occurrences)
 - Predicted: None
@@ -49244,17 +44682,17 @@ Accuracy: 98.66%
 - Examples:
   - そこでならば 指輪は安全なの？
 
-### "なり" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私の顔を見るなり 「結婚してくれ」だって。
-
 ### "なり" + "手足" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （軍人） 腹ばいになり 手足を広げろ！
+
+### "なりな" + "あばよ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いい飛行艇屋になりな あばよ！
 
 ### "なります" + "-" (1 occurrences)
 - Predicted: None
@@ -49304,12 +44742,6 @@ Accuracy: 98.66%
 - Examples:
   - 無駄になる コピー？
 
-### "なる" + "中" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その見張り台はタコになる 中にハンドルがあるだろ？
-
 ### "なるほど" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49346,23 +44778,11 @@ Accuracy: 98.66%
 - Examples:
   - 亭主なんか いないわ！
 
-### "なんか" + "いらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラピュタの宝なんか いらない お願いだ…。
-
 ### "なんか" + "しない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - いつも 勉強なんか しないくせに!
-
-### "なんか" + "じき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カーチスなんか じきアメリカに帰っちまうさ。
 
 ### "なんか" + "とっさ" (1 occurrences)
 - Predicted: None
@@ -49394,12 +44814,6 @@ Accuracy: 98.66%
 - Examples:
   - なんか まともな人間にでも なったつもり？
 
-### "なんか" + "やんない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） そうさ 料理なんか やんないよ！
-
 ### "なんか" + "よせ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49412,23 +44826,11 @@ Accuracy: 98.66%
 - Examples:
   - 噂なんか クソ喰らえだ！
 
-### "なんか" + "一度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私なんか 美しかったことなんか 一度もないわ！
-
 ### "なんか" + "出す" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - タバコで 火事なんか 出すんじゃないよ！
-
-### "なんか" + "好き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう！ ハウルなんか 好きにすればいい！
 
 ### "なんか" + "存在" (1 occurrences)
 - Predicted: None
@@ -49448,12 +44850,6 @@ Accuracy: 98.66%
 - Examples:
   - 巨神兵なんか 掘り起こすからいけないのよ！
 
-### "なんか" + "美しかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私なんか 美しかったことなんか 一度もないわ！
-
 ### "なんか" + "買って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49472,12 +44868,6 @@ Accuracy: 98.66%
 - Examples:
   - 手前のお袋なんぞ 口にするのも汚らわしい！
 
-### "なんぞ" + "絵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ローンを背負った空賊なんぞ 絵にもならねえ。
-
 ### "なんだって" + "帰ってらした" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49490,11 +44880,11 @@ Accuracy: 98.66%
 - Examples:
   - コートなしで セルキーが歌うなんて ありえない。
 
-### "なんて" + "いい" (1 occurrences)
+### "なんて" + "ある" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 荒地の魔女に張り合おうなんて いい度胸ね。
+  - 彼女を 見つける事なんて あるのでしょうか？
 
 ### "なんて" + "いる" (1 occurrences)
 - Predicted: None
@@ -49508,17 +44898,17 @@ Accuracy: 98.66%
 - Examples:
   - それでも行くなんて おかしいよ！
 
-### "なんて" + "こっけい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 国が亡びたのに 王だけ 生きてるなんて こっけいだわ。
-
 ### "なんて" + "それ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 娘を置いてくなんて それでも父親か？
+
+### "なんて" + "できる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 人を無理やり閉じ込めるなんて できるわけがないだろ？
 
 ### "なんて" + "とても" (1 occurrences)
 - Predicted: None
@@ -49573,6 +44963,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 裸足で沼を渡る事なんて 可能なのか？
+
+### "なんて" + "夜明け" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ついてないね こんな時にしけるなんて 夜明けまでは！？
+
+### "なんて" + "必要" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 世界にはヒーローなんて 必要ないよ。
 
 ### "なんて" + "思って" (1 occurrences)
 - Predicted: None
@@ -49784,12 +45186,6 @@ Accuracy: 98.66%
 - Examples:
   - おそいなァ まだ?
 
-### "な～に" + "軽い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - な～に 軽いもんよ。
-
 ### "に" + "" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49807,12 +45203,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何で こんな目に あうんだ ?
-
-### "に" + "あきらめる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 男が簡単に あきらめるんじゃないよ！
 
 ### "に" + "あげたい" (1 occurrences)
 - Predicted: None
@@ -49868,12 +45258,6 @@ Accuracy: 98.66%
 - Examples:
   - 私との夜に いくら払う？
 
-### "に" + "いた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなとこに いたほうが びょうきになるよ！
-
 ### "に" + "いつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49885,6 +45269,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私以外に あんたと一緒に いられる人がいると思う？
+
+### "に" + "おいで" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - かぐや姫様 そちらに おいでなのでしょう？
 
 ### "に" + "おいといて" (1 occurrences)
 - Predicted: None
@@ -49903,6 +45293,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - じゃ 勝手に おし!
+
+### "に" + "おばあちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 夕方までに おばあちゃんと 一緒に町から出て！
 
 ### "に" + "おやつ" (1 occurrences)
 - Predicted: None
@@ -49976,12 +45372,6 @@ Accuracy: 98.66%
 - Examples:
   - しかし 一体どのように お選びすればよいのだ？
 
-### "に" + "お金持ち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - とってもいい人 それに お金持ちなの。
-
 ### "に" + "かい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -49999,12 +45389,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あいつを撃った時に かけてたレコードは？
-
-### "に" + "かけられた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたに かけられた呪いを 解きたいの！
 
 ### "に" + "かまわないで" (1 occurrences)
 - Predicted: None
@@ -50036,17 +45420,17 @@ Accuracy: 98.66%
 - Examples:
   - えっ？ わたしに くれるの？
 
-### "に" + "こき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 契約に縛られて ここでハウルに こき使われてるんだ！
-
 ### "に" + "こだわって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 女の子が好きなことに こだわっているの？
+
+### "に" + "こっそり" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ボスに こっそり 取り入ったわけ？
 
 ### "に" + "ごあいさつ" (1 occurrences)
 - Predicted: None
@@ -50072,12 +45456,6 @@ Accuracy: 98.66%
 - Examples:
   - あの子の好きに させてあげたら?
 
-### "に" + "さらわれて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その黒メガネ達に さらわれて来たの？
-
 ### "に" + "さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50102,12 +45480,6 @@ Accuracy: 98.66%
 - Examples:
   - ペジテの二の舞に したいのか？
 
-### "に" + "しちまいやがって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカどもが お祭り騒ぎに しちまいやがって…。
-
 ### "に" + "しちゃう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50120,29 +45492,11 @@ Accuracy: 98.66%
 - Examples:
   - なぜタクシーに しなかったの？
 
-### "に" + "しねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （銃声） 引き分けなんかに しねえからな！
-
-### "に" + "しまって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 機関銃の隙間に しまってくれ。
-
 ### "に" + "しろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 家賃や食費の足しに しろとでも？
-
-### "に" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だってサリマンに すぐ見つかっちゃうよ！
 
 ### "に" + "すべき" (1 occurrences)
 - Predicted: None
@@ -50168,12 +45522,6 @@ Accuracy: 98.66%
 - Examples:
   - 奴のために ずっと 働いてるのか？
 
-### "に" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しっかりしなさいよ ここに ず～っと来たかったんでしょ？
-
 ### "に" + "そいつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50186,18 +45534,6 @@ Accuracy: 98.66%
 - Examples:
   - ダイヤを持って逃げるために そう言いたいんだろ？
 
-### "に" + "そっくり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私の若い頃に そっくりだよ。
-
-### "に" + "そなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかあ様に そなたの正体を 見せてあげよう。
-
 ### "に" + "そば" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50209,18 +45545,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そんなに たくさん？
-
-### "に" + "たたき込む" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 変なまねしたら すぐ海に たたき込むからね。
-
-### "に" + "ただ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すぐに ただの石に なってしまうがのう。
 
 ### "に" + "たどり" (1 occurrences)
 - Predicted: None
@@ -50252,6 +45576,12 @@ Accuracy: 98.66%
 - Examples:
   - 人間のために だろ！
 
+### "に" + "ついて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - はぐれないように ついて来てね！
+
 ### "に" + "ついてます" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50270,23 +45600,11 @@ Accuracy: 98.66%
 - Examples:
   - なぜ彼に つらく当たる？
 
-### "に" + "で" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 必ず出頭するように では。
-
 ### "に" + "でき" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - みんなが来る前に でき上がってたのか？
-
-### "に" + "とっとけ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎！ そういうものは 一番大事な時に とっとけ！
 
 ### "に" + "とどろかせます" (1 occurrences)
 - Predicted: None
@@ -50318,23 +45636,11 @@ Accuracy: 98.66%
 - Examples:
   - 娘を殺した犯人を捕まえるのに どれだけ時間がかかる？
 
-### "に" + "ない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 年は若いがな フィオには 息子どもに ないものがあるよ。
-
 ### "に" + "なっちまった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 眞人がセキセイインコに なっちまった！
-
-### "に" + "なっちゃって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まぁ こんなに おばあちゃんに なっちゃって！
 
 ### "に" + "ならなかった" (1 occurrences)
 - Predicted: None
@@ -50420,12 +45726,6 @@ Accuracy: 98.66%
 - Examples:
   - ここに はくっていうひと ふたりいるの？
 
-### "に" + "ひと飛び" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 会議は つまらぬ 息抜きに ひと飛びして来たのだ。
-
 ### "に" + "ぴったり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50438,23 +45738,11 @@ Accuracy: 98.66%
 - Examples:
   - 勝手にしろ お袋に ぶん殴られるがいいさ！
 
-### "に" + "ほしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あれ あたし 形見に ほしいの いい?
-
 ### "に" + "ほとんど" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼らの基本的な文法構造に ほとんど一緒になるよ。
-
-### "に" + "ほれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 給料は まけとくよ それに ほれ！ 伝声管も付けるぞ。
 
 ### "に" + "まず" (1 occurrences)
 - Predicted: None
@@ -50498,11 +45786,11 @@ Accuracy: 98.66%
 - Examples:
   - それで 勝手に やらせたわけか？
 
-### "に" + "やられる" (1 occurrences)
+### "に" + "やりたがってたろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 最新式の軍艦が こんなに やられるとはな。
+  - ベネがお前に やりたがってたろ?
 
 ### "に" + "やり残した" (1 occurrences)
 - Predicted: None
@@ -50528,23 +45816,17 @@ Accuracy: 98.66%
 - Examples:
   - ベガスに ようこそ！
 
-### "に" + "よさそう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 杖に よさそう。
-
 ### "に" + "よる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - じきに よるになる そのまえに はやくもどれ！
 
-### "に" + "よろしく" (1 occurrences)
+### "に" + "わざわざ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとうよ フェラーリン みんなに よろしくな。
+  - 歩いても行けるのに わざわざ ここから？
 
 ### "に" + "を" (1 occurrences)
 - Predicted: None
@@ -50654,12 +45936,6 @@ Accuracy: 98.66%
 - Examples:
   - 鶏みたいに サバいてやる！
 
-### "に" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔女のおばあちゃんに サリマン先生の犬とは。
-
 ### "に" + "ザンパノ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50696,12 +45972,6 @@ Accuracy: 98.66%
 - Examples:
   - （草太）その本棚の上に ダンボールがあるだろ？
 
-### "に" + "チューン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんまりデリケートに チューンするなよ。
-
 ### "に" + "チョコレート" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50719,12 +45989,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おれのように ニガー丸出しか？
-
-### "に" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - サリマンなんかに ハウルは渡さないよ。
 
 ### "に" + "ハンガリー" (1 occurrences)
 - Predicted: None
@@ -50750,18 +46014,6 @@ Accuracy: 98.66%
 - Examples:
   - 言っても あれの母親に バラさないかね？
 
-### "に" + "バラバラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカな！ 入ったとたんに バラバラにされちまうよ！
-
-### "に" + "パズー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 私のために パズーを海賊にしたくない。
-
 ### "に" + "パンチ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50785,12 +46037,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - この部屋 詩の朗読に ピッタリでしょ？
-
-### "に" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇなんかに フィオをやれるか！
 
 ### "に" + "フサフサ" (1 occurrences)
 - Predicted: None
@@ -50822,12 +46068,6 @@ Accuracy: 98.66%
 - Examples:
   - 床の上に マーズバーは無いぞ 何を見てるんだ？
 
-### "に" + "ミラノ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これから 艇を直しに ミラノへ行って来る。
-
 ### "に" + "ミラー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -50852,23 +46092,17 @@ Accuracy: 98.66%
 - Examples:
   - ほかに メールしたい相手 いる？
 
-### "に" + "リターンマッチ" (1 occurrences)
+### "に" + "ラピュタ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 要するに リターンマッチを したいんだろう？
+  - あの光のさす方向に ラピュタがあるのだ！
 
 ### "に" + "一人ぼっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 犬みたいに 一人ぼっちになるわよ！
-
-### "に" + "一体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなところに 一体どんな軍勢が居るのだ？
 
 ### "に" + "一夜" (1 occurrences)
 - Predicted: None
@@ -50882,17 +46116,23 @@ Accuracy: 98.66%
 - Examples:
   - 人間のボーイフレンドの家に 上がり込んでいる始末だ。
 
-### "に" + "下" (1 occurrences)
+### "に" + "不忠" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - こういう時に 下におるのは好きじゃがな。
+  - 意図的に 不忠な行為は？
 
 ### "に" + "不忠実" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 博士が合衆国に 不忠実だとは？
+
+### "に" + "乗せてって" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ガルカ 文化ホールに行くのに 乗せてってくれない？
 
 ### "に" + "乗った" (1 occurrences)
 - Predicted: None
@@ -50984,11 +46224,11 @@ Accuracy: 98.66%
 - Examples:
   - マークと連絡を取れるように 作動できるかな？
 
-### "に" + "使う" (1 occurrences)
+### "に" + "俺" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 魔法を自分のためだけに 使うようになったのです。
+  - 一緒に 俺の「ＦＢＩ」を観るか？
 
 ### "に" + "働いて" (1 occurrences)
 - Predicted: None
@@ -51001,6 +46241,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - コルシカ人のために 働いてるんだろ？
+
+### "に" + "働いてん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - イマム モサブのために 働いてんのか？
 
 ### "に" + "僕" (1 occurrences)
 - Predicted: None
@@ -51062,12 +46308,6 @@ Accuracy: 98.66%
 - Examples:
   - 僕の机 廊下に 出しちゃって!
 
-### "に" + "出し抜かれず" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ドーラごときに 出し抜かれずにすんだのだ！
-
 ### "に" + "出たって" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51128,12 +46368,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜこんな抗争に 加わった!
 
-### "に" + "助けられて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アメリカのカーチスに 助けられて よく平気ね。
-
 ### "に" + "努力" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51152,23 +46386,11 @@ Accuracy: 98.66%
 - Examples:
   - どうして私の指揮下に 勇敢な兵士がいない?
 
-### "に" + "動かして" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 閣下は 兵隊を必要な時に 動かしてくださればよい。
-
 ### "に" + "包まれる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 上品なドレスに 包まれることも 必要なの。
-
-### "に" + "化けてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見守るって まさかカラスに 化けてるんじゃないわよね。
 
 ### "に" + "原爆" (1 occurrences)
 - Predicted: None
@@ -51242,6 +46464,12 @@ Accuracy: 98.66%
 - Examples:
   - ワトニーはどこに 向かってますか？
 
+### "に" + "向ける" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ぼうず、それを床の方に 向けるんだ、いいな？
+
 ### "に" + "呉" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51254,11 +46482,11 @@ Accuracy: 98.66%
 - Examples:
   - 私に 告白を聞いてほしいか？
 
-### "に" + "味方" (1 occurrences)
+### "に" + "命令" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そのうちに 味方は俺だけになっちまった。
+  - モルグルのドブネズミに 命令されてたまるか！
 
 ### "に" + "問題" (1 occurrences)
 - Predicted: None
@@ -51283,12 +46511,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - まずは 私に 報告すべきだろう？
-
-### "に" + "変" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そのばあちゃんが オイラに 変なものを食わせたんだ。
 
 ### "に" + "変わって" (1 occurrences)
 - Predicted: None
@@ -51638,6 +46860,12 @@ Accuracy: 98.66%
 - Examples:
   - でも それは君と僕の目に 映るものだよね？
 
+### "に" + "時間" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 町全体を見るのに 時間がかからないよ。
+
 ### "に" + "書く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51680,12 +46908,6 @@ Accuracy: 98.66%
 - Examples:
   - さあ！ 彼女たちを相手に 朝まで踊り明かそう！
 
-### "に" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 違うの！ 帽子屋に 本当になりたいのかってこと。
-
 ### "に" + "来よう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -51709,6 +46931,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 他に 案あったか？
+
+### "に" + "案内" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いままでも 後ろ戸が開いた場所に 案内してくれてたの!
 
 ### "に" + "楯突きやがった" (1 occurrences)
 - Predicted: None
@@ -51824,11 +47052,11 @@ Accuracy: 98.66%
 - Examples:
   - 丘の上に 水道タンクがあるからだよ。
 
-### "に" + "決まってる" (1 occurrences)
+### "に" + "油" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 脅かされてやったに 決まってるじゃないか。
+  - パズー そのオンボロに 油さしとけよ！
 
 ### "に" + "泊まる" (1 occurrences)
 - Predicted: None
@@ -51877,6 +47105,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それぞれの髪に 物語があるの？
+
+### "に" + "玉座" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 知りもしない子のために 玉座をあきらめると?
 
 ### "に" + "理屈" (1 occurrences)
 - Predicted: None
@@ -52016,11 +47250,11 @@ Accuracy: 98.66%
 - Examples:
   - お爺さんと一緒に 立っていたいと思うよ。
 
-### "に" + "立ってなさい" (1 occurrences)
+### "に" + "答えよう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - どこか好きなとこに 立ってなさい！
+  - 心理学的に 答えようか？
 
 ### "に" + "箒" (1 occurrences)
 - Predicted: None
@@ -52166,18 +47400,6 @@ Accuracy: 98.66%
 - Examples:
   - 同じ形が同じ場所に 見えますね？
 
-### "に" + "見た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの雲の峰の向こうに 見たことのない島が浮いてるんだ。
-
-### "に" + "見つかっちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここにいたら すぐサリマン先生に 見つかっちゃうからね。
-
 ### "に" + "見つかる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52310,12 +47532,6 @@ Accuracy: 98.66%
 - Examples:
   - ここまで必死に 走ったのは無駄骨か？
 
-### "に" + "身" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 長い間に 身も心も 食い尽くされてしまったのです。
-
 ### "に" + "近寄る" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52351,12 +47567,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それで派手に 遊んでたわけ？
-
-### "に" + "道" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎どもが あんな所に 道を造っちまいやがって…。
 
 ### "に" + "避難" (1 occurrences)
 - Predicted: None
@@ -52436,6 +47646,12 @@ Accuracy: 98.66%
 - Examples:
   - 叫んだ刹那に 雷鳴が！
 
+### "に" + "静か" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 静かに 静かにしなさーい！
+
 ### "に" + "面識" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52478,6 +47694,12 @@ Accuracy: 98.66%
 - Examples:
   - 全てが 彼の涙に 飲み込まれるまで。
 
+### "に" + "馬鹿" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なぜそんなに 馬鹿な格好をしてるの？
+
 ### "に" + "驚く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52507,6 +47729,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 次の土曜にゃ 戻って来るよぉ。
+
+### "ぬいたら" + "みみず" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いしをぬいたら みみず そとにでちゃうよ？
 
 ### "ぬけ" + "急げ" (1 occurrences)
 - Predicted: None
@@ -52538,23 +47766,11 @@ Accuracy: 98.66%
 - Examples:
   - よくポニョを連れて来て くれましたね ありがとう。
 
-### "ね" + "ありがとさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これはピッタリの杖だね ありがとさん。
-
 ### "ね" + "いくら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - やっぱりね いくら？
-
-### "ね" + "え～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺ね え～っと え～っとね… 何でも食う！
 
 ### "ね" + "おいしい" (1 occurrences)
 - Predicted: None
@@ -52566,7 +47782,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 電話ってこれね おばさま。
+  - 電話ってこれね おばさま！
 
 ### "ね" + "お幾ら" (1 occurrences)
 - Predicted: None
@@ -52608,7 +47824,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ついてないね こんな時にシケるなんて。
+  - ついてないね こんな時にしけるなんて 夜明けまでは！？
 
 ### "ね" + "じゃ" (1 occurrences)
 - Predicted: None
@@ -52634,6 +47850,12 @@ Accuracy: 98.66%
 - Examples:
   - 驚いたね すごい！
 
+### "ね" + "ちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誕生日の子供にはね ちゃんとした格好させないと。
+
 ### "ね" + "で" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52657,6 +47879,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - まだ若いんだろうね どんな仕事を？
+
+### "ね" + "ねえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ね ねえ！
 
 ### "ね" + "まだ" (1 occurrences)
 - Predicted: None
@@ -52687,6 +47915,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ええ お礼にね ん？
+
+### "ね" + "アライグマ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ごめんね アライグマさん ごめんね！
 
 ### "ね" + "アンニュイ" (1 occurrences)
 - Predicted: None
@@ -52724,12 +47958,6 @@ Accuracy: 98.66%
 - Examples:
   - そうだね ジミー・マルカムは なぜあなたを嫌うの？
 
-### "ね" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ごめんね ソフィー。
-
 ### "ね" + "ダソン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52747,12 +47975,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ベンツね ドイツでも車を作ってんのか？
-
-### "ね" + "ハァ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるさいわね ハァ ハァ…。
 
 ### "ね" + "バス" (1 occurrences)
 - Predicted: None
@@ -52772,18 +47994,6 @@ Accuracy: 98.66%
 - Examples:
   - 奴はまだ近くにいますね パベル？
 
-### "ね" + "ヒャハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ひ孫に小遣いやりたくてね ヒャハハハ…。
-
-### "ね" + "フフフ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルによろしくね フフフ…。
-
 ### "ね" + "プリウス" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52796,11 +48006,11 @@ Accuracy: 98.66%
 - Examples:
   - 僕ね ポニョを守ってあげるって 約束したの。
 
-### "ね" + "ママ" (1 occurrences)
+### "ね" + "ポルコ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ルイ） よく分かるね ママ。
+  - ね ポルコって本当はスパイなの？
 
 ### "ね" + "マルセロ" (1 occurrences)
 - Predicted: None
@@ -52832,12 +48042,6 @@ Accuracy: 98.66%
 - Examples:
   - 私達ね 七国山から来たの。
 
-### "ね" + "世" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あのね 世の中 物騒になってるんだから。
-
 ### "ね" + "京子" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52855,18 +48059,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 素敵な帽子ですね 似合うかな？
-
-### "ね" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかしいわね 何で あんな元気なの？
-
-### "ね" + "何とかしな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 泣き事なんか聞きたかないね 何とかしな！
 
 ### "ね" + "何色" (1 occurrences)
 - Predicted: None
@@ -52910,12 +48102,6 @@ Accuracy: 98.66%
 - Examples:
   - どうだね 博士？
 
-### "ね" + "古い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう あなただけに なっちゃったわね 古い仲間は。
-
 ### "ね" + "外" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -52933,12 +48119,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 大変ね 大丈夫?
-
-### "ね" + "大事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 仕方ないね 大事にするんだよ。
 
 ### "ね" + "失われた" (1 occurrences)
 - Predicted: None
@@ -52964,23 +48144,11 @@ Accuracy: 98.66%
 - Examples:
   - グイド 疲れたのね 家に帰る？
 
-### "ね" + "小さい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私ね 小さい時から飛行艇乗りの 話を聞いて育って来たの。
-
 ### "ね" + "平気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ごめんね 平気か？
-
-### "ね" + "当然" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 当然だわ う～ん…。
 
 ### "ね" + "急" (1 occurrences)
 - Predicted: None
@@ -53000,23 +48168,11 @@ Accuracy: 98.66%
 - Examples:
   - （キキ）ええ いいニオイね 手伝っていい？
 
-### "ね" + "掃除婦" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 掃除婦には ピッタリの部屋ね。
-
 ### "ね" + "敬三" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうそう 住吉祭の晩ね 敬三 覚えてる?
-
-### "ね" + "新しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ドアの色が変わったからね 新しい出口だ。
 
 ### "ね" + "方言" (1 occurrences)
 - Predicted: None
@@ -53066,17 +48222,11 @@ Accuracy: 98.66%
 - Examples:
   - もちろん手ぶらでね 来るだけでいいの！
 
-### "ね" + "東洋" (1 occurrences)
+### "ね" + "瀧" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - これはね 東洋の計算器だよ。
-
-### "ね" + "死に神" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 死に神かもしれないわね。
+  - （司）ああ 例の？ いいね 瀧は？
 
 ### "ね" + "真っ暗" (1 occurrences)
 - Predicted: None
@@ -53084,17 +48234,17 @@ Accuracy: 98.66%
 - Examples:
   - あらあら 宗ちゃんね 真っ暗で よく見えないわ。
 
+### "ね" + "秘密基地" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いたいた… へぇ すごいね 秘密基地みたいだな。
+
 ### "ね" + "緊張" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 震えてるね 緊張してる？
-
-### "ね" + "花" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっぴりね 花を助けるのに。
 
 ### "ね" + "草太" (1 occurrences)
 - Predicted: None
@@ -53102,17 +48252,17 @@ Accuracy: 98.66%
 - Examples:
   - ね 草太さんって ずっとこんなふうに旅をしてるの？
 
-### "ね" + "見直した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたの魔法は一流ね 見直したわ！
-
 ### "ね" + "貴女" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 綺麗な人達ね 貴女のお友達？
+
+### "ね" + "赤ちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あぁ ごめんね 赤ちゃんは まだスープを飲めないの。
 
 ### "ね" + "鈴芽" (1 occurrences)
 - Predicted: None
@@ -53138,17 +48288,11 @@ Accuracy: 98.66%
 - Examples:
   - タバコ吞みは 大変だねぇ - フン！
 
-### "ねぇ" + "お姉ちゃん" (1 occurrences)
+### "ねぇ" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ねぇ お姉ちゃん 本当に一生 あのお店に いるつもりなの？
-
-### "ねぇ" + "こんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不思議ねぇ こんなに穏やかな 気持になれたの初めて…。
+  - ねぇ あなた ポニョを 人間にしてしまえばいいのよ。
 
 ### "ねぇ" + "それ" (1 occurrences)
 - Predicted: None
@@ -53156,23 +48300,11 @@ Accuracy: 98.66%
 - Examples:
   - ねぇ それ ちょっと見せてくれる？
 
-### "ねぇ" + "ただ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だろねぇ ただのボロ屋にしか 見えないけど…。
-
 ### "ねぇ" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ねぇ ちょっと延ばすだけだから。
-
-### "ねぇ" + "よく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい火だねぇ よく この家を隠してる。
 
 ### "ねぇ" + "カンタ" (1 occurrences)
 - Predicted: None
@@ -53180,41 +48312,11 @@ Accuracy: 98.66%
 - Examples:
   - かわいい子じゃねぇ カンタ。
 
-### "ねぇ" + "ジーナ" (1 occurrences)
+### "ねぇ" + "君" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ねぇ ジーナさんて どんな人？ ポルコも恋したの？
-
-### "ねぇ" + "ポット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お茶も欲しいねぇ ポットはあるの？
-
-### "ねぇ" + "ポルコ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ポルコって 本当はスパイなの？
-
-### "ねぇ" + "不景気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やだねぇ 不景気な話ばかりで。
-
-### "ねぇ" + "今さら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しょうがないわねぇ 今さら降ろせないじゃない。
-
-### "ねぇ" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クシャクシャだねぇ 何だい？ これ。
+  - （草太）ねぇ 君 -（鈴芽）はっ！
 
 ### "ねぇ" + "問題" (1 occurrences)
 - Predicted: None
@@ -53234,18 +48336,6 @@ Accuracy: 98.66%
 - Examples:
   - 私の妹なの。 さてねぇ 女の子…。
 
-### "ねぇ" + "戦争" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やだねぇ 戦争なんて。
-
-### "ねぇ" + "見て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これ おかしくない？ ねぇ 見て！ ハウルの城が来てる。
-
 ### "ねえ" + "あの" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53257,6 +48347,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ねえ いいでしょう？
+
+### "ねえ" + "えっと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - おれねえ えっと ええとねーぇ ぁ 何でも食う！！
 
 ### "ねえ" + "お外" (1 occurrences)
 - Predicted: None
@@ -53342,6 +48438,12 @@ Accuracy: 98.66%
 - Examples:
   - ねえ わかりっこないでしょう ガンダルフ？
 
+### "ねえ" + "アレックス" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ねえ アレックス？
+
 ### "ねえ" + "エブリン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53371,6 +48473,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - せっかく苦労して作ったのに ねえ ジジ？
+
+### "ねえ" + "ジーナ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ねえ ジーナさんてどんな人？ ポルコも恋したの？
 
 ### "ねえ" + "スケート" (1 occurrences)
 - Predicted: None
@@ -53420,6 +48528,12 @@ Accuracy: 98.66%
 - Examples:
   - ねえ 何故私達は明日招待されないの?
 
+### "ねえ" + "君" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ねえ 君いくつ？ この町の子？
+
 ### "ねえ" + "姉貴" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53437,12 +48551,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ねえ 手紙は？
-
-### "ねえ" + "持ち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ぼってるんじゃねえ 持ちつ持たれつなんだよ。
 
 ### "ねえ" + "早く" (1 occurrences)
 - Predicted: None
@@ -53540,6 +48648,12 @@ Accuracy: 98.66%
 - Examples:
   - 馬鹿だねえ 頭が腐ってる！
 
+### "ねえ" + "髪" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （信代）ねえ 髪 切ったの？
+
 ### "ねえ" + "魔女" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53558,11 +48672,11 @@ Accuracy: 98.66%
 - Examples:
   - ねっ うちの子になる？
 
-### "ねっ" + "ハリー" (1 occurrences)
+### "ねっ" + "だから" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お届けしちゃいます ねっ ハリー君。
+  - ねっ だからお願い！
 
 ### "ねっ" + "大学生" (1 occurrences)
 - Predicted: None
@@ -53570,11 +48684,11 @@ Accuracy: 98.66%
 - Examples:
   - あとで払ってくださいねっ 大学生！
 
-### "ねっ" + "掃除婦" (1 occurrences)
+### "ねーぇ" + "ぁ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ハニー） ねっ 掃除婦なんか しなくていいのよ。
+  - おれねえ えっと ええとねーぇ ぁ 何でも食う！！
 
 ### "ねーえー" + "まだぁ" (1 occurrences)
 - Predicted: None
@@ -53594,6 +48708,12 @@ Accuracy: 98.66%
 - Examples:
   - ちょっと伺いたかったの ”碧洋のハート”は見つかった？
 
+### "の" + "あの" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 結婚したら 一生夢に出てくるぞ 門の前の あの車が！
+
 ### "の" + "ありがたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53612,17 +48732,17 @@ Accuracy: 98.66%
 - Examples:
   - 彼女らの いるべき場所とは どこだ？
 
-### "の" + "うつっちゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 開けないで すごい風邪なの うつっちゃ大変よ。
-
 ### "の" + "おとうさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - アハハハ そういうの おとうさんにも覚えがあるなぁ。
+
+### "の" + "おばあちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お泊まりの おばあちゃん達がいるわ！
 
 ### "の" + "おバカ" (1 occurrences)
 - Predicted: None
@@ -53630,23 +48750,11 @@ Accuracy: 98.66%
 - Examples:
   - あの渡し舟の おバカ船長と パブで飲んでたんだろ。
 
-### "の" + "お住まい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 魔法使いペンドラゴン師の お住まいは こちらか？
-
 ### "の" + "お兄ちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あなたは 世界一の お兄ちゃんになるの。
-
-### "の" + "お出まし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こりゃ とんだイタリア空軍の お出ましだぜ。
 
 ### "の" + "お前" (1 occurrences)
 - Predicted: None
@@ -53666,19 +48774,13 @@ Accuracy: 98.66%
 - Examples:
   - そこの お古でいいだろ 朝は どれくらい寝てるんだ？
 
-### "の" + "お城" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルの所へ行きたいの お城を動かして。
-
 ### "の" + "お姫様" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何の お姫様？
 
-### "の" + "お守り" (1 occurrences)
+### "の" + "お守り袋" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -53738,17 +48840,17 @@ Accuracy: 98.66%
 - Examples:
   - 教会史上初のアフリカ人教皇の が誕生した。
 
-### "の" + "くそ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 舵が動かねえ！ いつもの くそ力は どうした！
-
 ### "の" + "けいやくいん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ぜにーばの！？ まじょの けいやくいんか！！
+
+### "の" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ど どうするの これ？
 
 ### "の" + "ご出身" (1 occurrences)
 - Predicted: None
@@ -53780,12 +48882,6 @@ Accuracy: 98.66%
 - Examples:
   - 母君の ご遺体を 見ていないでしょ？
 
-### "の" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やった！ 工場とは話がついてるの すぐ発注するね！
-
 ### "の" + "せい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53797,12 +48893,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そして 今日たまたま出会ったの そうよね?
-
-### "の" + "そういう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 あなたの そういうバカっぽいところ好き。
 
 ### "の" + "そして" (1 occurrences)
 - Predicted: None
@@ -53816,12 +48906,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜ怖がるの そんなに パパが期待してたの？
 
-### "の" + "だから" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配だったの だから嬉しい！ コーヒーいれるね！
-
 ### "の" + "だって" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -53834,23 +48918,11 @@ Accuracy: 98.66%
 - Examples:
   - 宇宙の ちりだってそうでしょう？
 
-### "の" + "つれない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 男を助けるための つれないしぐさ。
-
 ### "の" + "とこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 志げの とこは?
-
-### "の" + "どっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 前を失礼 ケツとムスコの どっちを向ける？
 
 ### "の" + "どんな" (1 occurrences)
 - Predicted: None
@@ -53906,23 +48978,17 @@ Accuracy: 98.66%
 - Examples:
   - 料理の ひらめきは？
 
-### "の" + "ほら" (1 occurrences)
+### "の" + "ほらっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとう… 大急ぎで作ったの ほら！
+  - ありがと 大急ぎで作ったの ほらっ！
 
 ### "の" + "ほんとう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - はくの ほんとうのなまえ？
-
-### "の" + "ほんの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊の用心棒なぞ 金と名声の ほんのワンステップさ。
 
 ### "の" + "ぼう" (1 occurrences)
 - Predicted: None
@@ -53953,18 +49019,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 死ぬの やめます！
-
-### "の" + "やる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんなデカいの やるんですか!
-
-### "の" + "ように" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君はラピュタを宝島か何かの ように考えているのかね？
 
 ### "の" + "よしみ" (1 occurrences)
 - Predicted: None
@@ -54044,12 +49098,6 @@ Accuracy: 98.66%
 - Examples:
   - テロリストの ガセネタじゃないのか ?
 
-### "の" + "キレイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうさ この国一番の キレイ好きな魔女さ。
-
 ### "の" + "ギター" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54098,12 +49146,6 @@ Accuracy: 98.66%
 - Examples:
   - 本物の コートだ。
 
-### "の" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私は王室付き魔法使いの サリマンです。
-
 ### "の" + "サンチャゴ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54140,11 +49182,11 @@ Accuracy: 98.66%
 - Examples:
   - あなたがそうだって 言うの ジョン？
 
-### "の" + "ジーナ" (1 occurrences)
+### "の" + "ジョージタウン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 『ホテル アドリアーノ』の ジーナさん？
+  - そうだ。サディアス…今の ジョージタウンで会った。
 
 ### "の" + "スカーフ" (1 occurrences)
 - Predicted: None
@@ -54187,6 +49229,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それに、ビニー、花屋の チェーン店を始められるよ。
+
+### "の" + "チビ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 親方んとこの チビのマッジが！
 
 ### "の" + "テスト" (1 occurrences)
 - Predicted: None
@@ -54242,6 +49290,12 @@ Accuracy: 98.66%
 - Examples:
   - 有名な アリスの バナナ・パンケーキ？
 
+### "の" + "バンガロー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ホラー映画の｢サイコ｣の バンガローみたいな？
+
 ### "の" + "ビリー･フリン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54271,12 +49325,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 全館電気照明の ボヘミアンの天国！
-
-### "の" + "ポケット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - …で あなたの ポケットの中のものは何？
 
 ### "の" + "マイロ・ザッチ" (1 occurrences)
 - Predicted: None
@@ -54326,12 +49374,6 @@ Accuracy: 98.66%
 - Examples:
   - ナチスの ユダヤ人迫害は？
 
-### "の" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー お願いがあるの ラピュタのこと忘れて…。
-
 ### "の" + "リスク" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54356,12 +49398,6 @@ Accuracy: 98.66%
 - Examples:
   - 君も〝死せる詩人の会〟の 一員と認めるな？
 
-### "の" + "一度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きちんとやりたいの 一度飛んでから手直ししなきゃ。
-
 ### "の" + "中心部" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54373,6 +49409,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 物語の最初の 主人公たちは？
+
+### "の" + "乗せない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 乗せるの 乗せないの どっちかにして！
 
 ### "の" + "乗って" (1 occurrences)
 - Predicted: None
@@ -54469,12 +49511,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私たちがグストーの 信念を忘れていいの？
-
-### "の" + "値打ち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 近頃はな 札束が紙クズ並の 値打ちしかないんだよ。
 
 ### "の" + "催促" (1 occurrences)
 - Predicted: None
@@ -54608,12 +49644,6 @@ Accuracy: 98.66%
 - Examples:
   - 誰もこのタイプライターの 在り処を知らない！
 
-### "の" + "報告" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 本国にラピュタ発見の 報告をしたか？
-
 ### "の" + "報知器" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54728,12 +49758,6 @@ Accuracy: 98.66%
 - Examples:
   - 月曜日には病院へ戻るの 少しずつ慣らすんだって。
 
-### "の" + "左はし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 光は 日の出た丘の 左はしを指したから…。
-
 ### "の" + "差し金" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54787,12 +49811,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - この日記は君への 彼からの贈り物なんだ。
-
-### "の" + "心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうなの 心って重いの。
 
 ### "の" + "心配" (1 occurrences)
 - Predicted: None
@@ -54878,12 +49896,6 @@ Accuracy: 98.66%
 - Examples:
   - プリペイドカードの 払い戻しを？
 
-### "の" + "指揮官" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ！ わしがラピュタ探索の 指揮官だぞ 忘れるな！
-
 ### "の" + "捜した" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -54955,12 +49967,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - フロイトの 本ばかりで？
-
-### "の" + "来て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 壊されたの 来て！
 
 ### "の" + "栄養素" (1 occurrences)
 - Predicted: None
@@ -55082,6 +50088,12 @@ Accuracy: 98.66%
 - Examples:
   - あなた達の 理解？
 
+### "の" + "生徒" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 相手は同じ学校の 生徒なんだね？
+
 ### "の" + "男" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55196,17 +50208,11 @@ Accuracy: 98.66%
 - Examples:
   - 心の奥底の 自分では どうしようもないものへの恐怖！
 
-### "の" + "自由" (1 occurrences)
+### "の" + "虚構" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 「さらば アドリア海の 自由と放埓の日々よ」ってわけだ。
-
-### "の" + "行かなきゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハニー） 車を待たせてあるの 行かなきゃ。
+  - 文法も異星人の 虚構だと？
 
 ### "の" + "西部劇" (1 occurrences)
 - Predicted: None
@@ -55273,12 +50279,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 水爆の 議論にも？
-
-### "の" + "財宝" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - たくさんの 財宝が眠ってるんだって。
 
 ### "の" + "賞金首" (1 occurrences)
 - Predicted: None
@@ -55466,11 +50466,11 @@ Accuracy: 98.66%
 - Examples:
   - どこへ行くの ？
 
-### "のこのこ" + "帰って" (1 occurrences)
+### "のぞみね" + "爆竹" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - …で いじけて のこのこ 帰って来たわけかい。
+  - 変わったのぞみね 爆竹のこと？
 
 ### "のってみよう" + "じゃ" (1 occurrences)
 - Predicted: None
@@ -55484,11 +50484,23 @@ Accuracy: 98.66%
 - Examples:
   - 心配だったので - バカな！
 
+### "ので" + "ございましょう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いっそうの輝きを増すので ございましょう？
+
 ### "ので" + "言語" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 少し言い辛いので 言語を変更できますか？
+
+### "のに" + "あたし" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なのに あたしを おバカ扱い！
 
 ### "のに" + "いつ" (1 occurrences)
 - Predicted: None
@@ -55544,12 +50556,6 @@ Accuracy: 98.66%
 - Examples:
   - 夫が亡くなったのに もう仕事を？
 
-### "のに" + "わざわざ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 歩いても行けるのに わざわざ ここから？
-
 ### "のに" + "ウイルス" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55573,12 +50579,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 写真を頼んだのに フォンジーの真似？
-
-### "のに" + "一体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さんが反対なのに 一体どうやって？
 
 ### "のに" + "一銭" (1 occurrences)
 - Predicted: None
@@ -55610,12 +50610,6 @@ Accuracy: 98.66%
 - Examples:
   - なのに 俺に払う金が ねえだと？
 
-### "のに" + "力" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心をなくしたのに 力があり過ぎるのです。
-
 ### "のに" + "半年" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55640,23 +50634,17 @@ Accuracy: 98.66%
 - Examples:
   - 完璧に聞こえるのに 歓迎されないって言うのか？
 
-### "のに" + "王" (1 occurrences)
+### "のに" + "殴った" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 国が亡びたのに 王だけ 生きてるなんて こっけいだわ。
+  - 何もしてないのに 殴ったんだな？
 
 ### "のに" + "男" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ホモでもないのに 男と結婚？
-
-### "のに" + "艇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それなのに 艇は勝手に飛んで行くんだ。
 
 ### "のに" + "読書" (1 occurrences)
 - Predicted: None
@@ -55694,17 +50682,11 @@ Accuracy: 98.66%
 - Examples:
   - 本当は あいつを少しも 愛してないんだろ？
 
-### "は" + "あいつら" (1 occurrences)
+### "は" + "あそこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おかしなのは あいつらだ。
-
-### "は" + "あちら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 将軍閣下は あちらです。
+  - それは あそこへ行く ということか？
 
 ### "は" + "ありがとうございます" (1 occurrences)
 - Predicted: None
@@ -55712,23 +50694,17 @@ Accuracy: 98.66%
 - Examples:
   - 私は ありがとうございます。
 
-### "は" + "ありません" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい仕事は ありませんか？
-
-### "は" + "いかない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女をやめるわけには いかないけど…。
-
 ### "は" + "いかほど" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お礼は いかほど？
+
+### "は" + "いけない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ここへきては いけない！ すぐもどれ！
 
 ### "は" + "いっぱい" (1 occurrences)
 - Predicted: None
@@ -55766,41 +50742,17 @@ Accuracy: 98.66%
 - Examples:
   - 保護者の方は いらっしゃらないのですか？
 
-### "は" + "いらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまく行かなかったら お金は いらないわ。
-
 ### "は" + "いらなかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - メイドは いらなかったか？
 
-### "は" + "いらねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 嫁は いらねえ 飛行石さ。
-
-### "は" + "いられない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも ここには いられないわね。
-
 ### "は" + "うち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 君は うちに来て何年になる？
-
-### "は" + "うめぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （魚屋） そいつは うめぇぞ。 わしは魚 嫌いじゃ。
 
 ### "は" + "うんざり" (1 occurrences)
 - Predicted: None
@@ -55813,12 +50765,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そのおかたは おくされがみではないぞ！
-
-### "は" + "おしまい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの… お店は おしまいなんです。
 
 ### "は" + "おばあさん" (1 occurrences)
 - Predicted: None
@@ -55850,18 +50796,6 @@ Accuracy: 98.66%
 - Examples:
   - ラナー、またはロナルド・デイは お世話になってますか？
 
-### "は" + "お国" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは お国に帰って 戦争でも やめさせなさいな。
-
-### "は" + "お墓" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これが玉座ですって？ ここは お墓よ あなたと私の。
-
 ### "は" + "お好き" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55880,6 +50814,12 @@ Accuracy: 98.66%
 - Examples:
   - フロストン･パラダイス行きは お急ぎを！
 
+### "は" + "お母様" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今晩は お母様の具合は？
+
 ### "は" + "お泊まり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55897,6 +50837,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君がスコットランド貴族とは お笑いだ！
+
+### "は" + "お茶" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 小間使いは お茶を？
 
 ### "は" + "お連れ様" (1 occurrences)
 - Predicted: None
@@ -55922,12 +50868,6 @@ Accuracy: 98.66%
 - Examples:
   - 多分ね あなたは かあさん似だから。
 
-### "は" + "かけられる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私は呪いは かけられるけど 解けない魔女なの。
-
 ### "は" + "かける" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -55952,11 +50892,23 @@ Accuracy: 98.66%
 - Examples:
   - 佛山には がっかりだ くそっ！
 
+### "は" + "きっと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - メイは きっと この森の主に会ったんだ。
+
 ### "は" + "きみ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 騒ぎの元は きみか？
+
+### "は" + "きれい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちっとは きれいになるでしょう。
 
 ### "は" + "くれる" (1 occurrences)
 - Predicted: None
@@ -56006,12 +50958,6 @@ Accuracy: 98.66%
 - Examples:
   - 思い通りには させないよ。
 
-### "は" + "しがない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここは しがない下町の帽子屋です。
-
 ### "は" + "したい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56029,12 +50975,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私は しっかりと 世話を見てただろ？
-
-### "は" + "して" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カタギに肩入れしてもよ 尊敬は してくれねえぜ。
 
 ### "は" + "しといた" (1 occurrences)
 - Predicted: None
@@ -56054,23 +50994,11 @@ Accuracy: 98.66%
 - Examples:
   - おなかは すいてない？
 
-### "は" + "すぐ" (1 occurrences)
+### "は" + "すっこんでろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 海賊は すぐ しばり首だ。
-
-### "は" + "すっ込んでろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇは すっ込んでろ！
-
-### "は" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルは ず～っと 待っててくれたのに。
+  - テメエは すっこんでろ！
 
 ### "は" + "せまい" (1 occurrences)
 - Predicted: None
@@ -56078,23 +51006,11 @@ Accuracy: 98.66%
 - Examples:
   - 都会はね、 クーみたいな 大きな犬には せまいところよ。
 
-### "は" + "そっち" (1 occurrences)
+### "は" + "そういう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前の艇は そっちだろ！ ちょっとだけ！
-
-### "は" + "そのまま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平面形は そのままにして 新しい翼断面を使いたいの。
-
-### "は" + "それほど" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうだなあ、王と娘は それほど意見が一致してないな。
+  - 私のやってる事は そういう事さ。
 
 ### "は" + "たまらん" (1 occurrences)
 - Predicted: None
@@ -56120,35 +51036,11 @@ Accuracy: 98.66%
 - Examples:
   - あなたは だ～れ？ 真っ黒クロスケ？
 
-### "は" + "ちっと" (1 occurrences)
+### "は" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 日ざしの中へは ちっとも出て来ない。
-
-### "は" + "ちと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいつは ちと高くつくぜ。
-
-### "は" + "ちょうど" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） バカどもには ちょうどいい目くらましだ。
-
-### "は" + "ついた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だがな 一度は ついた勝負だ。
-
-### "は" + "ついてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「エンジン不調…」。 「その話は ついてるはずだ」。
+  - 私を幸せにするには ちょっとしたことでいいのよ？
 
 ### "は" + "つく" (1 occurrences)
 - Predicted: None
@@ -56162,29 +51054,23 @@ Accuracy: 98.66%
 - Examples:
   - 部屋は異常にキレイだし 携帯は つながってないし！
 
-### "は" + "つまらぬ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 会議は つまらぬ 息抜きに ひと飛びして来たのだ。
-
 ### "は" + "できない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 俺たちの息子を取り戻すことは できないよな、ハニー？
 
+### "は" + "できました" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 社会復帰する準備は できましたか？
+
 ### "は" + "できん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - コピペ以上は できん！
-
-### "は" + "とっても" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ホントは とっても怖かったの…。
 
 ### "は" + "とばない" (1 occurrences)
 - Predicted: None
@@ -56197,6 +51083,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - この政策は どうか？
+
+### "は" + "どうせ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今夜は どうせ 私達 お泊まりだから。
 
 ### "は" + "どうも" (1 occurrences)
 - Predicted: None
@@ -56215,18 +51107,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 戦局は どないですの？
-
-### "は" + "なくす" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 年寄りのいいとこは なくすものが少ないことね。
-
-### "は" + "なくならない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 石を捨てたって ラピュタは なくならないよ。
 
 ### "は" + "ならなかった" (1 occurrences)
 - Predicted: None
@@ -56252,12 +51132,6 @@ Accuracy: 98.66%
 - Examples:
   - え？ 服は ぬれてないね。
 
-### "は" + "ねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 勝ち目は ねえぜ。
-
 ### "は" + "のんびり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56282,23 +51156,17 @@ Accuracy: 98.66%
 - Examples:
   - ポニョは はだしね。
 
-### "は" + "ひさしぶり" (1 occurrences)
+### "は" + "はなせ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うん 今日は ひさしぶりに忙しいんだ。
+  - は はなせ！！何をする！！
 
 ### "は" + "ひどい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ピッツ君 〝最低 ピッツ〟とは ひどい名だ どこだ？
-
-### "は" + "ぶち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 黙れ～！ グズグズ言うヤツは ぶち殺すぞ！
 
 ### "は" + "ほったらかし" (1 occurrences)
 - Predicted: None
@@ -56312,12 +51180,6 @@ Accuracy: 98.66%
 - Examples:
   - 父上のラナーとは ほんとに音信不通？
 
-### "は" + "まけとく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 給料は まけとくよ それに ほれ！ 伝声管も付けるぞ。
-
 ### "は" + "まず" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56329,6 +51191,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも結末は まずいんだろ？
+
+### "は" + "また" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今日は また どうしたよ？
 
 ### "は" + "まるで" (1 occurrences)
 - Predicted: None
@@ -56390,35 +51258,11 @@ Accuracy: 98.66%
 - Examples:
   - もう秘密会議は やめた方がいいわ！
 
-### "は" + "やめといたら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた 今日は やめといたら？ 無理だよ。
-
-### "は" + "やめなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「くだらない戦争は やめなさい 私は手伝えません」って！
-
-### "は" + "ややこしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わが家族は ややこしい者ばかりだな。
-
 ### "は" + "ゆかせは" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何人たりともヒメを連れては ゆかせはせぬ！
-
-### "は" + "ゆっくり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたとは ゆっくり話をしたいわねぇ。
 
 ### "は" + "ゆるんでない" (1 occurrences)
 - Predicted: None
@@ -56461,18 +51305,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 意味は わかりますよね？
-
-### "は" + "わが" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この決闘は わがマンマユート団が 取り仕切るぞ！
-
-### "は" + "わずか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これは わずかだが 心ばかりのお礼だ。
 
 ### "は" + "アイアン・クラウド" (1 occurrences)
 - Predicted: None
@@ -56522,35 +51354,17 @@ Accuracy: 98.66%
 - Examples:
   - ルターは インク壺 だったっけ？
 
-### "は" + "インドラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラーマヤーナでは インドラの矢とも伝えているがね。
-
 ### "は" + "ウサギ島" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - よし、さっきのは ウサギ島のバンパーカーのことさ。
 
-### "は" + "ウソ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛行艇については ウソはつかねえ。
-
 ### "は" + "ウド" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この任務は ウドに任せようか？
-
-### "は" + "オイラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 契約の秘密については オイラは喋れないよ。
 
 ### "は" + "オッペンハイマー" (1 occurrences)
 - Predicted: None
@@ -56569,12 +51383,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 一体何だこれは カルトか？
-
-### "は" + "カーチス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こいつを付けたイタリア艇は カーチスに負けたんだ。
 
 ### "は" + "ガルカ" (1 occurrences)
 - Predicted: None
@@ -56611,6 +51419,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなたは クイジーだと言ったでしょ！
+
+### "は" + "クローン" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 今日は クローンを？
 
 ### "は" + "ケビン" (1 occurrences)
 - Predicted: None
@@ -56708,6 +51522,12 @@ Accuracy: 98.66%
 - Examples:
   - コルシカ人には スパイがいる ボスは知ってるか？
 
+### "は" + "セン" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - レディ あなたは セン·シャンシを夫と?
+
 ### "は" + "ダメ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56750,12 +51570,6 @@ Accuracy: 98.66%
 - Examples:
   - 入る時は ノックしろと言ったろ！
 
-### "は" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このままでは ハウルは 荒地の魔女のようになってしまう。
-
 ### "は" + "ハリソン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56774,12 +51588,6 @@ Accuracy: 98.66%
 - Examples:
   - あなたの名前は ハンサムさん？
 
-### "は" + "バカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの子達は バカどもから ラピュタを守ったんだよ。
-
 ### "は" + "バス停" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56797,12 +51605,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 手配は パリで行われた。
-
-### "は" + "ピッタリ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 掃除婦には ピッタリの部屋ね。
 
 ### "は" + "ピップ" (1 occurrences)
 - Predicted: None
@@ -56834,12 +51636,6 @@ Accuracy: 98.66%
 - Examples:
   - 写真は フォトショップの加工か？
 
-### "は" + "フォルゴーレ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうだい？ これは フォルゴーレじゃねえか！
-
 ### "は" + "フラガ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -56851,12 +51647,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - チューバとベースは フレディ・ロイカーノ！
-
-### "は" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 気をつけろ ヤツらは ブタを裁判にかける気はないぞ。
 
 ### "は" + "ベタベタ" (1 occurrences)
 - Predicted: None
@@ -56900,29 +51690,17 @@ Accuracy: 98.66%
 - Examples:
   - あのクソメッセージは ポルシェを盗むためか？
 
-### "は" + "マシンガン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さては マシンガンが イカレやがったな？
-
 ### "は" + "マックス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - トランペットは マックス・トゥーニー！
 
-### "は" + "ムスカ" (1 occurrences)
+### "は" + "ママ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - このままでは ムスカが王になってしまう。
-
-### "は" + "ムダ骨" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 雲の中では ムダ骨です。
+  - なら何で あの人は ママに会えるの？
 
 ### "は" + "ムード" (1 occurrences)
 - Predicted: None
@@ -56948,23 +51726,11 @@ Accuracy: 98.66%
 - Examples:
   - それでも俺は ユナのパパであり続けるから。
 
-### "は" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今は ラピュタが なぜ亡びたのか 私 よく分かる。
-
 ### "は" + "リサ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - こちらは リサと宗介とポニョです。
-
-### "は" + "リュシータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私の継いだ名は リュシータ。
 
 ### "は" + "リラックス" (1 occurrences)
 - Predicted: None
@@ -57014,35 +51780,11 @@ Accuracy: 98.66%
 - Examples:
   - 二人は ロシアから？
 
-### "は" + "ロムスカ・パロ・ウル・ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私の名は ロムスカ・パロ・ウル・ラピュタ。
-
-### "は" + "ワリカン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「やられた時の修理代は ワリカンだよな？」。
-
 ### "は" + "ヴィク" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - では ヴィク？
-
-### "は" + "一文" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊狩り やっても 今日びは 一文にもなりゃしねえよ。
-
-### "は" + "一番" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎！ そういうものは 一番大事な時に とっとけ！
 
 ### "は" + "一緒" (1 occurrences)
 - Predicted: None
@@ -57055,18 +51797,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 俺が言ってるのは 万造のことだ!
-
-### "は" + "上出来" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 終点が玉座の間とは 上出来じゃないか。
-
-### "は" + "上陸" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヤツらは 上陸できなかったはずなんだ。
 
 ### "は" + "下水溝" (1 occurrences)
 - Predicted: None
@@ -57092,6 +51822,12 @@ Accuracy: 98.66%
 - Examples:
   - 彼の妻は 不審死ですか？
 
+### "は" + "不思議" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - サミュエル・マレスキーは 不思議な存在？
+
 ### "は" + "不運" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57116,6 +51852,12 @@ Accuracy: 98.66%
 - Examples:
   - いいえ、そんな男はこのバスには 乗ってないですね？
 
+### "は" + "乗り越えられまい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - コートの無い セルキーでは この夜は 乗り越えられまい。
+
 ### "は" + "事件" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57134,17 +51876,17 @@ Accuracy: 98.66%
 - Examples:
   - トムバッドには 二度と来ません！
 
+### "は" + "今" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 兄さんは 今も生きていた そうでしょ パパ！
+
 ### "は" + "今夜" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - まさか料理は 今夜が初めてじゃあるまい？
-
-### "は" + "今日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それでは 今日の映画は こちら！
 
 ### "は" + "令状" (1 occurrences)
 - Predicted: None
@@ -57248,12 +51990,6 @@ Accuracy: 98.66%
 - Examples:
   - バランスは 保たなければ ね？
 
-### "は" + "俺達" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アメリカに行かなきゃ ならねえのは 俺達のほうだよ。
-
 ### "は" + "個人" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57290,12 +52026,6 @@ Accuracy: 98.66%
 - Examples:
   - 兄さんは 入学試験より死ぬほうが 簡単だと思ったのよ！
 
-### "は" + "全部" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このガラクタは 全部 魔女よけの まじないなんだよ。
-
 ### "は" + "六国" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57307,12 +52037,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - その頃から彼は 共産主義者と関わっていた？
-
-### "は" + "兵隊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 閣下は 兵隊を必要な時に 動かしてくださればよい。
 
 ### "は" + "再び" (1 occurrences)
 - Predicted: None
@@ -57326,23 +52050,11 @@ Accuracy: 98.66%
 - Examples:
   - ユダヤ人ネタは 冗談にしないと同意できる？
 
-### "は" + "分かった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーの気持は 分かったでしょ。
-
 ### "は" + "分かってない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - マハ、 お願いだよ。 あなたは 分かってないんだ。
-
-### "は" + "分からない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それすら我々の科学力では 分からないんだ。
 
 ### "は" + "分からん" (1 occurrences)
 - Predicted: None
@@ -57361,12 +52073,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今日は 初参加？
-
-### "は" + "前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 歯だけは 前のまんまで よかったわ。
 
 ### "は" + "前山公園" (1 occurrences)
 - Predicted: None
@@ -57416,12 +52122,6 @@ Accuracy: 98.66%
 - Examples:
   - .あなたのご専攻は 化学ですか？
 
-### "は" + "北" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ロボットは 北の塔の少女を狙っている。
-
 ### "は" + "医学的" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57451,6 +52151,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なぜ 君と私は 友達なのか?
+
+### "は" + "反体制" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そんな天才だったなら なぜ今は 反体制を叫ぶんだ？
 
 ### "は" + "取り除けない" (1 occurrences)
 - Predicted: None
@@ -57560,12 +52266,6 @@ Accuracy: 98.66%
 - Examples:
   - この木は 園のじゃないもん。
 
-### "は" + "地上" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こいつは 地上で作られたものではない。
-
 ### "は" + "地質" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57601,6 +52301,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 気持ちは 変化した？
+
+### "は" + "外" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - その土管は 外につながってる。 行け！
 
 ### "は" + "大きすぎる" (1 occurrences)
 - Predicted: None
@@ -57698,12 +52404,6 @@ Accuracy: 98.66%
 - Examples:
   - とにかく このカードは 女房に渡す いいね？
 
-### "は" + "始める" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 双方 文句はねえな？ では 始める前に握手でもしな！
-
 ### "は" + "娘" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57751,12 +52451,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 書き留める用意は 宜しいですか？
-
-### "は" + "射殺" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 抵抗する場合は 射殺してかまわん！
 
 ### "は" + "将来" (1 occurrences)
 - Predicted: None
@@ -57818,12 +52512,6 @@ Accuracy: 98.66%
 - Examples:
   - ＬＡには 引っ越して来たの？
 
-### "は" + "強い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その石には 強い力がある。
-
 ### "は" + "強引" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57842,23 +52530,11 @@ Accuracy: 98.66%
 - Examples:
   - ヒトラー・コメディは 当たりそうです？
 
-### "は" + "当分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マンマユート団は 当分再起不能でしょう。
-
 ### "は" + "彼" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この録音は 彼の死去まで続いた？
-
-### "は" + "心底" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君のアホづらには 心底ウンザリさせられる。
 
 ### "は" + "忘れてない" (1 occurrences)
 - Predicted: None
@@ -57956,12 +52632,6 @@ Accuracy: 98.66%
 - Examples:
   - 正面から刺されたのは 恨みを持った顔見知りだと？
 
-### "は" + "息子ども" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 年は若いがな フィオには 息子どもに ないものがあるよ。
-
 ### "は" + "想像" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -57998,12 +52668,6 @@ Accuracy: 98.66%
 - Examples:
   - わかった 君の率直すぎる態度は 我が社には向いていない！
 
-### "は" + "戦争" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうしたら今度は 戦争で王様に呼び出された。
-
 ### "は" + "戦後" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58021,6 +52685,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 介護人は 手袋をしないんですか？
+
+### "は" + "手話" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 皆さんは 手話って知っていますか？
 
 ### "は" + "扱える" (1 occurrences)
 - Predicted: None
@@ -58051,12 +52721,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 車は 持ってる？
-
-### "は" + "掃除婦" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかげで 私は 掃除婦として働いているけど。
 
 ### "は" + "授業" (1 occurrences)
 - Predicted: None
@@ -58093,12 +52757,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ということは 新郎側のお客さんよね？
-
-### "は" + "日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 光は 日の出た丘の 左はしを指したから…。
 
 ### "は" + "旦那様" (1 occurrences)
 - Predicted: None
@@ -58225,6 +52883,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君は 楽しめた？
+
+### "は" + "檻" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - これは 檻よ！
 
 ### "は" + "欲しくない" (1 occurrences)
 - Predicted: None
@@ -58442,24 +53106,6 @@ Accuracy: 98.66%
 - Examples:
   - 「アトランティスの核心は 王の目にある」それだけだよ。
 
-### "は" + "王女様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これは これは 王女様ではないか。
-
-### "は" + "王族" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここから先は 王族しか入れない聖域なのだ。
-
-### "は" + "王様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何よ 来いって言ったのは 王様じゃない。
-
 ### "は" + "現れる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58472,6 +53118,12 @@ Accuracy: 98.66%
 - Examples:
   - 私は 現代的な女!
 
+### "は" + "理想的" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - しかし、私たちは 理想的な存在ではない。
+
 ### "は" + "生きて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58483,12 +53135,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - チェチェンからの帰還兵は 生きてたのか？
-
-### "は" + "生きられない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 土から離れては 生きられないのよ！
 
 ### "は" + "生まれて" (1 occurrences)
 - Predicted: None
@@ -58550,12 +53196,6 @@ Accuracy: 98.66%
 - Examples:
   - アウデッシュ先生には 相談したのか？
 
-### "は" + "眠り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう この城は 眠りから さめてるんだ。
-
 ### "は" + "眠りながら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58567,6 +53207,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 彼が八百長をしてないことは 知ってたんだろ？
+
+### "は" + "知らなかった" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも食べ物にアレルギーがあるのは 知らなかったでしょ？
 
 ### "は" + "知らねえ" (1 occurrences)
 - Predicted: None
@@ -58610,12 +53256,6 @@ Accuracy: 98.66%
 - Examples:
   - あの除草剤男は 確かに怪しいけどね。
 
-### "は" + "礼儀" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奴らには 礼儀ってものが ないからね。
-
 ### "は" + "祈り" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58652,18 +53292,6 @@ Accuracy: 98.66%
 - Examples:
   - 今夜は 空いてる？
 
-### "は" + "空賊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だが このまま引き下がっては 空賊の名誉が守れねえ！
-
-### "は" + "立たない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 王様のお役には 立たないと思います。
-
 ### "は" + "簡単" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58688,23 +53316,11 @@ Accuracy: 98.66%
 - Examples:
   - なんでママは 素っ気なくしてるんだ？
 
-### "は" + "終わっちまった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 冒険飛行家の時代は 終わっちまったんだ。
-
 ### "は" + "終わり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - おフザケハッカーは 終わりだ！
-
-### "は" + "終わりました" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛行艇のローンは 終わりました。
 
 ### "は" + "結婚" (1 occurrences)
 - Predicted: None
@@ -58766,12 +53382,6 @@ Accuracy: 98.66%
 - Examples:
   - 聞こえるか こっちは 聞こえない ハロー？
 
-### "は" + "能" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 賞金稼ぎで稼げねえヤツは 能なしだ。
-
 ### "は" + "脅されてない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58819,18 +53429,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 彼らの誰かは 英語も話せるかもな。
-
-### "は" + "英雄" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 戦争の時は 英雄だったんでしょう？
-
-### "は" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このままでは ハウルは 荒地の魔女のようになってしまう。
 
 ### "は" + "莫大" (1 occurrences)
 - Predicted: None
@@ -58916,12 +53514,6 @@ Accuracy: 98.66%
 - Examples:
   - 物理学者は 規則を選ぶ？
 
-### "は" + "親方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううん 僕の頭は 親方のゲンコツより固いんだ。
-
 ### "は" + "言ってない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58958,6 +53550,12 @@ Accuracy: 98.66%
 - Examples:
   - このスマートなトイレは 試したことあるか？
 
+### "は" + "話さない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 家ではあなたとは 話さない いい？
+
 ### "は" + "話しました" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -58969,12 +53567,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 我々は 詳細な声明を作成しなければならない。
-
-### "は" + "語り部" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは 語り部のシャーナキー？
 
 ### "は" + "警告" (1 occurrences)
 - Predicted: None
@@ -59024,12 +53616,6 @@ Accuracy: 98.66%
 - Examples:
   - アキラ様の目覚めのときは 近づいている！
 
-### "は" + "逃げた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルは 逃げたつもりでしょうけど。
-
 ### "は" + "速く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59047,6 +53633,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - スティーブン・キングは 連続殺人犯か？
+
+### "は" + "逮捕" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 君は 逮捕されたんだぞ。
 
 ### "は" + "週間" (1 occurrences)
 - Predicted: None
@@ -59072,12 +53664,6 @@ Accuracy: 98.66%
 - Examples:
   - そのとおり 最初は 違ってた だろ？
 
-### "は" + "遠く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手は打ちます どうせヤツらは 遠くへは逃げません。
-
 ### "は" + "適当" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59102,23 +53688,11 @@ Accuracy: 98.66%
 - Examples:
   - 国土に対して民衆の区分は 重要でなくなるのでは?
 
-### "は" + "金" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 彼らの一番大事なものは 金でも女でもない 名誉だって。
-
 ### "は" + "金目当て" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 殺したのは 金目当てじゃないな？
-
-### "は" + "鉱山" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 岩達が騒ぐのは 鉱山の上に ラピュタが来とるからだとな。
 
 ### "は" + "銀メダル" (1 occurrences)
 - Predicted: None
@@ -59210,12 +53784,6 @@ Accuracy: 98.66%
 - Examples:
   - 最近は 顔をぼかしたりしないの。
 
-### "は" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この辺りの岩には 飛行石が含まれているんだよ。
-
 ### "は" + "食べなかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59252,12 +53820,6 @@ Accuracy: 98.66%
 - Examples:
   - 演技力もだがこの家族は 騙されやすいな だろ？
 
-### "は" + "驚かなく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まっ 年をとっていいことは 驚かなくなることね。
-
 ### "は" + "驚嘆" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59269,12 +53831,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あれは 高いのよ！
-
-### "は" + "魔法" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - せっかくだがな 私は 魔法で戦に勝とうとは思わんのだ。
 
 ### "は" + "黙ってて" (1 occurrences)
 - Predicted: None
@@ -59336,6 +53892,12 @@ Accuracy: 98.66%
 - Examples:
   - はい ?
 
+### "はい" + "ありがとう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - はい、はい ありがとうね。
+
 ### "はい" + "あります" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59353,12 +53915,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - はい いつから勤務を？
-
-### "はい" + "おばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい おばあちゃん。
 
 ### "はい" + "お届けもの" (1 occurrences)
 - Predicted: None
@@ -59414,12 +53970,6 @@ Accuracy: 98.66%
 - Examples:
   - はい もちろんです！
 
-### "はい" + "やって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい やってみます あげてください。
-
 ### "はい" + "グリンダ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59432,29 +53982,11 @@ Accuracy: 98.66%
 - Examples:
   - 先生！ はい サツキさん。
 
-### "はい" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい サリマン先生も さぞ お喜びでしょう。
-
 ### "はい" + "ニハール・シン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - はい ニハール・シン？
-
-### "はい" + "ペンドラゴン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい ペンドラゴンと申します。
-
-### "はい" + "ママ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい ママ！
 
 ### "はい" + "何" (1 occurrences)
 - Predicted: None
@@ -59479,12 +54011,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - はい 父さん？
-
-### "はい" + "見張り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい 見張りを続けます。
 
 ### "はいえ" + "我々" (1 occurrences)
 - Predicted: None
@@ -59564,12 +54090,6 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽）はっ 落ち始めてる!
 
-### "はっきり" + "そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （海） 嫌いになったんなら はっきり そう言って。
-
 ### "はっはー" + "やった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59587,6 +54107,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （少年）すごーい （父親）はははっ だろ？
+
+### "はばかりは" + "どこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - はばかりは どこにすんの？
 
 ### "はよ" + "いけ" (1 occurrences)
 - Predicted: None
@@ -59612,17 +54138,17 @@ Accuracy: 98.66%
 - Examples:
   - “サー”はよせ 君のか？
 
+### "はーい" + "いますぐ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - はーい いますぐ！
+
 ### "はーっ" + "やーっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - はーっ やーっ!
-
-### "は～い" + "ちょっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - は～い ちょっと待ってね。 いいよ。
 
 ### "は～い" + "分かりました" (1 occurrences)
 - Predicted: None
@@ -59630,29 +54156,11 @@ Accuracy: 98.66%
 - Examples:
   - （青年） は～い 分かりました～！
 
-### "ばあちゃん" + "あんまり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばあちゃん あんまり ウロウロするなよ。
-
 ### "ばあちゃん" + "どこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 構わねえけど ばあちゃん どこへ行くの？
-
-### "ばあちゃん" + "入れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな ばあちゃん 入れるんじゃなかった！
-
-### "ばあちゃん" + "早く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばあちゃん 早く 早く！
+  - ばあちゃん どこ行くの？
 
 ### "ばかばかしい" + "Ｘ線" (1 occurrences)
 - Predicted: None
@@ -59714,23 +54222,11 @@ Accuracy: 98.66%
 - Examples:
   - ひと口 どうかね？
 
-### "ひと筋" + "流れて" (1 occurrences)
+### "ひどい" + "バカ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ず～っと高い所を不思議な雲が ひと筋 流れていてな。
-
-### "ひどい" + "におい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ひどい においよ。
-
-### "ひどい" + "体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うっ！ こりゃひどい 体が石みたいだ。
+  - ひどい バカな使用人は 俺の店だけじゃない！
 
 ### "ひどすぎる" + "傷" (1 occurrences)
 - Predicted: None
@@ -59882,11 +54378,11 @@ Accuracy: 98.66%
 - Examples:
   - 学長としての私の地位へ そしてローマを去る。
 
-### "へ" + "とんぼ返り" (1 occurrences)
+### "へ" + "つれて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 休暇が足りなくて その足で戦場へ とんぼ返りしたんだ。
+  - だって どこへ つれてくんだよ！？
 
 ### "へ" + "ね" (1 occurrences)
 - Predicted: None
@@ -59900,11 +54396,11 @@ Accuracy: 98.66%
 - Examples:
   - わたしが じかんをかせぐ かわのむこうへ はしれ！
 
-### "へ" + "もぐってる" (1 occurrences)
+### "へ" + "ようこそ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いないわ。 雲の中へ もぐってるんだ。
+  - 皆さん パラダイスへ ようこそ！
 
 ### "へ" + "コナーズ" (1 occurrences)
 - Predicted: None
@@ -59918,12 +54414,6 @@ Accuracy: 98.66%
 - Examples:
   - 城へ ハッ！
 
-### "へ" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「ハートのＧへ ブタへ連絡請う」。
-
 ### "へ" + "ミト" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -59936,29 +54426,11 @@ Accuracy: 98.66%
 - Examples:
   - ああ ここへ 今 開けます。
 
-### "へ" + "売り込んだら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だ ポルコも どっちかへ 売り込んだら いいんだよ。
-
-### "へ" + "戻して" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジーナ こいつをカタギの世界へ 戻してやってくれ。
-
 ### "へ" + "戻りたかったら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もし もうひとつの宇宙へ 戻りたかったら？
-
-### "へ" + "来たがらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルが なぜ ここへ 来たがらないのか分かりました。
 
 ### "へ" + "火曜" (1 occurrences)
 - Predicted: None
@@ -59971,6 +54443,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どこへ 行きたい？
+
+### "へ" + "連れて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どこへ 連れてくの？
 
 ### "へ" + "還したまえ" (1 occurrences)
 - Predicted: None
@@ -59990,6 +54468,12 @@ Accuracy: 98.66%
 - Examples:
   - へぇ あの子が？ ヤダよ こんなボロ傘。
 
+### "へぇ" + "すごい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いたいた… へぇ すごいね 秘密基地みたいだな。
+
 ### "へぇ" + "セックス" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60001,6 +54485,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - へえ このゲームが 面白くない？
+
+### "へえ" + "そお" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - へえ そお?
 
 ### "へえ" + "もう" (1 occurrences)
 - Predicted: None
@@ -60098,12 +54588,6 @@ Accuracy: 98.66%
 - Examples:
   - ほう なぜ分かる？
 
-### "ほぉ" + "ホッホッホッ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 軍隊にも追われてるんだ。 ほぉ ホッホッホッ…。
-
 ### "ほしい" + "この" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60115,12 +54599,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - すぐになくなってほしくない 分かるか？
-
-### "ほっ" + "泣かせる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほっ 泣かせる～。 おだまり！
 
 ### "ほっとけ" + "ほっとけ" (1 occurrences)
 - Predicted: None
@@ -60176,12 +54654,6 @@ Accuracy: 98.66%
 - Examples:
   - けど それほど 悪くは無いんだよ。
 
-### "ほど" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手を貸すほど 私は親切じゃないんでね。
-
 ### "ほどきやがれ" + "この" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60206,29 +54678,11 @@ Accuracy: 98.66%
 - Examples:
   - ほら あそこ ポニョのお母さんと ず～っと話してるわ。
 
-### "ほら" + "あれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 船の下 ほら あれ！
-
-### "ほら" + "あんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこどこ？ ほら あんなに近くに！
-
 ### "ほら" + "かわいい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ほら かわいいでしょ？
-
-### "ほら" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほら この城の新しい掃除婦さ。
 
 ### "ほら" + "これ" (1 occurrences)
 - Predicted: None
@@ -60283,12 +54737,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ほら もっと！
-
-### "ほら" + "クー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほら クー、 見なよ。
 
 ### "ほら" + "バルマンジ" (1 occurrences)
 - Predicted: None
@@ -60356,47 +54804,17 @@ Accuracy: 98.66%
 - Examples:
   - そこ！… ほら 早く行って！
 
-### "ほら" + "来た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほら 来た！
-
-### "ほら" + "欲しがってた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じっちゃん ほら 欲しがってた助手だ。
-
 ### "ほら" + "泣いた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ほら 泣いた！
 
-### "ほら" + "王手" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だって！ いや ほら 王手だな。
-
 ### "ほら" + "聞きなって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （後輩 女子Ｂ）ほら 聞きなって今しかないんだよ！
-
-### "ほら" + "自分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほら 自分の足で歩くのよ。
-
-### "ほら" + "見ろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カウントとれよ！ だって ほら 見ろよ！
 
 ### "ほら" + "鼻" (1 occurrences)
 - Predicted: None
@@ -60428,11 +54846,11 @@ Accuracy: 98.66%
 - Examples:
   - ほんとに そうしたいか？
 
-### "ほ～ら" + "お前" (1 occurrences)
+### "ぼ" + "ぼく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ほ～ら お前のヒゲ面のせいだぞ。
+  - ぼ ぼく？
 
 ### "ぼう" + "あなた" (1 occurrences)
 - Predicted: None
@@ -60451,30 +54869,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ん！ まぁ くれるの？
-
-### "まぁ" + "こんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まぁ こんなに おばあちゃんに なっちゃって！
-
-### "まぁ" + "どう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まぁ どうしたのかしら？
-
-### "まぁ" + "気持" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ピッコロ） まぁ 気持は分かるよ。
-
-### "まあ" + "ありがとう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まあ ありがとう じゃ そのお皿 しまってくださる？
 
 ### "まあ" + "お誕生日" (1 occurrences)
 - Predicted: None
@@ -60499,6 +54893,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - シェイファーの生徒にも 同じ事を感じる -まあ そうなの？
+
+### "まあ" + "そんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 放っといて！ よくもまあ そんなことができるわね！
+
+### "まあ" + "どう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まあ どうしたのかしら?
 
 ### "まあ" + "まあ" (1 occurrences)
 - Predicted: None
@@ -60529,12 +54935,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - まあ ステキ!
-
-### "まあ" + "ハリウッド" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まあ ハリウッドからね。
 
 ### "まあ" + "ホット" (1 occurrences)
 - Predicted: None
@@ -60596,12 +54996,6 @@ Accuracy: 98.66%
 - Examples:
   - あそこをまがった うば車の人でしょ？
 
-### "まけば" + "舟" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） この粉をまけば 舟にいい風が吹くじゃ。
-
 ### "まさか" + "こんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60626,12 +55020,6 @@ Accuracy: 98.66%
 - Examples:
   - おい まさか デカをしょっ引く気か？
 
-### "まさか" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル？ あんた まさか ハウルじゃないでしょうね？
-
 ### "まさか" + "ホント" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60649,6 +55037,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そなた まさか 人間の血を なめたんじゃないだろうな？
+
+### "まさか" + "偽物" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まさか 偽物だと思わないのか？
 
 ### "まさか" + "出て" (1 occurrences)
 - Predicted: None
@@ -60680,12 +55074,6 @@ Accuracy: 98.66%
 - Examples:
   - それはまさに 疑念と手を取り合っているからだ。
 
-### "まして" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まして その石は 人の手が作り出したもの。
-
 ### "まず" + "お名前" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60716,24 +55104,6 @@ Accuracy: 98.66%
 - Examples:
   - これがまた いい気持ちだ！
 
-### "また" + "いつも" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） また いつもの まじないじゃな。
-
-### "また" + "お会い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオさ～ん 待ってますよ～！ また お会いしましょう！
-
-### "また" + "お掃除" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また お掃除しなきゃ。
-
 ### "また" + "けんか" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60751,6 +55121,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - また それ？
+
+### "また" + "そんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - また そんな嘘を！
 
 ### "また" + "だます" (1 occurrences)
 - Predicted: None
@@ -60782,12 +55158,6 @@ Accuracy: 98.66%
 - Examples:
   - また どこかでな！
 
-### "また" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また みんなで暮らせるわ。
-
 ### "また" + "チュラン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60806,12 +55176,6 @@ Accuracy: 98.66%
 - Examples:
   - また 居眠りか？
 
-### "また" + "汚ねぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また 汚ねぇのが たくさん出て来やがったな。
-
 ### "また" + "洗わなきゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60822,7 +55186,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （玄関のベル） また 港町！
+  - また 港町！
 
 ### "また" + "演奏" (1 occurrences)
 - Predicted: None
@@ -60872,12 +55236,6 @@ Accuracy: 98.66%
 - Examples:
   - ところで なぜまだ あんな古いテレビを？
 
-### "まだ" + "いくら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ… まだ いくらも来てないわね。
-
 ### "まだ" + "いる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -60889,12 +55247,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - まだ ええの?
-
-### "まだ" + "お迎え" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まだ お迎えが来ねえのか？ ハハハハ…！
 
 ### "まだ" + "ここ" (1 occurrences)
 - Predicted: None
@@ -60998,6 +55350,12 @@ Accuracy: 98.66%
 - Examples:
   - まだ 知ってるのは 俺達だけか？
 
+### "まだ" + "私" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まだ 私が必要ですか？
+
 ### "まだ" + "粥" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61016,11 +55374,17 @@ Accuracy: 98.66%
 - Examples:
   - まだ 若者のつもり？
 
-### "まだまだ" + "これ" (1 occurrences)
+### "まだ" + "言葉" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ボス） まだまだ これからよ！
+  - まだ 言葉が 出てこないの？
+
+### "まだ" + "話し" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - まだ 話し中だよ！
 
 ### "まだまだ" + "道" (1 occurrences)
 - Predicted: None
@@ -61028,35 +55392,11 @@ Accuracy: 98.66%
 - Examples:
   - まだまだ 道は長いんだぞ。
 
-### "まっ" + "年" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まっ 年をとっていいことは 驚かなくなることね。
-
-### "まったく" + "いつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まったく いつまでたっても 子供なんだから…。
-
-### "まったく" + "とんでもない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まったく とんでもないムダ足だったよ。
-
 ### "まったく" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - まったく 何があったんだ？
-
-### "まったく" + "妙" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まったく 妙なことになっちまったぜ。
 
 ### "まったく" + "遅い" (1 occurrences)
 - Predicted: None
@@ -61081,36 +55421,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - さっきまで あんなに愛してくれたのに どうして？
-
-### "まで" + "うろついてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 荒地の魔女まで うろついてるっていうよ。
-
-### "まで" + "おる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おまけに女の子の小鬼まで おるわい。
-
-### "まで" + "くらんで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 目まで くらんで来やがってな もうダメだって思った。
-
-### "まで" + "ただ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さっきまで ただの岩だったのに。
-
-### "まで" + "ついて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ばあちゃんまで ついて来そうだからな。
 
 ### "まで" + "どこ" (1 occurrences)
 - Predicted: None
@@ -61178,12 +55488,6 @@ Accuracy: 98.66%
 - Examples:
   - で、お前らそれまで 気づかなかったの？
 
-### "まで" + "火" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 南の海から北の国境まで 火の海だった。
-
 ### "まで" + "生皮" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61250,12 +55554,6 @@ Accuracy: 98.66%
 - Examples:
   - 草の中に落ちたまま 消えちまったと言うのか？
 
-### "まま" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーは このまま 荒地の城まで飛ぶんだ。
-
 ### "まま" + "質問" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61310,23 +55608,11 @@ Accuracy: 98.66%
 - Examples:
   - みんな 笑ってみな おっかないのは逃げちゃうから。
 
-### "みな" + "そっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 時間がねえんだ そこの窓から 後ろを見てみな そっとだ。
-
 ### "みな" + "ズボン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 靴下だって？ 下を見てみな ズボンを忘れてるぞ！
-
-### "みないで" + "まけなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 足元みないで まけなさいよ。
 
 ### "みないと" + "分からない" (1 occurrences)
 - Predicted: None
@@ -61346,11 +55632,11 @@ Accuracy: 98.66%
 - Examples:
   - えー、みなさん ちょっと失礼します。
 
-### "みます" + "あげて" (1 occurrences)
+### "みみず" + "そと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - はい やってみます あげてください。
+  - いしをぬいたら みみず そとにでちゃうよ？
 
 ### "みよう" + "（" (1 occurrences)
 - Predicted: None
@@ -61369,18 +55655,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - やってみろ クソ野郎！
-
-### "みろ" + "石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータを撃ってみろ 石は戻らないぞ！
-
-### "みんな" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな いいコね。
 
 ### "みんな" + "うまい" (1 occurrences)
 - Predicted: None
@@ -61424,12 +55698,6 @@ Accuracy: 98.66%
 - Examples:
   - （英語で）みんな ついてきて！
 
-### "みんな" + "どう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな どうしたかしら…。
-
 ### "みんな" + "どこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61448,11 +55716,11 @@ Accuracy: 98.66%
 - Examples:
   - みんな やめろ！
 
-### "みんな" + "よ～く" (1 occurrences)
+### "みんな" + "よーく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - みんな よ～くお聞き！
+  - みんな よーくお聞き！！
 
 ### "みんな" + "ウソつき" (1 occurrences)
 - Predicted: None
@@ -61471,12 +55739,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - みんな ニセ物！ 私もニセ物！
-
-### "みんな" + "バカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ホントに飛行艇乗りって みんな バカなんだから！
 
 ### "みんな" + "下" (1 occurrences)
 - Predicted: None
@@ -61526,18 +55788,6 @@ Accuracy: 98.66%
 - Examples:
   - みんな 優しかった？
 
-### "みんな" + "入り込んで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 『ハウルの動く城』 みんな 入り込んで！
-
-### "みんな" + "出稼ぎ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 男は みんな 出稼ぎに出ちまったんだよ。
-
 ### "みんな" + "喧嘩" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61568,12 +55818,6 @@ Accuracy: 98.66%
 - Examples:
   - みんな 怪物よ！
 
-### "みんな" + "持ってっちまう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 木だ！ あの木が みんな 持ってっちまう！ 追うんだ！
-
 ### "みんな" + "来て" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61598,23 +55842,17 @@ Accuracy: 98.66%
 - Examples:
   - もっと大きく！ みんな 祈って！
 
-### "みんな" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな 私が悪いの！ あぁ！
-
 ### "みんな" + "秘密" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - みんな 秘密を守れるか？
 
-### "みんな" + "空賊" (1 occurrences)
+### "みんな" + "端" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - この人達 みんな 空賊なの？ 地中海じゅうのゴミさ。
+  - みんな 端によって！
 
 ### "みんな" + "笑って" (1 occurrences)
 - Predicted: None
@@ -61633,12 +55871,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - みんな 聞いてちょうだい！
-
-### "みんな" + "聞け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな 聞け～！ 俺はフィオ嬢の心意気にホレた！
 
 ### "みんな" + "自分" (1 occurrences)
 - Predicted: None
@@ -61670,29 +55902,23 @@ Accuracy: 98.66%
 - Examples:
   - みんな 追い返せ！ 二度と来るな！
 
-### "みんな" + "逃げる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いっぱい いるな…。 みんな 逃げるよ！
-
 ### "みんな" + "逃げろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - みんな 逃げろ！ 急いで！
 
-### "みんな" + "道" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな 道を空けてちょうだい。
-
 ### "みんな" + "避難" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - よし、みんな 避難するぞ！ 整列！
+
+### "みんな" + "飛行石" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - みんな 飛行石の力だよ！！
 
 ### "みんな" + "飲み" (1 occurrences)
 - Predicted: None
@@ -61777,12 +56003,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 魔術師め 思い知らせてくれる！
-
-### "め" + "本性" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 青二才め 本性を現しよったな…。
 
 ### "め" + "私" (1 occurrences)
 - Predicted: None
@@ -61928,12 +56148,6 @@ Accuracy: 98.66%
 - Examples:
   - あら じゃあ 夜になっても お便所 一緒に行ってやんない。
 
-### "も" + "お元気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 先生も お元気で何よりです。
-
 ### "も" + "お墓" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61951,12 +56165,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - うん… でも お姉ちゃん すぐ怒るよ。
-
-### "も" + "お忘れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私が政府の密命を 受けていることも お忘れなく。
 
 ### "も" + "お断り" (1 occurrences)
 - Predicted: None
@@ -61988,17 +56196,23 @@ Accuracy: 98.66%
 - Examples:
   - 私も かつては人間だった。
 
-### "も" + "かませろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊連合にも かませろ！ そうだ！
-
 ### "も" + "かゆい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - どないした？ あせも かゆいんか？
+
+### "も" + "かわいい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それでも かわいいと 思ってくれる？
+
+### "も" + "こいつ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 地球温暖化も こいつのせいだ！ これは たまらん！
 
 ### "も" + "こう" (1 occurrences)
 - Predicted: None
@@ -62024,29 +56238,11 @@ Accuracy: 98.66%
 - Examples:
   - コーヒーでも ご馳走いただけないかしら？
 
-### "も" + "さぞ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はい サリマン先生も さぞ お喜びでしょう。
-
-### "も" + "さっき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どれも さっき揚がった魚だよ。
-
 ### "も" + "した" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - サインも したのか？
-
-### "も" + "しなきゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒタキの巣を見回ったりも しなきゃならないし。
 
 ### "も" + "しょう" (1 occurrences)
 - Predicted: None
@@ -62060,12 +56256,6 @@ Accuracy: 98.66%
 - Examples:
   - ああ、それを忘れたかも しれないと思ったの？
 
-### "も" + "じき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - じゃ 何だなぁ あんたらも じきに非合法になるな。
-
 ### "も" + "すてき" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62077,12 +56267,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - バスよりも ずっと 安全かもな。
-
-### "も" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 科学も ず～っと進んでいたのに どうして…。
 
 ### "も" + "ぜ～んぶ" (1 occurrences)
 - Predicted: None
@@ -62096,29 +56280,11 @@ Accuracy: 98.66%
 - Examples:
   - お前も そういう希望だろう？
 
-### "も" + "そっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺も そっちが欲しいな。 こっち向いて！
-
 ### "も" + "それぞれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 我々のも それぞれだろ？ 思考の写しなのでは？
-
-### "も" + "たいがい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから掃除も たいがいにしろって 言ったのに！
-
-### "も" + "たくさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 教えることも たくさんありそうね。
 
 ### "も" + "ただ" (1 occurrences)
 - Predicted: None
@@ -62126,29 +56292,11 @@ Accuracy: 98.66%
 - Examples:
   - それとも ただのスクリプト小僧か？
 
-### "も" + "ちっと" (1 occurrences)
+### "も" + "つかぬ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - カタギも ちっとは交じってるかな。
-
-### "も" + "できる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 恋だったら いつでも できるけど…。
-
-### "も" + "どうぞ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） ソフィーさんも どうぞ。
-
-### "も" + "どっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だ ポルコも どっちかへ 売り込んだら いいんだよ。
+  - われわれの思いも つかぬことなのか？
 
 ### "も" + "どんな" (1 occurrences)
 - Predicted: None
@@ -62162,11 +56310,11 @@ Accuracy: 98.66%
 - Examples:
   - なんか まともな人間にでも なったつもり？
 
-### "も" + "なっちゃった" (1 occurrences)
+### "も" + "なめて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ベランダに降りて来たって 天使にでも なっちゃったの？
+  - 私達の足も なめてくれないかしらねぇ。
 
 ### "も" + "なめやがれ" (1 occurrences)
 - Predicted: None
@@ -62180,12 +56328,6 @@ Accuracy: 98.66%
 - Examples:
   - 結絃ちゃんも ね？
 
-### "も" + "のぼらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何してるんだい ちっとも のぼらないじゃないか！
-
 ### "も" + "のりたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62197,12 +56339,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 署長でも はねたか ?
-
-### "も" + "ひと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どいつも こいつも ひとをバカにして！
 
 ### "も" + "ひどい" (1 occurrences)
 - Predicted: None
@@ -62300,18 +56436,6 @@ Accuracy: 98.66%
 - Examples:
   - でも やっぱり飛べなかったら？
 
-### "も" + "やめさせなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたは お国に帰って 戦争でも やめさせなさいな。
-
-### "も" + "ややこしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フ～ン 君にも ややこしい呪いが かかってるね。
-
 ### "も" + "やられてんじゃねえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62348,29 +56472,17 @@ Accuracy: 98.66%
 - Examples:
   - どんな時も よ。
 
-### "も" + "よう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不幸を招くことも よう あることなんじゃ。
-
-### "も" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 戻って来なくても よかったのに。
-
-### "も" + "よみがえる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラピュタは亡びぬ 何度でも よみがえるさ。
-
 ### "も" + "よろしく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - これからも よろしくお願いいたします。
+
+### "も" + "わかってない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちっとも わかってないじゃない！
 
 ### "も" + "わかっとらん" (1 occurrences)
 - Predicted: None
@@ -62456,12 +56568,6 @@ Accuracy: 98.66%
 - Examples:
   - それとも ドングリ好きの ネズミかな？
 
-### "も" + "ハエ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 周り中 敵も味方も ハエのように落ちて行った。
-
 ### "も" + "バクスター" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62479,12 +56585,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 今頃 天井裏で 引っ越しの 相談でも ブッてんのかな。
-
-### "も" + "ペンドラゴン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジェンキンスにも ペンドラゴンにも。
 
 ### "も" + "マハ" (1 occurrences)
 - Predicted: None
@@ -62539,12 +56639,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 大人になっても 人生はつらい？
-
-### "も" + "今日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊狩り やっても 今日びは 一文にもなりゃしねえよ。
 
 ### "も" + "付き合ってる" (1 occurrences)
 - Predicted: None
@@ -62636,12 +56730,6 @@ Accuracy: 98.66%
 - Examples:
   - 過激派にでも 入っているのか?
 
-### "も" + "入り込んで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 『紅の豚』 この後 みんなも 入り込んで楽しんで！
-
 ### "も" + "入れよう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62665,12 +56753,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 誰も 出るな！
-
-### "も" + "分からねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 無事に飛び立てるかどうかも 分からねえんだ。
 
 ### "も" + "初戦" (1 occurrences)
 - Predicted: None
@@ -62700,7 +56782,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも 君は僕にとって 科学以上の存在なんだ！
+  - たとえ首相の息子でも 君の答案は無効だ！
 
 ### "も" + "否定" (1 occurrences)
 - Predicted: None
@@ -62714,12 +56796,6 @@ Accuracy: 98.66%
 - Examples:
   - 見たまえ私には私も 含む膨大なネットが接合されている。
 
-### "も" + "呪い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 焼け焦げは消えても 呪いは消えないさ。
-
 ### "も" + "命じて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -62731,12 +56807,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも 困ったね。
-
-### "も" + "国王" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルも 国王に呼び出されてるんだろ？
 
 ### "も" + "売る" (1 occurrences)
 - Predicted: None
@@ -62791,12 +56861,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも 好きな時に帰れると 言ったでしょ？
-
-### "も" + "子供" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まったく いつまでたっても 子供なんだから…。
 
 ### "も" + "学校" (1 occurrences)
 - Predicted: None
@@ -62870,23 +56934,17 @@ Accuracy: 98.66%
 - Examples:
   - でも 彼と野球に何の関係が？
 
+### "も" + "後ろ戸" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - いままでも 後ろ戸が開いた場所に 案内してくれてたの!
+
 ### "も" + "心配" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼は独りでも 心配ないんだろ？
-
-### "も" + "忘れて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君の一族は そんなことも 忘れてしまったのかね。
-
-### "も" + "思い出した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何よ… 呪いの解き方でも 思い出したの？
 
 ### "も" + "思う" (1 occurrences)
 - Predicted: None
@@ -62940,7 +56998,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - でも 戦争の時は 英雄だったんでしょう？
+  - でも 戦争の時は英雄だったんでしょう？
 
 ### "も" + "掴めなかった" (1 occurrences)
 - Predicted: None
@@ -62978,41 +57036,17 @@ Accuracy: 98.66%
 - Examples:
   - 我が方の兵士の運動能力も 最高だったとは想像しなかった!
 
-### "も" + "有名" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 故郷の飛行艇乗りにも 有名だもんな。
-
-### "も" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 本当じゃないか？
-
 ### "も" + "本当に" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - でも 本当にいいんですか？
 
-### "も" + "構わない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 古い友人に挨拶しても 構わないか？
-
 ### "も" + "死なない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ジョン 君を撃っても 死なないのか？
-
-### "も" + "死ななかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラもハウルも 死ななかったから。
 
 ### "も" + "殺しちゃいけない" (1 occurrences)
 - Predicted: None
@@ -63043,12 +57077,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そんなら お父ちゃんの巡洋艦も 沈んでしもたんか？
-
-### "も" + "没収" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前の戦闘艇も 没収すると言ってるぞ。
 
 ### "も" + "波打ち際" (1 occurrences)
 - Predicted: None
@@ -63086,12 +57114,6 @@ Accuracy: 98.66%
 - Examples:
   - 未来予知？ それとも 現実が創作を超えた？
 
-### "も" + "男" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 男が家に帰らないのは 良い事でしょう？
-
 ### "も" + "男の子" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -63115,6 +57137,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 注文を受けて撮る場合も 真の名作は創れますか？
+
+### "も" + "着いちまった" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アメリカにでも 着いちまったんですかねぇ。
 
 ### "も" + "知らない" (1 occurrences)
 - Predicted: None
@@ -63230,6 +57258,18 @@ Accuracy: 98.66%
 - Examples:
   - 食べ物も飲み物も 要らないの?
 
+### "も" + "見える" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 薄い雲のような物も 見えるでしょ？
+
+### "も" + "見たされた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 夢でも 見たされたか？
+
 ### "も" + "見たろう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -63241,12 +57281,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お給料のことも 見てもらえますか？
-
-### "も" + "解いて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すぐ あんたの呪いも 解いてやるよ。
 
 ### "も" + "解決" (1 occurrences)
 - Predicted: None
@@ -63289,18 +57323,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私の息子も 誰かを失った。 遠い遠い 昔の事さ。
-
-### "も" + "請求書" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちゃんと ガス代も 請求書に入れときますからね。
-
-### "も" + "諦めて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マダム・サリマンも 諦めてくれるかもしれない！
 
 ### "も" + "述べぬ" (1 occurrences)
 - Predicted: None
@@ -63374,18 +57396,6 @@ Accuracy: 98.66%
 - Examples:
   - これを読んでも 面接に行くかしら？
 
-### "も" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも 飛行石を取り戻したって 私 どうしたらよいか…。
-
-### "も" + "食い尽くされて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 長い間に 身も心も 食い尽くされてしまったのです。
-
 ### "も" + "飲む" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -63403,12 +57413,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もう あっちへは戻れないのでは？
-
-### "もう" + "あなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もう あなただけに なっちゃったわね 古い仲間は。
 
 ### "もう" + "あれ" (1 occurrences)
 - Predicted: None
@@ -63457,6 +57461,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おまえは もう ここに住めない！
+
+### "もう" + "こんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - もう こんなのを映すな！
 
 ### "もう" + "すっかり" (1 occurrences)
 - Predicted: None
@@ -63523,12 +57533,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もう 一緒にいたくない！
-
-### "もう" + "他" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここには もう 他のロボットは いないのかい？
 
 ### "もう" + "会えない" (1 occurrences)
 - Predicted: None
@@ -63674,6 +57678,12 @@ Accuracy: 98.66%
 - Examples:
   - もし ハスターに噛まれたら？
 
+### "もし" + "今" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でももし 今 パクが入ってきたら 戸を開けて？
+
 ### "もし" + "皇子様" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -63739,12 +57749,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （キタノシオリ） もしもし おじさん？
-
-### "もしもし" + "もしもし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もしもし もしもし… おい どうした！
 
 ### "もしもし" + "ママ" (1 occurrences)
 - Predicted: None
@@ -63884,12 +57888,6 @@ Accuracy: 98.66%
 - Examples:
   - もっと うまくやらねぇと ウザがられちゃうんじゃねぇの？
 
-### "もっと" + "ひどい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 略奪より もっと ひどいことが 始まるよ。
-
 ### "もっと" + "ふさわしい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -63901,6 +57899,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - もっと ゆっくり！
+
+### "もっと" + "スピード" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ジーナ） もっと スピード出ない？
 
 ### "もっと" + "使わない" (1 occurrences)
 - Predicted: None
@@ -63974,18 +57978,6 @@ Accuracy: 98.66%
 - Examples:
   - ご馳走 どんなもの 出ました?
 
-### "もの" + "当たる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ…！ 西部劇じゃねえんだ そんなもの 当たるかよ。
-
-### "もの" + "頭" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 急にアクロバットするんだもの 頭をぶつけちゃった。
-
 ### "ものすごく" + "失望" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64046,12 +58038,6 @@ Accuracy: 98.66%
 - Examples:
   - どんなもんだい これでいいだろ？
 
-### "ゃ" + "戦争" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 坊ず… 俺達ゃ 戦争やってるんじゃねえんだよ。
-
 ### "や" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64100,12 +58086,6 @@ Accuracy: 98.66%
 - Examples:
   - ほんと？ チャーリーや みんなも？
 
-### "や" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シャルルや もっと低く飛びな。
-
 ### "や" + "アホ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64147,12 +58127,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それならショパンや ベルリオーズは？
-
-### "や" + "ヤク" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見たいんだ シータの生まれた 古い家や 谷や ヤク達を…。
 
 ### "や" + "偶然" (1 occurrences)
 - Predicted: None
@@ -64220,12 +58194,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜだ 妻子や 親せきはいないのか？
 
-### "や" + "谷" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見たいんだ シータの生まれた 古い家や 谷や ヤク達を…。
-
 ### "や" + "路面電車" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64244,47 +58212,11 @@ Accuracy: 98.66%
 - Examples:
   - （川田章吾）こっちの袋や （安城三尉）フッ 何だと？
 
-### "やぁ" + "ごめん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハウル） やぁ ごめん ごめん 捜したよ。
-
-### "やぁ" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル！ やぁ みんな！
-
 ### "やぁ" + "クリス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - やぁ クリス！
-
-### "やぁ" + "レティー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ レティー。 ご苦労さま。
-
-### "やぁ" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 何か お探しかな？ 子ネズミちゃん。
-
-### "やぁ" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 君がカブだね。
-
-### "やぁ" + "気分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 気分はどう？ わっ こら 待て 待てったら…。
 
 ### "やぁ" + "素晴らしい" (1 occurrences)
 - Predicted: None
@@ -64436,6 +58368,12 @@ Accuracy: 98.66%
 - Examples:
   - やあ 新婚旅行は 楽しかった？
 
+### "やあ" + "気分" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やあ 気分はどぉ？
+
 ### "やあ" + "永束" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64574,6 +58512,12 @@ Accuracy: 98.66%
 - Examples:
   - どうやって お互い顔を合わせる？
 
+### "やって" + "お知り合い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 大尉とはどうやって お知り合いに?
+
 ### "やって" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64634,6 +58578,12 @@ Accuracy: 98.66%
 - Examples:
   - 昔のやり方を続けてどうやって 君自身が革命を起こせる？
 
+### "やって" + "彼" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どうやって 彼に断われると言うのだ？
+
 ### "やって" + "彼女" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64682,12 +58632,6 @@ Accuracy: 98.66%
 - Examples:
   - どうやって 返済しますか？
 
-### "やっと" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やっと みんな揃いやがったな。
-
 ### "やっと" + "見つけた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64718,6 +58662,12 @@ Accuracy: 98.66%
 - Examples:
   - やっぱ 会いに行くべきじゃない ってこと？
 
+### "やっぱ" + "男関係" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （勅使河原）やっぱ 男関係なんかなあ 失恋とか？
+
 ### "やっぱい" + "そうめん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64734,7 +58684,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やっぱり その石の力なんだ！ すごいや！
+  - やっぱり その石の力なんだ！
+
+### "やっぱり" + "シータ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やっぱり シータをねらってるんだ！
 
 ### "やっぱり" + "トトロ" (1 occurrences)
 - Predicted: None
@@ -64784,6 +58740,12 @@ Accuracy: 98.66%
 - Examples:
   - マジかよ！ やばい 銃を持っている！
 
+### "やめて" + "お父さん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やめて お父さん！
+
 ### "やめて" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64801,6 +58763,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - やめて ジミー！
+
+### "やめて" + "ダメ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - エルフィー！ エルフィー やめて ダメ！
 
 ### "やめて" + "パパ" (1 occurrences)
 - Predicted: None
@@ -64826,6 +58794,12 @@ Accuracy: 98.66%
 - Examples:
   - やめて 目がまわる！
 
+### "やめて" + "神様" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やめて 神様！
+
 ### "やめなさい" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -64849,12 +58823,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - リア やめなさい 危ないでしょ！
-
-### "やめなさい" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「くだらない戦争は やめなさい 私は手伝えません」って！
 
 ### "やめます" + "すいません" (1 occurrences)
 - Predicted: None
@@ -64964,11 +58932,11 @@ Accuracy: 98.66%
 - Examples:
   - やります やらせて下さい！
 
-### "やりゃあ" + "できる" (1 occurrences)
+### "やりゃぁ" + "できる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 落ち着いてやりゃあ できる。 はい！
+  - 落ち着いてやりゃぁ できる！
 
 ### "やり方" + "分かった" (1 occurrences)
 - Predicted: None
@@ -64988,17 +58956,17 @@ Accuracy: 98.66%
 - Examples:
   - 必ず 笑ってやる お前たちは泣くんだ！
 
+### "やる" + "やって" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やってやる やってやるぞ！
+
 ### "やる" + "恨んで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 呪ってやる 恨んでやる！
-
-### "やる" + "残り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「金貨は半分くれてやる 残りと人質を置いて失せろ」？
 
 ### "やる" + "逃がす" (1 occurrences)
 - Predicted: None
@@ -65022,7 +58990,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やれ ダッフィ 見せてやれ！
+  - やれ ダッフィ 見せてやれぃ！
+
+### "やれ" + "行け" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 行かせてやれ 行けよ 「ニガー」！
 
 ### "やれ" + "首" (1 occurrences)
 - Predicted: None
@@ -65034,7 +59008,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やれやれ 娘を金で売ったのかい。
+  - やれやれ 娘を金で売ったのかい？
+
+### "やろう" + "最後" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 来やがれ豚やろう 最後の勝負だ！
 
 ### "やろっ" + "どう" (1 occurrences)
 - Predicted: None
@@ -65138,11 +59118,17 @@ Accuracy: 98.66%
 - Examples:
   - 初めの言葉よ ”人生の勝利は違う”？
 
-### "よ" + "ありがとさん" (1 occurrences)
+### "よ" + "「" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 親切だけは頂くよ ありがとさん。
+  - 行かせてやれ 行けよ 「ニガー」！
+
+### "よ" + "いつ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 来いよ いつヤーマスへ？
 
 ### "よ" + "うれしい" (1 occurrences)
 - Predicted: None
@@ -65156,23 +59142,23 @@ Accuracy: 98.66%
 - Examples:
   - 私等のことを考えろよ ええ？ 私等だよ！
 
-### "よ" + "おいで" (1 occurrences)
+### "よ" + "お" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - とって食いやしないよ おいで。
+  - よ おなんかてつだおっか！
+
+### "よ" + "おいっ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ！ オメエその顔 待てよ おいっ！
 
 ### "よ" + "おしえろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 待てよ おしえろ！
-
-### "よ" + "おばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫よ おばあちゃん。
 
 ### "よ" + "おめえ" (1 occurrences)
 - Predicted: None
@@ -65185,12 +59171,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何だよ おれに何の用だ?
-
-### "よ" + "お嬢さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 両方だよ お嬢さん。
 
 ### "よ" + "お子さん" (1 occurrences)
 - Predicted: None
@@ -65234,18 +59214,6 @@ Accuracy: 98.66%
 - Examples:
   - ニコ ダメよ お願いだから行かないで！
 
-### "よ" + "お風呂" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何よ お風呂にも入らないで！
-
-### "よ" + "かんしゃく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫よ かんしゃくで死んだ人は いないわ。
-
 ### "よ" + "きかない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65258,11 +59226,11 @@ Accuracy: 98.66%
 - Examples:
   - けっこういいよ けっこう泳げるよ。
 
-### "よ" + "ここ" (1 occurrences)
+### "よ" + "こんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - しっかりしなさいよ ここに ず～っと来たかったんでしょ？
+  - へぇ あの子が？ ヤダよ こんなボロ傘。
 
 ### "よ" + "ごゆっくり" (1 occurrences)
 - Predicted: None
@@ -65288,17 +59256,17 @@ Accuracy: 98.66%
 - Examples:
   - プリチャードよ さらばだ！
 
-### "よ" + "しかも" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - とても古い魔法だよ しかも強力だ。
-
 ### "よ" + "しずまる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - よこしまなる血よ しずまるがいい。
+
+### "よ" + "すぐ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - じっとしてるんだよ すぐ戻って来るからね。
 
 ### "よ" + "すげぇ" (1 occurrences)
 - Predicted: None
@@ -65323,6 +59291,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そこよ そこ！… サッと開けて！
+
+### "よ" + "だから" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうよ だから何なの？
 
 ### "よ" + "だれ" (1 occurrences)
 - Predicted: None
@@ -65378,12 +59352,6 @@ Accuracy: 98.66%
 - Examples:
   - ええと あなたとベッキーは ここに残って飾り付けよ ね？
 
-### "よ" + "ばあちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やめときなよ ばあちゃん。
-
 ### "よ" + "ほか" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65402,17 +59370,23 @@ Accuracy: 98.66%
 - Examples:
   - 待てよ ぼくなしで 爆弾を作るって？
 
+### "よ" + "また" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 女の子が来てるよ また追い返そうか？
+
 ### "よ" + "まったく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何だよ まったく！
 
-### "よ" + "やり" (1 occurrences)
+### "よ" + "もっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ ヤバイよ やり過ぎだよ。
+  - そうよ もっと！ もっと！
 
 ### "よ" + "わかった" (1 occurrences)
 - Predicted: None
@@ -65438,17 +59412,17 @@ Accuracy: 98.66%
 - Examples:
   - 頑張れよ アリエル！
 
+### "よ" + "イヤ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （フィオ）イヤよ イヤ！
+
 ### "よ" + "ウィン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 開けろよ ウィン！
-
-### "よ" + "オイラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そんなこと言えるかよ オイラは悪魔だぜ。
 
 ### "よ" + "カス" (1 occurrences)
 - Predicted: None
@@ -65462,12 +59436,6 @@ Accuracy: 98.66%
 - Examples:
   - 何よ カベレイラ なぜ黙ってるの?
 
-### "よ" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すごいよ カルシファー！
-
 ### "よ" + "クソ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65480,11 +59448,11 @@ Accuracy: 98.66%
 - Examples:
   - バイオリン弾き それが常識よ クー！
 
-### "よ" + "ケジメ" (1 occurrences)
+### "よ" + "ゲイ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うるせぇな ケジメだよ ケジメ。
+  - それって どうなのよ ゲイっぽくない？
 
 ### "よ" + "コリン･フリッセル" (1 occurrences)
 - Predicted: None
@@ -65516,11 +59484,11 @@ Accuracy: 98.66%
 - Examples:
   - 来いよ シーザー.
 
-### "よ" + "シータ" (1 occurrences)
+### "よ" + "ジャネット" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 行くよ シータ！ ええ！
+  - ロバよ ジャネット！
 
 ### "よ" + "ジャータブ" (1 occurrences)
 - Predicted: None
@@ -65533,12 +59501,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - やめろよ ジュカ！
-
-### "よ" + "ジーナ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かってるよ ジーナ。
 
 ### "よ" + "スピード" (1 occurrences)
 - Predicted: None
@@ -65558,12 +59520,6 @@ Accuracy: 98.66%
 - Examples:
   - 心配ないよ セルキー。 コートは ちゃんと ここにある。
 
-### "よ" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 慌てると ろくなことないよ ソフィー…。
-
 ### "よ" + "ティーバッグ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65575,6 +59531,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そうだよ テッシー！
+
+### "よ" + "デコ助" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - “さん”をつけろよ デコ助野郎！
 
 ### "よ" + "デブ" (1 occurrences)
 - Predicted: None
@@ -65622,7 +59584,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ママ パズーだよ パズーが帰って来た！
+  - ママァー！パズーだよ パズーが帰って来たぁ！
 
 ### "よ" + "パパ" (1 occurrences)
 - Predicted: None
@@ -65648,23 +59610,23 @@ Accuracy: 98.66%
 - Examples:
   - そうだよ ピピン！
 
-### "よ" + "フェラーリン" (1 occurrences)
+### "よ" + "ベティ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとうよ フェラーリン みんなに よろしくな。
+  - 中傷だよ ベティ 分からんのか？
+
+### "よ" + "ホラ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 案外そうかもしれないよ ホラ。
 
 ### "よ" + "ボク" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 戦争は終わるよ ボクらは敵を木っ端みじんにするんだ！
-
-### "よ" + "ボス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボス！ 捕まえましたよ ボス！
 
 ### "よ" + "ボルフォント" (1 occurrences)
 - Predicted: None
@@ -65684,11 +59646,11 @@ Accuracy: 98.66%
 - Examples:
   - 私もちょっと見ただけよ ポン！
 
-### "よ" + "マルクル" (1 occurrences)
+### "よ" + "ママ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 私もよ マルクル 大丈夫 行かない。
+  - なんだよ ママ！
 
 ### "よ" + "ミルク" (1 occurrences)
 - Predicted: None
@@ -65701,12 +59663,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここよ ライトを消して！
-
-### "よ" + "リュシータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私も古い秘密の名前を 持ってるんだよ リュシータ。
 
 ### "よ" + "レイモンド" (1 occurrences)
 - Predicted: None
@@ -65726,12 +59682,6 @@ Accuracy: 98.66%
 - Examples:
   - 私の部屋はここよ 一歩も動きません！
 
-### "よ" + "中" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あがったら伝声管は使えないよ 中に電話があるから…。
-
 ### "よ" + "事実" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65743,6 +59693,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなたの拒否よ 事故以来 ファックは？
+
+### "よ" + "人" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ジーナ）何よ 人を伝言板か何かと思ってるの！
+
+### "よ" + "今" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも本当なのよ 今どこ?
 
 ### "よ" + "今度" (1 occurrences)
 - Predicted: None
@@ -65779,18 +59741,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - マジかよ 信じられねぇ！
-
-### "よ" + "修理代" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 仕方ねえっすよ 修理代が かさみましたからね。
-
-### "よ" + "借金取り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 丁重に扱えよ 借金取りに ついて来ちまったんだからな。
 
 ### "よ" + "偉い" (1 occurrences)
 - Predicted: None
@@ -65838,7 +59788,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 裏口から とっくに逃げたよ 出しな！
+  - 裏口からとっくに逃げたよ 出しな！
 
 ### "よ" + "出来" (1 occurrences)
 - Predicted: None
@@ -65870,12 +59820,6 @@ Accuracy: 98.66%
 - Examples:
   - “将来性”だよ 品切れかね？
 
-### "よ" + "坊や" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと借りてるよ 坊や。
-
 ### "よ" + "坊主" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65894,12 +59838,6 @@ Accuracy: 98.66%
 - Examples:
   - 意地も見栄もない男なんて最低よ 堂々と戦いなさい！
 
-### "よ" + "壊れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ そこ引っ張っちゃダメだよ 壊れる！
-
 ### "よ" + "声" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -65912,17 +59850,17 @@ Accuracy: 98.66%
 - Examples:
   - ベンジャミン・エンゲル そうよ 変人！
 
-### "よ" + "多分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーなら平気だよ 多分。
-
 ### "よ" + "大きな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 向こうのピンクの家よ 大きな門が見えるでしょ？
+
+### "よ" + "夫" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 話があるのよ 夫に近づかないで いい？
 
 ### "よ" + "娘" (1 occurrences)
 - Predicted: None
@@ -65952,25 +59890,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - トイレも作ったんだよ 家族が増えたからね。
-
-### "よ" + "家族旅行" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
   - 来年 また来ようよ 家族旅行！
-
-### "よ" + "尊敬" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カタギに肩入れしてもよ 尊敬は してくれねえぜ。
-
-### "よ" + "島巡り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だよ 島巡りの観光艇じゃねえか。
 
 ### "よ" + "帆高" (1 occurrences)
 - Predicted: None
@@ -66008,6 +59928,12 @@ Accuracy: 98.66%
 - Examples:
   - 妻のルイザよ 忘れた？
 
+### "よ" + "忘れろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マズいよ 忘れろ - 何で？
+
 ### "よ" + "怖がらないで" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66044,12 +59970,6 @@ Accuracy: 98.66%
 - Examples:
   - 主よ 我らとともに！
 
-### "よ" + "戦友" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとうよ 戦友！
-
 ### "よ" + "手伝おう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66080,12 +60000,6 @@ Accuracy: 98.66%
 - Examples:
   - ドメニコ おいで ぶつよ 早く！
 
-### "よ" + "明日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 安心して寝ろよ 明日は早いぞ。
-
 ### "よ" + "普通" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66115,12 +60029,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 待てよ 本当に母親を見たのか？
-
-### "よ" + "来い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何よ 来いって言ったのは 王様じゃない。
 
 ### "よ" + "来ないで" (1 occurrences)
 - Predicted: None
@@ -66266,12 +60174,6 @@ Accuracy: 98.66%
 - Examples:
   - 遠慮は要らないよ 発散させよう！
 
-### "よ" + "空賊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 海賊じゃないよ 空賊って言うんだよ。
-
 ### "よ" + "答えて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66296,12 +60198,6 @@ Accuracy: 98.66%
 - Examples:
   - 聞いたと言えよ 聞いたんだろう？
 
-### "よ" + "自由" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも あの人は真っすぐよ 自由に生きたいだけ。
-
 ### "よ" + "舌" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66319,12 +60215,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ジドラーは反対するよ 芝居を書いた経験が？
-
-### "よ" + "若ぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊どもと手を組むんなら 気をつけろよ 若ぇの。
 
 ### "よ" + "草太" (1 occurrences)
 - Predicted: None
@@ -66361,6 +60251,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 質問だ ドイツよ 覚悟は？
+
+### "よ" + "言った" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 死んだ父はコックよ 言ったでしょ？
 
 ### "よ" + "証拠" (1 occurrences)
 - Predicted: None
@@ -66452,12 +60348,6 @@ Accuracy: 98.66%
 - Examples:
   - 知ってるよ 開け方は？
 
-### "よ" + "閣下" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 事を急ぐと 元も子もなくしますよ 閣下。
-
 ### "よ" + "雑用" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66488,12 +60378,6 @@ Accuracy: 98.66%
 - Examples:
   - そうだよ 飢えてるんだよ女にさ！
 
-### "よ" + "飲みなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 温かいミルクよ 飲みなさい。
-
 ### "よ" + "飲む" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66517,18 +60401,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ＣＭよ ＣＭにして！
-
-### "よいしょ" + "よいしょ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よいしょ よいしょ…。
-
-### "よう" + "ある" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不幸を招くことも よう あることなんじゃ。
 
 ### "よう" + "よう" (1 occurrences)
 - Predicted: None
@@ -66583,12 +60455,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - よう 平気か？
-
-### "よう" + "待ちな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう！ （ルイ） よう 待ちな。
 
 ### "よう" + "怖い" (1 occurrences)
 - Predicted: None
@@ -66650,6 +60516,12 @@ Accuracy: 98.66%
 - Examples:
   - よお みんな！
 
+### "よお" + "待ちな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よお 待ちな！
+
 ### "よかった" + "ところ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66668,18 +60540,6 @@ Accuracy: 98.66%
 - Examples:
   - よかった ニック･ケイヴの曲は？
 
-### "よかった" + "卵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よかった 卵が割れてなくて。
-
-### "よかった" + "経験" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よかった 経験だって言われなくて。
-
 ### "よかったぁ" + "あんたん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66697,12 +60557,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - よく かけてるかしら？
-
-### "よく" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい火だねぇ よく この家を隠してる。
 
 ### "よく" + "見える" (1 occurrences)
 - Predicted: None
@@ -66758,6 +60612,12 @@ Accuracy: 98.66%
 - Examples:
   - よし かっ切るぞ！
 
+### "よし" + "そして" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よし そして？
+
 ### "よし" + "それ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66794,12 +60654,6 @@ Accuracy: 98.66%
 - Examples:
   - よし リードから いいか？
 
-### "よし" + "上出来" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よし 上出来だ しばらく そこにいてね。
-
 ### "よし" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66817,6 +60671,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - よし 君は？
+
+### "よし" + "木" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よし 木に結べ！
 
 ### "よし" + "構え" (1 occurrences)
 - Predicted: None
@@ -66841,6 +60701,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - よし 行くぞ！
+
+### "よし" + "行こう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よし 行こう 竜の巣へ！
 
 ### "よし" + "誰" (1 occurrences)
 - Predicted: None
@@ -66962,18 +60828,6 @@ Accuracy: 98.66%
 - Examples:
   - よっぽど お悪いのかしら?
 
-### "よっぽど" + "つらい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 髪の毛を切られるほうが よっぽど つらいさ。
-
-### "より" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それより あの人を助けてあげなさいよ。
-
 ### "より" + "あんたら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -66998,35 +60852,23 @@ Accuracy: 98.66%
 - Examples:
   - あの子達 見かけより ずっと無理して来たと思うの。
 
-### "より" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺の艇を前より ず～っといい艇にしたんだ。
-
 ### "より" + "そっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 僕の心配より そっちの女性関係は？
 
-### "より" + "ちょっと" (1 occurrences)
+### "より" + "もっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 日の出は真東より ちょっと南へ動いています。
+  - 世界には料理より もっと興味深い事があるだろ？
 
 ### "より" + "ギャング" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 密告か？ デカより ギャングの名がいいだろ？
-
-### "より" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ファシストになるより ブタのほうがマシさ。
 
 ### "より" + "マシ" (1 occurrences)
 - Predicted: None
@@ -67046,7 +60888,7 @@ Accuracy: 98.66%
 - Examples:
   - それより 外が変だけど 気づきました？
 
-### "より" + "愛" (1 occurrences)
+### "より" + "愛して" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -67069,24 +60911,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ここより 楽しかった？
-
-### "より" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そんなことより 私にかけた呪いを解きなさいよ。
-
-### "より" + "誇り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 地上の飛行機乗りより 誇り高いんだって。
-
-### "より" + "通信回路" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私はムスカ大佐だ ロボットにより 通信回路が破壊された。
 
 ### "より" + "酒" (1 occurrences)
 - Predicted: None
@@ -67118,17 +60942,35 @@ Accuracy: 98.66%
 - Examples:
   - キットカットによろしく 元気なの？
 
+### "よー" + "飯" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 飯くれよー 飯くれよーって ぐんじゃない!
+
 ### "よーし" + "天気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （帆高）よーし 天気で稼ごう！
 
+### "よーし" + "待ってろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よーし 待ってろ！
+
 ### "よ～く" + "こぎな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - よ～く こぎな 水が冷たくなるまで。
+
+### "よ～し" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よ～し それじゃあ お茶にしよっか。
 
 ### "よ～し" + "洗濯" (1 occurrences)
 - Predicted: None
@@ -67214,23 +61056,11 @@ Accuracy: 98.66%
 - Examples:
   - ―フョードルは・・・分かるわ ―何のこと？
 
-### "わ" + "ありがと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - とにかく入らせてもらうわ ありがと！
-
 ### "わ" + "いくら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 違うわ いくら？
-
-### "わ" + "う～ん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そうね 当然だわ う～ん…。
 
 ### "わ" + "おやすみ" (1 occurrences)
 - Predicted: None
@@ -67244,23 +61074,11 @@ Accuracy: 98.66%
 - Examples:
   - そうだわ お父様とお母様にも お声をおかけして！
 
-### "わ" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたならできるわ すごい力を持ってるもの。
-
 ### "わ" + "たりる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - これだけしか ないわ たりる?
-
-### "わ" + "で" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来てくれて嬉しいわ でも戦争ごっこはダメよ。
 
 ### "わ" + "どこ" (1 occurrences)
 - Predicted: None
@@ -67279,12 +61097,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 洗ってあるわ ねえ これ 持ってく?
-
-### "わ" + "また" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 下りないで行ってしまったわ また賭けに負けちゃった。
 
 ### "わ" + "まだ" (1 occurrences)
 - Predicted: None
@@ -67309,12 +61121,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 脅されたわ わからないの?
-
-### "わ" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかしいわ カルシファーが ちっとも燃えない。
 
 ### "わ" + "コーチ" (1 occurrences)
 - Predicted: None
@@ -67400,12 +61206,6 @@ Accuracy: 98.66%
 - Examples:
   - ジジ 今夜に決めたわ 出発よ！
 
-### "わ" + "夜明け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー おかしいわ 夜明けが横から来るなんて。
-
 ### "わ" + "娘" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -67478,11 +61278,11 @@ Accuracy: 98.66%
 - Examples:
   - 何も考えてないわ 混乱してるの、いい？
 
-### "わ" + "知らん" (1 occurrences)
+### "わ" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 追いついちゃうわ 知らん顔して行くのよ。
+  - もちろん寂しいわ 私の愛しい子！
 
 ### "わ" + "簡単" (1 occurrences)
 - Predicted: None
@@ -67507,12 +61307,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 知らないわ 訊かれたの初めて！
-
-### "わ" + "迎え" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お城だわ 迎えに来てくれた！ ヒン！
 
 ### "わ" + "違う" (1 occurrences)
 - Predicted: None
@@ -67603,6 +61397,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - わあーっ ありがとう！
+
+### "わかくて" + "かわいい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えー！ こんなにわかくて かわいいのに？
 
 ### "わかった" + "じゃあ" (1 occurrences)
 - Predicted: None
@@ -67754,6 +61554,12 @@ Accuracy: 98.66%
 - Examples:
   - わたし このまま死ぬのかしら？
 
+### "わたし" + "泳ぐ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - わたし 泳ぐ！
+
 ### "わたし" + "行きます" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -67783,12 +61589,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - わっ わっ うわっ！
-
-### "わっ" + "こら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 気分はどう？ わっ こら 待て 待てったら…。
 
 ### "わっ" + "わっ" (1 occurrences)
 - Predicted: None
@@ -67820,12 +61620,6 @@ Accuracy: 98.66%
 - Examples:
   - （将也）えッ？ わッ マジかよ すげぇな！
 
-### "を" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 幸運を !
-
 ### "を" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -67844,35 +61638,11 @@ Accuracy: 98.66%
 - Examples:
   - はく くちを あけて！
 
-### "を" + "あなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルは大切なものを あなたに渡したって。
-
-### "を" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ここの花を摘んでさ 花屋さんを あの店で できないかな？
-
-### "を" + "あまり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 友人を あまり いじめないでくれないか。
-
 ### "を" + "あんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私を あんな輩と 一緒にするな！
-
-### "を" + "いじってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに フィオは俺の飛行艇を いじってるからだ。
 
 ### "を" + "うろついてた" (1 occurrences)
 - Predicted: None
@@ -67898,11 +61668,11 @@ Accuracy: 98.66%
 - Examples:
   - 奴を止める ーおれを おまえが?
 
-### "を" + "お与え" (1 occurrences)
+### "を" + "おバカ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - パンと仕事を お与えくださいました。
+  - なのに あたしを おバカ扱い！
 
 ### "を" + "お姫様" (1 occurrences)
 - Predicted: None
@@ -67982,11 +61752,11 @@ Accuracy: 98.66%
 - Examples:
   - 貴様 目ん玉を くり抜いてやる！
 
-### "を" + "くれる" (1 occurrences)
+### "を" + "この" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - じゃあ ソフィーの何かを くれるかい？
+  - ウイルスを この世から消し去りたまえ！
 
 ### "を" + "ごまかす" (1 occurrences)
 - Predicted: None
@@ -68042,6 +61812,12 @@ Accuracy: 98.66%
 - Examples:
   - 不正確な証言を させたいのか？
 
+### "を" + "さらわれた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （船長）女の子と金貨を さらわれた！
+
 ### "を" + "し" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -68053,12 +61829,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 僕のゲームを したんだ！
-
-### "を" + "したい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 要するに リターンマッチを したいんだろう？
 
 ### "を" + "しちゃいけない" (1 occurrences)
 - Predicted: None
@@ -68078,6 +61848,12 @@ Accuracy: 98.66%
 - Examples:
   - さあ、みんなで彼が怪我を しないようにしましょうか。
 
+### "を" + "しめろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - んー 二番のバルブを しめろ！
+
 ### "を" + "しょっ引く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -68095,12 +61871,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それを すべて他人のせいにするのか？
-
-### "を" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 荒地で この日が来るのを ず～っと待ってたんだ…。
 
 ### "を" + "ぜんぶ" (1 occurrences)
 - Predicted: None
@@ -68126,7 +61896,7 @@ Accuracy: 98.66%
 - Examples:
   - わたしを たべるき？
 
-### "を" + "つくんだ" (1 occurrences)
+### "を" + "つく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -68143,12 +61913,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 文芸界にはびこる悪を つまみ出せ！
-
-### "を" + "つんで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ… お墓に供える花を つんで来てくれたの？
 
 ### "を" + "で" (1 occurrences)
 - Predicted: None
@@ -68185,12 +61949,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何を はめてるんだ？
-
-### "を" + "ひっぺが" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ボス） ブタを ひっぺがした！
 
 ### "を" + "ぶた" (1 occurrences)
 - Predicted: None
@@ -68276,11 +62034,11 @@ Accuracy: 98.66%
 - Examples:
   - なんで あたしがおまえを やとわなきゃならないんだい？
 
-### "を" + "やめねえ" (1 occurrences)
+### "を" + "よそ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 給油に下りるぞ おしゃべりを やめねえと 舌かむからな。
+  - リビング･セットを よその庭に移したこと？
 
 ### "を" + "を" (1 occurrences)
 - Predicted: None
@@ -68299,12 +62057,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こんなものを イーゴに出す気？
-
-### "を" + "オノ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな きれいな艇を オノで壊すって言うの!
 
 ### "を" + "オレ" (1 occurrences)
 - Predicted: None
@@ -68366,12 +62118,6 @@ Accuracy: 98.66%
 - Examples:
   - 自分の経歴を トイレに流すつもりか…？
 
-### "を" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それとも取引のことを ハウルにバラそうか？
-
 ### "を" + "パッシュ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -68383,18 +62129,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なぜそいつらの鼻を パンチしない？
-
-### "を" + "ベルリーニ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ポルコの声） 俺の横を ベルリーニのヤツが飛んでいた。
-
-### "を" + "メチャクチャ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まじないを メチャクチャにしちゃったんだ!
 
 ### "を" + "ユダヤ人" (1 occurrences)
 - Predicted: None
@@ -68425,6 +62159,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 軍曹、そいつらを 下がらせるんだ。
+
+### "を" + "不幸" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなた もう一人 女の子を 不幸にする気なの？
 
 ### "を" + "与えて" (1 occurrences)
 - Predicted: None
@@ -68534,12 +62274,6 @@ Accuracy: 98.66%
 - Examples:
   - 思索の時間を 使ったのか？
 
-### "を" + "保護" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お～い！ この子達を 保護してやってくれ。
-
 ### "を" + "信じて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -68576,18 +62310,6 @@ Accuracy: 98.66%
 - Examples:
   - ナイフを 借りてっていいかい？
 
-### "を" + "傷" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私を誰より 愛してくれる人を 傷つけると思う？
-
-### "を" + "傷つける" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 彼女が僕らを 傷つける？
-
 ### "を" + "傷付ける" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -68599,6 +62321,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そして、あなたは償いの手段を 償う手段を見つける。
+
+### "を" + "全部" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アメリカ人について知ってることを 全部話せ さあ！
 
 ### "を" + "出す" (1 occurrences)
 - Predicted: None
@@ -68702,17 +62430,17 @@ Accuracy: 98.66%
 - Examples:
   - 夏子おばちゃんを 取り戻さなきゃ！
 
-### "を" + "取る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 年寄りの楽しみを 取るもんじゃないよ。
-
 ### "を" + "受けた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 精神関連の療法を 受けたことは？
+
+### "を" + "受けて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お父さんは 僕たちが監査を 受けていることを知ってる？
 
 ### "を" + "受けなければ" (1 occurrences)
 - Predicted: None
@@ -68827,6 +62555,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - こんな間抜けな息子を 外国にやれって?
+
+### "を" + "大事" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 私がプライバシーを 大事にすることを知ってたんだ。
 
 ### "を" + "大切" (1 occurrences)
 - Predicted: None
@@ -68966,12 +62700,6 @@ Accuracy: 98.66%
 - Examples:
   - 甥を 後部座席の下に 隠すんですか？
 
-### "を" + "心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファーを 心の中で呼んでごらん。
-
 ### "を" + "忘れる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69001,12 +62729,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 誰かのことを 思ってるんじゃない？
-
-### "を" + "急いで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私なら大事なものを 急いでしまっておくけど。
 
 ### "を" + "恐れた" (1 occurrences)
 - Predicted: None
@@ -69104,6 +62826,12 @@ Accuracy: 98.66%
 - Examples:
   - ヤクを 扱わない？
 
+### "を" + "承認" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 陛下は法令を 承認されましたか?
+
 ### "を" + "折りやがった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69151,6 +62879,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - その子どもたちを 拘束する権利はない！
+
+### "を" + "拝む" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 忌々しい朝日を 拝むのは私だけ？
 
 ### "を" + "拝借" (1 occurrences)
 - Predicted: None
@@ -69217,6 +62951,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 学校の床を 掃除していたの 見てただろう？
+
+### "を" + "探して" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よかったら他の席を 探してもらえないか？
 
 ### "を" + "探す" (1 occurrences)
 - Predicted: None
@@ -69320,6 +63060,12 @@ Accuracy: 98.66%
 - Examples:
   - ゴルブンコフ氏を 昔からご存じ？
 
+### "を" + "晴らすべき" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なあ 梅は全ての恨みを 晴らすべきじゃないのか？
+
 ### "を" + "更新" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69404,6 +63150,12 @@ Accuracy: 98.66%
 - Examples:
   - セルキーが その素敵な歌を 歌う時を。
 
+### "を" + "歩かせる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなたの中を 歩かせるつもり？
+
 ### "を" + "死" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69427,6 +63179,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - よくもシュッテを 殺したな！
+
+### "を" + "殺しました" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 夫のイム・ホシンを 殺しましたか？
 
 ### "を" + "殺そう" (1 occurrences)
 - Predicted: None
@@ -69542,23 +63300,11 @@ Accuracy: 98.66%
 - Examples:
   - 私には あなたを 理解できないと？
 
-### "を" + "甘く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーばあちゃんを 甘く見ないで！
-
 ### "を" + "生かしつづけて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 君たちアトランティスを 生かしつづけているんだ。
-
-### "を" + "生かして" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お前 あいつらが あの子を 生かしておくと思うのかい？
 
 ### "を" + "生かそう" (1 occurrences)
 - Predicted: None
@@ -69698,18 +63444,6 @@ Accuracy: 98.66%
 - Examples:
   - これより安全に時間を 稼げる方法は？
 
-### "を" + "積んでる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 鉱山会社の給料を 積んでるんだ。
-
-### "を" + "空" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そいで でっかい島を 空に浮かばしたとな。
-
 ### "を" + "穿いてる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69757,12 +63491,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - マルチェロと婚約者のエンマを 紹介してもいいですか？
-
-### "を" + "終わらせましょう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この ばかげた戦争を 終わらせましょう。
 
 ### "を" + "終わらせられる" (1 occurrences)
 - Predicted: None
@@ -69854,12 +63582,6 @@ Accuracy: 98.66%
 - Examples:
   - 目を 背ける？
 
-### "を" + "自由" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの少年を 自由の身にしてやれるんだ。
-
 ### "を" + "自白" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69920,6 +63642,12 @@ Accuracy: 98.66%
 - Examples:
   - 強いところを 見せつけてやろうじゃないか！
 
+### "を" + "見せて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お仕事を 見せていただけるのよね？
+
 ### "を" + "見たい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -69932,29 +63660,23 @@ Accuracy: 98.66%
 - Examples:
   - けれど 息子を救う方法を 見つけた。
 
+### "を" + "見つけて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - クー、 僕らを 見つけてくれたね！
+
 ### "を" + "見つけない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 妹を 見つけないと。
 
-### "を" + "見つける" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 失われたアトランティス大陸を 見つける鍵なんだ。
-
 ### "を" + "見てない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 彼を 見てないか？
-
-### "を" + "見てる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ彼は 僕たちを 見てるんだろう？
 
 ### "を" + "見なさい" (1 occurrences)
 - Predicted: None
@@ -69992,23 +63714,17 @@ Accuracy: 98.66%
 - Examples:
   - 苦しむ息子を 見続けることに 私は 耐えられなかった。
 
-### "を" + "解きたい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたに かけられた呪いを 解きたいの！
-
 ### "を" + "解き放った" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - サルマンが狂気を 解き放ったのはいつなのだ？
 
-### "を" + "解読" (1 occurrences)
+### "を" + "言う" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 閣下が不用意に打たれた暗号を 解読されたのです。
+  - くだらないことを 言うのはやめろ！
 
 ### "を" + "言った" (1 occurrences)
 - Predicted: None
@@ -70021,12 +63737,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ヒョンソが下水溝の特徴を 言ってなかった？
-
-### "を" + "言ってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 冗談じゃねえ！ お前 何を 言ってるのか分かってるのか!
 
 ### "を" + "言われた" (1 occurrences)
 - Predicted: None
@@ -70160,12 +63870,6 @@ Accuracy: 98.66%
 - Examples:
   - これから 誰がコンガを 踊るの？
 
-### "を" + "迎え" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 嵐に乗って 飛行石を持つ者を 迎えに来たんだよ。
-
 ### "を" + "近く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -70184,7 +63888,7 @@ Accuracy: 98.66%
 - Examples:
   - また僕を 追いかけて来ない？
 
-### "を" + "退学処分" (1 occurrences)
+### "を" + "退学" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -70382,36 +64086,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜロブを 黙らせない？
 
-### "んぐっ" + "んぐっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - んぐっ んぐっ んぐ～…！
-
-### "んぐっ" + "んぐ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - んぐっ んぐっ んぐ～…！
-
-### "んっ" + "んっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - んっ んっ ん～っ…。
-
-### "んっ" + "ん～っ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - んっ んっ ん～っ…。
-
-### "んなら" + "はっきり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （海） 嫌いになったんなら はっきり そう言って。
-
 ### "んふ" + "自分" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -70436,11 +64110,23 @@ Accuracy: 98.66%
 - Examples:
   - んー ん？
 
+### "んー" + "二番" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - んー 二番のバルブを しめろ！
+
 ### "んー" + "何回" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - んー 何回でも同じや アホ！
+
+### "んー" + "急いでんだ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何？んー 急いでんだから早く！
 
 ### "アゝ" + "お父さん" (1 occurrences)
 - Predicted: None
@@ -70586,17 +64272,17 @@ Accuracy: 98.66%
 - Examples:
   - 走れアトレーユ 走れ！
 
+### "アドルフ・ヒトラー" + "言った" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アドルフ・ヒトラー 言った筈だ！
+
 ### "アニ" + "行こう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - アニ 行こう！
-
-### "アニキ" + "負ける" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アニキ 負けるな！
 
 ### "アニー" + "テレンス・マン" (1 occurrences)
 - Predicted: None
@@ -70808,12 +64494,6 @@ Accuracy: 98.66%
 - Examples:
   - アンドレア 筆跡学者はどこだ？
 
-### "アンナ" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 息子の嫁達だ マリア ティナ アンナ その妹のミレッタ。
-
 ### "アンナ" + "元気" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -70874,11 +64554,11 @@ Accuracy: 98.66%
 - Examples:
   - その間 女房は男とイチャつき アメ玉をなめてた！
 
-### "イヤ" + "私" (1 occurrences)
+### "イマム" + "モサブ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - イヤ 私こういうのダメ 戻ろう。
+  - イマム モサブのために 働いてんのか？
 
 ### "イリノイ州" + "万歳" (1 occurrences)
 - Predicted: None
@@ -70999,12 +64679,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - とウイスキー ウォッカ 欲しい?
-
-### "ウフっ" + "ウフフ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ウフっ ウフフ…。
 
 ### "ウフフフ" + "メイ" (1 occurrences)
 - Predicted: None
@@ -71162,6 +64836,12 @@ Accuracy: 98.66%
 - Examples:
   - エブリン 誰も信じるな！
 
+### "エミリアン" + "大丈夫" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - エミリアン 大丈夫か？
+
 ### "エミリー" + "飛び込め" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -71203,6 +64883,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - エルフィー どこに行くの？
+
+### "エルフィー" + "やめて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - エルフィー！ エルフィー やめて ダメ！
+
+### "エルフィー" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - エルフィー 何をしているの？
 
 ### "エンジェル･アイ" + "じゃねえ" (1 occurrences)
 - Predicted: None
@@ -71276,36 +64968,6 @@ Accuracy: 98.66%
 - Examples:
   - オイ 行くぞ！
 
-### "オイラ" + "かわいそう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ かわいそうな悪魔なんだ！
-
-### "オイラ" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ みんなと いたいんだ 雨も降りそうだしさ。
-
-### "オイラ" + "消えちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 雨漏りしてる オイラ 消えちゃうよ～。
-
-### "オイラ" + "火薬" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ 火薬の火は嫌いだよ。
-
-### "オイラ" + "自由" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 生きてる！ オイラ 自由だ～！
-
 ### "オオー" + "これ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -71342,23 +65004,11 @@ Accuracy: 98.66%
 - Examples:
   - オリビエロ 私の友達も連れて行ってもらえる？
 
-### "オーバーホール" + "しなきゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゲホっ！ そろそろオーバーホール しなきゃいかんな。
-
 ### "オープン" + "マインド" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - オープン マインド！
-
-### "オーライ" + "オーライ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オーライ オーライ！
 
 ### "オ～" + "オット" (1 occurrences)
 - Predicted: None
@@ -71390,29 +65040,11 @@ Accuracy: 98.66%
 - Examples:
   - カナビス 駆け足だ!
 
-### "カブ" + "あなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう カブ あなたは優しいカカシね。
-
-### "カブ" + "ありがとう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カブ ありがとう。
-
-### "カブ" + "勇気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう カブ 勇気を出さなくちゃね。
-
 ### "カブ" + "大丈夫" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - カブ 大丈夫？ すぐ新しい棒を 見つけてあげるね。
+  - カブ 大丈夫?
 
 ### "カベレイラ" + "なぜ" (1 occurrences)
 - Predicted: None
@@ -71455,42 +65087,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - カリン 黙ってろ！
-
-### "カルちゃん" + "キレイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルちゃん キレイだねぇ。 おばあちゃん ここ。
-
-### "カルちゃん" + "燃して" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルちゃん 燃して！
-
-### "カルシファー" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファー いいよ！
-
-### "カルシファー" + "しっかり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファー しっかりしろ！
-
-### "カルシファー" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - は～い！ カルシファー もっと口開けて！
-
-### "カルシファー" + "早く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カルシファー 早く！ あっ!
 
 ### "カルリトス" + "カルリトス" (1 occurrences)
 - Predicted: None
@@ -71587,6 +65183,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ガルカ 待って！
+
+### "ガルカ" + "文化ホール" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ガルカ 文化ホールに行くのに 乗せてってくれない？
 
 ### "ガルカ" + "日本人" (1 occurrences)
 - Predicted: None
@@ -71702,12 +65304,6 @@ Accuracy: 98.66%
 - Examples:
   - （川井）キャハハッ （永束）やッ やめろ～！
 
-### "キャハハハ" + "アハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キャハハハ アハハハ…。
-
 ### "キャプテン" + "クレンツェンドルフ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -71731,6 +65327,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （節子）キャー 冷たい！
+
+### "キャー" + "落ちた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - キャー 落ちたー！
 
 ### "キャー" + "（" (1 occurrences)
 - Predicted: None
@@ -71762,11 +65364,11 @@ Accuracy: 98.66%
 - Examples:
   - ギムリ 王はどちらに？
 
-### "ギャング" + "海賊密輸団" (1 occurrences)
+### "クイ" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ギャング 海賊密輸団 スパイに私服…。
+  - カイにクイ 私を覚えてる？
 
 ### "クソ" + "たかりや" (1 occurrences)
 - Predicted: None
@@ -71779,18 +65381,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - アカペラか？ クソ ドラムを叩け!
-
-### "クソっ" + "どこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） クソっ どこ行った…。
-
-### "クソっ" + "アチチ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソっ アチチ…。
 
 ### "クソったれ" + "もう" (1 occurrences)
 - Predicted: None
@@ -71827,6 +65417,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - クソッ 風が強い！ ナプキンが吹っ飛んだよ！
+
+### "クソーッ" + "こきたねえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - クソーッ こきたねえ賞金かせぎが 英雄 気どりやがって！
 
 ### "クソ女" + "クソッタレ" (1 occurrences)
 - Predicted: None
@@ -72110,12 +65706,6 @@ Accuracy: 98.66%
 - Examples:
   - ゲンカ どうした！
 
-### "コ" + "乗せてんだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女のコだぞ！ 女のコ 乗せてんだ。 かわいい！
-
 ### "コウ" + "シチコクヤマ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -72134,12 +65724,6 @@ Accuracy: 98.66%
 - Examples:
   - コスチャ どうなった？
 
-### "コソコソ" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぜ コソコソ 娘をさらったりするんだ？
-
 ### "コドモ" + "求む" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -72157,6 +65741,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - コラ 待たんかい！
+
+### "コン" + "ダウン" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ビリー・コン ダウンです！
 
 ### "コンピュータ" + "ウイルス" (1 occurrences)
 - Predicted: None
@@ -72206,6 +65796,12 @@ Accuracy: 98.66%
 - Examples:
   - どの ゴミ箱 に 捨てる の？
 
+### "ゴリアテ" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - くそぉ ゴリアテ 何をしてる！！
+
 ### "ゴル" + "あげて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -72254,11 +65850,11 @@ Accuracy: 98.66%
 - Examples:
   - こら サテンドラ 何やってる！
 
-### "サビ弾" + "よこしやがって" (1 occurrences)
+### "サム" + "アセラス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ジャンク屋の野郎 サビ弾 よこしやがって…。
+  - サム アセラスという植物を知っているか？
 
 ### "サム" + "トマト" (1 occurrences)
 - Predicted: None
@@ -72295,12 +65891,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - サムワイズ この大馬鹿野郎！
-
-### "サリマン" + "今度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - サリマン 今度の影武者は よく出来てるな。
 
 ### "サリー" + "は" (1 occurrences)
 - Predicted: None
@@ -72482,6 +66072,12 @@ Accuracy: 98.66%
 - Examples:
   - シス お願い！
 
+### "シネマボーイ" + "加藤清史郎" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 映画で楽しく冒険だ！ シネマボーイ 加藤清史郎です。
+
 ### "シモン" + "いい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -72536,12 +66132,6 @@ Accuracy: 98.66%
 - Examples:
   - シルビア 君は何者なんだ？
 
-### "シルヴァーナ" + "仕上げ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 甥っこの嫁のシルヴァーナ 仕上げをやる。
-
 ### "シルヴィア" + "どうして" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -72572,107 +66162,59 @@ Accuracy: 98.66%
 - Examples:
   - シーザー やめて下さい！
 
-### "シータ" + "あそこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ あそこ！
-
-### "シータ" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ あの空！ ええ。
-
 ### "シータ" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ こっちへ！
+  - シータ こっち！
 
 ### "シータ" + "まだ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ！ シータ まだ？
+  - シーター？シータ まだ？
+
+### "シータ" + "やっぱり" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - シータ やっぱりあるんだよ！
 
 ### "シータ" + "シータ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ シータ 大丈夫？
+  - シータ シータ！大丈夫？
 
 ### "シータ" + "一体" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ 一体…。
+  - シータ 一体どうしたんだ！！
 
 ### "シータ" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ 今 行く！
+  - シータ 今行く！！
 
-### "シータ" + "僕" (1 occurrences)
+### "シータ" + "束した" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ 僕のカバンから ひもを出して。
+  - まさか！シータ 束したじゃないか！
 
-### "シータ" + "入り" (1 occurrences)
+### "シータ" + "父さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - シータ 入りな。
-
-### "シータ" + "大丈夫" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ シータ 大丈夫？
-
-### "シータ" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ 本当？ だって…。
-
-### "シータ" + "海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ 海だ！ えっ？
-
-### "シータ" + "約束" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - まさか… シータ 約束したじゃないか！
-
-### "シータ" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ 飛行石を取り戻そう。
-
-### "シーツ" + "美しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 真っ白なシーツ 美しい女達…。
+  - シータ 父さんはうそつきじゃなかったんだ！
 
 ### "シートウ" + "見た" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 石頭シートウ 見たぞ！ 余計な事をするな！
-
-### "シーン" + "好き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このシーン 好きだなぁ。
 
 ### "ジェイ" + "何" (1 occurrences)
 - Predicted: None
@@ -72926,6 +66468,12 @@ Accuracy: 98.66%
 - Examples:
   - ジュリオ この辺りには電気がないの？
 
+### "ジュリオ" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ジュリオ これはいつ頃作られたの？
+
 ### "ジューク" + "か" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -73081,24 +66629,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ジリン キンタマと舌となら どっちを選ぶ？
-
-### "ジーナ" + "こいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジーナ こいつをカタギの世界へ 戻してやってくれ。
-
-### "ジーナ" + "ジーナ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジーナ ジーナと気やすく呼ぶな！
-
-### "ジーナ" + "ダメ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - セブン！ ジーナ ダメだよ。
 
 ### "スアン" + "おいで" (1 occurrences)
 - Predicted: None
@@ -73436,6 +66966,12 @@ Accuracy: 98.66%
 - Examples:
   - セレステ 説明していい？
 
+### "センセイ" + "兄弟" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - センセイ 兄弟！
+
 ### "セーニャ" + "開けて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -73448,29 +66984,11 @@ Accuracy: 98.66%
 - Examples:
   - ソフィ 眠ってる？
 
-### "ソフィー" + "いい" (1 occurrences)
+### "ソフィー" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィー いいよ！
-
-### "ソフィー" + "おやすみ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー おやすみ。 おやすみ。
-
-### "ソフィー" + "お願い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー お願い 戻って来て！ ハウルさんが大変なんだ！
-
-### "ソフィー" + "くたくた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー くたくただよ…。
+  - ソフィー こっちに来て！
 
 ### "ソフィー" + "どう" (1 occurrences)
 - Predicted: None
@@ -73478,47 +66996,17 @@ Accuracy: 98.66%
 - Examples:
   - ソフィー どうしたの？
 
-### "ソフィー" + "もっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー もっと近くに行ってみようよ。
-
-### "ソフィー" + "イヤ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） ソフィー イヤだよ 荒地の魔女だぜ。
-
 ### "ソフィー" + "ケガ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィー ケガはない？ おっとっと…。
-
-### "ソフィー" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー ハウルさんなら心配いらないよ。
-
-### "ソフィー" + "ビラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） ソフィー ビラだよ！ ソフィー！
+  - ソフィー ケガはない?
 
 ### "ソフィー" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィー 何か やったの？
-
-### "ソフィー" + "前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー 前へ移れ。
+  - ソフィー 何かやったの？
 
 ### "ソフィー" + "大丈夫" (1 occurrences)
 - Predicted: None
@@ -73526,35 +67014,23 @@ Accuracy: 98.66%
 - Examples:
   - ソフィー 大丈夫？
 
-### "ソフィー" + "早く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 落ちる… 危ない… ソフィー 早く！
-
-### "ソフィー" + "洗濯物" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー 洗濯物しまったよ。
-
 ### "ソフィー" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ ソフィー 私 再婚したの！ えっ！
-
-### "ソフィー" + "舵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー 舵をとれ。
+  - ソフィー 私 再婚したの！
 
 ### "ソフィー" + "行かないで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ソフィー 行かないで！
+
+### "ソフィー" + "風呂場" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ソフィー 風呂場の棚いじった？
 
 ### "ソフト" + "サードマン" (1 occurrences)
 - Predicted: None
@@ -73585,12 +67061,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - タイラー 本気だぞ！ バンからどけ！
-
-### "タオル" + "置いて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - タオル 置いてあるから おやすみなさい！
 
 ### "タケノコ" + "タケノコ" (1 occurrences)
 - Predicted: None
@@ -73710,7 +67180,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やれ ダッフィ 見せてやれ！
+  - やれ ダッフィ 見せてやれぃ！
 
 ### "ダニエル" + "どう" (1 occurrences)
 - Predicted: None
@@ -73766,17 +67236,29 @@ Accuracy: 98.66%
 - Examples:
   - ダメだ ダメ もう一回！
 
-### "ダメ" + "戻ろう" (1 occurrences)
+### "ダメ" + "二階" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - イヤ 私こういうのダメ 戻ろう。
+  - ダメ 二階はダメ！
+
+### "ダメ" + "分かる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 発射しちゃダメ 分かる？
 
 ### "ダメ" + "撃たないで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ダメ 撃たないで！
+
+### "ダメ" + "罠" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ハウル ダメ 罠よ！
 
 ### "ダメ" + "行かないで" (1 occurrences)
 - Predicted: None
@@ -73795,12 +67277,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ダン 穴居人よ？
-
-### "ダンナ" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ダンナ 何とか言ってよ。
 
 ### "ダーニャ" + "俺" (1 occurrences)
 - Predicted: None
@@ -73868,6 +67344,12 @@ Accuracy: 98.66%
 - Examples:
   - チャトール 教えてやる！
 
+### "チャンさん" + "今夜" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - チャンさん 今夜も麺を？
+
 ### "チャンドラバーン" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -73910,6 +67392,12 @@ Accuracy: 98.66%
 - Examples:
   - チーフ？ チーフ 何処にいるの？
 
+### "チーム" + "行け" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - デルタ･チーム 行け！
+
 ### "ッ" + "ああ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -73940,12 +67428,6 @@ Accuracy: 98.66%
 - Examples:
   - ティナ どうした？
 
-### "ティナ" + "アンナ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 息子の嫁達だ マリア ティナ アンナ その妹のミレッタ。
-
 ### "ティム" + "君" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -73975,6 +67457,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （ナウシカ）テト （ゴル）うりゃ！
+
+### "テメエ" + "おちょくる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - テメエ おちょくる気か うってこい！
+
+### "テメエ" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - テメエ それでもそふか！
 
 ### "テリー" + "少し" (1 occurrences)
 - Predicted: None
@@ -74018,23 +67512,17 @@ Accuracy: 98.66%
 - Examples:
   - この服も彼女のデザイン あなたは？
 
+### "デブ" + "なぜ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - デブ なぜだ？
+
 ### "デブ" + "分った" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - デブ 分ったとさ！
-
-### "デマ" + "とばしやがって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 汚ねぇデマ とばしやがって…。
-
-### "デルタ･チーム" + "行け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - デルタ･チーム 行け！
 
 ### "トイレ" + "いい" (1 occurrences)
 - Predicted: None
@@ -74366,6 +67854,12 @@ Accuracy: 98.66%
 - Examples:
   - ニューヨーク 核物理研究所 生存者は？
 
+### "ニーマン" + "一体" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ニーマン 一体なんだ？
+
 ### "ニール" + "返して" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -74396,18 +67890,6 @@ Accuracy: 98.66%
 - Examples:
   - ノーマン 子供たちは？
 
-### "ハァ" + "ちょっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ ちょっと待ちなさい！
-
-### "ハァ" + "よっこいしょっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ ハァ よっこいしょっと…。
-
 ### "ハイ" + "ジェニー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -74420,77 +67902,35 @@ Accuracy: 98.66%
 - Examples:
   - ハイ ジェニー -ハイ マギー マックスは？
 
-### "ハイヨ～" + "シルバー" (1 occurrences)
+### "ハイ" + "調子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハハハ…！ そんな物が届くか ハイヨ～ シルバー。
+  - ハイ 調子はどう？
+
+### "ハイヨー" + "シルバー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そんなものが届くかぁ ハイヨー シルバー！
 
 ### "ハウル" + "ありがとう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハウル ありがとう！ 夢みたい！
-
-### "ハウル" + "こっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル こっちおいで。
-
-### "ハウル" + "やめて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やめろ… ハウル やめて～！
-
-### "ハウル" + "やめろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル やめろ～！ 消えちゃうよ～！
+  - ハウル ありがとう！
 
 ### "ハウル" + "ダメ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ハウル ダメ！ 罠よ！
-
-### "ハウル" + "久しぶり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル 久しぶりね。
+  - ハウル ダメ 罠よ！
 
 ### "ハウル" + "元気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ハウル 元気かしら？
-
-### "ハウル" + "帰って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル 帰って来たのね。
-
-### "ハウル" + "本当" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル 本当のこと言って。
-
-### "ハウル" + "王様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ ハウル 王様に会いに行きなさいよ。
-
-### "ハウル" + "行って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 待って！ ハウル 行ってはダメ！ ここにいて！
 
 ### "ハスター" + "って" (1 occurrences)
 - Predicted: None
@@ -74528,7 +67968,7 @@ Accuracy: 98.66%
 - Examples:
   - （鉄雄）ハッ カオリ！
 
-### "ハッ" + "ケ" (1 occurrences)
+### "ハッ" + "ケ～イ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -74575,6 +68015,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ハハ ヘンなやつ！
+
+### "ハハ" + "届く" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ポルコ） ハハ 届くものか イテッ！
 
 ### "ハハハ" + "がんばれ" (1 occurrences)
 - Predicted: None
@@ -74708,12 +68154,6 @@ Accuracy: 98.66%
 - Examples:
   - このバカ 動物が好きなくせに 機械と結婚するつもりだ！
 
-### "バカ" + "夜" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも そのバカ 夜のお店にしか来ないわ。
-
 ### "バカ話" + "どこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -74785,12 +68225,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - バビウ 赤と銀どっち？
-
-### "バラして" + "湖" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それに 一度バラして 湖に運ぶだけで 一日かかるもの。
 
 ### "バルトロメオ" + "どう" (1 occurrences)
 - Predicted: None
@@ -74894,71 +68328,23 @@ Accuracy: 98.66%
 - Examples:
   - パコ 抜かれるよ！
 
-### "パズー" + "おかしい" (1 occurrences)
+### "パズー" + "けが" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - パズー おかしいわ 夜明けが横から来るなんて。
+  - パズー けがは？
 
-### "パズー" + "お願い" (1 occurrences)
+### "パズー" + "その" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - パズー お願いがあるの ラピュタのこと忘れて…。
-
-### "パズー" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕はパズー この小屋で ひとり暮らしをしてるんだ。
-
-### "パズー" + "しっかり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー しっかり！
-
-### "パズー" + "ケガ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー ケガは？
-
-### "パズー" + "レンチ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アチチ… パズー レンチよこせ。
-
-### "パズー" + "上" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー 上を見て。
-
-### "パズー" + "仕事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （機関士） パズー 仕事さぼってデートか？
-
-### "パズー" + "時間" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー 時間がない よく聞きな。
+  - パズー そのオンボロに 油さしとけよ！
 
 ### "パズー" + "来おった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - パズー 来おったぞ！
-
-### "パズー" + "来ちゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - パズー 来ちゃダメ！ この人は どうせ私達を殺す気よ！
 
 ### "パットパーガンジ" + "-" (1 occurrences)
 - Predicted: None
@@ -75104,12 +68490,6 @@ Accuracy: 98.66%
 - Examples:
   - パンタローネ 誰が呼んだ？
 
-### "パンチ" + "見た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ 今の俺のパンチ 見た… うっ。
-
 ### "パンチョ" + "ヒゲ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75122,17 +68502,23 @@ Accuracy: 98.66%
 - Examples:
   - パーシュカ 犬は？
 
+### "パーズー" + "仕事" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - パーズー 仕事サボってデートかぁ？
+
+### "パーティー" + "もう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - パーティー もう間に合わない？
+
 ### "ヒゲ" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そのヒゲ どうしたの？
-
-### "ヒトラー" + "言った" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アドルフ・ヒトラー 言った筈だ！
 
 ### "ヒミ" + "大丈夫" (1 occurrences)
 - Predicted: None
@@ -75152,12 +68538,6 @@ Accuracy: 98.66%
 - Examples:
   - ヒャ～ メイも重くなったなぁ。 お父さん あのクスの木！
 
-### "ヒャ～" + "危ない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヤバい！ ヤバいよ！ ヒャ～ 危ない！
-
 ### "ヒューイ" + "元気" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75170,23 +68550,29 @@ Accuracy: 98.66%
 - Examples:
   - ヒョンソ 生きてたのか？
 
-### "ヒロイン" + "ぶってんじゃねえ" (1 occurrences)
+### "ヒロイン" + "ぶって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 悲劇のヒロイン ぶってんじゃねえぞッ！
 
-### "ヒン" + "大変" (1 occurrences)
+### "ヒン" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ヒン 大変なことしちゃった…。
+  - ヒン ヒン !
 
-### "ヒン" + "歩く" (1 occurrences)
+### "ヒン" + "ヒン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 歩くよ… ヒン 歩くから。
+  - ヒン ヒン !
+
+### "ヒン" + "行こう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ヒン 行こう！
 
 ### "ビクトリァ" + "娘" (1 occurrences)
 - Predicted: None
@@ -75229,12 +68615,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ビリー やめて！
-
-### "ビリー・コン" + "ダウン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ビリー・コン ダウンです！
 
 ### "ビルボ" + "ドラゴン" (1 occurrences)
 - Predicted: None
@@ -75344,6 +68724,12 @@ Accuracy: 98.66%
 - Examples:
   - ファシス卜 !
 
+### "ファックユー" + "ブタ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ファックユー ブタ野郎！
+
 ### "ファビオ" + "腐った" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75386,47 +68772,11 @@ Accuracy: 98.66%
 - Examples:
   - フィエロ 何してるの？
 
-### "フィオ" + "あと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ あと頼むよ。 うん！ やっとく。
-
-### "フィオ" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シッ！ 大きな声出しちゃダメよ。 フィオ あのな…！
-
-### "フィオ" + "お土産" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ お土産は いいからね。
-
-### "フィオ" + "今" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ 今の俺のパンチ 見た… うっ。
-
-### "フィオ" + "終わったら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ 終わったら すぐ教会に行くからな。
-
 ### "フィリップ" + "さがれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フィリップ さがれ！
-
-### "フェラーリン" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとうよ フェラーリン みんなに よろしくな。
 
 ### "フェルミン" + "なぜ" (1 occurrences)
 - Predicted: None
@@ -75476,12 +68826,6 @@ Accuracy: 98.66%
 - Examples:
   - フック フェイントアッパーカット！
 
-### "フフっ" + "随分" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフっ 随分若い おかあ様だったこと。
-
 ### "フフフ" + "ごめん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75493,12 +68837,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お魚？ フフフ ポニョってステキな名前ね。
-
-### "フラれて" + "出した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 前にも女のコにフラれて 出したことがあるんです！
 
 ### "フライト" + "何" (1 occurrences)
 - Predicted: None
@@ -75596,12 +68934,6 @@ Accuracy: 98.66%
 - Examples:
   - フン 行き先は分かるのか？
 
-### "フ～ン" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フ～ン 君にも ややこしい呪いが かかってるね。
-
 ### "ブ" + "ッ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75613,18 +68945,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ブスカペ お前は経験したか?
-
-### "ブタ" + "やる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - くされブタ やるか!
-
-### "ブタ" + "出て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ブタ 出て来～い！
 
 ### "ブチ壊しだ" + "ボケ" (1 occurrences)
 - Predicted: None
@@ -75728,12 +69048,6 @@ Accuracy: 98.66%
 - Examples:
   - プリーチャーボーイ どこにいる？
 
-### "プレゼント" + "どうぞ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィーへのプレゼント どうぞ。
-
 ### "プレゼント" + "見たくない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75830,6 +69144,12 @@ Accuracy: 98.66%
 - Examples:
   - ベティ ?
 
+### "ベティ" + "分からん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 中傷だよ ベティ 分からんのか？
+
 ### "ベニチオ" + "キミ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -75870,7 +69190,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ((ベルリーニ 待て！ どこへ行く!
+  - ベルリーニ 待て どこへ行く！
 
 ### "ベロニカ" + "！" (1 occurrences)
 - Predicted: None
@@ -75925,12 +69245,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ホセ 運転席に 座ってくれるか？
-
-### "ホッホッホッ" + "まさか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ホッホッホッ まさかなぁ。
 
 ### "ホラ" + "おいで" (1 occurrences)
 - Predicted: None
@@ -76002,7 +69316,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ボス どうします？ 説得力は ありますね。
+  - ボス どうします？
 
 ### "ボス" + "一服" (1 occurrences)
 - Predicted: None
@@ -76202,59 +69516,29 @@ Accuracy: 98.66%
 - Examples:
   - ポニョ 遠くから来たのかなぁ。
 
-### "ポルコ" + "ありがとう" (1 occurrences)
+### "ポルコ" + "がんばって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ポルコ～！ ポルコ ありがとう！
-
-### "ポルコ" + "お話" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ お話 聞かせて。
-
-### "ポルコ" + "ひどい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ ひどいのよ。
+  - ポルコ がんばって！
 
 ### "ポルコ" + "乗って" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ポルコ 乗ってく？
-
-### "ポルコ" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ 何してるの!
+  - （フィオ）ポルコ 乗ってく？
 
 ### "ポルコ" + "大失敗" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ポルコ 大失敗！
+  - （フィオ） ポルコ 大失敗！
 
-### "ポルコ" + "好き" (1 occurrences)
+### "ポルコ" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 私 ポルコ 好きだもの。
-
-### "ポルコ" + "頑張って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ 頑張って！
-
-### "ポルコ・ロッソ" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ・ロッソ すぐ飛んでくれ。
+  - （フィオ）ポルコ （ポルコ）ああ？
 
 ### "ポーラ" + "アレックス" (1 occurrences)
 - Predicted: None
@@ -76370,17 +69654,11 @@ Accuracy: 98.66%
 - Examples:
   - マズい ものすごくマズい。
 
-### "マダム" + "それ" (1 occurrences)
+### "マダム･シュザンヌ" + "また" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マダム それは サリマン先生のプレゼントですね。
-
-### "マダム" + "でも" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私もです マダム でも今は時間がありません。
+  - マダム･シュザンヌ また湿疹が！
 
 ### "マックス" + "死んだ" (1 occurrences)
 - Predicted: None
@@ -76436,12 +69714,6 @@ Accuracy: 98.66%
 - Examples:
   - 政府内のマフィア 関係ないか？
 
-### "ママ" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 『ゴリアテ』のほうが 脚が速いよ どうするの？
-
 ### "ママ" + "あっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -76453,6 +69725,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ママ あなたまで？
+
+### "ママ" + "いた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママ いた！隠れてた！
 
 ### "ママ" + "いつ" (1 occurrences)
 - Predicted: None
@@ -76484,23 +69762,17 @@ Accuracy: 98.66%
 - Examples:
   - 痛い！ ママ やめて！
 
+### "ママ" + "ゴリアテ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママ ゴリアテの方が足が速いよ どうするの？
+
 ### "ママ" + "ジェルソミーナ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ママ ジェルソミーナは どこに行くの？
-
-### "ママ" + "ダメ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） ママ ダメだ 吸い込まれる！
-
-### "ママ" + "パズー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ パズーだよ パズーが帰って来た！
 
 ### "ママ" + "パパ" (1 occurrences)
 - Predicted: None
@@ -76538,12 +69810,6 @@ Accuracy: 98.66%
 - Examples:
   - ママ 少し穏やかになったよね？
 
-### "ママ" + "崩れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 崩れるよ！
-
 ### "ママ" + "戦争" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -76574,41 +69840,23 @@ Accuracy: 98.66%
 - Examples:
   - ママ 気分はどう？
 
-### "ママ" + "真っ暗" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） ダメだ ママ 真っ暗で何も分からないよ。
-
 ### "ママ" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ママ 私は いつ戻れるの？
 
-### "ママ" + "見て" (1 occurrences)
+### "ママ" + "落ちる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ママ 見て！ カマの底が抜ける！
-
-### "ママ" + "連れて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 連れてくの？
+  - ああ ママ 落ちる！
 
 ### "ママ" + "遠く" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ママ 遠くに行くの？
-
-### "ママ" + "飛べる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ 飛べるよ！ （ルイ） 早く逃げようよ！
 
 ### "ママ" + "鼻" (1 occurrences)
 - Predicted: None
@@ -76621,6 +69869,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （ミキ）えっ ママぁ この子がヘルプ？
+
+### "ママァ" + "連れて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ママァ 連れてくのぉ？
 
 ### "マヤ" + "いい" (1 occurrences)
 - Predicted: None
@@ -76645,12 +69899,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - マリア クララよ 起こした？
-
-### "マリア" + "ティナ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 息子の嫁達だ マリア ティナ アンナ その妹のミレッタ。
 
 ### "マリア" + "熱くない" (1 occurrences)
 - Predicted: None
@@ -76682,89 +69930,53 @@ Accuracy: 98.66%
 - Examples:
   - マリオン 何しに来たんだ？
 
+### "マリリン" + "こっち" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マリリン こっちに来い！ この淫売め！
+
 ### "マルガリータ" + "元気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - マルガリータ 元気？
 
-### "マルクル" + "あと" (1 occurrences)
+### "マルクル" + "おばあちゃん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル あと お願いね。 （マルクル） うん。
-
-### "マルクル" + "お湯" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル お湯をたっぷりね。 （マルクル） うん。
+  - マルクル おばあちゃんここへ！
 
 ### "マルクル" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル ここから入れる。
+  - マルクル ここから入れる！
 
 ### "マルクル" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル こっちへ来よう。 えっ？
-
-### "マルクル" + "ゴム" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル ゴム人間がいる。 えっ？
-
-### "マルクル" + "大丈夫" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私もよ マルクル 大丈夫 行かない。
+  - マルクル こっちへ来よう！
 
 ### "マルクル" + "大変" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル 大変！ 私 止め方 知らないの～！
+  - マルクル 大変！
 
-### "マルクル" + "手" (1 occurrences)
+### "マルコ" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あらあら… マルクル 手を貸して。
+  - マルコ あなたなの？
 
-### "マルクル" + "手伝って" (1 occurrences)
+### "マルコ" + "マルコ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - マルクル 手伝って。
-
-### "マルクル" + "皿" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フ～ン… マルクル 皿！
-
-### "マルコ" + "ありがとう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ ありがとう いつも そばにいてくれて。
-
-### "マルコ" + "空軍" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - なぁ マルコ 空軍に戻れよ 今なら俺達の力で何とかする。
-
-### "マルコ" + "聞いてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ！ マルコ 聞いてる？
+  - マルコ マルコ聞いてる？
 
 ### "マルセロ" + "髪" (1 occurrences)
 - Predicted: None
@@ -76958,12 +70170,6 @@ Accuracy: 98.66%
 - Examples:
   - ミア 君は会社に慣れたかね？
 
-### "ミスター" + "カーチス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう あなたも… ミスター カーチス。
-
 ### "ミス･ケリー" + "“" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77024,29 +70230,11 @@ Accuracy: 98.66%
 - Examples:
   - みんながムカついて メチャ怒ったら？
 
-### "ムスカ" + "なぜ" (1 occurrences)
+### "ムスカァ" + "ロボット" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ムスカ なぜ追わん！ 逃がすと やっかいだぞ。
-
-### "ムスカ" + "ロボット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ ロボットは どうした！
-
-### "ムスカ" + "出て" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ 出て来い！
-
-### "ムスカ" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ムスカ 娘は白状したか？ もう少し時間がいります。
+  - ムスカァ ロボットはどうした！
 
 ### "ムッシュー" + "今夜" (1 occurrences)
 - Predicted: None
@@ -77174,6 +70362,12 @@ Accuracy: 98.66%
 - Examples:
   - メッツ 何故まだそこに座ってる？ さっさと出て行け！
 
+### "メラニー" + "楽しんでる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - メラニー 楽しんでる？
+
 ### "メリー" + "よせ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77233,12 +70427,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - モナ 大丈夫か？
-
-### "モニカ" + "製図" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 次は姪のモニカ 製図をやる。 よろしく。
 
 ### "モハマド" + "ガジラー" (1 occurrences)
 - Predicted: None
@@ -77378,6 +70566,12 @@ Accuracy: 98.66%
 - Examples:
   - ヨンピョ 知り合いか？
 
+### "ヨンベ" + "見てない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ヨンベ 見てないか？
+
 ### "ライアン" + "よう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77407,6 +70601,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ラケル ママを連れてきてくれる？
+
+### "ラシド" + "黒い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ラシド 黒いプジョーをやるか？
 
 ### "ラジオ" + "持ちだした" (1 occurrences)
 - Predicted: None
@@ -77474,12 +70674,6 @@ Accuracy: 98.66%
 - Examples:
   - ラジュー 設計書は？
 
-### "ラズル" + "ダズル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - “ラズル ダズル”！
-
 ### "ラダック" + "なぜ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77539,6 +70733,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ランチョルダース シャマルダース チャンチャル！
+
+### "ランチョルダース" + "チャン" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ランチョルダース チャンチャル！
+
+### "ランチョルダース" + "チャンチャル" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ランチョルダース チャンチャルって 知らない？
 
 ### "ランチョー" + "ここ" (1 occurrences)
 - Predicted: None
@@ -77654,12 +70860,6 @@ Accuracy: 98.66%
 - Examples:
   - こちらリビング 聞こえるか？
 
-### "リュシータ・トエル・ウル" + "ラピュタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - リュシータ・トエル・ウル ラピュタ…。
-
 ### "リリー" + "あの" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77677,12 +70877,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - リー･チウ ここを開けろ！
-
-### "ルイ" + "女の子" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ルイ 女の子の服だ！
 
 ### "ルイーズ" + "何" (1 occurrences)
 - Predicted: None
@@ -77768,6 +70962,12 @@ Accuracy: 98.66%
 - Examples:
   - レイナ 仕事は何時に終わる？
 
+### "レイプ" + "と" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - レイプ とは何か 知っているかい？
+
 ### "レオ" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -77804,29 +71004,11 @@ Accuracy: 98.66%
 - Examples:
   - レプリカントとレズビアン どっちの検証かしら？
 
-### "レティー" + "また" (1 occurrences)
+### "レディ" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - レティー またね。
-
-### "レティー" + "オフィス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - レティー オフィスを使いなよ。
-
-### "レティー" + "マドレーヌ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - レティー マドレーヌが上がったよ。
-
-### "レティー" + "早く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - レティー 早く戻って来てくれよ！
+  - レディ あなたは セン·シャンシを夫と?
 
 ### "レナート" + "どこ" (1 occurrences)
 - Predicted: None
@@ -78062,6 +71244,12 @@ Accuracy: 98.66%
 - Examples:
   - ヴァリイ なんで どこに行くのか 聞いちゃいけないの？
 
+### "ヴァリイ" + "具合" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ヴァリイ 具合が悪いのか？
+
 ### "ヴァリイ" + "学校" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78176,23 +71364,35 @@ Accuracy: 98.66%
 - Examples:
   - 唱えたのはヴォルテール だったのは知ってるね？
 
+### "・" + "ねえ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 奴らは不味いよ・・ ねえ？
+
 ### "・" + "他" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もうすぐローズ奨学生で・・・ 他にいいニュースはない？
 
+### "・" + "名字" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マラベラ・・・ 名字は？
+
+### "・" + "少し" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 自分の名前は書いてる・・・ 少しは書けるのか？
+
 ### "・・" + "そして" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 今すぐ・・ そしてずっと！
-
-### "・・" + "ねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奴らは不味いよ・・ ねえ？
 
 ### "・・" + "何処" (1 occurrences)
 - Predicted: None
@@ -78242,18 +71442,6 @@ Accuracy: 98.66%
 - Examples:
   - 何も・・・ もう三日も経ってる どうする？
 
-### "・・・" + "名字" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マラベラ・・・ 名字は？
-
-### "・・・" + "少し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 自分の名前は書いてる・・・ 少しは書けるのか？
-
 ### "・・・" + "意味" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78278,6 +71466,12 @@ Accuracy: 98.66%
 - Examples:
   - ゴールは近いー しかし道を踏み外しているのか？
 
+### "ー" + "早く" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （団員） 親分 早くー 早く！
+
 ### "ー" + "誰" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78289,6 +71483,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - だめだー 逃げろー！
+
+### "ーっ" + "カーチス" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （空賊連合ボスＧ） こっちに来るなーっ カーチス！
+
+### "ーっ" + "金" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 人さらいーっ 金はらえー！
 
 ### "一つ" + "あたし" (1 occurrences)
 - Predicted: None
@@ -78307,6 +71513,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - は一ん この丸は?
+
+### "一人" + "女の子" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あなた もう一人 女の子を 不幸にする気なの？
 
 ### "一体" + "いつ" (1 occurrences)
 - Predicted: None
@@ -78494,12 +71706,6 @@ Accuracy: 98.66%
 - Examples:
   - もう一杯 いかが？
 
-### "一生" + "あの" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ お姉ちゃん 本当に一生 あのお店に いるつもりなの？
-
 ### "一生" + "ゴミ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78650,12 +71856,6 @@ Accuracy: 98.66%
 - Examples:
   - こまかい 絣の上布 あれ まだある?
 
-### "下" + "ほら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 船の下 ほら あれ！
-
 ### "下" + "向いてる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78704,7 +71904,7 @@ Accuracy: 98.66%
 - Examples:
   - どうか答えて下さい “あります”と！
 
-### "下さい" + "アジア人" (1 occurrences)
+### "下さい" + "アジア" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -78716,23 +71916,11 @@ Accuracy: 98.66%
 - Examples:
   - 關クアン座長！ 来て下さい 大変だ！
 
-### "下りて" + "ハァ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんた ちょっと下りて ハァ ハァ…。
-
 ### "下ろせ" + "下ろして" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 下ろせ 下ろしてくれ バカヤロー！
-
-### "不調" + "援護" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「われ エンジン不調 援護する 先にかかれ」。
 
 ### "世界中" + "どこ" (1 occurrences)
 - Predicted: None
@@ -78769,18 +71957,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 一晩中 ノン･ストップ！
-
-### "中" + "敵" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 周り中 敵も味方も ハエのように落ちて行った。
-
-### "中" + "物騒" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あのね 世の中 物騒になってるんだから。
 
 ### "中" + "見える" (1 occurrences)
 - Predicted: None
@@ -78836,12 +72012,6 @@ Accuracy: 98.66%
 - Examples:
   - （女子生徒）中庭 行く？
 
-### "中隊" + "報告" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 全中隊 報告！
-
 ### "丸める" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -78872,35 +72042,17 @@ Accuracy: 98.66%
 - Examples:
   - あっ いた！ 今日の主役 発見！
 
-### "乗せて" + "何" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛行石を持たない お前達を乗せて 何の得があるんだい。
-
 ### "乗せて" + "眠り" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私の胸に頭を乗せて 眠りについたのを覚えてる？
 
-### "乗せて" + "警察" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 隣町まで乗せて 警察に行く。
-
 ### "乗って" + "行かなかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なぜバスに乗って 行かなかったのよ？
-
-### "乗って" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 嵐に乗って 飛行石を持つ者を 迎えに来たんだよ。
 
 ### "乗り" + "お黙り" (1 occurrences)
 - Predicted: None
@@ -79010,12 +72162,6 @@ Accuracy: 98.66%
 - Examples:
   - お金の事 驚いた？
 
-### "二度と" + "ここ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 二度と ここへは帰れなくなるよ。 分かってる。
-
 ### "二発目" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79028,6 +72174,12 @@ Accuracy: 98.66%
 - Examples:
   - 二院 点灯！
 
+### "云ったって" + "いいやい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 云ったって いいやい!
+
 ### "五郎兵衛" + "五郎兵衛" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79039,12 +72191,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも 夫が亡くなり あなたは正直さを捨てた？
-
-### "亡びぬ" + "何度" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ラピュタは亡びぬ 何度でも よみがえるさ。
 
 ### "交換" + "来週" (1 occurrences)
 - Predicted: None
@@ -79074,7 +72220,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - とってもいい人 それに お金持ちなの。
+  - とってもいい人 それにお金持ちなの！
 
 ### "人" + "一体" (1 occurrences)
 - Predicted: None
@@ -79111,18 +72257,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 大事な人 忘れちゃダメな人 忘れたくなかった人！
-
-### "人" + "戻れなくなっちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなことしてたら あの人 戻れなくなっちゃう。
-
-### "人" + "本当に" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この翼を造った人 本当に木の性質をよく知ってる。
 
 ### "人" + "西宮" (1 occurrences)
 - Predicted: None
@@ -79196,12 +72330,6 @@ Accuracy: 98.66%
 - Examples:
   - （飯島）おい 今 そこ誰かいた （三村）えっ？
 
-### "今" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今 それどころじゃねえ！
-
 ### "今" + "そんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79219,6 +72347,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - パーシーが今 クソ目玉から出血している事を！
+
+### "今" + "パク" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でももし 今 パクが入ってきたら 戸を開けて？
 
 ### "今" + "ビル･カーソン" (1 occurrences)
 - Predicted: None
@@ -79298,11 +72432,11 @@ Accuracy: 98.66%
 - Examples:
   - 今 拭くものを持って来るね。
 
-### "今" + "本物" (1 occurrences)
+### "今" + "来た" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 今 本物を作ってるんだ。
+  - あがなうときが 今 来たのであ～る！
 
 ### "今" + "無理やり" (1 occurrences)
 - Predicted: None
@@ -79352,12 +72486,6 @@ Accuracy: 98.66%
 - Examples:
   - （夏美）今 胸見たでしょ（帆高）見てません！
 
-### "今" + "船" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今 船で 捜しに行こうとしていたの。
-
 ### "今" + "試合" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79375,12 +72503,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - やっとの事で易の家に辿り着いた 今 諦めるべきだろうか？
-
-### "今" + "賭け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でもダメ 私 今 賭けをしてるから。
 
 ### "今" + "踊って" (1 occurrences)
 - Predicted: None
@@ -79532,12 +72654,6 @@ Accuracy: 98.66%
 - Examples:
   - 今夜 逃げる？
 
-### "今度" + "お店" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今度 お店に来てね。 ああ。
-
 ### "今度" + "今度" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79664,12 +72780,6 @@ Accuracy: 98.66%
 - Examples:
   - 今日 誕生日だって？
 
-### "今日" + "連絡" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今日 連絡があったの。
-
 ### "今日" + "部活" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79706,7 +72816,7 @@ Accuracy: 98.66%
 - Examples:
   - 今朝 彼に会ったわ！
 
-### "今朝" + "管理人" (1 occurrences)
+### "今朝" + "管理人さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -79748,18 +72858,6 @@ Accuracy: 98.66%
 - Examples:
   - 今頃 天井裏で 引っ越しの 相談でも ブッてんのかな。
 
-### "今頃" + "連絡" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何です？ 今頃 連絡して来て… あなた 何をやってたの？
-
-### "仕上げちゃう" + "楽しんで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ソフィー） これ 仕上げちゃう 楽しんで来て。
-
 ### "仕事" + "お休み" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79796,18 +72894,6 @@ Accuracy: 98.66%
 - Examples:
   - その代わり カイロに戻るって？
 
-### "代わり" + "周り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その代わり 周りの町に落ちるのだ。
-
-### "代わり" + "私" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その代わり 私のお店に来て！ うんとサービスするから。
-
 ### "以上" + "こいつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79825,12 +72911,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - これ以上 もっと悪い。
-
-### "以上" + "寄る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - それ以上 寄るんじゃねえ！
 
 ### "以上" + "月" (1 occurrences)
 - Predicted: None
@@ -79946,12 +73026,6 @@ Accuracy: 98.66%
 - Examples:
   - 学校で会おう いい？
 
-### "会ったら" + "ただ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 荒地の魔女め！ 今度会ったら ただじゃおかないからね！
-
 ### "会ったら" + "心臓" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -79981,12 +73055,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どんな 会社 で 働いてる の？
-
-### "伝えろ" + "予定" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 将軍に伝えろ 予定通りラピュタへ出発すると。
 
 ### "伯父さん" + "何" (1 occurrences)
 - Predicted: None
@@ -80065,6 +73133,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 猫？ え… 何 この子 痩せすぎ！
+
+### "何" + "これ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ 腹？ 腹… 時計？ 何 これ？
 
 ### "何" + "して" (1 occurrences)
 - Predicted: None
@@ -80174,11 +73248,11 @@ Accuracy: 98.66%
 - Examples:
   - ピッタリですが 何か ?
 
-### "何か" + "ご用" (1 occurrences)
+### "何か" + "お探し" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 何か ご用？
+  - 何か お探しで？
 
 ### "何か" + "ホッチキス" (1 occurrences)
 - Predicted: None
@@ -80186,23 +73260,23 @@ Accuracy: 98.66%
 - Examples:
   - 私の額に何か ホッチキスで留めたの？
 
-### "何か" + "持って" (1 occurrences)
+### "何か" + "恐れる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前 何か 持って来なかったか？
+  - あの良い士気で何か 恐れるものがあるだろうか?
+
+### "何か" + "食べた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何か 食べたか？
 
 ### "何か" + "飲む" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何か 飲む？
-
-### "何しろ" + "時間" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何しろ 時間がなくてよ。
 
 ### "何せ" + "あの" (1 occurrences)
 - Predicted: None
@@ -80239,12 +73313,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何とか しろ！
-
-### "何とか" + "なりそう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何とか なりそうだ。
 
 ### "何人" + "子供" (1 occurrences)
 - Predicted: None
@@ -80420,12 +73488,6 @@ Accuracy: 98.66%
 - Examples:
   - 使い方 知らないの？
 
-### "使い犬" + "あなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私の使い犬 あなたを案内させました。
-
 ### "使う" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -80473,12 +73535,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 僕を信じて 愛してるだろ？
-
-### "信じは" + "しなかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 誰もラピュタを信じは しなかったろう。
 
 ### "信じられない" + "お菓子" (1 occurrences)
 - Predicted: None
@@ -80528,12 +73584,6 @@ Accuracy: 98.66%
 - Examples:
   - 俺 ちゃんと謝ったっけ？
 
-### "俺" + "ヒマ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺 ヒマなんだ 何か手伝…!
-
 ### "俺" + "代わり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -80545,12 +73595,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 俺 君たちに割り込みすぎかな？
-
-### "俺" + "感動" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺 感動しちゃった！
 
 ### "停まれ" + "分かった" (1 occurrences)
 - Predicted: None
@@ -80660,12 +73704,6 @@ Accuracy: 98.66%
 - Examples:
   - じゃ 僕 どこで 勉強するんだい!
 
-### "僕" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 僕 ソフィーが好きだ ここにいて。
-
 ### "僕" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -80726,6 +73764,12 @@ Accuracy: 98.66%
 - Examples:
   - あなたも元気そう 空腹？
 
+### "兄さん" + "大丈夫" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 出た もしもし、 チャンド兄さん 大丈夫？
+
 ### "兄さん" + "本気" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -80749,12 +73793,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 兄ちゃん しょんべん行くけど 節子もするか？
-
-### "兄ちゃん" + "やっちゃえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （アンリ） 兄ちゃん やっちゃえ！
 
 ### "兄ちゃん" + "殺さないで" (1 occurrences)
 - Predicted: None
@@ -80954,6 +73992,12 @@ Accuracy: 98.66%
 - Examples:
   - なぜ金貨が入ってる ふんどし を盗らないんですか？
 
+### "入り" + "何" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 石炭庫まで入り 何を探していたんだ？
+
 ### "入る" + "に" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -80966,7 +74010,7 @@ Accuracy: 98.66%
 - Examples:
   - 衣装まで質に入れ 京劇の伝統を汚けがしおった！
 
-### "入れたら" + "何" (1 occurrences)
+### "入れたら" + "何て" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -81002,6 +74046,12 @@ Accuracy: 98.66%
 - Examples:
   - 今夜 同族は全て 去らなくては ならないのよ。
 
+### "全中隊" + "報告" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 全中隊 報告！
+
 ### "全員" + "クズ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81032,12 +74082,6 @@ Accuracy: 98.66%
 - Examples:
   - 誰が全員 殺せと言った？
 
-### "全員" + "退避" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 全員 退避！ 退避～！
-
 ### "全然" + "割" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81067,12 +74111,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 全部 ありますか？
-
-### "全部" + "ぶっ壊した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だと！ ムスカが無線機を 全部 ぶっ壊しただと!
 
 ### "全部" + "ウソ" (1 occurrences)
 - Predicted: None
@@ -81116,12 +74154,6 @@ Accuracy: 98.66%
 - Examples:
   - これは全部 奴の所為だろ？
 
-### "全部" + "持ってく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 有り金 全部 持ってく気かよ。
-
 ### "全部" + "書けない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81134,11 +74166,11 @@ Accuracy: 98.66%
 - Examples:
   - 全部 父さんだ！
 
-### "全部" + "片づいたら" (1 occurrences)
+### "全部" + "給水" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 全部 片づいたら きっと ゴンドアへ送って行ってあげる。
+  - 全部 給水します？
 
 ### "全部" + "聞きたい" (1 occurrences)
 - Predicted: None
@@ -81157,12 +74189,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 外国が全部 韓国並みだと？
-
-### "全部" + "魔女" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - このガラクタは 全部 魔女よけの まじないなんだよ。
 
 ### "全隊" + "歌え" (1 occurrences)
 - Predicted: None
@@ -81193,12 +74219,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 共産党 経由 という意味？
-
-### "兵" + "数名" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 当直の兵 数名が重傷です。
 
 ### "内海" + "内海" (1 occurrences)
 - Predicted: None
@@ -81235,6 +74255,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お前の写真 すごく気に入ったそうだ お前の写真に夢中だ！
+
+### "写真" + "撮って" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 写真 撮っていい？
 
 ### "冷えてる" + "熱く" (1 occurrences)
 - Predicted: None
@@ -81278,12 +74304,6 @@ Accuracy: 98.66%
 - Examples:
   - 今度 手を出したら 命はないぞ！
 
-### "出しちゃ" + "いけない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの石は 外へ出しちゃ いけないものだったのよ。
-
 ### "出して" + "”" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81302,12 +74322,6 @@ Accuracy: 98.66%
 - Examples:
   - すごい瘴気を出して 谷中 大騒ぎになってる！
 
-### "出しな" + "プロペラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポケットの金も出しな プロペラ代と塗装費と…。
-
 ### "出せ" + "マリオン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81320,11 +74334,11 @@ Accuracy: 98.66%
 - Examples:
   - （少年Ａ）わ～ お化けが出た -（少年たち）わあ～！
 
-### "出たら" + "この" (1 occurrences)
+### "出た" + "もしもし" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - オイラが出たら この家 崩れちゃうぞ。 いい！
+  - 出た もしもし、 チャンド兄さん 大丈夫？
 
 ### "出たら" + "どう" (1 occurrences)
 - Predicted: None
@@ -81470,11 +74484,11 @@ Accuracy: 98.66%
 - Examples:
   - 分かった それで どうなる？
 
-### "分かった" + "そんな" (1 occurrences)
+### "分かった" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 分かった そんな目で ひとを見るな… 好きにやれよ。
+  - 分かった 今すぐ病院に電話してみるよ。
 
 ### "分かった" + "宝石" (1 occurrences)
 - Predicted: None
@@ -81644,17 +74658,17 @@ Accuracy: 98.66%
 - Examples:
   - おい ちょっとでも刺されば どうなるかわかるか？
 
+### "前" + "九如" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 楊（ヤン）夫人がこの前 九如に招待しなかった？
+
 ### "割引券" + "使います" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （将也）あ わわ… 割引券 使います （植野）マジで？
-
-### "助かった" + "さっき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかげで助かった さっきは本当に危なかったんだ。
 
 ### "助けて" + "お願い" (1 occurrences)
 - Predicted: None
@@ -81668,12 +74682,6 @@ Accuracy: 98.66%
 - Examples:
   - 誰か助けて 一番前の席よ！
 
-### "助けられて" + "よく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アメリカのカーチスに 助けられて よく平気ね。
-
 ### "助ける" + "町" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81685,6 +74693,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 早く 助け出せ !
+
+### "動いた" + "生きてる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 動いた 生きてる！
+
+### "動いてる" + "ハウル" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 動いてる ハウルは生きてるの？
 
 ### "動いてる" + "誰" (1 occurrences)
 - Predicted: None
@@ -81734,12 +74754,6 @@ Accuracy: 98.66%
 - Examples:
   - トイレを使う猫の動画 見たことある?
 
-### "勝ったら" + "俺" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺が勝ったら 俺と結婚するか？
-
 ### "勝四郎" + "利吉" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81781,12 +74795,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 付け合わせの野菜も 十分 取った？
-
-### "十分" + "安っぽいわ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなたも十分 安っぽいわね。
 
 ### "十分" + "楽しんだ" (1 occurrences)
 - Predicted: None
@@ -81848,12 +74856,6 @@ Accuracy: 98.66%
 - Examples:
   - 危ない危ない カニよけの結界が ゆるんでいたとは。
 
-### "危ない" + "プロペラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 危ない プロペラに近寄っちゃダメ！
-
 ### "卵" + "いただけます" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -81877,18 +74879,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 我らの友 ヒープをどう思う？
-
-### "双方" + "文句" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 双方 文句はねえな？ では 始める前に握手でもしな！
-
-### "双方" + "賭け金" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では 双方 賭け金を出せ。
 
 ### "反対" + "搾取" (1 occurrences)
 - Predicted: None
@@ -81919,12 +74909,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 殻と触覚を取ります 誰が触覚を食べます？
-
-### "取り乱しちゃって" + "まぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～あ 取り乱しちゃって まぁ…。
 
 ### "取り戻した" + "次" (1 occurrences)
 - Predicted: None
@@ -81967,12 +74951,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 口紅 貸してくれる？
-
-### "古い" + "なじみ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 古い なじみに挨拶したんだ。
 
 ### "叩かれてる" + "タブ" (1 occurrences)
 - Predicted: None
@@ -82094,6 +75072,12 @@ Accuracy: 98.66%
 - Examples:
   - 名前 -私の名前？
 
+### "名前" + "グレッグ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 彼の名前 グレッグだっけ？
+
 ### "名前" + "分かる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82166,7 +75150,7 @@ Accuracy: 98.66%
 - Examples:
   - 君 あるか？
 
-### "君" + "いまん" (1 occurrences)
+### "君" + "いま" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -82202,12 +75186,6 @@ Accuracy: 98.66%
 - Examples:
   - 杉村君 なんで？
 
-### "君" + "ひとりぼっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君 ひとりぼっちなの？
-
 ### "君" + "今日" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82231,12 +75209,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 君 医学部だったよな？
-
-### "君" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すばらしい ムスカ君 君は英雄だ 大変な功績だ。
 
 ### "君" + "地震" (1 occurrences)
 - Predicted: None
@@ -82268,12 +75240,6 @@ Accuracy: 98.66%
 - Examples:
   - （カナ）凪君 行け！
 
-### "君" + "離したまえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君 離したまえ！ ちょっと… あら！
-
 ### "君ら" + "同棲" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82291,12 +75257,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 風が吹き 雨が降り… （媼）ヒメ！
-
-### "吹き終わったら" + "あげる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 吹き終わったら あげる決まりなんだ。
 
 ### "吹っ飛ばしたら" + "どう" (1 occurrences)
 - Predicted: None
@@ -82400,6 +75360,12 @@ Accuracy: 98.66%
 - Examples:
   - 私の噂 聞いてない？
 
+### "噛まれたら" + "どれ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 足の裏を噛まれたら どれだけかゆいかわかるか？
+
 ### "噛みつき" + "やがった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82441,12 +75407,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 食う物に困ったら メダルを食うのか？
-
-### "困っちゃった" + "ヒザ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 困っちゃった ヒザがガクガクするんだもん。
 
 ### "困る" + "分かる" (1 occurrences)
 - Predicted: None
@@ -82490,6 +75450,12 @@ Accuracy: 98.66%
 - Examples:
   - 坊や 一人なのか…ん？
 
+### "坊や" + "落ち込んでる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 寂しい坊や 落ち込んでるの？
+
 ### "坊主" + "あの" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82526,18 +75492,6 @@ Accuracy: 98.66%
 - Examples:
   - 死体は 埋められました -埋められた だと？
 
-### "城" + "あんた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この城 あんたが動かしてるの？
-
-### "城" + "おいら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） この城 おいらが動かしてるんだぜ。
-
 ### "場合" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82567,12 +75521,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 日本軍の華北増兵 反対！
-
-### "壊さないで" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願い それを壊さないで それがないと帰れなくなるの。
 
 ### "壊しやがって" + "気違い" (1 occurrences)
 - Predicted: None
@@ -82604,12 +75552,6 @@ Accuracy: 98.66%
 - Examples:
   - でけえ声 出しやがって！
 
-### "声" + "出す" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （老技師） でっけぇ声 出すな！ 聞こえとるわい。
-
 ### "声" + "憶えてる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82628,12 +75570,6 @@ Accuracy: 98.66%
 - Examples:
   - 母親が体を売ってて 小さな娘は誰を手本に？
 
-### "売り込んだら" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何だ ポルコも どっちかへ 売り込んだら いいんだよ。
-
 ### "売れ" + "奴ら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -82651,12 +75587,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 変えちゃおう どんなのがいい？
-
-### "変えて" + "ついて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫 僕が姿を変えて ついて行くから。
 
 ### "変える" + "理由" (1 occurrences)
 - Predicted: None
@@ -82778,29 +75708,11 @@ Accuracy: 98.66%
 - Examples:
   - 何 大きな なりして!
 
-### "大丈夫" + "あんた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 怖いねぇ。 大丈夫 あんたは狙われないから。
-
-### "大丈夫" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫 このまま底まで行こう。
-
 ### "大丈夫" + "これ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 大丈夫 大丈夫 これ借りるよ？
-
-### "大丈夫" + "とって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポムじいさん！ 大丈夫 とってもいい人だよ。
 
 ### "大丈夫" + "みんな" (1 occurrences)
 - Predicted: None
@@ -82814,23 +75726,11 @@ Accuracy: 98.66%
 - Examples:
   - 大丈夫 何か？
 
-### "大丈夫" + "僕" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫 僕が姿を変えて ついて行くから。
-
 ### "大丈夫" + "絶対" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 大丈夫 絶対戻って来るから。
-
-### "大丈夫" + "行かない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私もよ マルクル 大丈夫 行かない。
 
 ### "大丈夫" + "逮捕" (1 occurrences)
 - Predicted: None
@@ -82838,35 +75738,17 @@ Accuracy: 98.66%
 - Examples:
   - もう大丈夫 逮捕した！
 
-### "大丈夫" + "鉱山" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫 鉱山の男は そんなにヤワじゃないよ。
-
 ### "大人しく" + "する" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 大人しく するか？
 
-### "大佐" + "ここ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大佐 ここは 一体…。
-
 ### "大佐殿" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 大佐殿 あなたが “コードＲ”の命令を？
-
-### "大体" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大体 お前はな…！
 
 ### "大司教" + "この" (1 occurrences)
 - Predicted: None
@@ -82891,6 +75773,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 失礼ですが、大尉 どうしてそんなに確信が?
+
+### "大尉" + "間に合いました" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 大尉 間に合いましたか？
 
 ### "大尽" + "太っ腹" (1 occurrences)
 - Predicted: None
@@ -83024,12 +75912,6 @@ Accuracy: 98.66%
 - Examples:
   - 奥さん 大丈夫ですか？
 
-### "奥さん" + "後" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奥さん 後にして。 燃えているらしいの。
-
 ### "奥さん" + "怒ってる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83048,18 +75930,6 @@ Accuracy: 98.66%
 - Examples:
   - 奥様 あなたのお名前は？
 
-### "奥様" + "これ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奥様 これより先は 禁じられております！
-
-### "奥様" + "ご案内" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奥様 ご案内します。
-
 ### "奥様" + "新しい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83077,12 +75947,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - パパの感情を奪い 石に変えたりしたら！
-
-### "奪い取ります" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来ないなら力を奪い取ります その女のように。
 
 ### "奪ってない" + "自分" (1 occurrences)
 - Predicted: None
@@ -83144,6 +76008,12 @@ Accuracy: 98.66%
 - Examples:
   - なんで あの女子 仕切ってんの？
 
+### "奴" + "おっきい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ちがう そっちの奴だ おっきい奴 おっきい奴！
+
 ### "奴" + "リック・ダルトン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83204,6 +76074,12 @@ Accuracy: 98.66%
 - Examples:
   - 姉さん 邪魔！
 
+### "姉ちゃん" + "いい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 姉ちゃん いいぞ！
+
 ### "姉ちゃん" + "アメ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83239,12 +76115,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何が始まった ?
-
-### "始まって" + "盛り上がってます" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 新しいコーナーが始まって 盛り上がってますよ。
 
 ### "委ねる" + "理由" (1 occurrences)
 - Predicted: None
@@ -83378,6 +76248,12 @@ Accuracy: 98.66%
 - Examples:
   - 子竜 お子を頼むぞ!
 
+### "字" + "書く" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （初枝）❝ゆり❞って どんな字 書くの？
+
 ### "学ばなかった" + "誰かさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83449,12 +76325,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - これを命がけで守れ グリーンか？
-
-### "守れない" + "小僧っ子" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 娘っ子ひとり守れない 小僧っ子が！
 
 ### "安くて" + "カッコ" (1 occurrences)
 - Predicted: None
@@ -83636,18 +76506,6 @@ Accuracy: 98.66%
 - Examples:
   - お父さん！ やっぱり この家 何かいる！
 
-### "家" + "出てって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 痛たた… もう こんな家 出てってやる！
-
-### "家" + "崩れちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラが出たら この家 崩れちゃうぞ。 いい！
-
 ### "家" + "行く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83677,12 +76535,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 一緒に寝たい いいだろ？
-
-### "寝て" + "明日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今夜は ここで寝て 明日 ベッドを作るから。
 
 ### "寝てちゃ" + "ダメ" (1 occurrences)
 - Predicted: None
@@ -83750,12 +76602,6 @@ Accuracy: 98.66%
 - Examples:
   - でも“小さい ”はどうしたの？ それは別？
 
-### "小僧" + "娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 小僧 娘の命と引きかえだ 石のありかを言え！
-
 ### "小僧" + "屁" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83780,12 +76626,6 @@ Accuracy: 98.66%
 - Examples:
   - 小喬 どうした?
 
-### "小娘" + "しめあげれば" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな小娘 しめあげれば すぐ口を割るわい。
-
 ### "小樓" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -83809,12 +76649,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 小豆 師匠に許しを請え！
-
-### "小隊" + "集まれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 小隊 集まれ！ こら！ 早くしろ！
 
 ### "少し" + "いて" (1 occurrences)
 - Predicted: None
@@ -84008,11 +76842,11 @@ Accuracy: 98.66%
 - Examples:
   - 週末に自分だけ帰って うれしいですか？
 
-### "帰って" + "戦争" (1 occurrences)
+### "帰ってらしたら" + "そう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あなたは お国に帰って 戦争でも やめさせなさいな。
+  - お父さん 帰ってらしたら そう 云うわよ!
 
 ### "帰らなければ" + "ならない" (1 occurrences)
 - Predicted: None
@@ -84068,12 +76902,6 @@ Accuracy: 98.66%
 - Examples:
   - 死は常に 隣にあるとわかっています！
 
-### "常に" + "雲" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 光は常に 雲の渦の中心を指している。
-
 ### "平さん" + "この" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -84085,12 +76913,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 平八 平八!
-
-### "平気" + "ごめん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平気 ごめん 痛かった？
 
 ### "平気" + "もっと" (1 occurrences)
 - Predicted: None
@@ -84127,12 +76949,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 国税局庁舎 - 早く 早く！ 遅れちゃうよ！
-
-### "店" + "安っぽい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （荒地の魔女） 安っぽい店 安っぽい帽子。
 
 ### "座って" + "“" (1 occurrences)
 - Predicted: None
@@ -84230,12 +77046,6 @@ Accuracy: 98.66%
 - Examples:
   - 引き金を引いたら レバーを引くぞ！
 
-### "引きかえだ" + "石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 小僧 娘の命と引きかえだ 石のありかを言え！
-
 ### "引きずり" + "込もう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -84259,12 +77069,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 弘樹 今 好きな子いる？
-
-### "張ってる" + "抜け道" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この先で空軍が網を張ってる 抜け道を教えてくれるとよ。
 
 ### "張り切りやがって" + "コーヒー" (1 occurrences)
 - Predicted: None
@@ -84295,12 +77099,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 当たった お見事！
-
-### "当たっちゃいねえ" + "故障" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - てめぇの弾なんぞ 当たっちゃいねえ 故障だ！
 
 ### "当たり" + "曲は" (1 occurrences)
 - Predicted: None
@@ -84349,6 +77147,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 「クソ」の動詞形態 また「クソ」だと 一体どうした？
+
+### "彼" + "どこ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 彼 どこかしら？
 
 ### "彼" + "なんて" (1 occurrences)
 - Predicted: None
@@ -84488,12 +77292,6 @@ Accuracy: 98.66%
 - Examples:
   - 待って あんた サミーちゃんじゃない？
 
-### "待って" + "うんと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 待って うんとキツく結んじゃったの。
-
 ### "待って" + "え～っと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -84548,11 +77346,11 @@ Accuracy: 98.66%
 - Examples:
   - ちょっと待って ショック療法だって？
 
-### "待って" + "シータ" (1 occurrences)
+### "待って" + "シータァ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 待って シータ！
+  - シータァ！あっ…待って シータァ！！
 
 ### "待って" + "ロシア人" (1 occurrences)
 - Predicted: None
@@ -84656,17 +77454,17 @@ Accuracy: 98.66%
 - Examples:
   - ああっ こらっ 逃げるな！ 待て おいっ！
 
+### "待て" + "お前" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 追い待て お前一人で戦車とやり合うつもりか？
+
 ### "待て" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 待て ちょっと待て なんだって？
-
-### "待て" + "どこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと待て どこ行くんや？
 
 ### "待て" + "なん" (1 occurrences)
 - Predicted: None
@@ -84685,6 +77483,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 待て よせ!
+
+### "待て" + "フィオ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 待て フィオ！
 
 ### "待て" + "ラジュ" (1 occurrences)
 - Predicted: None
@@ -84708,7 +77512,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - やぁ 気分はどう？ わっ こら 待て 待てったら…。
+  - こら 待て 待てったら！
 
 ### "待て" + "泥棒" (1 occurrences)
 - Predicted: None
@@ -84727,12 +77531,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 最後の米軍機が発った後 どうやって運ぶ？
-
-### "後" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 『紅の豚』 この後 みんなも 入り込んで楽しんで！
 
 ### "後" + "ニコ" (1 occurrences)
 - Predicted: None
@@ -84775,12 +77573,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 工学を修めた後 経営学をやり アメリカで銀行マンだって？
-
-### "後ろ" + "どう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい！ 後ろ どうだ？ アメリカ野郎は来てるか？
 
 ### "後ろ" + "横" (1 occurrences)
 - Predicted: None
@@ -84830,18 +77622,6 @@ Accuracy: 98.66%
 - Examples:
   - お母ちゃん 心臓 悪いんですけど その薬 もらえませんか？
 
-### "心臓" + "欲しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 欲しいよ ハウルの心臓 欲しいよ…。
-
-### "心臓" + "食べられちゃってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お姉ちゃん 心臓 食べられちゃってるよ。
-
 ### "心配" + "させたくない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -84853,12 +77633,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 心配ない あんた 名前は？
-
-### "必ず" + "大統領夫人" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 俺はマジだぜ！ ジーナを必ず 大統領夫人にしてみせる！
 
 ### "必ず" + "笑って" (1 occurrences)
 - Predicted: None
@@ -84950,6 +77724,12 @@ Accuracy: 98.66%
 - Examples:
   - 動転して我を忘れる ほどでした！
 
+### "忘れろ" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マズいよ 忘れろ - 何で？
+
 ### "忘れろ" + "いい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -84998,12 +77778,6 @@ Accuracy: 98.66%
 - Examples:
   - もし アンタが明かりを点けたら あいつ等怖がる そだろ？
 
-### "怖くて" + "たまらない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 怖くて たまらないの。
-
 ### "思います" + "グリンダ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85015,12 +77789,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうしてだと思います 皆さん？
-
-### "思い出したまえ" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 思い出したまえ この石を働かせる言葉を。
 
 ### "思い出して" + "話してる" (1 occurrences)
 - Predicted: None
@@ -85136,23 +77904,11 @@ Accuracy: 98.66%
 - Examples:
   - 私をどう思って おられるの?
 
-### "思って" + "僕" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 面白そうな人だなぁと思って 僕から近づいたんだ。
-
 ### "思って" + "同意" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 正しいと思って 同意したのか?
-
-### "思って" + "待っとった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ピッコロ） 今夜あたり着くと思って 待っとったよ。
 
 ### "思ってる" + "誰" (1 occurrences)
 - Predicted: None
@@ -85346,17 +78102,17 @@ Accuracy: 98.66%
 - Examples:
   - ポニョの悪口 言うからだよね。
 
-### "悪魔" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラは火の悪魔 カルシファー！っていうんだ。
-
 ### "悲しい" + "懐かしい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 嬉しい 悲しい 懐かしい？
+
+### "情けない" + "男" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 情けない 男だ！
 
 ### "惜しまない" + "国" (1 occurrences)
 - Predicted: None
@@ -85460,12 +78216,6 @@ Accuracy: 98.66%
 - Examples:
   - でなければ或いは そう見せかける事？
 
-### "戦" + "あった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - もうひと戦 あったらしいんだ。
-
 ### "戦え" + "マチュー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85544,12 +78294,6 @@ Accuracy: 98.66%
 - Examples:
   - 二度と戻らないで 我慢できない！
 
-### "戻れ" + "ジャジャ馬" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 戻れ ジャジャ馬！
-
 ### "戻れ" + "下がってろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85579,6 +78323,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ポニョ 手 ほしい！
+
+### "手" + "出す" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ピッコロのおやじ）手 出すなよ （ポルコ）ああ？
 
 ### "手" + "出た" (1 occurrences)
 - Predicted: None
@@ -85670,12 +78420,6 @@ Accuracy: 98.66%
 - Examples:
   - 私たちは海の波に打たれる 岩のようなものよ。
 
-### "打ちます" + "どうせ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手は打ちます どうせヤツらは 遠くへは逃げません。
-
 ### "打ち損じたら" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85712,12 +78456,6 @@ Accuracy: 98.66%
 - Examples:
   - 指でも折って 電話を掛けられないの？
 
-### "折れちまいやがった" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いけね 折れちまいやがった フィオの尻のせいだ。
-
 ### "抜いたら" + "汗" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85729,18 +78467,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 城壁を抜かれた 戻れ！
-
-### "抜かれて" + "鼻血" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 尻の毛まで抜かれて 鼻血も出ねえや。
-
-### "抜け" + "少女" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 砲弾から信管を抜け 少女を傷つけるな。
 
 ### "抜け出して" + "何か" (1 occurrences)
 - Predicted: None
@@ -85790,12 +78516,6 @@ Accuracy: 98.66%
 - Examples:
   - 衣服を持たず 凍えていたら どうなる？
 
-### "持たない" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛行石を持たない お前達を乗せて 何の得があるんだい。
-
 ### "持ち" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85826,12 +78546,6 @@ Accuracy: 98.66%
 - Examples:
   - ジェネシス一式を持って 一度逃げたということか？
 
-### "持ってけ" + "寒い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 持ってけ 寒いぞ。
-
 ### "持ってる" + "それ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85844,11 +78558,11 @@ Accuracy: 98.66%
 - Examples:
   - 荒っぽくて銃を持ってる 野獣どもだ！
 
-### "持つ" + "ロボット" (1 occurrences)
+### "持っとったら" + "目立つ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - すさまじい破壊力を持つ ロボットの兵隊だよ。
+  - 制服姿で椅子だけ持っとったら 目立つんやない？
 
 ### "挙げてろ" + "くそ" (1 occurrences)
 - Predicted: None
@@ -85880,6 +78594,12 @@ Accuracy: 98.66%
 - Examples:
   - 捜索願 出さなかったんですか？
 
+### "捨て" + "全責任" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - でも あなたは”正直”を捨て 全責任を負った？
+
 ### "捨て" + "身" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85891,12 +78611,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 全てを捨てて 人生やり直せる？
-
-### "捨てて" + "逃げて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来ちゃダメ！ 石を捨てて 逃げて！
 
 ### "捨てられた" + "お前" (1 occurrences)
 - Predicted: None
@@ -85915,18 +78629,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 離れろ！ ナイフを捨てろ 早く！
-
-### "掃除" + "掃除" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 掃除 掃除…。
-
-### "掃除" + "洗濯" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やった～！ 掃除 洗濯しなくてすむぞ！
 
 ### "掌法" + "覚えてる" (1 occurrences)
 - Predicted: None
@@ -85982,6 +78684,12 @@ Accuracy: 98.66%
 - Examples:
   - 提督 どうだい？
 
+### "提督" + "スコッティ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 応答ありません、提督 スコッティ、どうした？
+
 ### "換えたら" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -85993,12 +78701,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 挟まれた！こっち ノブを握れ 強く！
-
-### "撃たねえ" + "なっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やっぱり撃たねえ なっ！ 俺の言った通りさ。
 
 ### "撃たれた" + "なんで" (1 occurrences)
 - Predicted: None
@@ -86090,6 +78792,12 @@ Accuracy: 98.66%
 - Examples:
   - 放せ 騒ぐな！
 
+### "放せねぇ" + "お前" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 手が放せねぇ お前やれ！
+
 ### "放課後" + "カフェ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86132,12 +78840,6 @@ Accuracy: 98.66%
 - Examples:
   - 基礎は教えてません 知つてるわね？
 
-### "教えろ" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どんな呪文だ？ 教えろ その言葉を。
-
 ### "教授" + "おばさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86161,12 +78863,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 教育係 朕は まだ皇帝か？
-
-### "散々" + "捜した" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 散々 捜したのよ！
 
 ### "散らかしたら" + "ぶっとばす" (1 occurrences)
 - Predicted: None
@@ -86324,29 +79020,11 @@ Accuracy: 98.66%
 - Examples:
   - あー 旨い 顔をどうしたんだ？
 
-### "早く" + "おいで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 早く おいで～！
-
 ### "早く" + "かまど" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 早く かまどへ ね？
-
-### "早く" + "こっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 早く こっちへ！
-
-### "早く" + "これ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 早く これを！ ムスカが… 急いで！
 
 ### "早く" + "そっち" (1 occurrences)
 - Predicted: None
@@ -86360,6 +79038,12 @@ Accuracy: 98.66%
 - Examples:
   - カンタ～！ 早く とうちゃん呼んで来い！
 
+### "早く" + "みんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 早く みんなが！ みんなが！
+
 ### "早く" + "カベレイラ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86371,6 +79055,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 早く ギムリ！
+
+### "早く" + "クジラさん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ヨシエ） 早く クジラさんよ。 （ハナ） 立派ねぇ！
 
 ### "早く" + "トラック" (1 occurrences)
 - Predicted: None
@@ -86522,12 +79212,6 @@ Accuracy: 98.66%
 - Examples:
   - 明日 ほかの町を探す？
 
-### "明日" + "ベッド" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今夜は ここで寝て 明日 ベッドを作るから。
-
 ### "明日" + "一緒" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86551,12 +79235,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 明日 枢機卿に何を話そう？
-
-### "明日" + "艇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 明日 艇を湖に運ぶんで 借りて来たの。
 
 ### "明日" + "芽" (1 occurrences)
 - Predicted: None
@@ -86660,12 +79338,6 @@ Accuracy: 98.66%
 - Examples:
   - 昨日 インスリン注射は？
 
-### "昨日" + "来た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 昨日 来たかな 親方んとこのチビのマッジが。
-
 ### "昨晩" + "校長" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86690,12 +79362,6 @@ Accuracy: 98.66%
 - Examples:
   - ポニョが来た時 この家って分かるよね？
 
-### "時" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この石を受け継ぐ時 その名前も 私 継いだの。
-
 ### "時" + "どこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -86707,12 +79373,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - てめえら 俺達が村へ入ってきた時 どんな面で出迎えた あ?
-
-### "時" + "ドキドキ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ううん 君が空から降りて来た時 ドキドキしたんだ。
 
 ### "時" + "ビン" (1 occurrences)
 - Predicted: None
@@ -86756,23 +79416,11 @@ Accuracy: 98.66%
 - Examples:
   - 感染者が襲撃する時 彼らは何を見る？
 
-### "時" + "怖くて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 教わった時 怖くて眠れなかった。
-
 ### "時" + "我々" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 悪が襲ってきた時 我々に何の武器が？
-
-### "時" + "撮った" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その時 撮った写真なんだよ。
 
 ### "時" + "最悪" (1 occurrences)
 - Predicted: None
@@ -86798,11 +79446,11 @@ Accuracy: 98.66%
 - Examples:
   - 外す時 痛くなかった？
 
-### "時" + "誓い" (1 occurrences)
+### "時" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 魔法学校に入学する時 誓いをたてさせられてる。
+  - あなたが私を見る時 私は？
 
 ### "時" + "顔" (1 occurrences)
 - Predicted: None
@@ -86815,12 +79463,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 馬から投げだされた時 騎手はどうする？
-
-### "時々" + "お風呂" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう！ 時々 お風呂に入ってね！
 
 ### "時々" + "ここ" (1 occurrences)
 - Predicted: None
@@ -86863,6 +79505,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （夏美）じゃ みんなで晩ご飯 行かない？
+
+### "晴れた" + "晴れた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 晴れた 晴れた！
 
 ### "暖かい" + "暑い" (1 occurrences)
 - Predicted: None
@@ -87014,12 +79662,6 @@ Accuracy: 98.66%
 - Examples:
   - 劇場はこの有り様 その上 逮捕？
 
-### "有り金" + "全部" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 有り金 全部 持ってく気かよ。
-
 ### "服" + "きてる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -87079,12 +79721,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 本当に これで最後と 約束するのね？
-
-### "本当に" + "じいさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 本当に じいさんの孫なのか？
 
 ### "本当に" + "そんな" (1 occurrences)
 - Predicted: None
@@ -87188,12 +79824,6 @@ Accuracy: 98.66%
 - Examples:
   - 出て来い チュンスク！
 
-### "来い" + "ブタ野郎" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ナメやがって… しっかりついて来い ブタ野郎！
-
 ### "来い" + "急げ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -87253,18 +79883,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あいつがこっちに来た 見ちゃダメだ 見ちゃダメ！
-
-### "来たまえ" + "こっち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来たまえ こっちだ。
-
-### "来たら" + "伝えて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あのアメリカ野郎が店に来たら 伝えてくれねえか。
 
 ### "来たら" + "同じ" (1 occurrences)
 - Predicted: None
@@ -87404,12 +80022,6 @@ Accuracy: 98.66%
 - Examples:
   - 助けに来ました 聞こえます？
 
-### "来ました" + "Ｓｏ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 興奮して来ました Ｓｏ ｅｘｃｉｔｉｎｇ！
-
 ### "来やがった" + "ほほほ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -87422,17 +80034,11 @@ Accuracy: 98.66%
 - Examples:
   - 来やがった 来やがった ほほほ!
 
-### "来やがれ" + "ブタ" (1 occurrences)
+### "来る" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - うるせぇ！ 来やがれ ブタ野郎！ 最後の勝負だ！
-
-### "来る" + "カルシファー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 次の空襲が来る カルシファーも爆弾は防げない。
+  - 来る 来る こっちへ来る 頭下げて！
 
 ### "来る" + "何か" (1 occurrences)
 - Predicted: None
@@ -87446,11 +80052,17 @@ Accuracy: 98.66%
 - Examples:
   - 蒸気機関車も来る 好きでしょ？
 
-### "来る" + "幸運" (1 occurrences)
+### "来る" + "来る" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ 名声と金を運んで来る 幸運のガラガラ蛇さ。
+  - 来る 来る こっちへ来る 頭下げて！
+
+### "来る" + "頭" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 来る 来る こっちへ来る 頭下げて！
 
 ### "来年" + "また" (1 occurrences)
 - Predicted: None
@@ -87487,12 +80099,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 絵描き志望だったが果たせなかった 才能の欠如ですか？
-
-### "果たせば" + "君" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 約束さえ果たせば 君も自由になれる。
 
 ### "校長" + "私" (1 occurrences)
 - Predicted: None
@@ -87536,12 +80142,6 @@ Accuracy: 98.66%
 - Examples:
   - 検事 質問は？
 
-### "楽しく" + "皆さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さらに楽しく 皆さんをナビゲートしちゃいます。
-
 ### "楽しさ" + "夢" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -87583,6 +80183,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - エオメル様 こちらへ！
+
+### "様" + "そちら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - かぐや姫様 そちらに おいでなのでしょう？
 
 ### "様" + "マリア" (1 occurrences)
 - Predicted: None
@@ -87690,7 +80296,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 止まっちゃった ハウルが やったの？
+  - 止まっちゃった ハウルがやったの？
 
 ### "止まれ" + "止まれ" (1 occurrences)
 - Predicted: None
@@ -87716,6 +80322,12 @@ Accuracy: 98.66%
 - Examples:
   - 止めて いいのか？
 
+### "止めて" + "引越し" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 黄（ファン） 車の運転は止めて 引越し業者になったのか？
+
 ### "止める" + "ー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -87740,17 +80352,17 @@ Accuracy: 98.66%
 - Examples:
   - 彼をつかまえろ あいつを止めろ おい、お前！
 
+### "止めろ" + "止めろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 止めろ 止めろ！
+
 ### "止め方" + "分かる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 止め方 分かるんでしょ？
-
-### "止め方" + "知らない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル 大変！ 私 止め方 知らないの～！
 
 ### "正しくない" + "だろう" (1 occurrences)
 - Predicted: None
@@ -87836,11 +80448,11 @@ Accuracy: 98.66%
 - Examples:
   - クリプトンが死んだ マックス 死んだんだぞ！
 
-### "死んだら" + "ハウル" (1 occurrences)
+### "死んだ" + "マフィア" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - オイラが死んだら ハウルだって死ぬんだぞ！
+  - 心臓手術の最中に死んだ マフィアの外科医を覚えている？
 
 ### "死んだら" + "困る" (1 occurrences)
 - Predicted: None
@@ -87877,12 +80489,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何人か残して お手伝いさせます！
-
-### "残して" + "ブチ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ローンだけ残して ブチ壊してしまえ！
 
 ### "残る" + "悲しい" (1 occurrences)
 - Predicted: None
@@ -88057,12 +80663,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 毎晩 警官が来るでしょ？
-
-### "毎月" + "これ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すげぇぞ！ 毎月 これをやってくれねえかなぁ。
 
 ### "毎月" + "何" (1 occurrences)
 - Predicted: None
@@ -88286,11 +80886,23 @@ Accuracy: 98.66%
 - Examples:
   - 注射器 消毒してあったね?
 
+### "注目" + "独裁者" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 注目 独裁者を追い出せ！
+
 ### "泳いだら" + "おなか" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 泳いだら おなか減るやん！
+
+### "洗濯" + "しなくて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - やったーぃ！掃除洗濯 しなくてすむぞぉーぃ！
 
 ### "洗濯" + "終わり" (1 occurrences)
 - Predicted: None
@@ -88322,6 +80934,12 @@ Accuracy: 98.66%
 - Examples:
   - 俺達はその陽を浴びた そうだろ？
 
+### "浴びてっから" + "体" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お天道さま いっぱい浴びてっから 体にもいいんだぁ。
+
 ### "海" + "すれすれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -88333,12 +80951,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - りんは海 行ったことある？
-
-### "海賊密輸団" + "スパイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ギャング 海賊密輸団 スパイに私服…。
 
 ### "消えた" + "分かる" (1 occurrences)
 - Predicted: None
@@ -88376,17 +80988,17 @@ Accuracy: 98.66%
 - Examples:
   - 絶対だ 早く帰れ！ 消えろ この野郎！
 
+### "消失" + "脳波" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 反応消失 脳波の出力はどうだ？
+
 ### "深み" + "が" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 精神的な深み が必要だ。
-
-### "混ぜもの" + "なし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うちのは混ぜもの なしなんだよ だから女はイヤなんだ。
 
 ### "渇いた" + "そこ" (1 occurrences)
 - Predicted: None
@@ -88412,23 +81024,11 @@ Accuracy: 98.66%
 - Examples:
   - 出迎えは済んだ “メルセデス”は？
 
-### "渋って" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ガス代を渋って この近くの島に…。
-
 ### "渡した" + "ー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ーサムを悪魔に渡した ー嘘よ！
-
-### "渡したり" + "見せたり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 決して人に渡したり 見せたりしちゃいけないって。
 
 ### "渡して" + "くれたら" (1 occurrences)
 - Predicted: None
@@ -88447,12 +81047,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 妖精たちが 海を渡って みんな おうちに帰れるように。
-
-### "温かくて" + "小鳥" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 温かくて 小鳥みたいに動いてる。
 
 ### "測らせたら" + "どう" (1 occurrences)
 - Predicted: None
@@ -88519,6 +81113,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 驚きは無い こんな国で誰が子供を産む？
+
+### "無い" + "セルキー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - コートの無い セルキーでは この夜は 乗り越えられまい。
 
 ### "無く" + "彼ら" (1 occurrences)
 - Predicted: None
@@ -88664,12 +81264,6 @@ Accuracy: 98.66%
 - Examples:
   - 親愛なる母上 父上 兄弟 姉妹！
 
-### "片づいたら" + "きっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 全部 片づいたら きっと ゴンドアへ送って行ってあげる。
-
 ### "片思い" + "してる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -88681,12 +81275,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - フランク あの犬 何て名だったかな？
-
-### "犬" + "飼って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウルさん この犬 飼っていいでしょ？
 
 ### "犬" + "飼ってない" (1 occurrences)
 - Predicted: None
@@ -88706,6 +81294,12 @@ Accuracy: 98.66%
 - Examples:
   - その息子を犯罪者 呼ばわりするのか？
 
+### "狂ってる" + "お前" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 狂ってる お前は狂ってる！
+
 ### "狂ってる" + "頭" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -88717,18 +81311,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 成功が お前の命を狙った どうする？
-
-### "狙って" + "どこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 当たり前さね 海賊が財宝を狙って どこが悪い！
-
-### "狩り" + "やって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 空賊狩り やっても 今日びは 一文にもなりゃしねえよ。
 
 ### "猊下" + "二人" (1 occurrences)
 - Predicted: None
@@ -88754,23 +81336,11 @@ Accuracy: 98.66%
 - Examples:
   - 鉄 炎 火の玉 槍 目覚めよ!
 
-### "王" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「ウル」はラピュタ語で王 「トエル」は真。
-
 ### "王さん" + "一緒" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 王さん 一緒にいますか？
-
-### "王位継承者" + "リュシータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君はラピュタの正当な王位継承者 リュシータ王女だ。
 
 ### "王佳芝" + "入って" (1 occurrences)
 - Predicted: None
@@ -88855,12 +81425,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 一番生き残れる 方法は？
-
-### "生まれた" + "古い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見たいんだ シータの生まれた 古い家や 谷や ヤク達を…。
 
 ### "生まれたて" + "と" (1 occurrences)
 - Predicted: None
@@ -89180,6 +81744,12 @@ Accuracy: 98.66%
 - Examples:
   - はは 皆さん チステリーに会ったことありますか?
 
+### "皆さん" + "パラダイス" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 皆さん パラダイスへ ようこそ！
+
 ### "皆さん" + "一緒" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -89240,23 +81810,17 @@ Accuracy: 98.66%
 - Examples:
   - あたしの人気と弁護士を盗み ガーターまで盗んだのよ！
 
+### "盗んで" + "タダ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 俺んちの物を盗んで タダで済むと思うな！
+
 ### "盗撮" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （結絃）盗撮 （将也）えッ!
-
-### "目指して" + "アドリア海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - イストリアを目指して アドリア海へ出たんだ。
-
-### "目詰まり" + "起こしやがった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 目詰まり 起こしやがった。
 
 ### "直接" + "尋ねた" (1 occurrences)
 - Predicted: None
@@ -89353,6 +81917,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そんなにきちんと着て どこへ行くの？
+
+### "着替えろ" + "え" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 早く着替えろ え〜と？
 
 ### "瞬間" + "何組" (1 occurrences)
 - Predicted: None
@@ -89504,12 +82074,6 @@ Accuracy: 98.66%
 - Examples:
   - お楽しみは長く スカートは 短く ホットに行こう！
 
-### "石" + "早く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんな石 早く捨ててしまえばよかった。
-
 ### "石田" + "マジ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -89546,23 +82110,11 @@ Accuracy: 98.66%
 - Examples:
   - お前は確か こう言ってたな？
 
-### "確かに" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん 確かに いいアイデアだ。 ねっ！ だから お願い！
-
 ### "確かに" + "こっち" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 確かに こっちへ来たのかい？
-
-### "確かに" + "わがまま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 確かに わがままで臆病で 何を考えているか分からないわ。
 
 ### "確かめる" + "ヤツ" (1 occurrences)
 - Predicted: None
@@ -89618,6 +82170,12 @@ Accuracy: 98.66%
 - Examples:
   - イタリアはダンス禁止 ?
 
+### "私" + "あなた" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - だって私 あなたを愛してるの！
+
 ### "私" + "あんた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -89642,12 +82200,6 @@ Accuracy: 98.66%
 - Examples:
   - 私 お薬を飲まなきゃ。
 
-### "私" + "きっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私はソフィー！ 待ってて！ 私 きっと行くから！
-
 ### "私" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -89660,53 +82212,17 @@ Accuracy: 98.66%
 - Examples:
   - ちょっと短か過ぎない？ 私 このほうが好き。
 
-### "私" + "ちっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 ちっとも知らなかった。
-
 ### "私" + "ちょっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （鈴芽）私 ちょっと！ -（ミキ）え？
 
-### "私" + "どうして" (1 occurrences)
+### "私" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - そうだわ 私 どうして助かったのかしら。
-
-### "私" + "まだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 まだ言ってないことがあるの。
-
-### "私" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいわ！ でも 私 もう決めたから。
-
-### "私" + "よく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 今は ラピュタが なぜ亡びたのか 私 よく分かる。
-
-### "私" + "イヤ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 イヤよ そんなお葬式。
-
-### "私" + "キレイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 キレイでもないし 掃除ぐらいしか できないから…。
+  - 私 どうしてた？
 
 ### "私" + "サツキ" (1 occurrences)
 - Predicted: None
@@ -89714,23 +82230,11 @@ Accuracy: 98.66%
 - Examples:
   - あっ お父さん！ 私 サツキ！
 
-### "私" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ありがとう 助けてくれて 私 シータっていうの。
-
 ### "私" + "ホントに" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （早耶香） ええー？ 私 ホントにやるん？
-
-### "私" + "マルコ・パゴット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 マルコ・パゴット大尉のこと たくさん知ってるの。
 
 ### "私" + "一体" (1 occurrences)
 - Predicted: None
@@ -89754,25 +82258,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あぁ ソフィー 私 再婚したの！ えっ！
+  - ソフィー 私 再婚したの！
 
 ### "私" + "初めて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - まあ キツネリス 私 初めて！
-
-### "私" + "前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 不思議ね 私 前ここに来た気がするの。
-
-### "私" + "夢" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 夢見てるみたいなの…。
 
 ### "私" + "失敗" (1 occurrences)
 - Predicted: None
@@ -89786,30 +82278,6 @@ Accuracy: 98.66%
 - Examples:
   - 私 女優になれない？
 
-### "私" + "小さい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 小さい時から カブは嫌いなの。
-
-### "私" + "山育ち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あら おばさまも女よ それに私 山育ちで目はいいの。
-
-### "私" + "帰る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 帰るね。
-
-### "私" + "怖くて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 怖くて たまらないの。
-
 ### "私" + "月" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -89822,29 +82290,11 @@ Accuracy: 98.66%
 - Examples:
   - ちょっと待って 待って！私 本当にやるの!
 
-### "私" + "止め方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルクル 大変！ 私 止め方 知らないの～！
-
 ### "私" + "殺す" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （光子） そのスタンガンで 私 殺す気だったの？
-
-### "私" + "泳ぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 泳ぐ！
-
-### "私" + "海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 朝の市場なんて素敵じゃない 私 海初めてなの。
 
 ### "私" + "立派" (1 occurrences)
 - Predicted: None
@@ -89852,23 +82302,11 @@ Accuracy: 98.66%
 - Examples:
   - 私 立派でしょ？
 
-### "私" + "継いだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この石を受け継ぐ時 その名前も 私 継いだの。
-
 ### "私" + "草壁" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私 草壁サツキです… はい。
-
-### "私" + "行く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私 行くね。
 
 ### "私" + "行って" (1 occurrences)
 - Predicted: None
@@ -89894,35 +82332,11 @@ Accuracy: 98.66%
 - Examples:
   - 私 醜くない？
 
-### "私" + "野宿" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平気よ！ 私 野宿 好きだもの。
-
-### "私" + "長女" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お父さんが大事にしてたお店だし 私 長女だから…。
-
-### "私" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも私 飛行石 持ってないわ。
-
 ### "私っ" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私っ どうすればいいの!
-
-### "私ら" + "やつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私ら やつの風上にいるんだ 貿易風をつかまえれば…。
 
 ### "穴" + "なくなっちゃった" (1 occurrences)
 - Predicted: None
@@ -89935,12 +82349,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 道を空けろ 俺を知らんのか？
-
-### "空中戦" + "一生" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんな空中戦 一生に一度しか お目にかかれねえぞ。
 
 ### "空位" + "は" (1 occurrences)
 - Predicted: None
@@ -90002,11 +82410,11 @@ Accuracy: 98.66%
 - Examples:
   - 突然 現れて 卵でごまかす気？
 
-### "突然" + "目" (1 occurrences)
+### "立たない" + "何" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - その時だ 突然 目の前が 真っ白になっちまった。
+  - アデミは何の役にも立たない 何の役にも立たない。
 
 ### "立ち上がり" + "誇り" (1 occurrences)
 - Predicted: None
@@ -90026,12 +82434,6 @@ Accuracy: 98.66%
 - Examples:
   - 私が ここ立ち退いたら あんた いくらもらえんだ？
 
-### "立て" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヘヘ～っ 立て ブタ野郎！
-
 ### "立て" + "分かる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90044,12 +82446,6 @@ Accuracy: 98.66%
 - Examples:
   - 立て 立つんだ！
 
-### "立てたら" + "元気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… 腹を立てたら 元気が出たみたいね。
-
 ### "立てよ" + "オラッ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90061,6 +82457,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 竜… 竜 どこ？
+
+### "竜" + "見て" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 竜 見てみろ！
 
 ### "笑う" + "こんな" (1 occurrences)
 - Predicted: None
@@ -90194,29 +82596,11 @@ Accuracy: 98.66%
 - Examples:
   - いや、でも素晴らしい 素晴らしい選択だ。
 
-### "終わったら" + "すぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ 終わったら すぐ教会に行くからな。
-
 ### "終わったら" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 復讐が終わったら どうなる？
-
-### "終わり" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 引っ越し終わり もう下りていいよ。
-
-### "終わりましたら" + "また" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 戦争が終わりましたら また伺いましょう。
 
 ### "組んで" + "店" (1 occurrences)
 - Predicted: None
@@ -90284,12 +82668,6 @@ Accuracy: 98.66%
 - Examples:
   - 私 絶対 あんなふうにならない！
 
-### "絶対" + "イケる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これ 絶対 イケると思わない？
-
 ### "絶対" + "帰る" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90307,12 +82685,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 絶対 間違えるな！
-
-### "絶対" + "食べない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） ハウルさん 絶対 食べないと思うよ。
 
 ### "継ぎました" + "どう" (1 occurrences)
 - Predicted: None
@@ -90350,23 +82722,11 @@ Accuracy: 98.66%
 - Examples:
   - 両手の親指を縛って 吊してやる！
 
-### "縛られて" + "ここ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 契約に縛られて ここでハウルに こき使われてるんだ！
-
 ### "繰り返して" + "飽きない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 毎晩同じことを繰り返して 飽きないのかしら？
-
-### "繰り返します" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ラジオ） 繰り返します 「次は お前だ ブタ出て来い」。
 
 ### "置いて" + "どこ" (1 occurrences)
 - Predicted: None
@@ -90385,12 +82745,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何で私を置いて 逃げたの？
-
-### "美しくなかったら" + "生きて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 美しくなかったら 生きていたって仕方がない。
 
 ### "老人" + "刈り入れ" (1 occurrences)
 - Predicted: None
@@ -90446,6 +82800,12 @@ Accuracy: 98.66%
 - Examples:
   - 耕一 聞こえますか？
 
+### "聖父" + "辞任" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 聖父 辞任するのか？
+
 ### "聞いた" + "私" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90462,7 +82822,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - おかあさんが聞いたら きっと泣くわ！
+  - お母さんが聞いたら きっと泣くわ！
 
 ### "聞いて" + "-" (1 occurrences)
 - Predicted: None
@@ -90620,24 +82980,6 @@ Accuracy: 98.66%
 - Examples:
   - 至急 応援を頼む !
 
-### "至急" + "連絡" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「前向きに検討中につき 至急 連絡されたし」。
-
-### "船" + "キレ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キレだ！ この船 キレがはってある！
-
-### "船" + "造りゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - メソメソするんじゃないよ もっといい船 造りゃいいんだ！
-
 ### "船長" + "乗ります" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90686,18 +83028,6 @@ Accuracy: 98.66%
 - Examples:
   - え？ 花火 まだ終わってないのに？
 
-### "若い" + "おかあ様" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフっ 随分若い おかあ様だったこと。
-
-### "若くて" + "かわいい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こんなに若くて かわいいのに？
-
 ### "若くて" + "無知" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90710,11 +83040,11 @@ Accuracy: 98.66%
 - Examples:
   - 若様 おかえりで？
 
-### "英雄" + "気取り" (1 occurrences)
+### "英雄" + "気どり" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 小汚ねえ賞金稼ぎが 英雄 気取りやがって！
+  - クソーッ こきたねえ賞金かせぎが 英雄 気どりやがって！
 
 ### "草太" + "開けて" (1 occurrences)
 - Predicted: None
@@ -90764,12 +83094,6 @@ Accuracy: 98.66%
 - Examples:
   - ここに落ちて いなくなった。
 
-### "落ちる" + "あぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～っ！ ママ 落ちる あぁ…。
-
 ### "落ちる" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -90781,12 +83105,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （三葉） 落ちる この目で見たの！
-
-### "落ちる" + "落ちる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ 落ちる 落ちる！ 危な～い！
 
 ### "落ち着いて" + "いられた" (1 occurrences)
 - Predicted: None
@@ -90920,35 +83238,17 @@ Accuracy: 98.66%
 - Examples:
   - 父さん 行かないで お願いだ！
 
-### "行かないで" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行かないで ソフィー。
-
 ### "行かないで" + "ヒメ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 行かないで ヒメ！
 
-### "行かなかったら" + "お金" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまく行かなかったら お金は いらないわ。
-
 ### "行かなきゃ" + "いけない" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - やっぱり 行かなきゃ いけないかしら?
-
-### "行かなきゃ" + "ならねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アメリカに行かなきゃ ならねえのは 俺達のほうだよ。
 
 ### "行かん" + "劇場" (1 occurrences)
 - Predicted: None
@@ -91148,11 +83448,11 @@ Accuracy: 98.66%
 - Examples:
   - カリフォルニアにも行ける 私達ビーチに住めるのよ！
 
-### "行こう" + "「" (1 occurrences)
+### "行こう" + "おばさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - よ～し！ 行こう 「竜の巣」へ！
+  - 行こう おばさん！父さんの行った道だ！
 
 ### "行こう" + "パパ" (1 occurrences)
 - Predicted: None
@@ -91160,17 +83460,17 @@ Accuracy: 98.66%
 - Examples:
   - 行こう パパ！
 
-### "行こう" + "出口" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さぁ 行こう 出口を探さなきゃ。
-
 ### "行こう" + "立てる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 村の外れに診療所がある そこまで行こう 立てるか？
+
+### "行こう" + "竜" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よし 行こう 竜の巣へ！
 
 ### "行こう" + "行こう" (1 occurrences)
 - Predicted: None
@@ -91249,12 +83549,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 星空の街 僕のためだけに輝いているのかい？
-
-### "衛兵" + "集まれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 衛兵 集まれ！ 急げ！
 
 ### "袁先生" + "どこ" (1 occurrences)
 - Predicted: None
@@ -91388,23 +83682,11 @@ Accuracy: 98.66%
 - Examples:
   - 顔を見たくない 外に出して！
 
-### "見たまえ" + "この" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見たまえ この巨大な飛行石を。
-
 ### "見たら" + "この" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この写真を見ろ 死んだ息子を見たら この笑顔はどうなる！
-
-### "見たら" + "安心" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - レティーの元気な顔を見たら 安心したから。
 
 ### "見たら" + "誤解" (1 occurrences)
 - Predicted: None
@@ -91436,17 +83718,17 @@ Accuracy: 98.66%
 - Examples:
   - もしユダヤ人を見つけたら 表彰されるの？
 
-### "見て" + "「" (1 occurrences)
+### "見つけて" + "殺して" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あの野郎 フィオを見て 「ブタに真珠だ」と言いやがった。
+  - 見つけて 殺してやる！
 
-### "見て" + "あれ" (1 occurrences)
+### "見て" + "お手洗い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 見て あれ！ どうしたんだい 『ゴリアテ』かい!
+  - 書類を見て お手洗いは？
 
 ### "見て" + "きれい" (1 occurrences)
 - Predicted: None
@@ -91508,6 +83790,12 @@ Accuracy: 98.66%
 - Examples:
   - 宗介 見て 波が静まってる。
 
+### "見て" + "赤い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ 見て 赤いヒコーキ！
+
 ### "見て" + "逮捕" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -91532,17 +83820,17 @@ Accuracy: 98.66%
 - Examples:
   - 隣で見てて どうだったぁ？
 
+### "見てました" + "覚えてます" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - マルセイユのボートショーで 見てました 覚えてます？
+
 ### "見てやがる" + "赤毛" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 何 見てやがる 赤毛のクソ女！
-
-### "見ないで" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 下を見ないで すごい力だ。
 
 ### "見ました" + "善良" (1 occurrences)
 - Predicted: None
@@ -91646,17 +83934,11 @@ Accuracy: 98.66%
 - Examples:
   - 目を覚ませ そのままだと落ちる！
 
-### "親方" + "戦争" (1 occurrences)
+### "親分" + "早く" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 親方 戦争と賞金稼ぎと どう違うの？
-
-### "親方" + "空" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 親方 空から女の子…。
+  - （団員） 親分 早くー 早く！
 
 ### "観なくて" + "幸い" (1 occurrences)
 - Predicted: None
@@ -91670,12 +83952,6 @@ Accuracy: 98.66%
 - Examples:
   - もしビデオを観れば パク氏と奥さんは 衝撃を受けるぞ！
 
-### "解けない" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 自分の呪いも解けない お前にか…。
-
 ### "触った" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -91687,12 +83963,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私に触ったら 大声出すよ！
-
-### "触れたない" + "と" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 金庫に手も触れたない とはどういうわけだ？
 
 ### "言いなさい" + "ブリュンヒルデ" (1 occurrences)
 - Predicted: None
@@ -91766,6 +84036,12 @@ Accuracy: 98.66%
 - Examples:
   - バカ言え 喧嘩もせずに どうやって己を知る？
 
+### "言え" + "女の子" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - バカを言え 女の子を競技場に？
+
 ### "言え" + "真昼" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -91783,6 +84059,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - じゃあ私が命令よと言えば 教えてくれるのかしら？
+
+### "言えば" + "運ばなくて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - できないと彼らに言えば 運ばなくても済むだろ？
 
 ### "言った" + "?" (1 occurrences)
 - Predicted: None
@@ -91819,12 +84101,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 違うと言ったら 安心するかい？
-
-### "言ったろ" + "崩れる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だから言ったろ 崩れるって。
 
 ### "言って" + "ごめんなさい" (1 occurrences)
 - Predicted: None
@@ -91892,12 +84168,6 @@ Accuracy: 98.66%
 - Examples:
   - バカなことを言わないで 乗れ！
 
-### "言わなきゃ" + "ならねえらしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうやら 礼を言わなきゃ ならねえらしいな。
-
 ### "言われて" + "お前" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -91958,12 +84228,6 @@ Accuracy: 98.66%
 - Examples:
   - 詰まってる あそこ詰まってる。
 
-### "話" + "ある" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お姫様のキッスで 人間に戻るって話 あるじゃない。
-
 ### "話" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -91974,7 +84238,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 王様の話 断れないの？ あれ。
+  - ことわ 王様の話 断れないの？
 
 ### "話" + "知ってる" (1 occurrences)
 - Predicted: None
@@ -91992,7 +84256,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 用心棒を連れてやがった！ こんな話 聞いてねえぞ！
+  - （空賊連合ボスＦ） こんな話 聞いてねえぞ！
 
 ### "話" + "聞いてます" (1 occurrences)
 - Predicted: None
@@ -92005,6 +84269,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 私の話 覚えてる？
+
+### "話さない" + "いい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 家ではあなたとは 話さない いい？
 
 ### "話した" + "?" (1 occurrences)
 - Predicted: None
@@ -92114,6 +84384,12 @@ Accuracy: 98.66%
 - Examples:
   - 誰か ドラッグ 持ってないか？
 
+### "誰か" + "マッチ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誰か マッチ持ってない？
+
 ### "課長さん" + "どうして" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92144,23 +84420,11 @@ Accuracy: 98.66%
 - Examples:
   - 罪を犯し、許しを請い 自分の道を行く。
 
-### "請求書" + "水増し" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さっきの請求書 水増ししとけば よかった！
-
 ### "諸君" + "〝" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 諸君 〝四柱〟とは何だ？
-
-### "諸君" + "いただこう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 諸君 いただこう うまし糧を。
 
 ### "諸君" + "これ" (1 occurrences)
 - Predicted: None
@@ -92198,12 +84462,6 @@ Accuracy: 98.66%
 - Examples:
   - 諸君 静粛に！
 
-### "諸君" + "食事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 諸君 食事を続けてくれたまえ。
-
 ### "謝れば" + "いい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92228,6 +84486,18 @@ Accuracy: 98.66%
 - Examples:
   - すごい瘴気を出して 谷中 大騒ぎになってる！
 
+### "豚" + "やる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何を！ クサレ豚 やるか！
+
+### "豚" + "出て" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 豚 出てこーい！
+
 ### "貰って" + "いい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92246,6 +84516,12 @@ Accuracy: 98.66%
 - Examples:
   - 貴様 この村の者か?
 
+### "貴様" + "それ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 貴様 それでも侍か!
+
 ### "貴様" + "一体" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92257,12 +84533,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おい貴様 何だって怒るんだ?
-
-### "貴様" + "正気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 貴様 正気か？
 
 ### "貴様" + "目ん玉" (1 occurrences)
 - Predicted: None
@@ -92312,12 +84582,6 @@ Accuracy: 98.66%
 - Examples:
   - オニックス･クラブが贈る シカゴ一ホットなチーム！
 
-### "赤" + "間違い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この軽薄な赤 間違いねえ。
-
 ### "赤けりゃ" + "発情" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92347,12 +84611,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 帽子のチビと走ってる 二人組みは？
-
-### "走れ" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 軍隊だ！ 走れ シータ！
 
 ### "走れ" + "フォレスト･ガンプ" (1 occurrences)
 - Predicted: None
@@ -92419,12 +84677,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ポニョの足 手みたいだよ。
-
-### "足りなくて" + "その" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 休暇が足りなくて その足で戦場へ とんぼ返りしたんだ。
 
 ### "跪け" + "ビーム" (1 occurrences)
 - Predicted: None
@@ -92534,23 +84786,17 @@ Accuracy: 98.66%
 - Examples:
   - これ以上 月が近づいたら 取り返しがつかないんです！
 
+### "近づかないで" + "いい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 話があるのよ 夫に近づかないで いい？
+
 ### "近寄って" + "確かめて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - もっと近寄って 確かめてもいかがですか？
-
-### "返したまえ" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 返したまえ いい子だから さぁ！
-
-### "返したら" + "あなた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心臓をハウルに返したら あなたは死んじゃうの？
 
 ### "返せよ" + "メリー" (1 occurrences)
 - Predicted: None
@@ -92569,12 +84815,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 終わったら妹さんを追い出して 写真は裏返しかい？
-
-### "追い待て" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 追い待て お前一人で戦車とやり合うつもりか？
 
 ### "追い詰められて" + "怖じ気づいた" (1 occurrences)
 - Predicted: None
@@ -92606,17 +84846,17 @@ Accuracy: 98.66%
 - Examples:
   - 彼は逃げました - えっ？
 
-### "逃げましょう" + "戦って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 逃げましょう 戦ってはダメ！
-
 ### "逃げよう" + "逃げる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 逃げよう 逃げるんだ ここから！
+
+### "逃げられなくて" + "怖くなかった" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 逃げられなくて 怖くなかった？
 
 ### "逃げろ" + "この" (1 occurrences)
 - Predicted: None
@@ -92659,12 +84899,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （勅使河原）逃げろ 火事や！
-
-### "逃げ出して" + "町" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな逃げ出して 町じゅう 空っぽになっちゃうわね。
 
 ### "逃げ込みました" + "-" (1 occurrences)
 - Predicted: None
@@ -92756,12 +84990,6 @@ Accuracy: 98.66%
 - Examples:
   - なぜ息子を自分で連れ戻さず 俺たちを雇ったんだ？
 
-### "連れ込んだり" + "まるで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 変な部屋に連れ込んだり まるで罠だわ。
-
 ### "連中" + "いつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92780,12 +85008,6 @@ Accuracy: 98.66%
 - Examples:
   - 連中 まだ何か たくらんでるのかな？
 
-### "連中" + "今日" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マンマユートの連中 今日は来れねえとさ。
-
 ### "連絡先" + "知ってたり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -92797,6 +85019,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 週末 私なしで我慢できる？
+
+### "進め" + "エオル" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 進め エオルの子ら！
 
 ### "遅くなりました" + "緊急事態" (1 occurrences)
 - Predicted: None
@@ -92864,47 +85092,17 @@ Accuracy: 98.66%
 - Examples:
   - 今夜は どうせ 私達 お泊まりだから。
 
-### "達" + "それ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた達 それでも飛行艇乗りなの!
-
-### "達" + "ちょっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君達 ちょっと 散歩して来てくれないか？
-
 ### "達" + "どう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - お前達 どうしたんだい？
-
-### "達" + "みんな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この人達 みんな 空賊なの？ 地中海じゅうのゴミさ。
-
-### "達" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - オイラ達 もう時間がないよ。
+  - お前達 どうしたんだい！
 
 ### "達" + "エイリアン" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この人達 エイリアン？
-
-### "達" + "スイミング" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心配しないで 私達 スイミングクラブの子だから。
 
 ### "達" + "ブランド" (1 occurrences)
 - Predicted: None
@@ -92918,35 +85116,11 @@ Accuracy: 98.66%
 - Examples:
   - やっぱりアメリカだわ 素晴らしい人達 万歳！
 
-### "達" + "人質" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私達 人質ね。 そうだよ。
-
 ### "達" + "急ぐ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 急いで ホビット達 急ぐね！
-
-### "達" + "恥ずかしくない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あなた達 恥ずかしくないのかって 言ってるの！
-
-### "達" + "悪人" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （女の子） あなた達 悪人さん？ そうさ。
-
-### "達" + "援護" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女は度胸だ！ お前達 援護しな！
 
 ### "達" + "歩く" (1 occurrences)
 - Predicted: None
@@ -93037,18 +85211,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - でも 顔が違う 整形手術でもしたのか？
-
-### "違ぇねえ" + "ハハハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 違ぇねえ ハハハハハ…！
-
-### "違ぇねえ" + "モグラ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒヒヒっ！ 違ぇねえ モグラも同じさ。
 
 ### "違って" + "なぜ" (1 occurrences)
 - Predicted: None
@@ -93146,23 +85308,11 @@ Accuracy: 98.66%
 - Examples:
   - おお 重くなった 重くなった！
 
-### "野宿" + "好き" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 平気よ！ 私 野宿 好きだもの。
-
 ### "野郎" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 能なし野郎 !
-
-### "野郎" + "いい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あのアメリカ野郎 いい腕してるぜ。
 
 ### "野郎" + "いつ" (1 occurrences)
 - Predicted: None
@@ -93175,12 +85325,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何だ この野郎 うちに何の用だ？
-
-### "野郎" + "おめぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカ野郎 おめぇのほうは弾切れだ！
 
 ### "野郎" + "お前" (1 occurrences)
 - Predicted: None
@@ -93200,6 +85344,12 @@ Accuracy: 98.66%
 - Examples:
   - この野郎 ふざけやがって！
 
+### "野郎" + "イカサマ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - このクソ野郎 イカサマサイコロを持ってる！
+
 ### "野郎" + "クソ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -93212,23 +85362,11 @@ Accuracy: 98.66%
 - Examples:
   - あの野郎 クソったれめー！
 
-### "野郎" + "サビ弾" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ジャンク屋の野郎 サビ弾 よこしやがって…。
-
 ### "野郎" + "スティーブ・ロックジョー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あの どクソ野郎 スティーブ・ロックジョーが？
-
-### "野郎" + "フィオ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの野郎 フィオを見て 「ブタに真珠だ」と言いやがった。
 
 ### "野郎" + "フレッチャー" (1 occurrences)
 - Predicted: None
@@ -93254,35 +85392,17 @@ Accuracy: 98.66%
 - Examples:
   - バカ野郎 俺に勘定が 渡せねえだと？
 
-### "野郎" + "戻って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あの野郎 戻って来やがった。
-
 ### "野郎" + "放しやがれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ど腐れのブタ野郎 放しやがれ！
 
-### "野郎" + "最後" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 読めたぞ あの野郎 最後まで撃たねえつもりなんだ。
-
 ### "野郎" + "殴られたい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - この野郎 殴られたいのか？
-
-### "野郎" + "笑ってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フフフ… ハハハハ…。 バカ野郎 笑ってる時か！
 
 ### "野郎" + "聞け" (1 occurrences)
 - Predicted: None
@@ -93325,6 +85445,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - リサ！ 金魚 生きてた！
+
+### "釜たき" + "たのむ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 釜たき たのむ！！
 
 ### "釜山" + "大田" (1 occurrences)
 - Predicted: None
@@ -93470,29 +85596,23 @@ Accuracy: 98.66%
 - Examples:
   - 国境警備隊がゲートを開けた 大興奮だ！
 
+### "開けた" + "来い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ラピュタへの道は開けた 来い！！
+
 ### "開けて" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （節子）これ開けて -（清太）ん？
 
-### "開けて" + "マルクル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 窓開けて マルクル。 うん。
-
 ### "開けてますが" + "大丈夫" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 目を開けてますが 大丈夫ですか？
-
-### "開けないで" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 開けないで すごい風邪なの うつっちゃ大変よ。
 
 ### "開けろ" + "スモーク" (1 occurrences)
 - Predicted: None
@@ -93656,12 +85776,6 @@ Accuracy: 98.66%
 - Examples:
   - 私が責任者である限り そんな不正は認めん！
 
-### "限り" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ダメ 私達がここにいる限り ハウルは戦うわ。
-
 ### "陛下" + "早く" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -93679,18 +85793,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 甲殻の中の亀を除いて すべて逃げました!
-
-### "随分" + "時間" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 随分 時間が かかったよ。
-
-### "随分" + "騒がしい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 地上は随分 騒がしいな。 そうかい？
 
 ### "隠して" + "早く" (1 occurrences)
 - Predicted: None
@@ -93751,12 +85853,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 離せ 離せ！
-
-### "離せねえ" + "お前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手が離せねえ お前やれ。 え？
 
 ### "難しく" + "考えすぎ" (1 occurrences)
 - Predicted: None
@@ -93876,19 +85972,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - カブ頭 あれ ハウルの城じゃない？
+  - カブ頭 あれハウルの城じゃない？
 
 ### "頭" + "それ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （真柴）永束くんの頭 それ本物？
-
-### "頭" + "下げて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来る！ 来る！ こっちへ来る！ 頭 下げて！
 
 ### "頭" + "大丈夫" (1 occurrences)
 - Predicted: None
@@ -93944,11 +86034,11 @@ Accuracy: 98.66%
 - Examples:
   - やれやれ、ウォルトの顔 どうしたと思う？
 
-### "顔" + "洗える" (1 occurrences)
+### "顔" + "待て" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あそこで 顔 洗えるよ。
+  - ああ！ オメエその顔 待てよ おいっ！
 
 ### "顔" + "見えた" (1 occurrences)
 - Predicted: None
@@ -94004,17 +86094,11 @@ Accuracy: 98.66%
 - Examples:
   - このコースを飛び続けて 逆行できなくなるまでの時間は？
 
-### "飛んで" + "すぐ" (1 occurrences)
+### "飛んで" + "小さな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 見えなくなるまで飛んで すぐ針路を変えるに違ぇねえ。
-
-### "飛行石" + "持ってない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - でも私 飛行石 持ってないわ。
+  - このまままっすぐ飛んで 小さな塔の上にいる！
 
 ### "食い物" + "飲み物" (1 occurrences)
 - Predicted: None
@@ -94069,6 +86153,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - これでも食らえ !
+
+### "食事" + "楽しんでる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 元気かい？ 食事 楽しんでる？
 
 ### "食堂" + "開いてる" (1 occurrences)
 - Predicted: None
@@ -94148,12 +86238,6 @@ Accuracy: 98.66%
 - Examples:
   - カネを騙し取る つもりだったのか？
 
-### "驚いちゃった" + "空" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 驚いちゃった 空から降りて来るんだもん。
-
 ### "高かった" + "低かった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94166,17 +86250,17 @@ Accuracy: 98.66%
 - Examples:
   - しょーちゃんは どんな高校 行ってるの？
 
+### "髪" + "切った" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （信代）ねえ 髪 切ったの？
+
 ### "髪形" + "なんで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 髪形 なんで変えたの？
-
-### "魚" + "嫌い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （魚屋） そいつは うめぇぞ。 わしは魚 嫌いじゃ。
 
 ### "麗水" + "蔚珍" (1 occurrences)
 - Predicted: None
@@ -94196,6 +86280,12 @@ Accuracy: 98.66%
 - Examples:
   - 黄土色 赤・・・あれは？
 
+### "黄（ファン）" + "車" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 黄（ファン） 車の運転は止めて 引越し業者になったのか？
+
 ### "黙って" + "外国" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94207,6 +86297,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 少し黙ってて いい？
+
+### "黙ってて" + "くれない" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 黙ってて くれない？
 
 ### "黙ってろ" + "いい" (1 occurrences)
 - Predicted: None
@@ -94226,11 +86322,11 @@ Accuracy: 98.66%
 - Examples:
   - 黙ってろ 嫌だと？
 
-### "黙れ" + "いもブタ" (1 occurrences)
+### "黙れ" + "くそったれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 黙れ いもブタ！
+  - 黙れ くそったれ！
 
 ### "黙れ" + "クソガキ" (1 occurrences)
 - Predicted: None
@@ -94298,29 +86394,11 @@ Accuracy: 98.66%
 - Examples:
   - ―人殺しだ！ ―捕まえろ！
 
-### "！" + "「" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ブタから信号！ 「お前の負けだ 話を聞け」。
-
-### "！" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） ママ！ 『ゴリアテ』が動き始めた！
-
 ### "！" + "あああぁぁあぁっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ひゃあっ！ あああぁぁあぁっ！
-
-### "！" + "あいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あいつだ！ あいつが落としたんだ！
 
 ### "！" + "あいつら" (1 occurrences)
 - Predicted: None
@@ -94328,17 +86406,11 @@ Accuracy: 98.66%
 - Examples:
   - どうだ！ あいつらを 逃がした罰だ！
 
-### "！" + "あたい" (1 occurrences)
+### "！" + "あそこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィーが いじめた！ あたいのだ～！
-
-### "！" + "あっちは" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 引っ越し？ ムチャだよ！ あっちは空っぽだよ！
+  - 見ろ！ あそこに銃が！
 
 ### "！" + "あっははははは" (1 occurrences)
 - Predicted: None
@@ -94346,17 +86418,11 @@ Accuracy: 98.66%
 - Examples:
   - ふっ ははっ！ あっははははは！
 
-### "！" + "あばよ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いい飛行艇屋になりな！ あばよ！
-
 ### "！" + "あら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ソフィー！ ソフィー！ あら？
+  - ソフィー！ あら？
 
 ### "！" + "ありえない" (1 occurrences)
 - Predicted: None
@@ -94388,12 +86454,6 @@ Accuracy: 98.66%
 - Examples:
   - あっ ずるい！ あ～！
 
-### "！" + "あ～っ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ こいつ…！ みんな逃げて！ あ～っ！
-
 ### "！" + "いいえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94406,23 +86466,11 @@ Accuracy: 98.66%
 - Examples:
   - ジジ！ いくよ！
 
-### "！" + "いた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ママ！ いた！ 隠れてた！
-
 ### "！" + "いったい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ダーニャ！ いったいどうしたんだ 兄弟？
-
-### "！" + "いつも" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 舵が動かねえ！ いつもの くそ力は どうした！
 
 ### "！" + "いま" (1 occurrences)
 - Predicted: None
@@ -94435,6 +86483,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ええい！ いまいましい！
+
+### "！" + "いや" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ヒメ）いやいや！ いやよ！
 
 ### "！" + "いやっ" (1 occurrences)
 - Predicted: None
@@ -94472,12 +86526,6 @@ Accuracy: 98.66%
 - Examples:
   - うううあっ！ うあっ！
 
-### "！" + "うぅ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あぁ～！ うぅ～！
-
 ### "！" + "うぅぅうぅ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94495,6 +86543,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - おっ！ おっ！ うおっ！
+
+### "！" + "うちまくれ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - うて うてっ！ うちまくれ！
 
 ### "！" + "うふふ" (1 occurrences)
 - Predicted: None
@@ -94514,17 +86568,23 @@ Accuracy: 98.66%
 - Examples:
   - （トンボ） あっ！ うわーっ！ ああっ！
 
-### "！" + "うんと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その代わり 私のお店に来て！ うんとサービスするから。
-
 ### "！" + "うーんっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （キキ）フフフ… アハハハ！ うーんっ！
+
+### "！" + "う～" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - う～！ う～！ 出～る！
+
+### "！" + "お" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （デモ参加者たち） アキラ様ばんざ～い！ お～！
 
 ### "！" + "おかあさん" (1 occurrences)
 - Predicted: None
@@ -94538,24 +86598,6 @@ Accuracy: 98.66%
 - Examples:
   - おおどをあけな！ おかえりだ！
 
-### "！" + "おかわり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おかわり！ おかわり！
-
-### "！" + "おしっこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おしっこ～！ おしっこ!
-
-### "！" + "おじいちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ねぇ！ おじいちゃん。 わしの孫だ うまくやるさ。
-
 ### "！" + "おじさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94568,12 +86610,6 @@ Accuracy: 98.66%
 - Examples:
   - おだいじんさま！ おだいじんさま！
 
-### "！" + "おっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 代わりな！ おっと！
-
 ### "！" + "おとうさん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94585,12 +86621,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - シ～！ おとなしくしてなきゃ ダメでしょ。
-
-### "！" + "おなか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うれしい！ おなかペコペコだったの。
 
 ### "！" + "おはぎ" (1 occurrences)
 - Predicted: None
@@ -94609,6 +86639,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 先生！ おはよう！
+
+### "！" + "おばあちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - メイ！ おばあちゃんとこにいな！
 
 ### "！" + "おへそ" (1 occurrences)
 - Predicted: None
@@ -94640,12 +86676,6 @@ Accuracy: 98.66%
 - Examples:
   - お化け屋敷みたい！ お化け？
 
-### "！" + "お城" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー！ お城ボロボロだよ。 いいの！
-
 ### "！" + "お大尽" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94658,6 +86688,12 @@ Accuracy: 98.66%
 - Examples:
   - メイ！ お姉ちゃ～ん!
 
+### "！" + "お姉ちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 痛い目に合わせてやるから！ お姉ちゃんでしょ？
+
 ### "！" + "お姉ちゃ～ん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94669,30 +86705,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 死なないで 結婚しないで！ お嬢様！
-
-### "！" + "お尻" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～！ お尻がゴワゴワになっちゃった。
-
-### "！" + "お店" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 中庭だ！ ハハハ！ お店もあるよ。
-
-### "！" + "お待ち" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - これ！ お待ち。
-
-### "！" + "お祭り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - さあ！ お祭りは終わり！
 
 ### "！" + "お茶" (1 occurrences)
 - Predicted: None
@@ -94711,12 +86723,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 皆さ～ん！ お集まりくださ～い！
-
-### "！" + "お電話" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 奥様！ お電話です！ ご無事です 生きておられました！
 
 ### "！" + "お食事" (1 occurrences)
 - Predicted: None
@@ -94753,12 +86759,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 頑張って！ かっ飛ばせ！
-
-### "！" + "かまう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 装甲列車だ！ かまうもんか つっこめ！
 
 ### "！" + "かわいい" (1 occurrences)
 - Predicted: None
@@ -94838,23 +86838,11 @@ Accuracy: 98.66%
 - Examples:
   - （ルミ）こらぁ！ こぼさんように気ぃつけや！
 
-### "！" + "こりゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うっ！ こりゃひどい 体が石みたいだ。
-
 ### "！" + "こ～んな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - すっごく大きいの！ こ～んな目してるの！
-
-### "！" + "ごはん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな！ ごはんにするよ！
 
 ### "！" + "ご主人" (1 occurrences)
 - Predicted: None
@@ -94868,17 +86856,17 @@ Accuracy: 98.66%
 - Examples:
   - 違う 違う！ ご主人さま！
 
+### "！" + "ご無事" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （サイトウ） 皆さ～ん！ ご無事でしたか！
+
 ### "！" + "ご精" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - こんにちは！ ご精が出ますね。
-
-### "！" + "さっき" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハッ… パズー！ さっきのロボットじゃ ない！
 
 ### "！" + "さめろ" (1 occurrences)
 - Predicted: None
@@ -94892,23 +86880,11 @@ Accuracy: 98.66%
 - Examples:
   - しとごしろ！ しごと！
 
-### "！" + "しまった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どけ！ しまった！
-
 ### "！" + "しめしめ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ハハハ！ しめしめ 水もれ なしだ。
-
-### "！" + "じっちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこへ行っちまったのかな？ じっちゃん！ じっちゃん！
 
 ### "！" + "じっと" (1 occurrences)
 - Predicted: None
@@ -94921,18 +86897,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 当たり！ じゃあね 何色でしょう？
-
-### "！" + "すげぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ペッチャンコだ！ すげぇ！
-
-### "！" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やっぱり その石の力なんだ！ すごいや！
 
 ### "！" + "すごくない" (1 occurrences)
 - Predicted: None
@@ -94970,12 +86934,6 @@ Accuracy: 98.66%
 - Examples:
   - ダーニャ！ ずっと探してたんだぞ どこにいるんだ？
 
-### "！" + "せめぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どけよ！ せめぇな。
-
 ### "！" + "せん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -94988,23 +86946,17 @@ Accuracy: 98.66%
 - Examples:
   - まどをあけ！ ぜんぶだよ！
 
-### "！" + "そいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） アニキ～！ そいつだ！
-
-### "！" + "そしたら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何てこと言うんだ！ そしたらハウルも死ぬぞ！
-
 ### "！" + "そして" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - からかわれたんだよ！ そして引っかかった！
+
+### "！" + "そっち" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ジュニア！ そっちの手を！
 
 ### "！" + "そら" (1 occurrences)
 - Predicted: None
@@ -95017,6 +86969,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 何と！ そりゃ本当か？
+
+### "！" + "そろそろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （千果） 鈴芽！ そろそろ出るんやろ？
+
+### "！" + "そんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 馬鹿野郎！ そんなに死にてえか！
 
 ### "！" + "そーれ" (1 occurrences)
 - Predicted: None
@@ -95036,18 +87000,6 @@ Accuracy: 98.66%
 - Examples:
   - せん！ だいじょうぶか？
 
-### "！" + "だから" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～ん 確かに いいアイデアだ。 ねっ！ だから お願い！
-
-### "！" + "だって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カウントとれよ！ だって ほら 見ろよ！
-
 ### "！" + "ちくしょう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95066,6 +87018,12 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽）ごめん 環さん -（環）えっ！ ちょっとぉ！
 
+### "！" + "っあ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - パズー！ っあ はなしてぇーーー！
+
 ### "！" + "ついて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95078,12 +87036,6 @@ Accuracy: 98.66%
 - Examples:
   - 見つけたぞ、 ラグ！ ついに見つけたんだ！
 
-### "！" + "てめぇら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しょうがねえな 待てよ！ てめぇら！
-
 ### "！" + "できた" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95095,6 +87047,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - とった…！ とったぞー！
+
+### "！" + "とっとと" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - デニス・ホッパー！ とっとと行け！
 
 ### "！" + "とても" (1 occurrences)
 - Predicted: None
@@ -95113,12 +87071,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 違います！ とんでもない！
-
-### "！" + "と～りゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - う～りゃ！ と～りゃ！
 
 ### "！" + "どいて" (1 occurrences)
 - Predicted: None
@@ -95180,17 +87132,17 @@ Accuracy: 98.66%
 - Examples:
   - わっ！！ なに してんの？
 
-### "！" + "にぃ" (1 occurrences)
+### "！" + "なんだ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 私こそ荒地の魔女に…！ にぃ…！
+  - ドアを閉めろ！ なんだよ？なんだよ？
 
-### "！" + "ね" (1 occurrences)
+### "！" + "ねえ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - いたよね～！ ね～！
+  - （萌花）パパ！ ねえ お外見た？
 
 ### "！" + "ねこ" (1 occurrences)
 - Predicted: None
@@ -95246,41 +87198,17 @@ Accuracy: 98.66%
 - Examples:
   - あっ！ ふっ！
 
-### "！" + "へい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 追うんだ！ へい！
-
-### "！" + "へぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～！ へぇ～！
-
 ### "！" + "へっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - て～つ～お～！ へっ？
 
-### "！" + "べ～っ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - べ～っ！ べ～っ！
-
 ### "！" + "ほっとけ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ほっといていい！ ほっとけ！
-
-### "！" + "ほれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいコだ 頑張れ！ ほれほれ！
 
 ### "！" + "ほんと" (1 occurrences)
 - Predicted: None
@@ -95318,35 +87246,17 @@ Accuracy: 98.66%
 - Examples:
   - まったくっ！ もうっ！
 
-### "！" + "もしもし" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ロボットが… ロボットが 生きています！ もしもし！
-
 ### "！" + "もちろん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - うん！ もちろん！
 
-### "！" + "ものすごく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 雲です！ ものすごく大きな！
-
 ### "！" + "もんく" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - なんだ！？ おまえたち！ もんくがあるのか！？
-
-### "！" + "やぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル！ やぁ みんな！
 
 ### "！" + "やあ" (1 occurrences)
 - Predicted: None
@@ -95360,7 +87270,7 @@ Accuracy: 98.66%
 - Examples:
   - あはっ うそみたい！ できた！ やったあ！
 
-### "！" + "やったれや" (1 occurrences)
+### "！" + "やったれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -95378,12 +87288,6 @@ Accuracy: 98.66%
 - Examples:
   - いいよ！ やってみろ！
 
-### "！" + "やっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - フィオ あと頼むよ。 うん！ やっとく。
-
 ### "！" + "やっぱり" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95396,11 +87300,23 @@ Accuracy: 98.66%
 - Examples:
   - お願い！ やめないで！
 
+### "！" + "やめろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よせ！ やめろ！
+
 ### "！" + "やりぃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - わ～！ やりぃ！
+
+### "！" + "やりやがった" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - くそ！ やりやがったな！
 
 ### "！" + "やり方" (1 occurrences)
 - Predicted: None
@@ -95456,35 +87372,23 @@ Accuracy: 98.66%
 - Examples:
   - おい！ よせよ ふざけるな！
 
-### "！" + "よ～いしょ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よ～いしょ！ よ～いしょ！
-
-### "！" + "よ～く" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （アンリ） 落ちるぞ！ 静かに！ よ～く見てな！
-
 ### "！" + "ろくでなし" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - クズ！ ろくでなし！
 
-### "！" + "わ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わ…んっ！ わ…んっ！
-
 ### "！" + "わかった" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - わかった！ わかった！
+
+### "！" + "わたし" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どいて！ わたしのクツ！
 
 ### "！" + "わーい" (1 occurrences)
 - Predicted: None
@@ -95528,12 +87432,6 @@ Accuracy: 98.66%
 - Examples:
   - アチアチ！ アッチィ！
 
-### "！" + "アッパー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - アッパー！ アッパー！ ブロック！ ブロック！
-
 ### "！" + "アトレーユ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95552,23 +87450,11 @@ Accuracy: 98.66%
 - Examples:
   - あっ！ アハハ… よかった。
 
-### "！" + "アハハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 届くものか あ 痛っ！ アハハハハ…！
-
 ### "！" + "アマンディ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - レンツェル！ アマンディ！
-
-### "！" + "アメリカ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 運が開けた！ アメリカで百万長者になる！
 
 ### "！" + "アラゴルン" (1 occurrences)
 - Predicted: None
@@ -95629,12 +87515,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - テリー 気を付けろ！ イタリア製のニットだぞ！
-
-### "！" + "イタリア軍" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 見えた！ イタリア軍は まだ来てないわ。
 
 ### "！" + "イテッ" (1 occurrences)
 - Predicted: None
@@ -95708,6 +87588,12 @@ Accuracy: 98.66%
 - Examples:
   - 隊列を組め！ ウジ虫ども！
 
+### "！" + "ウッ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アラッ！ ウッ！
+
 ### "！" + "ウリぼう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95725,6 +87611,18 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - レゴラス！ エルフの目で何が見える？
+
+### "！" + "エルフィー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - エルフィー！ エルフィー やめて ダメ！
+
+### "！" + "エンジェル･アイ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よせ！ エンジェル･アイ！
 
 ### "！" + "エンジン" (1 occurrences)
 - Predicted: None
@@ -95750,29 +87648,29 @@ Accuracy: 98.66%
 - Examples:
   - 照明がショートするぞ！ オフにするんだ！
 
+### "！" + "オメエ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ああ！ オメエその顔 待てよ おいっ！
+
 ### "！" + "オ～" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - これこれ… ヨッ！ オ～ オット～。
 
-### "！" + "カマ" (1 occurrences)
+### "！" + "カルシファー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ママ 見て！ カマの底が抜ける！
+  - ハウル！ カルシファー！
 
-### "！" + "カマたき" (1 occurrences)
+### "！" + "カワイイー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 分かった！ カマたき手伝え！ うん！
-
-### "！" + "カーチス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こっちに来るな～っ！ カーチス！
+  - 豚さーん！ カワイイー！
 
 ### "！" + "カーテン" (1 occurrences)
 - Predicted: None
@@ -95798,17 +87696,29 @@ Accuracy: 98.66%
 - Examples:
   - 離せよ！ キモいんだけど！
 
-### "！" + "ギャ～" (1 occurrences)
+### "！" + "ギータ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ギャ～！ ギャ～！
+  - 頑張れ！ ギータ！
+
+### "！" + "クサレ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何を！ クサレ豚 やるか！
 
 ### "！" + "クス" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - クスの木！ クスの木！
+
+### "！" + "クソったれ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前はクソ能無しだ！ クソったれ!
 
 ### "！" + "クソッ" (1 occurrences)
 - Predicted: None
@@ -95862,25 +87772,13 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 心配だったの だから嬉しい！ コーヒーいれるね！
-
-### "！" + "ゴホっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 催涙ガスだ！ ゴホっ ゴホっ…。
+  - だからうれしい！ コーヒー入れるね！
 
 ### "！" + "ゴラム" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - わしら行かない ゴラム！ ゴラム！
-
-### "！" + "ゴング" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ～！ ゴングだ！
 
 ### "！" + "ゴンドール" (1 occurrences)
 - Predicted: None
@@ -95936,6 +87834,12 @@ Accuracy: 98.66%
 - Examples:
   - （耕一） 船を潮に立てろ！ シーアンカーを下ろすぞ！
 
+### "！" + "シータァ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あっ！ シータァ！
+
 ### "！" + "ジジ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -95984,12 +87888,6 @@ Accuracy: 98.66%
 - Examples:
   - やめて！ スハースは変わったの！
 
-### "！" + "スパイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 兵を集めろ！ スパイ狩りだ！
-
 ### "！" + "スペシャル" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96014,23 +87912,17 @@ Accuracy: 98.66%
 - Examples:
   - 起て！ セオデンの騎手たちよ！
 
-### "！" + "セオリー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 太陽の中にいま～す！ セオリー通りやってます。
-
-### "！" + "セッティング" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 一度止めて！ セッティングを変えるわ。
-
 ### "！" + "ソフィ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - トーニョ！ ソフィ！
+
+### "！" + "ソフィー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ハウルさん！ ソフィー！
 
 ### "！" + "タカシ" (1 occurrences)
 - Predicted: None
@@ -96073,6 +87965,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 信じられない！ ディー・ナ・シー！
+
+### "！" + "デブ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 変なの！ デブだし ウチの金魚のほうが かわいい。
 
 ### "！" + "トイレ" (1 occurrences)
 - Predicted: None
@@ -96170,18 +88068,6 @@ Accuracy: 98.66%
 - Examples:
   - ニセ物！ ニセ物！
 
-### "！" + "ニッコリ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 皆さん！ ニッコリして～！
-
-### "！" + "ネコババ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - こら～！ ネコババするな～！
-
 ### "！" + "ノロマ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96218,29 +88104,23 @@ Accuracy: 98.66%
 - Examples:
   - ブタ野郎！ ハゲタカめ！
 
+### "！" + "ハッ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （クミコ） 宗介！ ハッ！ クミコちゃん！
+
 ### "！" + "ハッハハ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フフフ！ ハッハハ～！
 
-### "！" + "ハハハハ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - また会おうぜ アメリカ野郎！ ハハハハ…。
-
 ### "！" + "ハーディ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ハーディ！ ハーディ！
-
-### "！" + "バイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行っちまえ！ バイ！
 
 ### "！" + "バイバイ" (1 occurrences)
 - Predicted: None
@@ -96266,12 +88146,6 @@ Accuracy: 98.66%
 - Examples:
   - 頑張れよ ボルフォント！ バスチアで会おうぜ！
 
-### "！" + "バック" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （フィオ） 下がって！ バックで入れるから。
-
 ### "！" + "バッタ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96289,12 +88163,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - マンガだ！ バリー･アレンは “フラッシュ”だ！
-
-### "！" + "バルス" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バルス！ バルス！
 
 ### "！" + "バン" (1 occurrences)
 - Predicted: None
@@ -96326,17 +88194,11 @@ Accuracy: 98.66%
 - Examples:
   - いかん！ パワーが足りない！
 
-### "！" + "フィオ" (1 occurrences)
+### "！" + "フィエロ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 待て！ フィオ！
-
-### "！" + "フィナーレ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よ～し ブタが後ろをとったぞ！ フィナーレだ！
+  - フィエロ！ フィエロ！
 
 ### "！" + "フィーニャ" (1 occurrences)
 - Predicted: None
@@ -96349,18 +88211,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - フロド！ フロド！
-
-### "！" + "フン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハハハ！ フン。
-
-### "！" + "ブタさん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キャ～っ！ ブタよ！ ブタさんよ！
 
 ### "！" + "ブラウン" (1 occurrences)
 - Predicted: None
@@ -96434,12 +88284,6 @@ Accuracy: 98.66%
 - Examples:
   - ベンジャミン！ ベンジャミン・エンゲル！
 
-### "！" + "ベーコン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちぇっ！ ちぇっ！ ベーコンなんか焦げちまえ！
-
 ### "！" + "ホビット" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96500,17 +88344,17 @@ Accuracy: 98.66%
 - Examples:
   - 何してる 映画を見ろ！ マセガキども！
 
-### "！" + "マルコ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - マルコ！ マルコ 聞いてる？
-
 ### "！" + "マーシー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ジョナス！ マーシー！
+
+### "！" + "ミミズ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - あれは！ ミミズだ！
 
 ### "！" + "メ～イ" (1 occurrences)
 - Predicted: None
@@ -96518,23 +88362,11 @@ Accuracy: 98.66%
 - Examples:
   - メ～イ！ メ～イ！
 
-### "！" + "ヤッホ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お～い！ ヤッホ～！ よかった～！
-
 ### "！" + "ヤツら" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 聞けよ！ ヤツら この件じゃ病気だ！
-
-### "！" + "ヤバい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヤバい！ ヤバいよ！ ヒャ～ 危ない！
 
 ### "！" + "ユパ" (1 occurrences)
 - Predicted: None
@@ -96590,12 +88422,6 @@ Accuracy: 98.66%
 - Examples:
   - へえ ルーク警部！ ルーク警部か！
 
-### "！" + "ルール" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 決闘を始める！ ルールは特にねえ。
-
 ### "！" + "レイ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96632,12 +88458,6 @@ Accuracy: 98.66%
 - Examples:
   - ブラック･スター！ ロスコ！
 
-### "！" + "ロボット" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 動いてるぞ！ 火を消せ！ ロボットだ！
-
 ### "！" + "ローハン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96661,12 +88481,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 彼はクソ狼だった！ ヴァンパイアだったんだ！
-
-### "！" + "ートマシン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ーこのバカ！ ートマシン！
 
 ### "！" + "一生" (1 occurrences)
 - Predicted: None
@@ -96698,11 +88512,11 @@ Accuracy: 98.66%
 - Examples:
   - 上がれ！ 上がれ！ 戻れ！
 
-### "！" + "上手" (1 occurrences)
+### "！" + "下がって" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ガイコツ！ 上手だねぇ。
+  - ダメ！ 下がって 下がって！
 
 ### "！" + "不届き者" (1 occurrences)
 - Predicted: None
@@ -96710,23 +88524,11 @@ Accuracy: 98.66%
 - Examples:
   - クズめ！ 不届き者！
 
-### "！" + "世界" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇ！ 女がどうした！ 世界の半分は女だ。
-
 ### "！" + "世話係" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 世話係だ！ 世話係が 服を持って行った！
-
-### "！" + "久しぶり" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うまし糧！ 久しぶりですね ちゃんとした朝ご飯なんて。
 
 ### "！" + "乗る" (1 occurrences)
 - Predicted: None
@@ -96739,12 +88541,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 魚雷を装填！ 乗員は戦闘配置に！
-
-### "！" + "乱暴" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 君しか世界は救えないんだ！ 乱暴は したくない。
 
 ### "！" + "乾杯" (1 occurrences)
 - Predicted: None
@@ -96782,12 +88578,6 @@ Accuracy: 98.66%
 - Examples:
   - 中止だ！ 人形を戻せ！
 
-### "！" + "人間相手" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 本当よ！ 人間相手に こんなに感じたの初めて！
-
 ### "！" + "人面魚" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96799,6 +88589,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - アイスランドに！ 今回は確かです！
+
+### "！" + "今度" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - くそっ！ 今度は被害者づらか！
 
 ### "！" + "伏せて" (1 occurrences)
 - Predicted: None
@@ -96830,35 +88626,11 @@ Accuracy: 98.66%
 - Examples:
   - とても興味があるわ！ 会えない？
 
-### "！" + "伝声管" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 給料は まけとくよ それに ほれ！ 伝声管も付けるぞ。
-
-### "！" + "似合います" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すっご～い！ 似合いますよ！
-
 ### "！" + "体" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 動く！ 体が動く 椅子に馴染んできたんだ！
-
-### "！" + "何とか" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - そんな暇はねえ！ 何とか持ち上げてみせらぁ！
-
-### "！" + "何事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大佐！ 何事ですか！
 
 ### "！" + "何者" (1 occurrences)
 - Predicted: None
@@ -96914,12 +88686,6 @@ Accuracy: 98.66%
 - Examples:
   - キャプテン！ 先に確保したほうがいいですか？
 
-### "！" + "入った" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - バカな！ 入ったとたんに バラバラにされちまうよ！
-
 ### "！" + "入れる" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96968,12 +88734,6 @@ Accuracy: 98.66%
 - Examples:
   - 出～る！ 出～る！
 
-### "！" + "出ちゃった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いけね！ 出ちゃった！
-
 ### "！" + "出ろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -96985,6 +88745,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 準備をしろ！ 出撃だ！
+
+### "！" + "出～る" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - う～！ う～！ 出～る！
 
 ### "！" + "分かった" (1 occurrences)
 - Predicted: None
@@ -97040,11 +88806,11 @@ Accuracy: 98.66%
 - Examples:
   - こんにちは！ 勝って帰って来たら 結婚して上げる！
 
-### "！" + "北" (1 occurrences)
+### "！" + "勝手に" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - えっ！ 北へ向かってるって!
+  - お前なんか！ 勝手にしろ！
 
 ### "！" + "北軍" (1 occurrences)
 - Predicted: None
@@ -97094,17 +88860,17 @@ Accuracy: 98.66%
 - Examples:
   - 何が味方だ！ 博士が殺されたんだぞ！
 
-### "！" + "危な" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ 落ちる 落ちる！ 危な～い！
-
 ### "！" + "危ねぇ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - バッカヤロ～！ 危ねぇ…。
+
+### "！" + "友達" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 町から逃げて！ 友達にも伝えて！
 
 ### "！" + "反共" (1 occurrences)
 - Predicted: None
@@ -97112,29 +88878,17 @@ Accuracy: 98.66%
 - Examples:
   - 小樓と蝶衣は人民の敵！ 反共分子だ！
 
-### "！" + "反対側" (1 occurrences)
+### "！" + "反対" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 気をつけて！ 反対側を歩くんだ！
-
-### "！" + "収容" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ふんばりな！ 収容はできない！
 
 ### "！" + "取って" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 掴んで！ 取って フロドさん！
-
-### "！" + "取り戻して" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 女の子と金貨をさらわれた！ 取り戻してくれ～っ！
 
 ### "！" + "号外" (1 occurrences)
 - Predicted: None
@@ -97166,17 +88920,17 @@ Accuracy: 98.66%
 - Examples:
   - 破滅を呼ぶ侵略者め！ 呪われろ！
 
-### "！" + "命ごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ひざまずけ！ 命ごいをしろ！ 小僧から石を取り戻せ！
-
 ### "！" + "喜べ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 婚約者が逃げた！ 喜べ！
+
+### "！" + "嘘" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 違う！ 嘘だ！
 
 ### "！" + "困ります" (1 occurrences)
 - Predicted: None
@@ -97196,12 +88950,6 @@ Accuracy: 98.66%
 - Examples:
   - 降りろ！ 地下へ向かえ！
 
-### "！" + "地中海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 目標発見！ 地中海の女王号だ！
-
 ### "！" + "地図" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97213,6 +88961,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 人殺し！ 地獄に堕ちろ！
+
+### "！" + "城壁" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 続け！ 城壁を守るのだ！
 
 ### "！" + "場所" (1 occurrences)
 - Predicted: None
@@ -97238,47 +88992,17 @@ Accuracy: 98.66%
 - Examples:
   - 壊れる～！ 壊れる！
 
-### "！" + "声" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 静かに！ 声をたてるんじゃないよ。
-
-### "！" + "変" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー！ 変な人が入って来ちゃった！
-
 ### "！" + "夏子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ダメだ！ 夏子さんがまだだ！
 
-### "！" + "夢" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル ありがとう！ 夢みたい！
-
-### "！" + "大きな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シッ！ 大きな声出しちゃダメよ。 フィオ あのな…！
-
 ### "！" + "大っ嫌い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ウソつき！ 大っ嫌い！
-
-### "！" + "大事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 止めろ！ 大事な人質だぞ！
 
 ### "！" + "大佐" (1 occurrences)
 - Predicted: None
@@ -97400,18 +89124,6 @@ Accuracy: 98.66%
 - Examples:
   - 何なのよ！ 寝てるんだけど！
 
-### "！" + "小僧" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ひざまずけ！ 命ごいをしろ！ 小僧から石を取り戻せ！
-
-### "！" + "小娘" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その石を大事に持ってろ！ 小娘の命と引きかえだ！
-
 ### "！" + "少尉" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97429,12 +89141,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - なに！ 山形が！
-
-### "！" + "工場" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やった！ 工場とは話がついてるの すぐ発注するね！
 
 ### "！" + "己" (1 occurrences)
 - Predicted: None
@@ -97460,29 +89166,11 @@ Accuracy: 98.66%
 - Examples:
   - 入って！ 席に着いてベルトを締めて。
 
-### "！" + "帰って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 艦隊が帰って来たぞ！ 帰って来たぞ！
-
 ### "！" + "帰ろう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 母さん！ 帰ろう！
-
-### "！" + "帽子屋" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 違うの！ 帽子屋に 本当になりたいのかってこと。
-
-### "！" + "幸せ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたはカブだけど いいカブだったよ！ 幸せにね！
 
 ### "！" + "座れ" (1 occurrences)
 - Predicted: None
@@ -97508,23 +89196,11 @@ Accuracy: 98.66%
 - Examples:
   - 落とせ！ 引きずり落とすのだ！！
 
-### "！" + "引きずり込まれる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 全速力！ 引きずり込まれるよ！
-
 ### "！" + "引き戻す" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 行動を迷うな！ 引き戻すぞ！
-
-### "！" + "引っ張り過ぎ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - カブ！ 引っ張り過ぎだよ！
 
 ### "！" + "弾くな" (1 occurrences)
 - Predicted: None
@@ -97538,29 +89214,11 @@ Accuracy: 98.66%
 - Examples:
   - こらっ鈴芽！ 待たんね！
 
-### "！" + "待ちなさい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ちょっと待ちなさい！ 待ちなさいってば！
-
 ### "！" + "待ちやがれ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 小汚い泥棒野郎め！ 待ちやがれ！
-
-### "！" + "待ってて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 私はソフィー！ 待ってて！ 私 きっと行くから！
-
-### "！" + "後ろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おい！ 後ろ どうだ？ アメリカ野郎は来てるか？
 
 ### "！" + "後ろ戸" (1 occurrences)
 - Predicted: None
@@ -97580,18 +89238,6 @@ Accuracy: 98.66%
 - Examples:
   - すごい動きだ！ 得点になるでしょうか？
 
-### "！" + "心臓" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 心臓！ 心臓があるのかい？
-
-### "！" + "必ず" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すばらしい！ 必ず手に入れてやる！
-
 ### "！" + "必要" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97604,23 +89250,17 @@ Accuracy: 98.66%
 - Examples:
   - 忌まわしい！ 忌まわしい！
 
-### "！" + "志" (1 occurrences)
+### "！" + "忘れられよう" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - バカ野郎！ 志をもっと大きく持て！
+  - パステルナーク！ 忘れられようか？
 
 ### "！" + "忘れんと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - お父さん あれも！ 忘れんと はよう！
-
-### "！" + "忙しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ボス） 早くおいで！ 忙しいんだから もう！
 
 ### "！" + "応戦" (1 occurrences)
 - Predicted: None
@@ -97658,12 +89298,6 @@ Accuracy: 98.66%
 - Examples:
   - 飲むな！ 急に飲んじゃダメだ！
 
-### "！" + "急ぎな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - しかたない 脱出！ 急ぎな！
-
 ### "！" + "急用" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97682,17 +89316,17 @@ Accuracy: 98.66%
 - Examples:
   - 指輪だ！ 恐ろしい！
 
+### "！" + "悪い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - グッドニュースだ！ 悪い魔女は死んだ！
+
 ### "！" + "愛国心" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 非常時に芝居なんか！ 愛国心はないの？
-
-### "！" + "愛想" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - チェっ！ 愛想のねえ野郎だぜ。
 
 ### "！" + "我が" (1 occurrences)
 - Predicted: None
@@ -97705,12 +89339,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ボリカ！ 戦争だよ！
-
-### "！" + "戦闘艇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒュ～！ 戦闘艇に女のコが乗ってらぁ。
 
 ### "！" + "戻らない" (1 occurrences)
 - Predicted: None
@@ -97736,18 +89364,6 @@ Accuracy: 98.66%
 - Examples:
   - ああ クソ！ 抜けな！
 
-### "！" + "押しまくれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 押せ！ 押しまくれ～！
-
-### "！" + "拍手" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かったか？ 分かったら拍手しろ！ 拍手！
-
 ### "！" + "持って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97760,23 +89376,11 @@ Accuracy: 98.66%
 - Examples:
   - いとしい！ いとしい！ いとしい！ 指輪！
 
-### "！" + "捕まえました" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボス！ 捕まえましたよ ボス！
-
 ### "！" + "捕まる" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 捕まる！ 捕まるよ！
-
-### "！" + "捜せ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （兵士） はっ！ 捜せ！
 
 ### "！" + "捨てて" (1 occurrences)
 - Predicted: None
@@ -97801,12 +89405,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 運転手！ 援助が必要です！
-
-### "！" + "撃ちまくれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～！ 何てことしやがる 撃て撃て！ 撃ちまくれ！
 
 ### "！" + "放して" (1 occurrences)
 - Predicted: None
@@ -97868,12 +89466,6 @@ Accuracy: 98.66%
 - Examples:
   - ロキシー･ハートは無罪！ 新聞で速報を！
 
-### "！" + "方向" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 大丈夫！ 方向は指輪が教えてくれる。
-
 ### "！" + "日" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -97886,17 +89478,11 @@ Accuracy: 98.66%
 - Examples:
   - こっちに来させろ！ 早うせい！
 
-### "！" + "時々" (1 occurrences)
+### "！" + "最後" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ありがとう！ 時々 お風呂に入ってね！
-
-### "！" + "景品" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 待ちな！ 景品が いなくなっちゃダメだよ。
+  - 戦え！ 最後の一人になろうとも！
 
 ### "！" + "最新式" (1 occurrences)
 - Predicted: None
@@ -97946,29 +89532,11 @@ Accuracy: 98.66%
 - Examples:
   - 何て事を！ 本気ですか？
 
-### "！" + "来やがれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - うるせぇ！ 来やがれ ブタ野郎！ 最後の勝負だ！
-
-### "！" + "来る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来る！ 来る！ こっちへ来る！ 頭 下げて！
-
 ### "！" + "次" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - はい！ 次の作戦は？
-
-### "！" + "欲しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すごい！ 欲しい！
 
 ### "！" + "止せ" (1 occurrences)
 - Predicted: None
@@ -97976,23 +89544,11 @@ Accuracy: 98.66%
 - Examples:
   - 止せ！ 止せ！ バカ野朗！
 
-### "！" + "止まっちゃった" (1 occurrences)
+### "！" + "止まれー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ああっ いけねえ！ 止まっちゃった！
-
-### "！" + "止まらねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ボス） 止まれ～！ 止まらねえと沈めるぞ～！
-
-### "！" + "止まらんと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 止まれ！ 止まらんと撃つぞ！
+  - 止まらねえと沈めるぞ！ 止まれー！
 
 ### "！" + "死" (1 occurrences)
 - Predicted: None
@@ -98042,29 +89598,11 @@ Accuracy: 98.66%
 - Examples:
   - 離せ！ 母さん！
 
-### "！" + "毎月" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - すげぇぞ！ 毎月 これをやってくれねえかなぁ。
-
 ### "！" + "気楽" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 俺はそこに行くんだ！ 気楽に行こうぜ！
-
-### "！" + "汚れてない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 選んで！ 汚れてないの これしかないんだ。
-
-### "！" + "決めた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 「てめぇ ずるいぞ！ 決めた通りにしろ！」。
 
 ### "！" + "泣きわめいて" (1 occurrences)
 - Predicted: None
@@ -98090,17 +89628,11 @@ Accuracy: 98.66%
 - Examples:
   - ソフィ！ パコ！ 浜辺に戻って！
 
-### "！" + "消えた" (1 occurrences)
+### "！" + "海賊" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - すごい！ 消えた！
-
-### "！" + "消えちゃう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル やめろ～！ 消えちゃうよ～！
+  - こんなに遅くなりやがって！ 海賊のクズども！
 
 ### "！" + "消去" (1 occurrences)
 - Predicted: None
@@ -98126,12 +89658,6 @@ Accuracy: 98.66%
 - Examples:
   - 残業！ 漁業体験の準備！
 
-### "！" + "火" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 動いてるぞ！ 火を消せ！ ロボットだ！
-
 ### "！" + "火事" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98144,29 +89670,11 @@ Accuracy: 98.66%
 - Examples:
   - アチチッ！ 火傷する！ バカ野郎！
 
-### "！" + "無事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ((ベルリーニ！ 無事だったのか!
-
 ### "！" + "無茶" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - やめろ！ 無茶だ！
-
-### "！" + "父さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータ！ 父さんは ウソつきじゃなかったんだ！
-
-### "！" + "牛" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゲンコツで来い！ 牛の所へ帰れ！
 
 ### "！" + "犯人" (1 occurrences)
 - Predicted: None
@@ -98198,6 +89706,12 @@ Accuracy: 98.66%
 - Examples:
   - （草太）消えたくない もっと生きたい！ 生きていたい！
 
+### "！" + "生きてる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - なめた！ 生きてる！
+
 ### "！" + "町" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98228,12 +89742,6 @@ Accuracy: 98.66%
 - Examples:
   - 〝酢〞 ああ！ 痛い！
 
-### "！" + "痛っ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル大好き！ よかった！ 痛っ！
-
 ### "！" + "皆さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98258,18 +89766,6 @@ Accuracy: 98.66%
 - Examples:
   - じっとしてろ！ 相棒！
 
-### "！" + "真下" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 『ゴリアテ』だ！ 真下にいるぞ！
-
-### "！" + "石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来ちゃダメ！ 石を捨てて 逃げて！
-
 ### "！" + "砲" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98293,24 +89789,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 程蝶衣！ 程蝶衣！
-
-### "！" + "空" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 親方！ 空から女の子が…。
-
-### "！" + "空中" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - かまわん！ 空中で たっぷり しめあげてやれ。
-
-### "！" + "突風" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしたんだ！ 突風です！ 大丈夫！
 
 ### "！" + "立った" (1 occurrences)
 - Predicted: None
@@ -98390,12 +89868,6 @@ Accuracy: 98.66%
 - Examples:
   - 緊急事態！ 緊急事態！
 
-### "！" + "罠" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル ダメ！ 罠よ！
-
 ### "！" + "耕一" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98408,12 +89880,6 @@ Accuracy: 98.66%
 - Examples:
   - バカ野郎！ 耳かよ！
 
-### "！" + "聖なる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - その光だ！ 聖なる光で ロボットの封印がとけたのだ！
-
 ### "！" + "聞いて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98425,12 +89891,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （美也子）おいッ！ 聞いてんのか コラ！
-
-### "！" + "聞こえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （老技師） でっけぇ声 出すな！ 聞こえとるわい。
 
 ### "！" + "聞こえる" (1 occurrences)
 - Predicted: None
@@ -98450,47 +89910,11 @@ Accuracy: 98.66%
 - Examples:
   - インドだよ！ 舞台はインド！
 
-### "！" + "船長" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行こう おばさん！ 船長とお呼び！
-
-### "！" + "艦内" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - はっ！ 艦内が手うすになった 隙をつかれました。
-
-### "！" + "色魔" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 来い！ 色魔野郎！
-
 ### "！" + "英雄" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ちくしょう！ 英雄を気取りたいんだな？
-
-### "！" + "荒地" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 動かないで！ 荒地の魔女の手下よ。
-
-### "！" + "落ちた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キャ～！ 落ちた！ 沈没する～！ 沈没する～！
-
-### "！" + "落ちる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あっ！ 落ちる 落ちる！ 危な～い！
 
 ### "！" + "落ち着いて" (1 occurrences)
 - Predicted: None
@@ -98522,12 +89946,6 @@ Accuracy: 98.66%
 - Examples:
   - は～い！ 行きましょう！
 
-### "！" + "行くな" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ((ベルリーニ！ 行くな！ ジーナをどうする気だ!
-
 ### "！" + "行っちまった" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98558,35 +89976,11 @@ Accuracy: 98.66%
 - Examples:
   - 助けて！ 襲われる！
 
-### "！" + "西部劇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハハハ…！ 西部劇じゃねえんだ そんなもの 当たるかよ。
-
-### "！" + "要塞" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 爆薬を使う？ バカ者！ 要塞をふっ飛ばす気か！
-
 ### "！" + "要石" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （草太）ダイジン！ 要石に戻れ！
-
-### "！" + "見えないっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコ・ロッソだ！ 見えないっ！
-
-### "！" + "見せて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 飛んでる～！ 見せて～。
 
 ### "！" + "見せ物" (1 occurrences)
 - Predicted: None
@@ -98599,12 +89993,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - ウィスコンシンの女たち！ 覚悟しとけよ！
-
-### "！" + "親方" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 親方～！ 親方～！
 
 ### "！" + "解ってる" (1 occurrences)
 - Predicted: None
@@ -98629,6 +90017,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 言え！ 言わぬか！
+
+### "！" + "訓練" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ひどい踊りだな！ 訓練を受けないとダメだ！
 
 ### "！" + "訴えて" (1 occurrences)
 - Predicted: None
@@ -98672,35 +90066,23 @@ Accuracy: 98.66%
 - Examples:
   - ほらね！ 誓ってる！
 
-### "！" + "読める" (1 occurrences)
+### "！" + "豚" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 読める！ 読めるぞ！
+  - 豚よ！ 豚さんよ！
+
+### "！" + "豚やろう" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - そうだ！ 豚やろうを叩きわれ！
 
 ### "！" + "質問" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - すぐ 来て！ 質問は もういいから！
-
-### "！" + "賭け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ！ 賭けだ 賭けができる！ 連合が胴元になるぞ！
-
-### "！" + "赤い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きれいね～ あっ 見て！ 赤い飛行機！
-
-### "！" + "走れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 軍隊だ！ 走れ シータ！
 
 ### "！" + "起きた" (1 occurrences)
 - Predicted: None
@@ -98750,29 +90132,11 @@ Accuracy: 98.66%
 - Examples:
   - 見ろ！ 輝くダイヤモンドだ！
 
-### "！" + "迎え" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - よかった！ 迎えに来てくれて ありがとうね。
-
 ### "！" + "近く" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あいつだ！ 近くにいる 行こう！
-
-### "！" + "追いつかれる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 蒸気をあげろ！ 追いつかれるぞ！
-
-### "！" + "追う" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 木だ！ あの木が みんな 持ってっちまう！ 追うんだ！
 
 ### "！" + "追え" (1 occurrences)
 - Predicted: None
@@ -98786,23 +90150,11 @@ Accuracy: 98.66%
 - Examples:
   - （草太）電車で移動してる！ 追わないと！
 
-### "！" + "追跡隊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何をボヤボヤしとる 火を消せ！ 追跡隊を組織しろ！
-
 ### "！" + "退却" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 退却！ 退却！
-
-### "！" + "退避" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 全員 退避！ 退避～！
 
 ### "！" + "逃げ" (1 occurrences)
 - Predicted: None
@@ -98815,6 +90167,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - つかまえた！ 逃げた！
+
+### "！" + "逃げる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - よせ！ 逃げるんだ！
 
 ### "！" + "逃亡者" (1 occurrences)
 - Predicted: None
@@ -98834,12 +90192,6 @@ Accuracy: 98.66%
 - Examples:
   - 革命に罪はない！ 造反有理！
 
-### "！" + "連合" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いいぞ！ 賭けだ 賭けができる！ 連合が胴元になるぞ！
-
 ### "！" + "遅れちゃう" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -98851,12 +90203,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どけろ！ 道をあけるんだ！
-
-### "！" + "違ぇねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ヒヒヒっ！ 違ぇねえ モグラも同じさ。
 
 ### "！" + "部屋" (1 occurrences)
 - Predicted: None
@@ -98894,23 +90240,17 @@ Accuracy: 98.66%
 - Examples:
   - 那 頼む！ 釈明してくれ！
 
-### "！" + "野郎" (1 occurrences)
+### "！" + "金" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - わあ～！ 野郎ども 引き揚げだ！
+  - 売らない！ 金はどうする！
 
 ### "！" + "金田" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ならどうする？ おい！ 金田！
-
-### "！" + "金貨" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - …と言ってますが！ 金貨半分？
 
 ### "！" + "鋳型" (1 occurrences)
 - Predicted: None
@@ -98935,18 +90275,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 門を開けろ！ 門を開けろ！
-
-### "！" + "開いて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - お願い！ 開いて！
-
-### "！" + "開けろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 開けろ！ 開けろ！
 
 ### "！" + "開店" (1 occurrences)
 - Predicted: None
@@ -98996,11 +90324,11 @@ Accuracy: 98.66%
 - Examples:
   - 隠れて！ 隠れて！
 
-### "！" + "隠れてた" (1 occurrences)
+### "！" + "離さないで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ママ！ いた！ 隠れてた！
+  - もっと強く抱いて！ 離さないで！
 
 ### "！" + "離さん" (1 occurrences)
 - Predicted: None
@@ -99013,12 +90341,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （ペジテ兵たち） やめろ！ 離すな！
-
-### "！" + "離れて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 出たよ！ 離れて。
 
 ### "！" + "離婚" (1 occurrences)
 - Predicted: None
@@ -99044,29 +90366,23 @@ Accuracy: 98.66%
 - Examples:
   - この恥知らず！ 面汚し！
 
-### "！" + "頑張りな" (1 occurrences)
+### "！" + "頑張って" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - あんた！ 頑張りな～！
+  - さあ 姉さん いきんで！ 頑張って！
+
+### "！" + "頑張れ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - しっかりな！ 頑張れ！
 
 ### "！" + "顔" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 右向け右！ 顔は正面！
-
-### "！" + "風呂場" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー！ 風呂場の棚いじった!
-
-### "！" + "飛行艇" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 沈没しない！ 飛行艇だぞ！
 
 ### "！" + "食うて" (1 occurrences)
 - Predicted: None
@@ -99092,12 +90408,6 @@ Accuracy: 98.66%
 - Examples:
   - バン！ 骨が死んだ！
 
-### "！" + "鬼ごっこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 立て！ 鬼ごっこは終わりだ！
-
 ### "！" + "魔女" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99122,12 +90432,6 @@ Accuracy: 98.66%
 - Examples:
   - 愛しのボディ！ ！
 
-### "！”" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - “ズドーン！” すごい！
-
 ### "）" + "≪" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99146,23 +90450,17 @@ Accuracy: 98.66%
 - Examples:
   - （警官） 『ひまわり』の人は 前山公園に避難してる！
 
-### "）" + "あ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （骨が鳴る音） あ痛たたた…。
-
 ### "）" + "あそこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （耕一） あそこへ海の水が集まって 山になってるんだ。
 
-### "）" + "あの" (1 occurrences)
+### "）" + "あなた" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （おかみ） あの子は どうしたんだい？
+  - （三葉の声） あなた バイト入れすぎ！
 
 ### "）" + "ありがてぇ" (1 occurrences)
 - Predicted: None
@@ -99170,35 +90468,23 @@ Accuracy: 98.66%
 - Examples:
   - （耕一） ありがてぇ これで針路がとれるぞ！
 
-### "）" + "あ～" (1 occurrences)
+### "）" + "あんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （カルシファー） あ～ やめろ～!
+  - （団員） あんなでかいのやるんですか？
 
-### "）" + "いいかげんに" (1 occurrences)
+### "）" + "いつ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （マルクル） いいかげんにしてください 怒りますよ！
+  - （司） いつの時代の人だよ お前は？
 
-### "）" + "いかにも" (1 occurrences)
+### "）" + "いや" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （マルクル） いかにも。
-
-### "）" + "いた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） いた！
-
-### "）" + "いって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） いってらっしゃ～い！
+  - （看護師） いや お母ちゃん 待ちはった？
 
 ### "）" + "ううっ" (1 occurrences)
 - Predicted: None
@@ -99206,29 +90492,11 @@ Accuracy: 98.66%
 - Examples:
   - （真砂） ううっ きゃああーっ！
 
-### "）" + "うぉ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） うぉ～！
-
-### "）" + "うっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - キレイな火だね。 （カルシファー） うっ。
-
 ### "）" + "うるさい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （鉄雄） うるさい あっちへ行ってろ！
-
-### "）" + "うわ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （機銃音） うわ～っ！
 
 ### "）" + "うわあああっ" (1 occurrences)
 - Predicted: None
@@ -99242,11 +90510,11 @@ Accuracy: 98.66%
 - Examples:
   - （一同） うわあっ 何がどうなってんだ？
 
-### "）" + "う～" (1 occurrences)
+### "）" + "うん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ルイ） う～ 寒い！ お前 上だ。 うん。
+  - （宗介） うん！
 
 ### "）" + "え" (1 occurrences)
 - Predicted: None
@@ -99260,6 +90528,12 @@ Accuracy: 98.66%
 - Examples:
   - （ルミ） ええやん 目玉焼きのせな！
 
+### "）" + "ええい" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （内麻呂） ええい じゃまだてするな！
+
 ### "）" + "ええー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99272,23 +90546,11 @@ Accuracy: 98.66%
 - Examples:
   - （軍人たち） おおっ 何だ？
 
-### "）" + "おそれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうかな？ 体の具合は。 （サリマン） おそれいります。
-
 ### "）" + "おっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （父） おっ ありがとう くたびれたかい？
-
-### "）" + "おとなしく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） おとなしくしておれよ。
 
 ### "）" + "おめえ" (1 occurrences)
 - Predicted: None
@@ -99301,6 +90563,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （大ババ） おやっ どうするんじゃ？
+
+### "）" + "おーし" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （マンマユート･ボス） おーし 豚が後ろをとったぞ！
 
 ### "）" + "お先に" (1 occurrences)
 - Predicted: None
@@ -99362,41 +90630,29 @@ Accuracy: 98.66%
 - Examples:
   - （町の人々） がんばれ！ がんばって！
 
-### "）" + "くい止めろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） くい止めろ 君は床に伏せていたまえ。
-
 ### "）" + "けがれて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （かぐや姫） けがれてなんかいないわ！
 
-### "）" + "こんがらがった" (1 occurrences)
+### "）" + "ここ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （カルシファー） こんがらがった呪いだね。
+  - （トシキ） ここからの放送じゃないだと？
 
-### "）" + "こんな" (1 occurrences)
+### "）" + "こん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （幸枝） こんな食中毒ってある？
+  - （環） こん男がうちに来ちょったやつ？
 
 ### "）" + "ご注文" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （店員） ご注文は お決まりになりましたか？
-
-### "）" + "ご苦労さん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） ご苦労さん。
 
 ### "）" + "ご覧" (1 occurrences)
 - Predicted: None
@@ -99410,23 +90666,11 @@ Accuracy: 98.66%
 - Examples:
   - （ヨシエ：のり子） さようなら。
 
-### "）" + "じゃ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ベッシー） じゃ 行って来ますね。
-
 ### "）" + "じゃあ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （男） じゃあな。
-
-### "）" + "すげぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） すげぇ…。
 
 ### "）" + "すごく" (1 occurrences)
 - Predicted: None
@@ -99434,41 +90678,23 @@ Accuracy: 98.66%
 - Examples:
   - （英語で） すごくキレイね！ 試してみていい？
 
-### "）" + "そいつ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （魚屋） そいつは うめぇぞ。 わしは魚 嫌いじゃ。
-
-### "）" + "そう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） そうさ 料理なんか やんないよ！
-
-### "）" + "そこ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （親方） そこで何してやがる メシはどうした！
-
 ### "）" + "それで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （看護師の母） それで お前 元気やったんか？
 
+### "）" + "そんな" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （小声） そんなこと言ったって草太さん！
+
 ### "）" + "そ～" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （ポニョ） そ～すけ。
-
-### "）" + "ただいま" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハニー） ただいま～！
 
 ### "）" + "ち" (1 occurrences)
 - Predicted: None
@@ -99493,12 +90719,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （鈴芽） でも やっつけたんですよね？
-
-### "）" + "でっけぇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （老技師） でっけぇ声 出すな！ 聞こえとるわい。
 
 ### "）" + "どうせ" (1 occurrences)
 - Predicted: None
@@ -99542,17 +90762,23 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽） ねえっ！ 後ろ戸の場所って！
 
+### "）" + "ねっ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （鈴芽：小声） ねっ 草太さんも一緒に！
+
 ### "）" + "のり子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （島さん） のり子さんのイス お願い。 は～い！
 
-### "）" + "はっ" (1 occurrences)
+### "）" + "はい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （兵士） はっ！ 捜せ！
+  - （新井） はい！
 
 ### "）" + "は～い" (1 occurrences)
 - Predicted: None
@@ -99560,11 +90786,11 @@ Accuracy: 98.66%
 - Examples:
   - （青年） は～い 分かりました～！
 
-### "）" + "へ～い" (1 occurrences)
+### "）" + "ばくだん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ポルコ） へ～い。
+  - （空賊連合ボスＥ） ばくだんも自己負担なのか？
 
 ### "）" + "ほい" (1 occurrences)
 - Predicted: None
@@ -99578,29 +90804,17 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽：小声） ほら 新幹線はやっ！
 
-### "）" + "まぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ピッコロ） まぁ 気持は分かるよ。
-
 ### "）" + "まさか" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （デモ参加者たち） まさか ホントか？
 
-### "）" + "まだまだ" (1 occurrences)
+### "）" + "また" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ボス） まだまだ これからよ！
-
-### "）" + "もう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） もうウロウロしないでください。
+  - （老婦人） またケーキを焼けるでしょ？
 
 ### "）" + "もしもし" (1 occurrences)
 - Predicted: None
@@ -99608,11 +90822,11 @@ Accuracy: 98.66%
 - Examples:
   - （キタノシオリ） もしもし おじさん？
 
-### "）" + "やぁ" (1 occurrences)
+### "）" + "もっと" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ハウル） やぁ ごめん ごめん 捜したよ。
+  - （ジーナ） もっと スピード出ない？
 
 ### "）" + "やめろ" (1 occurrences)
 - Predicted: None
@@ -99637,18 +90851,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （人足たち） よいしょ！ よいしょ！
-
-### "）" + "よう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おはよう！ （ルイ） よう 待ちな。
-
-### "）" + "よく" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） よく分かるね ママ。
 
 ### "）" + "わぁ" (1 occurrences)
 - Predicted: None
@@ -99680,12 +90882,6 @@ Accuracy: 98.66%
 - Examples:
   - （芹澤） イトコだってのはうそだよな？
 
-### "）" + "ウム" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （将軍） ウム？
-
 ### "）" + "エイサっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99716,41 +90912,17 @@ Accuracy: 98.66%
 - Examples:
   - （ハナ） カヨさん速い！
 
-### "）" + "クソっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ルイ） クソっ どこ行った…。
-
-### "）" + "コンタクト" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ピッコロ） コンタクト！
-
 ### "）" + "ゴーゴー" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （少女たち） ゴーゴー キキ！ ゴーゴー キキ！
 
-### "）" + "サリマン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （国王） サリマン！
-
 ### "）" + "サ～ツキ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （みちこ） サ～ツキちゃ～ん！
-
-### "）" + "シータ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータだ！ （一同） シータだ！
 
 ### "）" + "シ～" (1 occurrences)
 - Predicted: None
@@ -99788,23 +90960,17 @@ Accuracy: 98.66%
 - Examples:
   - （ダイジン） ニャオォォオォアォア！
 
-### "）" + "ハイ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 笑え～！ （カメラマン） ハイ！
-
 ### "）" + "ハッ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （物音） ハッ！
 
-### "）" + "ハハハハ" (1 occurrences)
+### "）" + "ハハ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ムスカ） ハハハハ…。
+  - （ポルコ） ハハ 届くものか イテッ！
 
 ### "）" + "フジモト" (1 occurrences)
 - Predicted: None
@@ -99812,23 +90978,17 @@ Accuracy: 98.66%
 - Examples:
   - （グランマンマーレ） フジモト…。
 
-### "）" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ボス） ブタを ひっぺがした！
-
-### "）" + "ヘヘヘ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ドーラ） ヘヘヘ…。
-
 ### "）" + "ポニョ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （ポニョ） ポニョ 宗介 好き！
+
+### "）" + "ポルコ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （フィオ） ポルコ 大失敗！
 
 ### "）" + "マキ" (1 occurrences)
 - Predicted: None
@@ -99854,12 +91014,6 @@ Accuracy: 98.66%
 - Examples:
   - （勅使河原） 三葉！ お前 今までどこに？
 
-### "）" + "下がって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （フィオ） 下がって！ バックで入れるから。
-
 ### "）" + "人前" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -99872,11 +91026,11 @@ Accuracy: 98.66%
 - Examples:
   - （英語で） 人生で一番 楽しかった日はいつですか？
 
-### "）" + "今夜" (1 occurrences)
+### "）" + "今" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （ピッコロ） 今夜あたり着くと思って 待っとったよ。
+  - （グランマンマーレ） 今は静かにおやすみ 子供達。
 
 ### "）" + "似た" (1 occurrences)
 - Predicted: None
@@ -99884,47 +91038,23 @@ Accuracy: 98.66%
 - Examples:
   - （瀧） 似たようなモンじゃねえか！
 
-### "）" + "何用" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） 何用かな？
-
-### "）" + "俺" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ポルコの声） 俺の横を ベルリーニのヤツが飛んでいた。
-
 ### "）" + "優雅" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （相模） 優雅なものでございましょ？
 
+### "）" + "兄ちゃん" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （節子） 兄ちゃん 兄ちゃん 兄ちゃん！
+
 ### "）" + "先生" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （千草貴子） 先生 トイレ行ってもいい？
-
-### "）" + "光" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 光は常に 雲の渦の中心を指している。
-
-### "）" + "出ろ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （兵士） 出ろ。
-
-### "）" + "出来た" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （おかみ） 出来たよ。 すまねえ。
 
 ### "）" + "千果" (1 occurrences)
 - Predicted: None
@@ -99980,29 +91110,11 @@ Accuracy: 98.66%
 - Examples:
   - （結絃） 姉ちゃん 何て言ったんだ？
 
-### "）" + "嫌い" (1 occurrences)
+### "）" + "子供" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - （海） 嫌いになったんなら はっきり そう言って。
-
-### "）" + "安っぽい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （荒地の魔女） 安っぽい店 安っぽい帽子。
-
-### "）" + "小僧" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） 生きてらぁ！ （老技師） 小僧だ！
-
-### "）" + "小鬼" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ポム） 小鬼だ 小鬼がおる。
+  - （少年Ｄ） 子供がおるんや なんやぁ？
 
 ### "）" + "山火事" (1 occurrences)
 - Predicted: None
@@ -100010,53 +91122,17 @@ Accuracy: 98.66%
 - Examples:
   - （三葉） 山火事です 逃げてください！
 
-### "）" + "崩れ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） 崩れが止まった！
-
 ### "）" + "平気" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （ナオミ） 平気よ ちょっと遅れてるだけよ きっと。
 
-### "）" + "引き分け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （銃声） 引き分けなんかに しねえからな！
-
-### "）" + "引っ込まない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） 引っ込まないと 鼻がなくなりますよ。
-
-### "）" + "待たれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） 待たれよ。
-
-### "）" + "待ちやがれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （親方） 待ちやがれ～！
-
 ### "）" + "急いで" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （息をきらして） 急いで！
-
-### "）" + "手ぬるい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （将軍） 手ぬるい！
 
 ### "）" + "持ってる" (1 occurrences)
 - Predicted: None
@@ -100070,17 +91146,17 @@ Accuracy: 98.66%
 - Examples:
   - （川井） 数学のノート 提出まだかな？
 
+### "）" + "早く" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ヨシエ） 早く クジラさんよ。 （ハナ） 立派ねぇ！
+
 ### "）" + "月" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （新井） 月が出ました！ 町の明かりが見えます！
-
-### "）" + "止まれ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ボス） 止まれ～！ 止まらねえと沈めるぞ～！
 
 ### "）" + "死んでる" (1 occurrences)
 - Predicted: None
@@ -100088,35 +91164,17 @@ Accuracy: 98.66%
 - Examples:
   - （はるか） 死んでる… なんで？
 
-### "）" + "母ちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マッジ） 母ちゃんの代わりに来たの。
-
 ### "）" + "汚い" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （フジモト） 汚い！ 汚いぞ！
 
-### "）" + "海賊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マッジ） 海賊？ 見る～！
-
 ### "）" + "消化器" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （軍人たち） 消化器だ 早く早く！ 大丈夫か？
-
-### "）" + "港町" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マルクル） あれ？ 誰だろう？ （カルシファー） 港町！
 
 ### "）" + "滋養" (1 occurrences)
 - Predicted: None
@@ -100129,24 +91187,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （ミキ） 焼きうどんとか どうです？
-
-### "）" + "王陛下" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （サリマン） 王陛下。 （国王） いや そのまま。
-
-### "）" + "生きてらぁ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （シャルル） 生きてらぁ！ （老技師） 小僧だ！
-
-### "）" + "生きてる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 生きてる！ オイラ 自由だ～！
 
 ### "）" + "男子" (1 occurrences)
 - Predicted: None
@@ -100178,41 +91218,29 @@ Accuracy: 98.66%
 - Examples:
   - （デモの参加者たち） 税制改革を撤回せよ～！
 
+### "）" + "立派" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ヨシエ） 早く クジラさんよ。 （ハナ） 立派ねぇ！
+
 ### "）" + "竜宮城" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （カヨ） 竜宮城だと思ってたの？ アハハハ！
 
+### "）" + "竜巻" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （耕一） 竜巻か!
+
 ### "）" + "組紐" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （瀧の声） 組紐とか これ無理だろ？
-
-### "）" + "続け" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （将軍） 続け～！
-
-### "）" + "緊急" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 緊急事態につき 私が臨時に指揮をとる。
-
-### "）" + "繰り返します" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ラジオ） 繰り返します 「次は お前だ ブタ出て来い」。
-
-### "）" + "美しい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カーチス） 美しい…。
 
 ### "）" + "聞いとん" (1 occurrences)
 - Predicted: None
@@ -100238,12 +91266,6 @@ Accuracy: 98.66%
 - Examples:
   - （軍人） 腹ばいになり 手足を広げろ！
 
-### "）" + "航海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ムスカ） 航海は極めて順調ですよ。
-
 ### "）" + "船" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100256,6 +91278,12 @@ Accuracy: 98.66%
 - Examples:
   - （鈴芽） 草太さんっ 起きてよおっ！
 
+### "）" + "落ちる" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （三葉） 落ちる この目で見たの！
+
 ### "）" + "行って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100267,6 +91295,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （草太） 要石に戻って ミミズを抑えろ！
+
+### "）" + "見せて" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （ヨシエ：のり子） 見せて。 うん！
 
 ### "）" + "見た" (1 occurrences)
 - Predicted: None
@@ -100286,6 +91320,12 @@ Accuracy: 98.66%
 - Examples:
   - （清太） 見てみ 兄ちゃん うまいで！
 
+### "）" + "親分" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （団員） 親分 早くー 早く！
+
 ### "）" + "親父さん" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100298,6 +91338,12 @@ Accuracy: 98.66%
 - Examples:
   - （月岡彰） 誰が殺し合いなんかするかよ なあ？
 
+### "）" + "豚" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - （マンマユート･ボス） 豚をひっぺがした！
+
 ### "）" + "赤" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100309,12 +91355,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （山形） 路地に逃げ込んだぞ 追え～！
-
-### "）" + "車" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ハニー） 車を待たせてあるの 行かなきゃ。
 
 ### "）" + "違う" (1 occurrences)
 - Predicted: None
@@ -100334,29 +91374,11 @@ Accuracy: 98.66%
 - Examples:
   - （川田） 鍋のフタに双眼鏡か 何しに来た？
 
-### "）" + "雨漏り" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （カルシファー） 雨漏りしてる オイラ 消えちゃうよ～。
-
-### "）" + "飛ばねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （ポルコ） 飛ばねえブタは ただのブタだ。
-
 ### "）" + "食い止めろ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （警護たち） 食い止めろ！ クソッ！
-
-### "）" + "騒ぐ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （アンリ） 騒ぐんじゃねえ！
 
 ### "－" + "あっ" (1 occurrences)
 - Predicted: None
@@ -100418,6 +91440,12 @@ Accuracy: 98.66%
 - Examples:
   - 上部にはこう書かれている： 私は至高の教皇を選ぶ。
 
+### "＞" + "空襲" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ＜くうしゅう＞ 空襲？
+
 ### "？" + "―" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100465,12 +91493,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - たいやき？ あんこが入っているお菓子？
-
-### "？" + "あ～" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どこ？ どこ 行った？ あ～ 隠れてる～！
 
 ### "？" + "いいえ" (1 occurrences)
 - Predicted: None
@@ -100568,12 +91590,6 @@ Accuracy: 98.66%
 - Examples:
   - ホントですか？ おくさん！
 
-### "？" + "おっとっと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ソフィー ケガはない？ おっとっと…。
-
 ### "？" + "おーい" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100585,12 +91601,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どんな気持ちで？ お人好しの馬鹿とでも思った？
-
-### "？" + "お付き合い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - では お茶など いかがでしょう？ お付き合い願えますか？
 
 ### "？" + "お偉い" (1 occurrences)
 - Predicted: None
@@ -100688,6 +91698,18 @@ Accuracy: 98.66%
 - Examples:
   - ソヨンが育てる？ くだらない話はやめろ。
 
+### "？" + "けが" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - びょうきかな？ けがしてる？
+
+### "？" + "こいつ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 月末だぜ 誰が金をくれるんだ？ こいつの母親か？
+
 ### "？" + "こいつら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100706,12 +91728,6 @@ Accuracy: 98.66%
 - Examples:
   - 彼が狂った？ こんなふうに？ これよりひどかったか？
 
-### "？" + "ごはん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - おなか へってるだろ？ ごはんにしよう。
-
 ### "？" + "ご婦人" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100729,12 +91745,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - またカラス？ ご飯をあげたから お礼に？
-
-### "？" + "さあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - シータを狙ってるの？ さあ…。
 
 ### "？" + "さっさと" (1 occurrences)
 - Predicted: None
@@ -100760,23 +91770,29 @@ Accuracy: 98.66%
 - Examples:
   - しぬ～？ しぬ～？
 
-### "？" + "じいさん" (1 occurrences)
+### "？" + "じゃ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - どうしたの？ じいさん。 ウム…。
+  - 分かるわよね？ じゃ！
 
-### "？" + "じっちゃん" (1 occurrences)
+### "？" + "じょうけん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - どこへ行っちまったのかな？ じっちゃん！ じっちゃん！
+  - ただじゃ やらないってこと？ じょうけんは？
 
 ### "？" + "すき" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - えぇ ええ？ すきじゃないの？ だいじんのこと！
+
+### "？" + "すぐ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ほんとう？ すぐいきます！
 
 ### "？" + "すごく" (1 occurrences)
 - Predicted: None
@@ -100802,12 +91818,6 @@ Accuracy: 98.66%
 - Examples:
   - 僕は寝てたのか？ ずっと寝てたのか？
 
-### "？" + "ず～っと" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ゴンドア？ ず～っと北の山奥だね。
-
 ### "？" + "せっせと" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100832,12 +91842,6 @@ Accuracy: 98.66%
 - Examples:
   - でもその前には？ そこにはどうやって？
 
-### "？" + "そりゃあ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ああ？ そりゃあ 戦争で稼ぐヤツは悪党さ。
-
 ### "？" + "そんな" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100856,6 +91860,12 @@ Accuracy: 98.66%
 - Examples:
   - ぼくだけかな？ だんだん大きくなってない？
 
+### "？" + "ち" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ち！ わかる！？ ち！！
+
 ### "？" + "って" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -100867,6 +91877,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 貴様 一体何者だ？ てめえもホモ野郎か？
+
+### "？" + "で" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ？ でもなんで？
 
 ### "？" + "と" (1 occurrences)
 - Predicted: None
@@ -100886,11 +91902,11 @@ Accuracy: 98.66%
 - Examples:
   - 私の仕事がしたいの？ どうぞお好きに。
 
-### "？" + "どちら" (1 occurrences)
+### "？" + "どこどこ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 敵？ 味方？ どちらでも同じことさ。
+  - ハウル？ どこどこ？
 
 ### "？" + "どれ" (1 occurrences)
 - Predicted: None
@@ -100928,11 +91944,11 @@ Accuracy: 98.66%
 - Examples:
   - 何？ なんでしょう？
 
-### "？" + "ねぇ" (1 occurrences)
+### "？" + "はい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - これ おかしくない？ ねぇ 見て！ ハウルの城が来てる。
+  - 何か古い？ はい。
 
 ### "？" + "はくは" (1 occurrences)
 - Predicted: None
@@ -100952,11 +91968,11 @@ Accuracy: 98.66%
 - Examples:
   - それは何だ？ ひがみか？
 
-### "？" + "へっ" (1 occurrences)
+### "？" + "ひどい" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 誰が そのシャツを縫うんだい？ へっ？
+  - 大丈夫？ ひどい事されたの？
 
 ### "？" + "ほか" (1 occurrences)
 - Predicted: None
@@ -100970,17 +91986,17 @@ Accuracy: 98.66%
 - Examples:
   - 母さんをどうするの？ ほっといていいの？
 
+### "？" + "ほら" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ほらね？ ほらね？
+
 ### "？" + "まあ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - フランク？ まあ！
-
-### "？" + "まいて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 尾行されなかったか？ まいてやったよ。
 
 ### "？" + "まさか" (1 occurrences)
 - Predicted: None
@@ -101006,12 +92022,6 @@ Accuracy: 98.66%
 - Examples:
   - 本当に？ やあ 子供たち！
 
-### "？" + "よかった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 引っ越し？ よかった。
-
 ### "？" + "よせ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101029,12 +92039,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - えっ？ わたしに くれるの？
-
-### "？" + "わっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 気分はどう？ わっ こら 待て 待てったら…。
 
 ### "？" + "わッ" (1 occurrences)
 - Predicted: None
@@ -101083,6 +92087,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - アフリカにいたって？ アフリカのどこに？
+
+### "？" + "アメリカ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ご両親が？ アメリカから？
 
 ### "？" + "アルフォンソ" (1 occurrences)
 - Predicted: None
@@ -101216,12 +92226,6 @@ Accuracy: 98.66%
 - Examples:
   - 君は？ グロリアって？
 
-### "？" + "ケガ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 苦しいの？ ケガをしてるのね。
-
 ### "？" + "ケンカ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101239,6 +92243,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 怖いか？ コスチャを殺したときも怖かったか？
+
+### "？" + "コペルニクス" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - パスツールは？ コペルニクスは？
 
 ### "？" + "コンプトン" (1 occurrences)
 - Predicted: None
@@ -101366,18 +92376,6 @@ Accuracy: 98.66%
 - Examples:
   - ふふっ 別人やろ？ チビたち平気？
 
-### "？" + "チャウ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ピン 戻ったの？ チャウさんに？
-
-### "？" + "チャウ･モウワン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - だれを？ チャウ･モウワン？
-
 ### "？" + "チャンソク" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101492,6 +92490,12 @@ Accuracy: 98.66%
 - Examples:
   - ヒ～テラーとは何だ？ ドイツ語はできるだろう？
 
+### "？" + "ドドン" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - アイスクリームは いかが？ ドドンと張ってみろ！
+
 ### "？" + "ドライマン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101540,12 +92544,6 @@ Accuracy: 98.66%
 - Examples:
   - 幻覚か？ ネズミの亡霊か？
 
-### "？" + "ハウル" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハウル？ ハウルね。
-
 ### "？" + "ハグ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101564,11 +92562,11 @@ Accuracy: 98.66%
 - Examples:
   - 何の仕事だ？ ハッシシか？ クスリか？
 
-### "？" + "バカ者" (1 occurrences)
+### "？" + "ハハハハ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 爆薬を使う？ バカ者！ 要塞をふっ飛ばす気か！
+  - ん？ ハハハハ！
 
 ### "？" + "バギンズ" (1 occurrences)
 - Predicted: None
@@ -101588,17 +92586,17 @@ Accuracy: 98.66%
 - Examples:
   - この服は何？ バーゲンの電気のカサ？
 
-### "？" + "パズー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 名前は？ パズー。
-
 ### "？" + "パパ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 私に？ パパに？
+
+### "？" + "ヒョンソ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - お前は誰だ？ ヒョンソと一緒にいたのか？
 
 ### "？" + "ビル" (1 occurrences)
 - Predicted: None
@@ -101624,6 +92622,12 @@ Accuracy: 98.66%
 - Examples:
   - 継続の申し立てはした？ ピーボディ対ヘンダーソンの件？
 
+### "？" + "ファミリー" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 何者だ？ ファミリーは？
+
 ### "？" + "フフ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101641,12 +92645,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - お待たせした？ フリンさん？
-
-### "？" + "ブタ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - えっ？ ブタは殺しは やらねえんだ。
 
 ### "？" + "ブチ壊しだ" (1 occurrences)
 - Predicted: None
@@ -101726,6 +92724,12 @@ Accuracy: 98.66%
 - Examples:
   - ひげそり？ ポマード？ ブラッシング？
 
+### "？" + "ポルコ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ねえ ジーナさんてどんな人？ ポルコも恋したの？
+
 ### "？" + "ポーカー" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101768,12 +92772,6 @@ Accuracy: 98.66%
 - Examples:
   - 誰？ ミスタ・ホワイト？
 
-### "？" + "ムチャ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 引っ越し？ ムチャだよ！ あっちは空っぽだよ！
-
 ### "？" + "ムングァン" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101786,17 +92784,17 @@ Accuracy: 98.66%
 - Examples:
   - 川で？ メイも行く！
 
+### "？" + "モニタ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - どういうことだ！？ モニタしていたのなら何故？
+
 ### "？" + "ヤダ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - へぇ あの子が？ ヤダよ こんなボロ傘。
-
-### "？" + "ヤツら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 手伝うか？ ヤツらを よそに引っ張って行くんだ。
 
 ### "？" + "ヨハンセン" (1 occurrences)
 - Predicted: None
@@ -101966,12 +92964,6 @@ Accuracy: 98.66%
 - Examples:
   - 賛成？ 反対？ 中立？
 
-### "？" + "乗せない" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 乗せるの？ 乗せないの？ どっちかにして！
-
 ### "？" + "事故" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102020,12 +93012,6 @@ Accuracy: 98.66%
 - Examples:
   - で？ 今更 手話 覚えたって？
 
-### "？" + "今頃" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何です？ 今頃 連絡して来て… あなた 何をやってたの？
-
 ### "？" + "他所" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102050,25 +93036,13 @@ Accuracy: 98.66%
 - Examples:
   - トリックは何だ？ 伝える方法は？
 
-### "？" + "体" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうかな？ 体の具合は。 （サリマン） おそれいります。
-
-### "？" + "何か" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうにかならないの？ 何か方法は？
-
 ### "？" + "何人" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - そうだろ？ 何人のお産を見た？
 
-### "？" + "何千" (1 occurrences)
+### "？" + "何千キロ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -102152,12 +93126,6 @@ Accuracy: 98.66%
 - Examples:
   - どなたかいますか？ 入りますよ？
 
-### "？" + "具合" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしたんだ？ 具合でも悪いのか？ フィオ…？
-
 ### "？" + "内緒話" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102182,12 +93150,6 @@ Accuracy: 98.66%
 - Examples:
   - 誰だ？ 出てこい！
 
-### "？" + "分かったら" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 分かったか？ 分かったら拍手しろ！ 拍手！
-
 ### "？" + "初対面" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102200,12 +93162,6 @@ Accuracy: 98.66%
 - Examples:
   - いつからボスになった？ 別れたいなら そう言え！
 
-### "？" + "前" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やらせてくれない？ 前の図面もあるし。
-
 ### "？" + "助ける" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102217,12 +93173,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - このままでいい？ 包む？
-
-### "？" + "化けて" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何？ 化けてたんだ！ お前はママに知らせろ！
 
 ### "？" + "単なる" (1 occurrences)
 - Predicted: None
@@ -102288,7 +93238,7 @@ Accuracy: 98.66%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - 敵？ 味方？ どちらでも同じことさ。
+  - 敵？ 味方？
 
 ### "？" + "呼んだ" (1 occurrences)
 - Predicted: None
@@ -102338,12 +93288,6 @@ Accuracy: 98.66%
 - Examples:
   - 一体なんだ？ 国家社会主義ではないか？
 
-### "？" + "地中海" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - この人達 みんな 空賊なの？ 地中海じゅうのゴミさ。
-
 ### "？" + "地球" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102367,12 +93311,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - それで、誰が生きてるんだ？ 声を上げろ。
-
-### "？" + "変" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 荒地から？ 変だなぁ。
 
 ### "？" + "夕べ" (1 occurrences)
 - Predicted: None
@@ -102415,6 +93353,12 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - じゃあ誰が？ 太后様！ -大臣、それを聞くか？
+
+### "？" + "夫" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 拘束服か？ 夫か？
 
 ### "？" + "失せろ" (1 occurrences)
 - Predicted: None
@@ -102469,12 +93413,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （結絃）あれ？ 姉ちゃんは？
-
-### "？" + "子ネズミ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やぁ 何か お探しかな？ 子ネズミちゃん。
 
 ### "？" + "字" (1 occurrences)
 - Predicted: None
@@ -102548,12 +93486,6 @@ Accuracy: 98.66%
 - Examples:
   - なるほど 払いは現金？ 小切手？
 
-### "？" + "屁" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何？ 屁？
-
 ### "？" + "居心地" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102577,12 +93509,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 火事は？ 干し草置き場が燃えたろ？
-
-### "？" + "平気" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - トイレは？ 平気だよ。
 
 ### "？" + "幽鬼" (1 occurrences)
 - Predicted: None
@@ -102626,6 +93552,12 @@ Accuracy: 98.66%
 - Examples:
   - なら何だ？ 強姦か？ 科学を強姦しに来たのか？
 
+### "？" + "役" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - それが どうした？ 役に立つのか？
+
 ### "？" + "彼ら" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -102650,7 +93582,7 @@ Accuracy: 98.66%
 - Examples:
   - どこへ行く？ 待てよ… 冗談だろ？
 
-### "？" + "怒んな" (1 occurrences)
+### "？" + "怒ん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -102667,12 +93599,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - 我々のも それぞれだろ？ 思考の写しなのでは？
-
-### "？" + "急いでんだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何？ 急いでんだから早く！
 
 ### "？" + "恐くなかった" (1 occurrences)
 - Predicted: None
@@ -102740,11 +93666,23 @@ Accuracy: 98.66%
 - Examples:
   - 撒いたか？ 撒いたよな？
 
+### "？" + "攻撃" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ なに？ 攻撃？
+
 ### "？" + "救急車" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - 電話？ 救急車？
+
+### "？" + "教えろ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 誰が作った？ 教えろ！
 
 ### "？" + "整理" (1 occurrences)
 - Predicted: None
@@ -102877,12 +93815,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どれだけ偉くなった？ 村の先生か？
-
-### "？" + "条件" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - タダじゃやらないってこと？ 条件は？
 
 ### "？" + "来ちゃ" (1 occurrences)
 - Predicted: None
@@ -103034,12 +93966,6 @@ Accuracy: 98.66%
 - Examples:
   - 売国奴だと？ 濡れ衣だ！
 
-### "？" + "無事" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - みんな 無事だった？ 無事なもんかい！
-
 ### "？" + "無意識" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103051,12 +93977,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （草太･ルミ）え？ -（ミキ）え？ 焼きうどんに？
-
-### "？" + "煙" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ん？ 煙のにおいがする 山小屋でもあるのかしら…。
 
 ### "？" + "熱い" (1 occurrences)
 - Predicted: None
@@ -103075,12 +93995,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - どうだった？ 熱帯の蚊にかまれた？
-
-### "？" + "父ちゃん" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ポルコは？ 父ちゃんと難しい話をしてるよ。
 
 ### "？" + "父親" (1 occurrences)
 - Predicted: None
@@ -103124,17 +94038,17 @@ Accuracy: 98.66%
 - Examples:
   - ヒーローはどっちに？ 現実？ 虚構？
 
-### "？" + "男" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - どうしても どかねえか？ 男ならゲンコツで通れ。
-
 ### "？" + "男子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - （千果） なー？ 男子ってバカやろお？
+
+### "？" + "町" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 肉を食うゾンビ？ 町にゾンビが？
 
 ### "？" + "番号" (1 occurrences)
 - Predicted: None
@@ -103189,18 +94103,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - あなたは だ～れ？ 真っ黒クロスケ？
-
-### "？" + "眠れねえ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ん…？ 眠れねえのか？
-
-### "？" + "知ってる" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何者なんだ？ 知ってる奴か？
 
 ### "？" + "知らねえ" (1 occurrences)
 - Predicted: None
@@ -103286,12 +94188,6 @@ Accuracy: 98.66%
 - Examples:
   - 若者？ 老人？
 
-### "？" + "聞いた" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ペンドラゴン？ 聞いたことある名だね。
-
 ### "？" + "聞いて" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103364,6 +94260,18 @@ Accuracy: 98.66%
 - Examples:
   - 子供はどこに居る？ 若者は？
 
+### "？" + "苦い" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 甘い？ 苦い？
+
+### "？" + "草太" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - えっ？ 草太さん!
+
 ### "？" + "虎拳" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103423,12 +94331,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - そなたの國は？ 見なれぬししに乘っていたな.
-
-### "？" + "見る" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - （マッジ） 海賊？ 見る～！
 
 ### "？" + "覚えてる" (1 occurrences)
 - Predicted: None
@@ -103508,12 +94410,6 @@ Accuracy: 98.66%
 - Examples:
   - これは？何の日付？ 誕生日？命日？
 
-### "？" + "説得力" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ボス どうします？ 説得力は ありますね。
-
 ### "？" + "誰か" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103580,12 +94476,6 @@ Accuracy: 98.66%
 - Examples:
   - 商売はどう？ 軌道にのった？
 
-### "？" + "軍隊" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 何者だろう？ 軍隊と一緒にいるなんて。
-
 ### "？" + "軽ワザ" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103640,12 +94530,6 @@ Accuracy: 98.66%
 - Examples:
   - 本当に？ 違いますよね？
 
-### "？" + "違う" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あんたがハウル？ 違うね。
-
 ### "？" + "遠見" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103664,7 +94548,7 @@ Accuracy: 98.66%
 - Examples:
   - で そっちはどうなん？ 避難計画とやら できたん？
 
-### "？" + "郡刑務所" (1 occurrences)
+### "？" + "郡" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -103808,17 +94692,17 @@ Accuracy: 98.66%
 - Examples:
   - どうしたの？ 飛び降りたらどう？
 
-### "？" + "飛行石" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ほとんど真東だね？ 飛行石の光が指したのは。
-
 ### "？" + "食べて" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あいつは？ 食べていい？
+
+### "？" + "食事" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - 元気かい？ 食事 楽しんでる？
 
 ### "？" + "飲んでない" (1 occurrences)
 - Predicted: None
@@ -103856,6 +94740,12 @@ Accuracy: 98.66%
 - Examples:
   - 〝腹ぼてワンコ〟 結果は－か？ ＋か？
 
+### "？" + "Ｍ" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ｍ－Ｉ－Ｎ－Ｇ？ Ｍ－Ａ－Ｙじゃない？
+
 ### "ＡＰＰ" + "使えない" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -103874,41 +94764,11 @@ Accuracy: 98.66%
 - Examples:
   - Ｊドッグ どうよ？
 
-### "Ｓｏ" + "ｅｘｃｉｔｉｎｇ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 興奮して来ました Ｓｏ ｅｘｃｉｔｉｎｇ！
-
 ### "ＶＪ" + "調子" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ＶＪ 調子は？
-
-### "～" + "『" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～ 『ゴリアテ』 何をしてる！
-
-### "～" + "あがって" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ～ あがってくれ。
-
-### "～" + "あたい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - やだ～ あたいんだよ～！
-
-### "～" + "あっ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - きれいね～ あっ 見て！ 赤い飛行機！
 
 ### "～" + "お化け" (1 occurrences)
 - Predicted: None
@@ -103916,23 +94776,11 @@ Accuracy: 98.66%
 - Examples:
   - （少年Ａ）わ～ お化けが出た -（少年たち）わあ～！
 
-### "～" + "しょう" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ～ しょうがないわねぇ。
-
 ### "～" + "しん" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ええ～ しんからすごいわ！
-
-### "～" + "すごい" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - わぁ～ すごい雲！
 
 ### "～" + "たくさん" (1 occurrences)
 - Predicted: None
@@ -103951,12 +94799,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - キャ～ どうしよう！ 愛の試練よ。
-
-### "～" + "まだ" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～ まだダメだよ！
 
 ### "～" + "みたいな" (1 occurrences)
 - Predicted: None
@@ -104000,23 +94842,11 @@ Accuracy: 98.66%
 - Examples:
   - う～ イヤだ！ 人面魚じゃないか！
 
-### "～" + "ソフィー" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ハァ～ ソフィーは あの人達を知らないんだ。
-
 ### "～" + "ボロ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - うわ～ ボロ！ ボロ～！
-
-### "～" + "ボロエンジン" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～ ボロエンジンめ！
 
 ### "～" + "メイ" (1 occurrences)
 - Predicted: None
@@ -104029,12 +94859,6 @@ Accuracy: 98.66%
 - Actual: Space
 - Examples:
   - （節子）あ～ 兄ちゃん！
-
-### "～" + "助かった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - いや～ 助かったぜ。
 
 ### "～" + "医者" (1 occurrences)
 - Predicted: None
@@ -104060,35 +94884,11 @@ Accuracy: 98.66%
 - Examples:
   - あの～ 妹が…。
 
-### "～" + "待って" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 行くわよ。 あ～ 待って！
-
-### "～" + "怖かった" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あ～ 怖かった。
-
-### "～" + "特務" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - クソ～ 特務の青二才が！
-
 ### "～" + "西宮" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - あ～ 西宮さんって 日本語しゃべれるの？
-
-### "～" + "赤い" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - 強いね～ 赤い飛行機。
 
 ### "～" + "鉄雄" (1 occurrences)
 - Predicted: None
@@ -104102,12 +94902,6 @@ Accuracy: 98.66%
 - Examples:
   - わ～ 降って来た！
 
-### "～" + "離さないで" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - あそこへ走れ！ イヤ～ 離さないで！
-
 ### "～" + "（" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -104120,11 +94914,11 @@ Accuracy: 98.66%
 - Examples:
   - （金田）うわっ ああ～っ！ （ケイ）あっ あ～っ キャー！
 
-### "～っ" + "立て" (1 occurrences)
+### "･･･" + "えっ" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - ヘヘ～っ 立て ブタ野郎！
+  - ああ･･･ えっ？
 
 ### "･･･" + "それ" (1 occurrences)
 - Predicted: None

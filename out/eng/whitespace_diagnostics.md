@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2129984
-Total errors: 1460
+Total predictions: 2128250
+Total errors: 1533
 Accuracy: 99.93%
 
 ## Error Patterns (sorted by frequency)
@@ -14,13 +14,13 @@ Accuracy: 99.93%
   - A few months and send you packing, but I cannot.
   - A foreign language cannot be mastered in a year or so.
 
-### "gon" + "na" (39 occurrences)
+### "gon" + "na" (66 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - A scary movies gonna be on.
+  - Are we gonna do nothing?
   - Are we gonna let them do this?
-  - Are you gonna finish me off?
 
 ### "-" + "I" (19 occurrences)
 - Predicted: None
@@ -38,7 +38,23 @@ Accuracy: 99.93%
   - But I didn’t read it.
   - Could it be that the Captain didn’t notify the customs?
 
-### "-" + "What" (10 occurrences)
+### "--" + "-" (15 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Carrots, we need-- -Nick.
+  - Did I sense a little-- -Yeah.
+  - Hey-- -You showing me something?
+
+### "got" + "ta" (12 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Franco, you gotta stop.
+  - I gotta call to get my bucks.
+  - I gotta get out of here.
+
+### "-" + "What" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -46,7 +62,7 @@ Accuracy: 99.93%
   - Batteries charge automatic - What?
   - Get him-- What does he like?
 
-### "-" + "the" (10 occurrences)
+### "-" + "the" (9 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -61,6 +77,14 @@ Accuracy: 99.93%
   - All those are yours-- a present.
   - Brother, did you see my nuke - a duke shot!
   - But it takes a long time-- a very long time.
+
+### "do" + "n't" (8 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - I don't believe it.
+  - I don't know the answer.
+  - I don't think so.
 
 ### "," + "-" (7 occurrences)
 - Predicted: None
@@ -86,14 +110,6 @@ Accuracy: 99.93%
   - I am leaving immediately to return to Wisborg - and to you.
   - I prefer black- and red-colored clothes.
 
-### "--" + "-" (6 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Carrots, we need-- -Nick.
-  - Did I sense a little-- -Yeah.
-  - If he finds out-- -I know who he is.
-
 ### "," + "“" (5 occurrences)
 - Predicted: None
 - Actual: Space
@@ -117,6 +133,14 @@ Accuracy: 99.93%
   - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
   - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
   - Just dumb-- dumb-- dumb-- dumb-- dumb-- dumb bunny.
+
+### "Do" + "n't" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Don't be late.
+  - Don't forget your keys.
+  - Don't give up.
 
 ### "have" + "n’t" (5 occurrences)
 - Predicted: Space
@@ -197,14 +221,6 @@ Accuracy: 99.93%
   - I just got to know that their love story was born in your house - My house?
   - Look - My dad.
   - My let-- My letters?
-
-### "-" + "Why" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Are these zip-- Why do you have zip ties on the door?
-  - Why is-- Why did he use his name?
-  - Why-- Why are you so determined to keep me alive?
 
 ### "-" + "Yes" (3 occurrences)
 - Predicted: None
@@ -376,6 +392,13 @@ Accuracy: 99.93%
   - W- Wait a minute!
   - W- Wait!
 
+### "-" + "Why" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Are these zip-- Why do you have zip ties on the door?
+  - Why-- Why are you so determined to keep me alive?
+
 ### "-" + "Yeah" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -495,12 +518,26 @@ Accuracy: 99.93%
   - I used to be-- a long, long time ago-- a Communist.
   - I used to be-- a long, long time ago-- a Communist.
 
+### "It" + "'s" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - It's gonna rain tomorrow.
+  - It's gonna take some time.
+
 ### "Jakesully" + "." (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Jakesully .
   - We are grateful you stand with us, Jakesully .
+
+### "She" + "'s" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - She's gonna call you later.
+  - She's gonna love this.
 
 ### "Sikandar" + "!" (2 occurrences)
 - Predicted: None
@@ -516,6 +553,13 @@ Accuracy: 99.93%
   - Skxawng , let go.
   - Skxawng , over here.
 
+### "They" + "'re" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - They're gonna need help.
+  - They're gonna win the game.
+
 ### "Tram" + "p" (2 occurrences)
 - Predicted: Space
 - Actual: None
@@ -530,12 +574,26 @@ Accuracy: 99.93%
   - I am Tsahik !
   - Then be Tsahik !
 
+### "We" + "'re" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - We're gonna be late.
+  - We're gonna miss the bus.
+
 ### "What" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - So What - is - Definite?
   - What - do - you - want?
+
+### "ca" + "n’t" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - With just a salary to live on, you can’t take taxis!
+  - You can answer, can’t you?
 
 ### "credentials" + "?" (2 occurrences)
 - Predicted: None
@@ -557,6 +615,13 @@ Accuracy: 99.93%
 - Examples:
   - No, I don’t mind.
   - Strange, but we all know what this is, don’t we?
+
+### "does" + "n't" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - He doesn't work here.
+  - She doesn't like coffee.
 
 ### "for" + "?" (2 occurrences)
 - Predicted: None
@@ -1100,12 +1165,6 @@ Accuracy: 99.93%
 - Examples:
   - Grenade fishing - nearly catch of the fucking day, me.
 
-### "-" + "oink" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Here an oink, there an oink Oink- oink everywhere!
-
 ### "-" + "our" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1165,12 +1224,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - She said someone died-- someone named Alfredo.
-
-### "-" + "sounds" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - A hunchback from Crespin, hiding on the hill-- sounds fishy.
 
 ### "-" + "swastika" (1 occurrences)
 - Predicted: None
@@ -1250,6 +1303,12 @@ Accuracy: 99.93%
 - Examples:
   - He never -- Beto.
 
+### "--" + "Comeuppance" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - His come-- Comeuppance?
+
 ### "--" + "Fuck" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1261,12 +1320,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - I was-- Hey, wait!
-
-### "--" + "How" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Metaphors are-- How can I explain?
 
 ### "--" + "Is" (1 occurrences)
 - Predicted: None
@@ -1496,6 +1549,12 @@ Accuracy: 99.93%
 - Examples:
   - I would like to see Gibarian - I mean, Sartorius.
 
+### "Got" + "ta" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Gotta use the phone, love?
+
 ### "Govind" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1513,6 +1572,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Hallo ?
+
+### "He" + "'s" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - He's gonna be angry.
 
 ### "Heh" + "?" (1 occurrences)
 - Predicted: None
@@ -1591,6 +1656,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Jerry .
+
+### "Just--" + "Just" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Just-- Just breathe, okay?
 
 ### "Kaushalya Didi" + "-" (1 occurrences)
 - Predicted: None
@@ -1729,6 +1800,12 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - Oh - my - God!
+
+### "Oink-" + "oink" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Here an oink, there an oink Oink- oink everywhere!
 
 ### "Okay" + "?" (1 occurrences)
 - Predicted: None
@@ -2000,6 +2077,12 @@ Accuracy: 99.93%
 - Examples:
   - Yes ?
 
+### "You" + "'re" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - You're gonna be fine.
+
 ### "a" + "--" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2084,6 +2167,12 @@ Accuracy: 99.93%
 - Examples:
   - We areJew-haters because we are proud to be Aryans.
 
+### "are--" + "How" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Metaphors are-- How can I explain?
+
 ### "arrivés" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2120,12 +2209,6 @@ Accuracy: 99.93%
 - Examples:
   - Who was that woman in the barwith you?
 
-### "better" + "than" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No, youlookbetterthan ever.
-
 ### "biscuits" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2149,12 +2232,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - What are you doing brother ?
-
-### "ca" + "n" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - With just a salary to live on, you can’t take taxis!
 
 ### "calm" + "-" (1 occurrences)
 - Predicted: None
@@ -2528,6 +2605,12 @@ Accuracy: 99.93%
 - Examples:
   - À quelle heure ?
 
+### "hill--" + "sounds" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - A hunchback from Crespin, hiding on the hill-- sounds fishy.
+
 ### "him" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2612,13 +2695,19 @@ Accuracy: 99.93%
 - Examples:
   - Not because they are funny or ironic .
 
+### "is--" + "Why" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Why is-- Why did he use his name?
+
 ### "it" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - The noes have it !
 
-### "it" + "-" (1 occurrences)
+### "it" + "-Why" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -2707,12 +2796,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - I am waiting for this moment for so long .
-
-### "look" + "better" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No, youlookbetterthan ever.
 
 ### "lucky" + "-" (1 occurrences)
 - Predicted: None
@@ -3236,6 +3319,12 @@ Accuracy: 99.93%
 - Examples:
   - Is that so ?
 
+### "soap-" + "the" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - I make and I sell soap- the yard stick of civilization.
+
 ### "son" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3547,12 +3636,6 @@ Accuracy: 99.93%
 - Actual: Space
 - Examples:
   - I told you -- You can go piss yourself.
-
-### "you" + "look" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - No, youlookbetterthan ever.
 
 ### "your" + "?" (1 occurrences)
 - Predicted: None

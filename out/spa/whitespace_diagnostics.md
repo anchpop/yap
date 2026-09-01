@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2898835
-Total errors: 939
+Total predictions: 2890003
+Total errors: 958
 Accuracy: 99.97%
 
 ## Error Patterns (sorted by frequency)
 
-### "ver" + "te" (160 occurrences)
+### "ver" + "te" (165 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
@@ -70,6 +70,14 @@ Accuracy: 99.97%
   - Estaba a punto de hacerte la misma pregunta.
   - Mira, tengo que hacerte una pregunta.
 
+### "conocer" + "te" (9 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Bueno, es un placer conocerte, Judy.
+  - Encantado de conocerte a ti también.
+  - Encantado de conocerte, Hodaka.
+
 ### "," + "'" (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -101,14 +109,6 @@ Accuracy: 99.97%
   - Ella me pidió perdón por haberme pisado el pie.
   - Ella se volvió loca conmigo por haberme salido del camino.
   - Esta mañana, partí hacia la escuela sin haberme lavado la cara.
-
-### "conocer" + "te" (6 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Encantado de conocerte a ti también.
-  - Encantado de conocerte, Hodaka.
-  - Encantado de conocerte, Toni.
 
 ### "¿" + "no" (6 occurrences)
 - Predicted: None
@@ -582,12 +582,6 @@ Accuracy: 99.97%
 - Examples:
   - También puedes usar el atajo de teclado Ctrl+Alt+R.
 
-### "," + "," (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Vendi la casa, pague las cfacturas, , me puse firme con mis deudas.
-
 ### "," + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -809,6 +803,18 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Uno - dos - tres - cuatro - cinco - seis - siete.
+
+### "-" + "en" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Yo-yo-yo te estaba mirando en-- en Free-Vee!
+
+### "-" + "enserio" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dentro del retrete, ha pasado un tiempo desde que la vi - enserio, iré a ver.
 
 ### "-" + "es" (1 occurrences)
 - Predicted: None
@@ -1116,6 +1122,12 @@ Accuracy: 99.97%
 - Examples:
   - PRIMER AMOR - ¿No ves lo maravilloso que será?
 
+### "ARCHIVOS TYRELL" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ARCHIVOS TYRELL - ¿Es artificial?
+
 ### "Aal izz Well" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1236,6 +1248,12 @@ Accuracy: 99.97%
 - Examples:
   - También puedes usar el atajo de teclado Ctrl+Alt+R.
 
+### "Da" + "me" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dame cinco.
+
 ### "Decía" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1259,6 +1277,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Di: 'Ah' .
+
+### "Di" + "me" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Dime, mamá.
 
 ### "Dice" + "-" (1 occurrences)
 - Predicted: None
@@ -1373,6 +1397,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Ciudadanos de Gwangju, ciudadanos de Gwangju ?
+
+### "Haber" + "te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Haberte traído para que mires fue un error.
 
 ### "Han" + "?" (1 occurrences)
 - Predicted: None
@@ -1703,12 +1733,6 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - UN AÑO MÁS TARDE - ¡Dios!
-
-### "TYRELL" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - ARCHIVOS TYRELL - ¿Es artificial?
 
 ### "Tadashi Doi" + "," (1 occurrences)
 - Predicted: None
@@ -2196,6 +2220,12 @@ Accuracy: 99.97%
 - Examples:
   - La bebida oficial deThe Running Man.
 
+### "decir" + "te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tengo que decirte algo, Mitch.
+
 ### "decirte" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2292,17 +2322,17 @@ Accuracy: 99.97%
 - Examples:
   - Cuantos vasos de jugo se tomó ella ?
 
-### "en" + "The" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Hoy es tu última oportunidad del año estar enThe Running Man!
-
 ### "enamorados" + "'" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - Pero para una clienta especial como tú tengo 'enamorados'.
+
+### "encontrar" + "te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ¡Vaya, no esperaba encontrarte aquí a estas horas de la noche!
 
 ### "encontré" + "'" (1 occurrences)
 - Predicted: Space
@@ -2327,6 +2357,12 @@ Accuracy: 99.97%
 - Actual: None
 - Examples:
   - Pensé que era uno de esos 'artistas de escena'.
+
+### "escuchar" + "lo" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Es un argumento fuerte que convence a cualquiera al escucharlo.
 
 ### "eso" + ":" (1 occurrences)
 - Predicted: Space
@@ -2910,6 +2946,12 @@ Accuracy: 99.97%
 - Examples:
   - A él solo le interesa la plata -¿Cómo?
 
+### "poner" + "te" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tengo que ponerte una inyección.
+
 ### "primer" + "jabón" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -3090,11 +3132,23 @@ Accuracy: 99.97%
 - Examples:
   - Y como que quizás sea la mejor sensación -en el mundo, ¿sabes?
 
+### "ser" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sobre 'Sé todo lo que puedes ser'.
+
 ### "ser" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - No puede ser -Acompáñeme por favor.
+
+### "ser" + "terrible" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Imaginaos la muerte de un mamut, debía serterrible, ¿no?
 
 ### "será" + "'" (1 occurrences)
 - Predicted: Space
@@ -3113,6 +3167,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - No no yo conozco a esta señora - Papá cállate.
+
+### "si" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Creo que si , señor!
 
 ### "siempre" + "'" (1 occurrences)
 - Predicted: Space
@@ -3281,6 +3341,12 @@ Accuracy: 99.97%
 - Actual: Space
 - Examples:
   - Cada vez , te deseo a ti.
+
+### "vi" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Dentro del retrete, ha pasado un tiempo desde que la vi - enserio, iré a ver.
 
 ### "vida" + "'" (1 occurrences)
 - Predicted: Space

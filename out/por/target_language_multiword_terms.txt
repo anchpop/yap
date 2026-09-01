@@ -9103,6 +9103,7 @@ nem me fala
 nem me fale
 nem mesmo
 nem morto
+nem nem
 nem oito, nem oitenta
 nem pensar
 nem por um decreto
@@ -9303,6 +9304,7 @@ não me diga
 não meter prego nem estopa
 não nada
 não nenhum
+não nenhuma
 não ninguém
 não nunca
 não obstante
@@ -9323,8 +9325,10 @@ não sei das quantas
 não sei o quê
 não sei quê
 não sei, não quero saber e tenho raiva de quem sabe
+não senão
 não ser grande espingarda
 não só
+não só mas também
 não te interessa
 não ter nada a ver com
 não ter onde cair morto

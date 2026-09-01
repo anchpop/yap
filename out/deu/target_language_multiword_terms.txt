@@ -3884,6 +3884,7 @@ jahraus jahrein
 jahraus, jahrein
 jahrein, jahraus
 jambischer Fünfheber
+je desto
 je früher
 je länger
 je mehr
@@ -3892,6 +3893,7 @@ je nach
 je nachdem
 je später der Abend, desto schöner die Gäste
 je strenger die Gesetze, desto schlechter die Menschen
+je umso
 je weniger
 jede Menge
 jedem Tierchen sein Pläsierchen
@@ -4411,6 +4413,7 @@ nicht mal
 nicht mehr
 nicht nur sondern auch
 nicht so tun als ob
+nicht sondern
 nicht tot überm Zaun hängen wollen
 nicht um alles in der Welt
 nicht umhin können

@@ -1,17 +1,4 @@
-{"sentence":"मेरे पति क्रिकेट खेलते हैं।","failure_count":1}
-{"sentence":"बाईं तरफ।","failure_count":1}
-{"sentence":"अमित सेन उधर होंगे।","failure_count":1}
-{"sentence":"क्या आप हिंदी पढ़ सकते हैं?","failure_count":1}
-{"sentence":"जी नहीं, मेरे घर पर।","failure_count":1}
-{"sentence":"जी नहीं, मैं नहीं समझता हूँ।","failure_count":1}
-{"sentence":"जी हां, मैं कुछ खाऊंगा।","failure_count":1}
-{"sentence":"क्या ये दूर है?","failure_count":1}
-{"sentence":"सही रास्ता दाईं तरफ है।","failure_count":1}
-{"sentence":"क्या ये बाईं तरफ है?","failure_count":1}
-{"sentence":"पुरुष या महिला?","failure_count":1}
-{"sentence":"मुझको कुछ नहीं चाहिए।","failure_count":1}
-{"sentence":"आप अमरीका में किधर रहते हैं?","failure_count":1}
-{"sentence":"क्या आप हिंदी समझते हैं?","failure_count":1}
-{"sentence":"बाईं तरफ जाइए।","failure_count":1}
 {"sentence":"तुमने कल क्या किया?","failure_count":1}
 {"sentence":"क्या आपको चाय पसंद है?","failure_count":1}
+{"sentence":"बाईं तरफ जाइए।","failure_count":2}
+{"sentence":"बाईं तरफ।","failure_count":2}

@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2793923
-Total errors: 2821
+Total predictions: 2812234
+Total errors: 2845
 Accuracy: 99.90%
 
 ## Error Patterns (sorted by frequency)
@@ -102,6 +102,14 @@ Accuracy: 99.90%
   - Angelina - tre; Geeta - zero.
   - Geeta - quattro; Angelina - zero.
 
+### "." + "—" (9 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ecco il suo resto, signora. — Prego, grazie a lei e buona giornata.
+  - Ecco le chiavi dell'appartamento. — Prego, grazie, ne avrò cura come fosse il mio.
+  - Grazie di tutto, sei stata gentilissima. — Prego, è stato un piacere conoscerti davvero.
+
 ### "detto" + "?" (9 occurrences)
 - Predicted: None
 - Actual: Space
@@ -181,14 +189,6 @@ Accuracy: 99.90%
   - Anche a noi mancavi tanto, sai ?
   - Che ne sai ?
   - Come lo sai ?
-
-### "." + "—" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ecco le chiavi dell'appartamento. — Prego, grazie, ne avrò cura come fosse il mio.
-  - Grazie di tutto, sei stata gentilissima. — Prego, è stato un piacere conoscerti davvero.
-  - Grazie per aver cucinato stasera. — Prego, mi faceva piacere preparare qualcosa di buono per voi.
 
 ### "?" + "—" (7 occurrences)
 - Predicted: None
@@ -526,6 +526,14 @@ Accuracy: 99.90%
   - Gosha !
   - Mi mancava un Gosha !
 
+### "Marwan" + "?" (4 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Come puoi affermare che Nihad di Maggio è il figlio di Nawal Marwan ?
+  - Le piace il tè, signor Marwan ?
+  - Marwan ?
+
 ### "Tv" + "?" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -773,14 +781,6 @@ Accuracy: 99.90%
   - Di’ a Joan di tenere i bambini in casa oggi.
   - Di’ a Solovyov di non fare cazzate.
   - Di’ a Tom di aiutare Mary.
-
-### "Marwan" + "?" (3 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le piace il tè, signor Marwan ?
-  - Marwan ?
-  - Sarwan Marwan ?
 
 ### "Signore" + "!" (3 occurrences)
 - Predicted: None
@@ -1038,6 +1038,14 @@ Accuracy: 99.90%
   - Forza, bevi un po' d'acqua e riprenditi, vedrai che passa subito.
   - Su, bevi un po' d'acqua e calmati.
 
+### "po'" + "prima" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Hai gli occhi stanchi, dormi un po' prima di guidare.
+  - Sarebbe stato meglio aspettare un altro po' prima di decidere.
+  - Vogliamo restare qui ancora un po' prima di andare via.
+
 ### "porta" + "!" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1149,6 +1157,14 @@ Accuracy: 99.90%
   - Inseguitela Un intruso umano !
   - Odore di umano !
   - Un umano !
+
+### "un" + "'" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Io prego ogni sera prima di dormire, è un'abitudine che ho fin da bambino.
+  - Non credo che stia scherzando, ha un'aria molto seria.
+  - Quella francese bionda che lavora in ambasciata è un'amica di mia cugina.
 
 ### "vai" + "?" (3 occurrences)
 - Predicted: None
@@ -1345,6 +1361,13 @@ Accuracy: 99.90%
 - Examples:
   - Auguri, zia Lucia !
   - Viva zia Lucia !
+
+### "Maria Bethània" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Come Maria Bethània ?
+  - Perché non mi hai fatto ascoltare Maria Bethània ?
 
 ### "Marilia" + "!" (2 occurrences)
 - Predicted: None
@@ -1682,6 +1705,13 @@ Accuracy: 99.90%
   - Il cellulare ?
   - Più tardi me le puoi trasferire sul cellulare ?
 
+### "cena" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Allora, come mai mi hai invitato a cena ?
+  - E la cena ?
+
 ### "cercato" + "!" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1822,6 +1852,13 @@ Accuracy: 99.90%
   - Che cosa succede se la polizia ci chiede i documenti ?
   - Per questi documenti ?
 
+### "donna" + "!" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non è roba da donna !
+  - Sto parlando di quello che ci ha fatto quella donna !
+
 ### "donna" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1927,6 +1964,13 @@ Accuracy: 99.90%
   - Te ne prego Mi basta una gamba !
   - Un ragazzo in gamba !
 
+### "genere" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Chiderle una cosa del genere ?
+  - Una che hai nel portafogli, qualcosa del genere ?
+
 ### "giusto" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2031,6 +2075,13 @@ Accuracy: 99.90%
 - Examples:
   - Sei diventata matta ?
   - Sei matta ?
+
+### "matti" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Siamo matti ?
+  - Siete diventati matti ?
 
 ### "me" + "-" (2 occurrences)
 - Predicted: None
@@ -2200,13 +2251,6 @@ Accuracy: 99.90%
   - Voleva dormire ancora un po' ma la sveglia era già suonata.
   - Vorrei restare ancora un po' ma devo alzarmi presto domani.
 
-### "po'" + "prima" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Hai gli occhi stanchi, dormi un po' prima di guidare.
-  - Vogliamo restare qui ancora un po' prima di andare via.
-
 ### "porta" + "?" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -2339,6 +2383,13 @@ Accuracy: 99.90%
 - Examples:
   - Dite delle sciocchezze !
   - Sono tutte sciocchezze !
+
+### "scuola" + "?" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - E la scuola ?
+  - Le insegnanti vivono a scuola ?
 
 ### "sempre" + "!" (2 occurrences)
 - Predicted: None
@@ -2570,6 +2621,12 @@ Accuracy: 99.90%
 - Examples:
   - A una persona importante, dare del “tu“ è molto difficile.
   - Trovare qualcuno che ti sostituisse come “fiuta-veleni“ è stato arduo.
+
+### """ + "in" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Come si dice "grazie" in giapponese?
 
 ### "," + "-" (1 occurrences)
 - Predicted: None
@@ -2823,12 +2880,6 @@ Accuracy: 99.90%
 - Examples:
   - Fuori piove - Sono a casa.
 
-### "-" + "Sto" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sto solo - Sto lasciando che la vita mi colpisca finché non si stanca.
-
 ### "-" + "Suo" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3075,6 +3126,12 @@ Accuracy: 99.90%
 - Examples:
   - Forse-- E sto sono tirando a casaccio.
 
+### "--" + "Hai" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non sono una-- Hai capito?
+
 ### "--" + "No" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -3224,6 +3281,18 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Allegro ?
+
+### "Altezza" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non guardate Sua Altezza !
+
+### "Altezza" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lì, Altezza ?
 
 ### "Altrimenti" + "?" (1 occurrences)
 - Predicted: None
@@ -3458,6 +3527,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Bentornato !
+
+### "Benvenuto" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Benvenuto !
 
 ### "Bhagwan" + "-" (1 occurrences)
 - Predicted: None
@@ -3812,6 +3887,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Cucù !
+
+### "Dadinho" + "“" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Tu da oggi non ti chiami più “Dadinho“.
 
 ### "Dai" + "!" (1 occurrences)
 - Predicted: None
@@ -4551,6 +4632,12 @@ Accuracy: 99.90%
 - Examples:
   - Il LEGGA - UNA SELEZIONE CASUALE!
 
+### "Ladjane" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Puoi darli tu a Ladjane ?
+
 ### "Lascia" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4689,12 +4776,6 @@ Accuracy: 99.90%
 - Examples:
   - Ha sentito nominare Elena Marcos ?
 
-### "Maria Bethània" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Perché non mi hai fatto ascoltare Maria Bethània ?
-
 ### "Marilia" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4778,6 +4859,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Come stai, Nawal ?
+
+### "Nawal Marwan" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Conosce Nawal Marwan ?
 
 ### "New Yorker" + "." (1 occurrences)
 - Predicted: None
@@ -5445,6 +5532,12 @@ Accuracy: 99.90%
 - Examples:
   - Shh !
 
+### "Siediti" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Siediti !
+
 ### "Signora" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5486,6 +5579,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Smettetela !
+
+### "Smettila" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Smettila !
 
 ### "Souha" + "?" (1 occurrences)
 - Predicted: None
@@ -5643,6 +5742,12 @@ Accuracy: 99.90%
 - Examples:
   - Sei un Ufficiale ?
 
+### "Un" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Un'occhiata veloce al telefono e poi usciamo subito di casa.
+
 ### "Vadik" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5781,12 +5886,6 @@ Accuracy: 99.90%
 - Examples:
   - Ehi, ragazzi… lasciate stare, dai!
 
-### "a po" + "co tr" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
-
 ### "abbandonando" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5870,12 +5969,6 @@ Accuracy: 99.90%
 - Actual: None
 - Examples:
   - Sai bene che sono anni che non “salto addosso“ come dici tu.
-
-### "afiggerò co" + "n un" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
 ### "agio" + "?" (1 occurrences)
 - Predicted: None
@@ -6182,6 +6275,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Voi dovete ascoltarmi !
+
+### "asfaltata" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Una strada asfaltata !
 
 ### "aspettato" + "!" (1 occurrences)
 - Predicted: None
@@ -6537,6 +6636,12 @@ Accuracy: 99.90%
 - Examples:
   - Quando ti decidi a buttarla ?
 
+### "c" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Sì, ho capito perfettamente, non c'è bisogno di ripetere.
+
 ### "cacciano" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6771,12 +6876,6 @@ Accuracy: 99.90%
 - Examples:
   - Se avesse detto “cazzo“ allora saremmo stati nei guai.
 
-### "cena" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Allora, come mai mi hai invitato a cena ?
-
 ### "cerca" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6920,12 +7019,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Per conoscersi sono dovuti venire qui al club !
-
-### "co tr" + "afiggerò co" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
 ### "coglione" + "?" (1 occurrences)
 - Predicted: None
@@ -7359,6 +7452,12 @@ Accuracy: 99.90%
 - Examples:
   - Corri fuori e di' a tuo fratello che la cena è pronta.
 
+### "dice" + """ (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Come si dice "grazie" in giapponese?
+
 ### "dicendo" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7521,12 +7620,6 @@ Accuracy: 99.90%
 - Examples:
   - Il vicedirettore ha domande ?
 
-### "donna" + "!" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Non è roba da donna !
-
 ### "donne" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -7557,17 +7650,17 @@ Accuracy: 99.90%
 - Examples:
   - Perché due ?
 
+### "dunque" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Cosa dite dunque ?
+
 ### "durare" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Quanto tempo ancora può durare ?
-
-### "e fr" + "a po" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
 ### "edi?" + "" (1 occurrences)
 - Predicted: Space
@@ -7826,6 +7919,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - In realtà, ero felice .
+
+### "felicità" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Questa è felicità !
 
 ### "fenomeno" + "!" (1 occurrences)
 - Predicted: None
@@ -8145,12 +8244,6 @@ Accuracy: 99.90%
 - Examples:
   - Se ne infischiano del pane, criticano la vecchia generazione !
 
-### "genere" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Chiderle una cosa del genere ?
-
 ### "generoso" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8264,12 +8357,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Crede che sia la strada giusta ?
-
-### "gnale." + "" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
 ### "gonna" + "?" (1 occurrences)
 - Predicted: None
@@ -8469,6 +8556,12 @@ Accuracy: 99.90%
 - Examples:
   - Santo Cielo, quante volte mi sono immaginata questo incontro !
 
+### "incredibile" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Povero Daniel, finire sbranato, è incredibile !
+
 ### "incubo" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8636,6 +8729,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Hai familiari laggiù ?
+
+### "lamentarsi" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Quelle vogliono ballare, sarebbe il primo a lamentarsi !
 
 ### "lamentato" + "?" (1 occurrences)
 - Predicted: None
@@ -8853,6 +8952,12 @@ Accuracy: 99.90%
 - Examples:
   - Non prenderlo male - non ti preoccupare.
 
+### "maledetto" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Finalmente lontano da questo posto maledetto !
+
 ### "maligna" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -8882,6 +8987,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Chi ti ha mandato ?
+
+### "mangeranno" + "!" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non ingrassate troppo, O vi mangeranno !
 
 ### "mangia" + "?" (1 occurrences)
 - Predicted: None
@@ -8942,12 +9053,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - La matrigna ?
-
-### "matti" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Siamo matti ?
 
 ### "mattinata" + "!" (1 occurrences)
 - Predicted: None
@@ -9939,12 +10044,6 @@ Accuracy: 99.90%
 - Examples:
   - Sembra un po’ finto, per me.
 
-### "po’" + "fissata" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Dai tuoi messaggi eri un po’ fissata sul non sentirti alla sua altezza.
-
 ### "po’" + "improvvisato" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10209,12 +10308,6 @@ Accuracy: 99.90%
 - Examples:
   - Cosa fosse possibile psicologicamente ?
 
-### "pu" + "gnale." (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
-
 ### "pungerti" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -10358,6 +10451,12 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Accendi la radio !
+
+### "radiofaro" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Abbiamo il segnale del radio faro?
 
 ### "ragazza" + "-" (1 occurrences)
 - Predicted: None
@@ -10899,12 +10998,6 @@ Accuracy: 99.90%
 - Examples:
   - Andavo ancora a scuola !
 
-### "scuola" + "?" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Le insegnanti vivono a scuola ?
-
 ### "scusa" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -11168,12 +11261,6 @@ Accuracy: 99.90%
 - Actual: Space
 - Examples:
   - Vorrei che ci stesse da solo !
-
-### "solo" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Sto solo - Sto lasciando che la vita mi colpisca finché non si stanca.
 
 ### "somiglia" + "!" (1 occurrences)
 - Predicted: None
@@ -12458,12 +12545,6 @@ Accuracy: 99.90%
 - Actual: None
 - Examples:
   - Guarda qui…questa è mia nipote Geisa, da bambina.
-
-### "… ch" + "e fr" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Dove si trova il cuore… che fra poco trafiggerò con un pugnale.
 
 ### "… la" + "sciate st" (1 occurrences)
 - Predicted: Space

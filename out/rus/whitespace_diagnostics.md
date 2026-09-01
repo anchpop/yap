@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 2222854
-Total errors: 11801
+Total predictions: 2225048
+Total errors: 11833
 Accuracy: 99.47%
 
 ## Error Patterns (sorted by frequency)
@@ -270,6 +270,14 @@ Accuracy: 99.47%
   - Голосование - ваш гражданский долг.
   - Джим, я - ваш доктор, и я - ваш друг.
 
+### "-" + "лучший" (21 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - В этом деле он - лучший.
+  - Время - лучший лекарь.
+  - Все знаю, что собака - лучший друг человека.
+
 ### "-" + "я" (21 occurrences)
 - Predicted: None
 - Actual: Space
@@ -286,14 +294,6 @@ Accuracy: 99.47%
   - Важная характеристика стали - её прочность.
   - Важное качество стали - её прочность.
 
-### "-" + "лучший" (20 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - В этом деле он - лучший.
-  - Время - лучший лекарь.
-  - Вы - лучший нейрохирург в нашей клинике.
-
 ### "-" + "мои" (20 occurrences)
 - Predicted: None
 - Actual: Space
@@ -309,6 +309,14 @@ Accuracy: 99.47%
   - Вам что нибудь надо?
   - Взять что нибудь-почитать?
   - Вина или еще чего нибудь?
+
+### "," + "«" (19 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А, «Сто к одному».
+  - В конце концов, «Лишь одного душа впускает».
+  - Вперед, «Олд Кристианс»!
 
 ### "-" + "врач" (19 occurrences)
 - Predicted: None
@@ -341,14 +349,6 @@ Accuracy: 99.47%
   - Ваша работа - его найти.
   - Ваша работа - её найти.
   - Его работа - писать рассказы.
-
-### "," + "«" (18 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - А, «Сто к одному».
-  - В конце концов, «Лишь одного душа впускает».
-  - Вперед, «Олд Кристианс»!
 
 ### "-" + "на" (18 occurrences)
 - Predicted: None
@@ -806,6 +806,14 @@ Accuracy: 99.47%
   - Женщина - самое сладкое, что есть в мире.
   - Мёртвое море - самое низкое место на Земле.
 
+### "-" + "то" (10 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А когда прочли Маркузе - то марксистами.
+  - Вообще- то, нет.
+  - Вы - то, что вы едите.
+
 ### "-" + "хорошие" (10 occurrences)
 - Predicted: None
 - Actual: Space
@@ -901,14 +909,6 @@ Accuracy: 99.47%
   - Апельсины - прекрасный источник витамина С.
   - Бостон - прекрасный город.
   - Вена - прекрасный город.
-
-### "-" + "то" (9 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Вообще- то, нет.
-  - Вы - то, что вы едите.
-  - Если выйдешь за эту дверь - то это всё, понял?
 
 ### "-" + "часть" (9 occurrences)
 - Predicted: None
@@ -3438,6 +3438,14 @@ Accuracy: 99.47%
   - Эй, что значит твое - мое?
   - Это - мое!
 
+### "-" + "мороженое" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Дитям - мороженое!
+  - Мой любимый десерт - мороженое.
+  - Моя любимая еда - мороженое.
+
 ### "-" + "морское" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -4798,6 +4806,14 @@ Accuracy: 99.47%
   - Цикл жизни и смерти ?
   - Что древние люди думали о смерти ?
 
+### "собака" + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Все знаю, что собака - лучший друг человека.
+  - Может там собака - друг человека!
+  - Эта собака - помесь кокер-спаниеля и пуделя.
+
 ### "страной" + "-" (3 occurrences)
 - Predicted: None
 - Actual: Space
@@ -5869,13 +5885,6 @@ Accuracy: 99.47%
   - Облей его чатни, увидим - может и скажу.
   - Потом я подумал - может быть я проклят ?
 
-### "-" + "мороженое" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Мой любимый десерт - мороженое.
-  - Моя любимая еда - мороженое.
-
 ### "-" + "мошенник" (2 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6442,6 +6451,13 @@ Accuracy: 99.47%
 - Examples:
   - У собак - хозяева, у кошек - слуги.
   - У собак есть хозяева, у кошек - слуги.
+
+### "-" + "смерть" (2 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Единственное равенство на земле - смерть.
+  - Что русскому хорошо, то немцу - смерть.
 
 ### "-" + "смешной" (2 occurrences)
 - Predicted: None
@@ -8892,13 +8908,6 @@ Accuracy: 99.47%
 - Examples:
   - Но снег - это тоже круто.
   - У нас тут снег - редкость.
-
-### "собака" + "-" (2 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Может там собака - друг человека!
-  - Эта собака - помесь кокер-спаниеля и пуделя.
 
 ### "совесть" + "-" (2 occurrences)
 - Predicted: None
@@ -11961,6 +11970,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Том - вундеркинд.
+
+### "-" + "входи" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Палуба Б - входи туда, давай-давай.
 
 ### "-" + "выгонят" (1 occurrences)
 - Predicted: None
@@ -17638,12 +17653,6 @@ Accuracy: 99.47%
 - Examples:
   - Развод - смертный грех, представь себе.
 
-### "-" + "смерть" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Единственное равенство на земле - смерть.
-
 ### "-" + "смешно" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -19570,6 +19579,18 @@ Accuracy: 99.47%
 - Examples:
   - И ее автор, мистер Манн-- -Больной!
 
+### "--" + "Хватит" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Убери руки с-- Я не пони-- Хватит!
+
+### "--" + "Я" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Убери руки с-- Я не пони-- Хватит!
+
 ### "--" + "велики" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -20133,6 +20154,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Ашхабад - столица Туркменистана.
+
+### "Б" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Палуба Б - входи туда, давай-давай.
 
 ### "Бабочка" + "-" (1 occurrences)
 - Predicted: None
@@ -21646,6 +21673,12 @@ Accuracy: 99.47%
 - Examples:
   - Дистанция - шесть тысяч.
 
+### "Дитям" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Дитям - мороженое!
+
 ### "Днём" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -22612,6 +22645,12 @@ Accuracy: 99.47%
 - Examples:
   - Кока-кола - социалистический напиток?
 
+### "Кока-колу" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Одну «Кока-колу».
+
 ### "Кокаин" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23308,6 +23347,12 @@ Accuracy: 99.47%
 - Examples:
   - Маркс - немецкий философ и экономист.
 
+### "Маркузе" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - А когда прочли Маркузе - то марксистами.
+
 ### "Марлы" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23662,6 +23707,12 @@ Accuracy: 99.47%
 - Examples:
   - Мыши - это бедствие.
 
+### "Мышь" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ловлю на слове, «Мышь».
+
 ### "Мэй" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -23709,6 +23760,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Нажрался -заткнись.
+
+### "Назарета" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - А мой отец был героем Назарета».
 
 ### "Найроби" + "-" (1 occurrences)
 - Predicted: None
@@ -23781,6 +23838,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Там Шевчук, Кинчев, Настя - все.
+
+### "Натан" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Твой, Натан».
 
 ### "Наташа" + "-" (1 occurrences)
 - Predicted: None
@@ -27358,6 +27421,12 @@ Accuracy: 99.47%
 - Examples:
   - Прямо, как на бирже - твой папа, договор.
 
+### "благах" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - И не думай о земных ты благах».
+
 ### "блюдо" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -27441,6 +27510,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Вообще, полный бред - я спасаю духа!
+
+### "бризом" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - И летним бризом».
 
 ### "бриллиант" + "-" (1 occurrences)
 - Predicted: None
@@ -28107,6 +28182,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Том думал, что встреча - это трата времени.
+
+### "встречи" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - До встречи».
 
 ### "всё" + "?" (1 occurrences)
 - Predicted: None
@@ -28822,6 +28903,12 @@ Accuracy: 99.47%
 - Examples:
   - Гарри, отвези меня домой ?
 
+### "домой" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Я хочу домой».
+
 ### "допишешь" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -28917,6 +29004,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Найдёшь друга - найдёшь сокровище.
+
+### "друга" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Дома похожи друг на друга».
 
 ### "другим" + "-" (1 occurrences)
 - Predicted: None
@@ -29019,6 +29112,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Юголен и его дядюшка - настоящие подонки.
+
+### "е" + "сь" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Зде-е-есь!
 
 ### "е-н" + "и" (1 occurrences)
 - Predicted: Space
@@ -30160,6 +30259,12 @@ Accuracy: 99.47%
 - Examples:
   - Жасмин и лаванда - мои любимые ароматы.
 
+### "лазарете" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Он лежал с гонореей в лазарете».
+
 ### "лапша" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30448,6 +30553,12 @@ Accuracy: 99.47%
 - Examples:
   - Отпустите меня !
 
+### "мерзкий" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Он такой мерзкий».
+
 ### "месте" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -30639,6 +30750,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Его бабушка и моя - подруги.
+
+### "моё" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Твои глаза, уши, рот — всё это моё».
 
 ### "му" + "»" (1 occurrences)
 - Predicted: Space
@@ -30850,6 +30967,12 @@ Accuracy: 99.47%
 - Examples:
   - Все эти наряды - для вас, Ваше Высочество.
 
+### "нас" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Он снова смотрит на нас».
+
 ### "насвинячил" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -31017,6 +31140,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Поплевать немного - и пройдёт.
+
+### "немцу" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Что русскому хорошо, то немцу - смерть.
 
 ### "необычным" + "?" (1 occurrences)
 - Predicted: None
@@ -31419,6 +31548,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Продеваем верёвку в отверстие - и вуаля!
+
+### "ответа" + "?" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Он что, опять уклоняется от ответа ?
 
 ### "ответь" + "!" (1 occurrences)
 - Predicted: None
@@ -32326,11 +32461,23 @@ Accuracy: 99.47%
 - Examples:
   - Как преподаватель - ты, конечно.
 
+### "препятствия" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Отказывавшим чинила препятствия».
+
 ### "привиделось" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - Или мне все это привиделось ?
+
+### "привилегия" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Сок — это привилегия».
 
 ### "привычка" + "-" (1 occurrences)
 - Predicted: None
@@ -32811,6 +32958,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Дока во всех ремёслах - мастер в никаком.
+
+### "решала" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Мадам Войтер «решала» наравне с мужем.
 
 ### "решил" + "-" (1 occurrences)
 - Predicted: None
@@ -34101,6 +34254,12 @@ Accuracy: 99.47%
 - Actual: Space
 - Examples:
   - Где наши товарищи ?
+
+### "того" + "»" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Время покажет, заслуживает ли он того».
 
 ### "толпа" + "»" (1 occurrences)
 - Predicted: Space

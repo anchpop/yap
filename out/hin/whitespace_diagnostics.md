@@ -1,12 +1,12 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 143053
-Total errors: 550
-Accuracy: 99.62%
+Total predictions: 143064
+Total errors: 566
+Accuracy: 99.60%
 
 ## Error Patterns (sorted by frequency)
 
-### "।" + "-" (290 occurrences)
+### "।" + "-" (287 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -46,14 +46,6 @@ Accuracy: 99.62%
   - मदद के लिए शुक्रिया ।
   - सभी का, शुक्रिया ।
 
-### "," + "-" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - अरे नहीं, -नहीं रुको।
-  - ओह नहीं, भामचिक, -क्या हुआ?
-  - और भाई, -उज़ैर मियाँ!
-
 ### "हैं" + "।" (4 occurrences)
 - Predicted: None
 - Actual: Space
@@ -61,6 +53,14 @@ Accuracy: 99.62%
   - आप ऐसा कह सकते हैं ।
   - टॉम और मेेरी अब कमरे में हैं ।
   - टॉम को अब पसीने आ रहे हैं ।
+
+### "," + "-" (3 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - अरे नहीं, -नहीं रुको।
+  - ओह नहीं, भामचिक, -क्या हुआ?
+  - और भाई, -उज़ैर मियाँ!
 
 ### "ली" + "।" (3 occurrences)
 - Predicted: None
@@ -105,7 +105,7 @@ Accuracy: 99.62%
   - टॉम आख़िरकार आ ही गया ।
   - फादिल जल्द ही शादी से भाग गया ।
 
-### "चुप" + "---" (2 occurrences)
+### "चुप" + "-" (2 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
@@ -199,29 +199,71 @@ Accuracy: 99.62%
 - Examples:
   - इन्हीं हाथों से मारा।
 
-### " सकत" + "े" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - तुम भाग्य नहीं बादल सकते।
-
 ### " ह" + "ो" (1 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
   - कान्ताबेन, कैसी हो?
 
-### " होग" + "ा" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - शायेद हिमपात होगा.
-
 ### "," + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - सब अमर बाड़े, . सब कुछ अमर बा।
+
+### "," + "ऐसा" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - एक तूफ़ान आ रहा है, ऐसा?
+
+### "," + "डॉक्टर" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - मैं कुछ नहीं सुनता, डॉक्टर।
+
+### "," + "थोरिन" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - थोरिन, थोरिन।
+
+### "," + "बैठिए" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - आइए, बैठिए, बैठिए।
+
+### "," + "भाई" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - यक़ीन मानो, भाई।
+
+### "," + "मुझे" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - स्वामीजी, मुझे आशीर्वाद दो।
+
+### "," + "रुको" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - ईशान, रुको। ईशान!
+
+### "," + "सर" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - कृपया, सर।
+
+### "-" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - पर हमें-- -नहीं।
 
 ### "-" + "आप" (1 occurrences)
 - Predicted: None
@@ -259,11 +301,11 @@ Accuracy: 99.62%
 - Examples:
   - बात - चीत बंद करें।
 
-### "-" + "छानबे" (1 occurrences)
+### "-" + "चुप" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
-  - छानबे। - छानबे।
+  - बस बस बस, चुप --- चुप ---।
 
 ### "-" + "धन्यवाद" (1 occurrences)
 - Predicted: None
@@ -349,12 +391,6 @@ Accuracy: 99.62%
 - Examples:
   - वो मौत से क्या डरेगा, सर। - हाँ।
 
-### "-" + "हू" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - व्हू - हू!
-
 ### "-" + "हेलो" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -365,7 +401,7 @@ Accuracy: 99.62%
 - Predicted: None
 - Actual: Space
 - Examples:
-  - पर हमें-- -नहीं।
+  - थैंक यू, मैं-- -मैं आ गई!
 
 ### "--" + "कुछ" (1 occurrences)
 - Predicted: None
@@ -421,12 +457,6 @@ Accuracy: 99.62%
 - Examples:
   - मिल --- गया!
 
-### "---" + "चुप" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - बस बस बस, चुप --- चुप ---।
-
 ### "---" + "छोटू" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -450,12 +480,6 @@ Accuracy: 99.62%
 - Actual: Space
 - Examples:
   - फीस कौन भरेगा --- तेरा बाप?
-
-### "---" + "थुचुक" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - मध्यमं पादं --- थुचुक थुचुक।
 
 ### "---" + "नहीं" (1 occurrences)
 - Predicted: None
@@ -535,6 +559,12 @@ Accuracy: 99.62%
 - Examples:
   - अरे --- अपना दोस्त मिल गया।
 
+### "आँखें" + "…" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - आँखें… आँखें खोलिए, रहमान भाई।
+
 ### "आइए" + "।" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -571,17 +601,17 @@ Accuracy: 99.62%
 - Examples:
   - और ये हो गया इनॉग्रेशन ।
 
+### "ईशान" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - ईशान, रुको। ईशान!
+
 ### "उत्तम" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - उत्तम !
-
-### "उड़ा" + "येंगे" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - उड़ेगा कैसे नहीं। हम उड़ायेंगे।
 
 ### "ऊपर" + "-" (1 occurrences)
 - Predicted: None
@@ -606,6 +636,12 @@ Accuracy: 99.62%
 - Actual: Space
 - Examples:
   - कब ?
+
+### "कबसे" + "हैं" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - आप विदेश में कबसे हैं?
 
 ### "करना" + "।" (1 occurrences)
 - Predicted: None
@@ -643,6 +679,12 @@ Accuracy: 99.62%
 - Examples:
   - कान्ताबेन, कैसी हो?
 
+### "किस" + "के" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - चिल्ला किसके लिए रही हो?
+
 ### "की" + "." (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -654,6 +696,12 @@ Accuracy: 99.62%
 - Actual: Space
 - Examples:
   - क्षमा कीजिए ।
+
+### "कृपया" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - कृपया, सर।
 
 ### "के" + "." (1 occurrences)
 - Predicted: None
@@ -697,11 +745,23 @@ Accuracy: 99.62%
 - Examples:
   - चुम्मा !
 
+### "जाएगा" + "<END>" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - मन के जीत है जीत है। हो जाएगा।
+
 ### "जाओ" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - चल जाओ !
+
+### "जाओ" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - लकी तुम अंदर जाओ। -सुनो, राजा।
 
 ### "जाओ" + "।" (1 occurrences)
 - Predicted: None
@@ -762,6 +822,12 @@ Accuracy: 99.62%
 - Actual: Space
 - Examples:
   - बैठक मैं कितने लोग मौजूद थे ?
+
+### "थोरिन" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - थोरिन, थोरिन।
 
 ### "दा" + "!" (1 occurrences)
 - Predicted: None
@@ -865,12 +931,6 @@ Accuracy: 99.62%
 - Examples:
   - पांडु -हां?
 
-### "पादं" + "---" (1 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - मध्यमं पादं --- थुचुक थुचुक।
-
 ### "पासवर्ड" + "?" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -913,11 +973,23 @@ Accuracy: 99.62%
 - Examples:
   - एक भयानक बात .
 
+### "बाबू राव" + "-" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - बाबू राव, -हां, सर।
+
 ### "बुज्जी" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - बुज्जी -हां।
+
+### "बैठिए" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - आइए, बैठिए, बैठिए।
 
 ### "बोलो" + "-" (1 occurrences)
 - Predicted: None
@@ -997,6 +1069,12 @@ Accuracy: 99.62%
 - Examples:
   - एक मुट्ठी एक बार में .
 
+### "में" + "थे" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - क्या तुम सच में बॉस्टन में थे?
+
 ### "मेरी" + "-" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1021,11 +1099,23 @@ Accuracy: 99.62%
 - Examples:
   - मैं रखूंगी ।
 
+### "रह" + "<END>" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - वो मेरा बैग है। चुप रह।
+
 ### "रहा" + "।" (1 occurrences)
 - Predicted: None
 - Actual: Space
 - Examples:
   - ये रहा ।
+
+### "रहो" + "<END>" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - पाको, सुनो। यहीं रहो।
 
 ### "राजा" + "-" (1 occurrences)
 - Predicted: None
@@ -1087,11 +1177,11 @@ Accuracy: 99.62%
 - Examples:
   - वाइन ।
 
-### "व्हू" + "-" (1 occurrences)
-- Predicted: None
-- Actual: Space
+### "वास्तव" + "में" (1 occurrences)
+- Predicted: Space
+- Actual: None
 - Examples:
-  - व्हू - हू!
+  - मतलब वास्तव में निर्दोष, है न?
 
 ### "शनी" + "," (1 occurrences)
 - Predicted: None
@@ -1146,6 +1236,12 @@ Accuracy: 99.62%
 - Actual: Space
 - Examples:
   - तुम अभी तक क्यों नहीं सोए ?
+
+### "स्वामीजी" + "," (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - स्वामीजी, मुझे आशीर्वाद दो।
 
 ### "स्विमिंग पूल" + "-" (1 occurrences)
 - Predicted: None
@@ -1207,6 +1303,12 @@ Accuracy: 99.62%
 - Examples:
   - क्या मैं आपकी मदद कर सकता हूँ ?
 
+### "है" + "ना" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - हैना?
+
 ### "हैं" + "!" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1249,6 +1351,18 @@ Accuracy: 99.62%
 - Examples:
   - आज बारिश होगी ।
 
+### "।" + "ऊपर" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - मैंने आवाज़ें सुनी। ऊपर।
+
+### "।" + "मैंने" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - मैंने दी थी, बाबा। मैंने दी थी।
+
 ### "—" + "अंदर" (1 occurrences)
 - Predicted: Space
 - Actual: None
@@ -1284,4 +1398,10 @@ Accuracy: 99.62%
 - Actual: None
 - Examples:
   - फिर कहा—भगवान फ्रॉड हैं।
+
+### "…" + "आँखें" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - आँखें… आँखें खोलिए, रहमान भाई।
 
