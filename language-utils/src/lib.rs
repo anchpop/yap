@@ -1121,6 +1121,7 @@ pub enum MorphemeInfo<S> {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum OtherWordType {
@@ -1150,6 +1151,7 @@ pub enum OtherWordType {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct OtherWord {
@@ -1172,6 +1174,7 @@ pub struct OtherWord {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
@@ -1198,6 +1201,7 @@ pub enum WordType<S> {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Word<S> {
@@ -1723,6 +1727,7 @@ pub mod transcription_challenge {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Whitespace {
@@ -1791,6 +1796,7 @@ impl std::str::FromStr for Whitespace {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ControlToken(pub Whitespace);
@@ -1812,6 +1818,7 @@ pub struct ControlToken(pub Whitespace);
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Atom<S> {
@@ -1929,6 +1936,7 @@ impl<'de> serde::Deserialize<'de> for EncodedSentence {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Gram<S>(pub Vec<Atom<S>>);
@@ -2604,6 +2612,7 @@ impl ConsolidatedLanguageData {
     rkyv::Serialize,
     rkyv::Deserialize,
     tsify::Tsify,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum TtsProvider {
@@ -4110,7 +4119,9 @@ impl HomophonePractice<lasso::Spur> {
         }
     }
 }
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, tsify::Tsify)]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, tsify::Tsify, schemars::JsonSchema,
+)]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct TtsRequest {
     pub text: String,

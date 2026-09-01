@@ -9,3 +9,4 @@ pub mod output;
 pub mod remote;
 pub mod server;
 pub mod sync;
+pub mod verbatim;

@@ -23,7 +23,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use language_utils::{
-    Course, Gram, Language, SpurGram, autograde, dictionary_entry_slug,
+    Course, Gram, Language, SpurGram, TtsProvider, TtsRequest, autograde, dictionary_entry_slug,
     language_pack::LanguagePack, text_cleanup::find_closest_match,
 };
 use lasso::Spur;
@@ -40,6 +40,11 @@ use crate::output::*;
 use crate::sync::{
     DEVICE_ID, REVIEWS_STREAM, SupabaseAuth, fetch_events, find_user_id, upload_events,
 };
+use crate::verbatim::Verbatim;
+
+/// A card as tool input and output: the deck's own indicator with grams and
+/// patterns spelled out as strings.
+pub type Card = CardIndicator<Gram<String>, String>;
 
 /// How long fetched events stay fresh before a tool call triggers a re-fetch.
 const REFRESH_INTERVAL: Duration = Duration::from_secs(20);
@@ -402,14 +407,9 @@ impl YapState {
     /// Parse a gram (the word/lemma/part-of-speech token sequence that uniquely
     /// identifies a dictionary entry) from tool input, requiring it to name a
     /// gram that actually exists in this course — the server never guesses.
-    fn parse_gram(&self, value: &serde_json::Value) -> Result<(Gram<String>, SpurGram), String> {
-        let gram: Gram<String> = serde_json::from_value(value.clone()).map_err(|e| {
-            format!(
-                "invalid gram (pass it exactly as returned by search_dictionary or get_due_cards): {e}"
-            )
-        })?;
-        match self.pack().course_gram(&gram) {
-            Some(interned) => Ok((gram, interned)),
+    fn resolve_gram(&self, gram: &Gram<String>) -> Result<SpurGram, String> {
+        match self.pack().course_gram(gram) {
+            Some(interned) => Ok(interned),
             None => Err(format!(
                 "no dictionary entry in this course matches that gram for '{}' — the full \
                  word/lemma/part-of-speech sequence must match exactly. Use search_dictionary \
@@ -419,23 +419,13 @@ impl YapState {
         }
     }
 
-    /// Parse a card from tool input (the exact JSON returned by get_due_cards).
-    fn parse_card(
-        &self,
-        value: &serde_json::Value,
-    ) -> Result<CardIndicator<Gram<String>, String>, String> {
-        serde_json::from_value(value.clone()).map_err(|e| {
-            format!("invalid card (pass it exactly as returned by get_due_cards): {e}")
-        })
-    }
-
     /// Resolve a written-gram card plus an optional explicit sentence into
     /// the full translation-challenge payload. Explicit sentences are
     /// verified against the corpus (a model- or widget-supplied sentence is
     /// only accepted verbatim); omitted ones use the app's own selection.
     fn translation_challenge_payload(
         &mut self,
-        card: &CardIndicator<Gram<String>, String>,
+        card: &Card,
         sentence: Option<&str>,
     ) -> Result<(Spur, TranslateComprehensibleSentence), String> {
         let CardIndicator::WrittenGram { gram } = card else {
@@ -717,7 +707,7 @@ fn card_summary_out(language: Language, summary: &CardSummary) -> CardSummaryOut
     }
 }
 
-fn card_kind(card: &CardIndicator<Gram<String>, String>) -> &'static str {
+fn card_kind(card: &Card) -> &'static str {
     match card {
         CardIndicator::WrittenGram { .. } => "written",
         CardIndicator::ListeningGram { .. } => "listening",
@@ -770,7 +760,7 @@ pub struct AddCardsParams {
     /// The grams (words/phrases) to add, each the exact gram JSON returned by
     /// search_dictionary: a sequence of tokens with word, lemma, and part of
     /// speech.
-    grams: Vec<serde_json::Value>,
+    grams: Vec<Verbatim<Gram<String>>>,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -785,7 +775,7 @@ pub struct LogReviewParams {
     /// The target language of the card, e.g. "French".
     language: String,
     /// The card object exactly as returned by get_due_cards.
-    card: serde_json::Value,
+    card: Verbatim<Card>,
     /// How the review went: "again" (forgot), "hard", "good", or "easy".
     /// "remembered" is a simple success when finer grading doesn't apply.
     rating: String,
@@ -802,7 +792,7 @@ pub struct GetSentencesParams {
     /// The target language of the gram, e.g. "French".
     language: String,
     /// The exact gram JSON returned by search_dictionary or get_due_cards.
-    gram: serde_json::Value,
+    gram: Verbatim<Gram<String>>,
     /// How many sentences of each kind to return (default 5, max 20).
     #[serde(default)]
     count: Option<usize>,
@@ -813,7 +803,7 @@ pub struct PresentCardParams {
     /// The target language of the card, e.g. "French".
     language: String,
     /// The card object exactly as returned by get_due_cards or unlock_cards.
-    card: serde_json::Value,
+    card: Verbatim<Card>,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -822,7 +812,7 @@ pub struct PresentTranslationParams {
     language: String,
     /// The written-gram card being reviewed, exactly as returned by
     /// get_due_cards or unlock_cards.
-    card: serde_json::Value,
+    card: Verbatim<Card>,
     /// Optional: the exact text of a corpus sentence containing this card's
     /// gram, chosen from get_sentences — prefer comprehensible_sentences,
     /// since the grade reviews every word in the sentence, not just this
@@ -838,7 +828,7 @@ pub struct GradeTranslationParams {
     /// The target language of the challenge, e.g. "French".
     language: String,
     /// The card object exactly as given in the widget data.
-    card: serde_json::Value,
+    card: Verbatim<Card>,
     /// The challenge sentence exactly as given in the widget data.
     sentence: String,
     /// The user's typed translation.
@@ -854,10 +844,10 @@ pub struct GradeTranslationParams {
 pub struct GetAudioParams {
     /// The TTS request exactly as provided in widget data: text, language,
     /// and optional speed/is_ssml/instructions.
-    request: serde_json::Value,
+    request: Verbatim<TtsRequest>,
     /// The TTS provider to synthesize with when no human recording exists,
     /// exactly as provided in widget data (e.g. "ElevenLabs").
-    provider: serde_json::Value,
+    provider: TtsProvider,
 }
 
 #[derive(Serialize, Deserialize, JsonSchema)]
@@ -1138,9 +1128,9 @@ impl YapMcp {
         let target_language = state.context.course.target_language;
         let mut resolved = Vec::new();
         let mut errors = Vec::new();
-        for value in &params.grams {
-            match state.parse_gram(value) {
-                Ok((gram, _)) => resolved.push(gram),
+        for Verbatim(gram) in params.grams {
+            match state.resolve_gram(&gram) {
+                Ok(_) => resolved.push(gram),
                 Err(e) => errors.push(e),
             }
         }
@@ -1148,7 +1138,7 @@ impl YapMcp {
             return error(format!("no cards were added:\n{}", errors.join("\n")));
         }
 
-        let candidates: Vec<(CardIndicator<Gram<String>, String>, String)> = resolved
+        let candidates: Vec<(Card, String)> = resolved
             .into_iter()
             .map(|gram| {
                 let display = gram.to_display_string(target_language);
@@ -1334,10 +1324,7 @@ impl YapMcp {
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
         }
-        let card = match state.parse_card(&params.card) {
-            Ok(card) => card,
-            Err(e) => return error(e),
-        };
+        let Verbatim(card) = params.card;
         let target_language = state.context.course.target_language;
 
         // Pronunciation cards have no gram: build the app's own
@@ -1392,7 +1379,7 @@ impl YapMcp {
                     "language": language,
                     "is_new": is_new,
                     "times_type_seen": times_type_seen,
-                    "card": params.card,
+                    "card": card,
                     "pattern": pattern,
                     "guide": guide,
                     "audio_requests": audio_requests,
@@ -1470,7 +1457,7 @@ impl YapMcp {
                 "is_new": is_new,
                 "total_count": total_count,
                 "times_type_seen": times_type_seen,
-                "card": params.card,
+                "card": card,
                 "content": serde_json::to_value(&flashcard.content).expect("content serializes"),
                 "audio": serde_json::to_value(&flashcard.audio).expect("audio serializes"),
             },
@@ -1514,10 +1501,7 @@ impl YapMcp {
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
         }
-        let card = match state.parse_card(&params.card) {
-            Ok(card) => card,
-            Err(e) => return error(e),
-        };
+        let Verbatim(card) = params.card;
         let is_new = {
             let Some(summary) = state.deck().find_card_summary(&card) else {
                 return error(
@@ -1547,7 +1531,7 @@ impl YapMcp {
                 "type": "translation",
                 "nonce": presentation_nonce(),
                 "language": state.target_language_value(),
-                "card": params.card,
+                "card": card,
                 "is_new": is_new,
                 "sentence": {
                     "text": challenge.target_language,
@@ -1588,7 +1572,7 @@ impl YapMcp {
         const TOOL: &str = "grade_translation";
         // The presentation's immutable identity — the mutable submission is
         // deliberately excluded so an edited retry still replays.
-        let identity = json!([params.card, params.language, params.sentence]).to_string();
+        let identity = json!([&*params.card, &params.language, &params.sentence]).to_string();
         let mut state = slot.lock().await;
         // Sync first, so a retry after a failed upload drives the pending
         // flush before we short-circuit on the cached response.
@@ -1606,10 +1590,7 @@ impl YapMcp {
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
         }
-        let card = match state.parse_card(&params.card) {
-            Ok(card) => card,
-            Err(e) => return error(e),
-        };
+        let Verbatim(card) = params.card;
         let submission = params.submission.trim().to_string();
         if submission.is_empty() {
             return error("the submission is empty — the user needs to type a translation first");
@@ -1726,22 +1707,10 @@ impl YapMcp {
         ctx: RequestContext<RoleServer>,
         Parameters(params): Parameters<GetAudioParams>,
     ) -> CallToolResult {
-        let request: language_utils::TtsRequest = match serde_json::from_value(params.request) {
-            Ok(request) => request,
-            Err(e) => {
-                return error(format!(
-                    "invalid audio request (pass it exactly as given in the widget data): {e}"
-                ));
-            }
-        };
-        let provider: language_utils::TtsProvider = match serde_json::from_value(params.provider) {
-            Ok(provider) => provider,
-            Err(e) => {
-                return error(format!(
-                    "invalid provider (pass it exactly as given in the widget data): {e}"
-                ));
-            }
-        };
+        let GetAudioParams {
+            request: Verbatim(request),
+            provider,
+        } = params;
 
         // Authenticated per-user state must exist before we spend TTS money,
         // and loading it registers the course pack's human recordings so the
@@ -1811,7 +1780,7 @@ impl YapMcp {
         const TOOL: &str = "log_review";
         // The card under review is the presentation's immutable identity; the
         // mutable rating is excluded so a retry replays the first review.
-        let identity = json!([params.card, params.language]).to_string();
+        let identity = json!([&*params.card, &params.language]).to_string();
         let mut state = slot.lock().await;
         // Sync first, so a retry after a failed upload drives the pending
         // flush before we short-circuit on the cached response.
@@ -1828,10 +1797,7 @@ impl YapMcp {
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
         }
-        let card = match state.parse_card(&params.card) {
-            Ok(c) => c,
-            Err(e) => return error(e),
-        };
+        let Verbatim(card) = params.card;
         let deck = state.deck();
         let Some(before) = deck.find_card_summary(&card) else {
             return error(
@@ -1902,8 +1868,9 @@ impl YapMcp {
         if let Err(e) = state.check_language(&params.language) {
             return error(e);
         }
-        let (gram, interned) = match state.parse_gram(&params.gram) {
-            Ok(pair) => pair,
+        let Verbatim(gram) = params.gram;
+        let interned = match state.resolve_gram(&gram) {
+            Ok(interned) => interned,
             Err(e) => return error(e),
         };
         let display = gram.to_display_string(state.context.course.target_language);
@@ -2288,5 +2255,63 @@ impl ServerHandler for YapMcp {
                 .to_string(),
         );
         info
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Every tool parameter must advertise a real JSON type: claude.ai's
+    /// client stringifies untyped parameters before they reach the server.
+    /// The verbatim parameters must also match the shape their producers
+    /// emit (a gram is an array, a card an object), or the client rejects the
+    /// echoed value.
+    #[test]
+    fn every_tool_parameter_has_its_real_type() {
+        fn schema<T: JsonSchema>() -> serde_json::Value {
+            serde_json::to_value(schemars::schema_for!(T)).unwrap()
+        }
+        fn is_typed(prop: &serde_json::Value) -> bool {
+            ["type", "$ref", "anyOf", "oneOf"]
+                .iter()
+                .any(|key| prop.get(key).is_some())
+        }
+        fn check<T: JsonSchema>() -> serde_json::Value {
+            let schema = schema::<T>();
+            for (name, prop) in schema["properties"].as_object().unwrap() {
+                assert!(
+                    is_typed(prop),
+                    "{}::{name} is untyped: {prop}",
+                    std::any::type_name::<T>()
+                );
+                if let Some(items) = prop.get("items") {
+                    assert!(
+                        is_typed(items),
+                        "{}::{name} items untyped: {items}",
+                        std::any::type_name::<T>()
+                    );
+                }
+            }
+            schema
+        }
+        check::<SearchDictionaryParams>();
+        check::<GetDueCardsParams>();
+        check::<LogReviewParams>();
+        check::<PresentCardParams>();
+        check::<PresentTranslationParams>();
+        check::<GradeTranslationParams>();
+        check::<GetAudioParams>();
+        check::<SearchParams>();
+        check::<FetchParams>();
+
+        let sentences = check::<GetSentencesParams>();
+        assert_eq!(sentences["properties"]["gram"]["type"], "array");
+        let add = check::<AddCardsParams>();
+        assert_eq!(add["properties"]["grams"]["items"]["type"], "array");
+
+        let card = &check::<PresentCardParams>()["properties"]["card"];
+        assert_eq!(card["type"], "object");
+        assert_eq!(card["oneOf"].as_array().unwrap().len(), 3);
     }
 }

@@ -10,10 +10,24 @@ use lasso::Spur;
 use serde::{Deserialize, Serialize};
 
 #[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify, Hash,
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    Ord,
+    PartialOrd,
+    tsify::Tsify,
+    Hash,
+    schemars::JsonSchema,
 )]
 #[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
+// Every variant is an object; saying so at the top level keeps MCP clients
+// that key off `type` from treating the union as untyped.
+#[schemars(extend("type" = "object"))]
 pub enum CardIndicator<G, S> {
     WrittenGram {
         gram: G,
