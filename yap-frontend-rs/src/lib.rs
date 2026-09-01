@@ -136,7 +136,7 @@ pub struct Weapon {
     device_id: String,
 
     // not this ofc
-    language_pack: RefCell<BTreeMap<Course, Arc<LanguagePack>>>,
+    language_pack: RefCell<BTreeMap<Course, LoadedLanguagePack>>,
     directories: Directories,
 }
 
@@ -306,7 +306,7 @@ impl Weapon {
             .language_pack
             .borrow()
             .get(&course)
-            .cloned()
+            .map(|loaded| loaded.pack.clone())
             .ok_or_else(|| JsValue::from_str("language pack not loaded for this course"))?;
         let target_language = course.target_language;
         let native_language = self
@@ -616,13 +616,53 @@ impl Weapon {
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Weapon {
+    /// Load the full language pack (core + sentences), replacing a core-only
+    /// pack if one was loaded first.
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn load_language_pack(
         &self,
         course: Course,
         on_progress: Option<js_sys::Function>,
     ) -> Result<(), language_pack::LanguageDataError> {
-        if self.language_pack.borrow().get(&course).is_some() {
+        self.load_language_pack_inner(course, on_progress, false)
+            .await
+    }
+
+    /// Load just the core half (dictionary + frequencies) — enough to create
+    /// a deck and run the placement test while the sentence half is still
+    /// downloading. A later `load_language_pack` call swaps in the full pack.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub async fn load_language_pack_core(
+        &self,
+        course: Course,
+        on_progress: Option<js_sys::Function>,
+    ) -> Result<(), language_pack::LanguageDataError> {
+        self.load_language_pack_inner(course, on_progress, true)
+            .await
+    }
+
+    /// Whether the loaded pack for this course (if any) includes the
+    /// sentence half.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn is_language_pack_fully_loaded(&self, course: Course) -> bool {
+        self.language_pack
+            .borrow()
+            .get(&course)
+            .is_some_and(|loaded| loaded.full)
+    }
+
+    async fn load_language_pack_inner(
+        &self,
+        course: Course,
+        on_progress: Option<js_sys::Function>,
+        core_only: bool,
+    ) -> Result<(), language_pack::LanguageDataError> {
+        let satisfied = |loaded: &BTreeMap<Course, LoadedLanguagePack>| {
+            loaded
+                .get(&course)
+                .is_some_and(|loaded| loaded.full || core_only)
+        };
+        if satisfied(&self.language_pack.borrow()) {
             return Ok(());
         }
 
@@ -638,32 +678,53 @@ impl Weapon {
             )
         })?;
 
-        if self.language_pack.borrow().get(&course).is_some() {
+        if satisfied(&self.language_pack.borrow()) {
             return Ok(());
         }
 
-        let language_pack = language_pack::load_language_pack(
-            &self.directories.data_directory_handle,
-            course,
-            &|message: &str, progress: f32| {
-                if let Some(ref callback) = on_progress {
-                    let this = wasm_bindgen::JsValue::NULL;
-                    let message_js = wasm_bindgen::JsValue::from_str(message);
-                    let progress_js = wasm_bindgen::JsValue::from_f64(progress as f64);
-                    let _ = callback.call2(&this, &message_js, &progress_js);
-                }
-            },
-        )
-        .await?;
+        let set_loading_state = |message: &str, progress: f32| {
+            if let Some(ref callback) = on_progress {
+                let this = wasm_bindgen::JsValue::NULL;
+                let message_js = wasm_bindgen::JsValue::from_str(message);
+                let progress_js = wasm_bindgen::JsValue::from_f64(progress as f64);
+                let _ = callback.call2(&this, &message_js, &progress_js);
+            }
+        };
+        let language_pack = if core_only {
+            language_pack::load_language_pack_core(
+                &self.directories.data_directory_handle,
+                course,
+                &set_loading_state,
+            )
+            .await?
+        } else {
+            language_pack::load_language_pack(
+                &self.directories.data_directory_handle,
+                course,
+                &set_loading_state,
+            )
+            .await?
+        };
         let language_pack = Arc::new(language_pack);
         // Register before the move below: the registry holds only a Weak, so
         // the inserted Arc remains the sole owner.
         human_audio::register(course.target_language, &language_pack);
-        self.language_pack
-            .borrow_mut()
-            .insert(course, language_pack);
+        self.language_pack.borrow_mut().insert(
+            course,
+            LoadedLanguagePack {
+                pack: language_pack,
+                full: !core_only,
+            },
+        );
         Ok(())
     }
+}
+
+/// A language pack in the per-course cache, with whether it includes the
+/// sentence half or only the core.
+struct LoadedLanguagePack {
+    pack: Arc<LanguagePack>,
+    full: bool,
 }
 
 #[derive(Clone, Debug, tsify::Tsify, serde::Serialize, serde::Deserialize)]
@@ -5100,16 +5161,10 @@ mod tests {
         fn default() -> Self {
             // Read the French language data from file for tests
             // Vec<u8> provides proper alignment for rkyv deserialization
-            let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-                .expect("Failed to read test language data");
-
-            let archived = rkyv::access::<
-                language_utils::language_pack::ArchivedLanguagePack,
-                rkyv::rancor::Error,
-            >(&bytes)
-            .unwrap();
-            let language_pack: LanguagePack =
-                rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+            let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
+                std::path::Path::new("../out/fra_for_eng"),
+            )
+            .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
 
             let language_pack = Arc::new(language_pack);
 
@@ -6056,15 +6111,10 @@ mod tests {
         use weapon::opfs::parse_event_log_records;
 
         // 1. Load language pack from rkyv
-        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-            .expect("Failed to read language data - run `cargo run --bin generate-data` first");
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
-        let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
+            std::path::Path::new("../out/fra_for_eng"),
+        )
+        .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
         let language_pack = Arc::new(language_pack);
 
         // 2. Set up the EventStore (same as production: EventStore<String, String>)
@@ -6179,15 +6229,10 @@ mod tests {
     #[test]
     fn test_savoir_sentence_cleanup_and_lookup() {
         // Load language pack
-        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-            .expect("Failed to read language data - run `cargo run --bin generate-data` first");
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
-        let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
+            std::path::Path::new("../out/fra_for_eng"),
+        )
+        .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
 
         // The sentence from v1 events (without proper French punctuation spacing)
         let raw_sentence = "Qu'est-ce que tu veux savoir?";
@@ -6248,15 +6293,10 @@ mod tests {
         use weapon::opfs::parse_event_log_records;
 
         // Load language pack and replay events to get deck state
-        let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-            .expect("Failed to read language data");
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
-        let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
+            std::path::Path::new("../out/fra_for_eng"),
+        )
+        .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
         let language_pack = Arc::new(language_pack);
 
         let mut store: EventStore<String, String> = EventStore::default();
@@ -6493,20 +6533,10 @@ mod tests {
         println!("  Using: {target} for {native}");
 
         // 5. Load language pack and compute deck state
-        let rkyv_path = format!(
-            "../out/{}_for_{}/language_data.rkyv",
-            target.code(),
-            native.code()
-        );
-        let bytes =
-            std::fs::read(&rkyv_path).unwrap_or_else(|e| panic!("Failed to read {rkyv_path}: {e}"));
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
+        let pack_dir = format!("../out/{}_for_{}", target.code(), native.code());
         let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+            language_utils::language_pack::load_split_dir(std::path::Path::new(&pack_dir))
+                .unwrap_or_else(|e| panic!("Failed to load {pack_dir}: {e}"));
         let language_pack = Arc::new(language_pack);
 
         let course = Course {
@@ -6744,19 +6774,19 @@ mod tests {
     /// Build the language pack + display→gram map for a course, or `None` if the
     /// pack isn't on disk.
     fn build_pack_entry(course: Course) -> PackEntry {
-        let path = format!(
-            "../out/{}_for_{}/language_data.rkyv",
+        let dir = format!(
+            "../out/{}_for_{}",
             course.target_language.code(),
             course.native_language.code()
         );
-        let bytes = std::fs::read(&path).ok()?;
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .ok()?;
-        let pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).ok()?;
+        let dir = std::path::Path::new(&dir);
+        if !dir
+            .join(language_utils::language_pack::CORE_FILENAME)
+            .exists()
+        {
+            return None;
+        }
+        let pack: LanguagePack = language_utils::language_pack::load_split_dir(dir).ok()?;
         let target = course.target_language;
         let mut map = std::collections::HashMap::new();
         for gram_spur in pack.gram_rodeo.strings() {

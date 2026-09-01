@@ -4,7 +4,7 @@
 # commit and push the regenerated language packs.
 #
 # Regenerating packs and committing the result is a recurring chore (see
-# `git log -- 'out/*_for_*/language_data.rkyv'`), and the risky parts are always
+# `git log -- 'out/*_for_*/language_data_*.rkyv'`), and the risky parts are always
 # the same: committing a half-written pack, or sweeping unrelated code changes
 # into a multi-GB data commit. This does the waiting and the checking.
 #
@@ -82,27 +82,55 @@ fi
 
 say "verifying pack integrity"
 
-# generate-data writes "<xxh3>;<size_in_bytes>" next to each pack, after the
-# pack itself. A truncated pack (killed mid-write) disagrees with its recorded
-# size; a pack whose hash file never got written is missing outright.
+# generate-data writes each pack as a core + sentences pair, with a two-line
+# language_data.hash ("<xxh3>;<size_in_bytes>" for the core, then the same for
+# the sentences half), written after both packs. A truncated pack (killed
+# mid-write) disagrees with its recorded size; a pack whose hash file never
+# got written is missing outright.
 FAILED=0
-for rkyv in out/*_for_*/language_data.rkyv; do
-  hash_file="${rkyv%/*}/language_data.hash"
-  pair="$(basename "$(dirname "$rkyv")")"
-  if [ ! -f "$hash_file" ]; then
-    printf '  %-22s MISSING language_data.hash\n' "$pair"; FAILED=1; continue
+for hash_file in out/*_for_*/language_data.hash; do
+  course_dir="${hash_file%/*}"
+  pair="$(basename "$course_dir")"
+  if [ "$(wc -l < "$hash_file" | tr -d ' ')" -gt 2 ]; then
+    printf '  %-22s language_data.hash is not the two-line core+sentences format\n' "$pair"
+    FAILED=1; continue
   fi
-  recorded="$(cat "$hash_file")"
-  recorded_size="${recorded##*;}"
-  actual_size="$(stat -f %z "$rkyv")"
-  if [ "$recorded_size" != "$actual_size" ]; then
-    printf '  %-22s SIZE MISMATCH recorded=%s actual=%s\n' "$pair" "$recorded_size" "$actual_size"
-    FAILED=1
+  ok=1
+  line=0
+  while IFS= read -r recorded || [ -n "$recorded" ]; do
+    line=$((line + 1))
+    case "$line" in
+      1) part="core" ;;
+      2) part="sentences" ;;
+      *) break ;;
+    esac
+    rkyv="$course_dir/language_data_${part}.rkyv"
+    if [ ! -f "$rkyv" ]; then
+      printf '  %-22s MISSING %s\n' "$pair" "$(basename "$rkyv")"; ok=0; continue
+    fi
+    recorded_size="${recorded##*;}"
+    actual_size="$(stat -f %z "$rkyv")"
+    if [ "$recorded_size" != "$actual_size" ]; then
+      printf '  %-22s %s SIZE MISMATCH recorded=%s actual=%s\n' "$pair" "$part" "$recorded_size" "$actual_size"
+      ok=0
+    fi
+  done < "$hash_file"
+  if [ "$line" -ne 2 ]; then
+    printf '  %-22s language_data.hash has %s line(s), expected 2\n' "$pair" "$line"
+    ok=0
+  fi
+  if [ "$ok" -eq 1 ]; then
+    printf '  %-22s ok\n' "$pair"
   else
-    printf '  %-22s ok (%s bytes)\n' "$pair" "$actual_size"
+    FAILED=1
   fi
 done
 [ "$FAILED" -eq 0 ] || die "pack integrity check failed (see above) -- not committing"
+
+# Sizes alone can't catch an interrupted regeneration that left mixed halves
+# or a stale hash file; verify the recorded XXH3 hashes against the archives.
+cargo run --release -p language-utils --example verify_pack_hashes \
+  || die "pack hash verification failed -- not committing"
 
 # Leftover .partial files mean a corpus-cleaning stage was interrupted.
 PARTIALS="$(ls out/cleaned_*.partial.jsonl 2>/dev/null || true)"

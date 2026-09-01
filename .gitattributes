@@ -16,7 +16,7 @@ out/*/target_language_multiword_terms_tokenization.jsonl filter=lfs diff=lfs mer
 out/cleaned_*.jsonl filter=lfs diff=lfs merge=lfs -text
 
 # Language pair data (e.g., fra_for_eng)
-out/*_for_*/language_data.rkyv filter=lfs diff=lfs merge=lfs -text
+out/*_for_*/language_data_*.rkyv filter=lfs diff=lfs merge=lfs -text
 out/*_for_*/conjugations.jsonl filter=lfs diff=lfs merge=lfs -text
 
 # Clean NLP data (all languages)

@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   useMemo,
   useCallback,
+  useRef,
 } from "react";
 import { useZeno } from "@/hooks/useZeno";
 import { AuthDialogProvider } from "@/components/auth-dialog-provider";
@@ -1615,32 +1616,77 @@ export function useDeck():
   const course = courseParts ?? cachedCourse;
   const courseKey = getCourseKey(course);
 
-  // Fetch language pack — only re-runs when course changes, not when numEvents changes
-  const languagePackResult = useAsyncMemo(async () => {
+  // Fetch language pack — only re-runs when course changes, not when numEvents
+  // changes. Two-stage: the core half (dictionary + frequencies) loads first
+  // so the placement test can start immediately; when the sentence half lands
+  // the result flips to full and the deck below is rebuilt against it.
+  type LanguagePackResult =
+    | { courseKey: string; ok: true; full: boolean }
+    | { courseKey: string; ok: false; error: unknown };
+  const [languagePackResult, setLanguagePackResult] =
+    useState<LanguagePackResult | null>(null);
+  // Generation counter so a superseded load (course switch, retry) can't
+  // clobber the current one's result after the fact — a stale write here
+  // would strand the app on the loading screen, since no further updates
+  // ever arrive once both loads have finished.
+  const packLoadGeneration = useRef(0);
+  useAsyncMemo(async () => {
+    const generation = ++packLoadGeneration.current;
+    const alive = () => packLoadGeneration.current === generation;
+    setLanguagePackResult(null);
     if (!course || !courseKey) return null;
     Sentry.addBreadcrumb({
       category: "language-pack",
       message: `Loading language pack: ${course.targetLanguage} → ${course.nativeLanguage}`,
       level: "info",
     });
+    const onProgress = (message: string, progress: number) => {
+      Sentry.addBreadcrumb({
+        category: "language-pack",
+        message: `${message} (${Math.round(progress)}%)`,
+        level: "info",
+      });
+      if (alive()) setLoadingState({ message, progress });
+    };
     try {
-      await weapon.load_language_pack(
-        course,
-        (message: string, progress: number) => {
-          Sentry.addBreadcrumb({
-            category: "language-pack",
-            message: `${message} (${Math.round(progress)}%)`,
-            level: "info",
-          });
-          setLoadingState({ message, progress });
-        },
-      );
-      setLoadingState(null);
-      return { courseKey, ok: true as const };
+      await weapon.load_language_pack_core(course, onProgress);
     } catch (error) {
+      if (!alive()) return null;
       setLoadingState(null);
-      return { courseKey, ok: false as const, error };
+      setLanguagePackResult({ courseKey, ok: false, error });
+      return null;
     }
+    if (!alive()) return null;
+    setLanguagePackResult({
+      courseKey,
+      ok: true,
+      full: weapon.is_language_pack_fully_loaded(course),
+    });
+    // The sentence half downloads in the background, possibly while the
+    // placement test is already underway — a transient failure must not tear
+    // down that usable core-only state. Retries are cheap (already-downloaded
+    // chunks are cached in OPFS), so retry with backoff and only surface an
+    // error if it keeps failing.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        await weapon.load_language_pack(course, onProgress);
+        break;
+      } catch (error) {
+        if (!alive()) return null;
+        if (attempt >= 5) {
+          setLoadingState(null);
+          setLanguagePackResult({ courseKey, ok: false, error });
+          return null;
+        }
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.min(30_000, 2_000 * 2 ** attempt)),
+        );
+      }
+    }
+    if (!alive()) return null;
+    setLoadingState(null);
+    setLanguagePackResult({ courseKey, ok: true, full: true });
+    return null;
   }, [weapon, courseKey, retryCount]);
 
   // Build deck — re-runs when language pack is ready or streams change
@@ -1695,16 +1741,31 @@ export function useDeck():
     }
 
     try {
+      const deck = await weapon.get_deck_state(
+        course,
+        new Date().getTimezoneOffset() * -60,
+      );
+
+      // While only the core half of the pack is loaded, the deck is usable
+      // for exactly one thing: the placement test. If this user wouldn't see
+      // it, stay on the loading screen until the sentence half arrives.
+      if (!languagePackResult.full) {
+        const startingFresh = deck_selection.onboardingSelections?.startingFresh;
+        const wouldShowPlacementTest =
+          startingFresh === false &&
+          deck !== null &&
+          !deck.has_taken_placement_test() &&
+          deck.num_cards_added() < 3;
+        if (!wouldShowPlacementTest) return null;
+      }
+
       return {
         type: "deck",
         courseKey,
         startingFresh: deck_selection.onboardingSelections?.startingFresh,
         nativeLanguage: course.nativeLanguage,
         targetLanguage: course.targetLanguage,
-        deck: await weapon.get_deck_state(
-          course,
-          new Date().getTimezoneOffset() * -60,
-        ),
+        deck,
       } as {
         type: "deck";
         courseKey: string;

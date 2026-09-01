@@ -1,7 +1,10 @@
 use futures::StreamExt as _;
 use language_utils::{
     Course, Language,
-    language_pack::{ArchivedLanguagePack, LanguagePack},
+    language_pack::{
+        ArchivedLanguagePackCore, ArchivedLanguagePackSentences, LanguagePack, LanguagePackCore,
+        LanguagePackSentences,
+    },
 };
 use opfs::{
     DirectoryHandle as _, FileHandle as _, WritableFileStream as _,
@@ -111,17 +114,62 @@ static LANGUAGE_DATA_HASHES: LazyLock<BTreeMap<Course, &'static str>> = LazyLock
     hashes
 });
 
-/// Parses hash metadata from format "hash;size_in_bytes" and returns (hash, size)
-fn parse_hash_metadata(metadata: &str) -> (u64, usize) {
-    let metadata = metadata.trim();
-    let (hash_str, size_str) = metadata.split_once(';').unwrap();
-    let hash = hash_str.parse().unwrap();
-    let size = size_str.parse().unwrap();
-    (hash, size)
+/// Which half of the split language pack a request refers to. The core
+/// (dictionary, frequencies, pronunciation) is a fraction of the size of the
+/// sentence data and is downloaded first, so the placement test can start
+/// before the sentences have arrived.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum PackPart {
+    Core,
+    Sentences,
 }
 
-fn language_data_hash_for_course(course: Course) -> Option<&'static str> {
-    LANGUAGE_DATA_HASHES.get(&course).copied()
+impl PackPart {
+    fn slug(self) -> &'static str {
+        match self {
+            PackPart::Core => "core",
+            PackPart::Sentences => "sentences",
+        }
+    }
+
+    fn describe(self, course: Course) -> String {
+        match self {
+            PackPart::Core => format!("Downloading {:?} dictionary", course.target_language),
+            PackPart::Sentences => format!("Downloading {:?} sentences", course.target_language),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct PartMeta {
+    hash: u64,
+    size: usize,
+}
+
+/// Parses the two-line hash metadata file: line 1 is the core's
+/// `hash;size_in_bytes`, line 2 the sentences'.
+fn parse_hash_metadata(metadata: &str) -> (PartMeta, PartMeta) {
+    let mut parts = metadata.trim().lines().map(|line| {
+        let (hash_str, size_str) = line.trim().split_once(';').unwrap();
+        PartMeta {
+            hash: hash_str.parse().unwrap(),
+            size: size_str.parse().unwrap(),
+        }
+    });
+    let core = parts.next().unwrap();
+    let sentences = parts.next().unwrap();
+    (core, sentences)
+}
+
+fn language_data_hashes_for_course(
+    course: Course,
+) -> Result<(PartMeta, PartMeta), LanguageDataError> {
+    LANGUAGE_DATA_HASHES
+        .get(&course)
+        .copied()
+        .map(parse_hash_metadata)
+        .ok_or(LanguageDataError::UnsupportedCourse(course))
 }
 
 fn course_directory_slug(course: Course) -> String {
@@ -134,50 +182,55 @@ fn course_directory_slug(course: Course) -> String {
 
 const LANGUAGE_DATA_WRITE_CHUNK_SIZE: usize = 1024 * 1024;
 const LANGUAGE_DATA_WRITE_ATTEMPTS: usize = 3;
-const LANGUAGE_DATA_TARGET_CHUNK_COUNT: usize = 5;
+/// Download/cache granularity. A fixed chunk size (instead of a fixed chunk
+/// count) keeps resume granularity sane now that parts range from ~2 MB to
+/// ~200 MB.
+const LANGUAGE_DATA_CHUNK_SIZE: usize = 16 * 1024 * 1024;
 
 #[derive(serde::Serialize)]
 struct LanguageDataRequest {
     course: Course,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    chunk_index: Option<usize>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    chunk_size: Option<usize>,
-}
-
-fn language_data_chunk_size(total_size: usize) -> usize {
-    total_size.max(1).div_ceil(LANGUAGE_DATA_TARGET_CHUNK_COUNT)
+    part: PackPart,
+    chunk_index: usize,
+    chunk_size: usize,
 }
 
 fn language_data_chunk_count(total_size: usize) -> usize {
-    total_size
-        .max(1)
-        .div_ceil(language_data_chunk_size(total_size))
+    total_size.max(1).div_ceil(LANGUAGE_DATA_CHUNK_SIZE)
 }
 
-fn language_data_chunk_filename(hash: u64, total_size: usize, chunk_index: usize) -> String {
-    let chunk_len = language_data_chunk_len(total_size, chunk_index);
+fn language_data_chunk_filename(part: PackPart, meta: PartMeta, chunk_index: usize) -> String {
+    let chunk_len = language_data_chunk_len(meta.size, chunk_index);
     format!(
-        "language_data_{hash}.chunk_{chunk_index:02}_of_{chunk_count:02}.size_{chunk_len}",
-        chunk_count = language_data_chunk_count(total_size)
+        "language_data_{slug}_{hash}.chunk_{chunk_index:02}_of_{chunk_count:02}.size_{chunk_len}",
+        slug = part.slug(),
+        hash = meta.hash,
+        chunk_count = language_data_chunk_count(meta.size)
     )
 }
 
-fn language_data_chunk_filenames(hash: u64, total_size: usize) -> Vec<String> {
-    (0..language_data_chunk_count(total_size))
-        .map(|chunk_index| language_data_chunk_filename(hash, total_size, chunk_index))
+fn language_data_chunk_filenames(part: PackPart, meta: PartMeta) -> Vec<String> {
+    (0..language_data_chunk_count(meta.size))
+        .map(|chunk_index| language_data_chunk_filename(part, meta, chunk_index))
         .collect()
 }
 
 fn language_data_chunk_len(total_size: usize, chunk_index: usize) -> usize {
-    let chunk_size = language_data_chunk_size(total_size);
-    let chunk_start = chunk_index * chunk_size;
-    total_size.saturating_sub(chunk_start).min(chunk_size)
+    let chunk_start = chunk_index * LANGUAGE_DATA_CHUNK_SIZE;
+    total_size
+        .saturating_sub(chunk_start)
+        .min(LANGUAGE_DATA_CHUNK_SIZE)
 }
 
-fn current_language_data_filenames(hash: u64, total_size: usize) -> BTreeSet<String> {
-    language_data_chunk_filenames(hash, total_size)
+/// Every filename both halves of the current pack version are allowed to
+/// occupy; anything else with the `language_data_` prefix is stale.
+fn current_language_data_filenames(core: PartMeta, sentences: PartMeta) -> BTreeSet<String> {
+    language_data_chunk_filenames(PackPart::Core, core)
         .into_iter()
+        .chain(language_data_chunk_filenames(
+            PackPart::Sentences,
+            sentences,
+        ))
         .collect()
 }
 
@@ -188,106 +241,154 @@ fn is_retryable_persistent_error(error: &persistent::Error) -> bool {
         || error_text.contains("out of memory")
 }
 
+/// Load just the core half and assemble a sentence-less pack: enough for the
+/// placement test and word lookups while the sentence half is still on the
+/// wire.
+pub(crate) async fn load_language_pack_core(
+    data_directory_handle: &DirectoryHandle,
+    course: Course,
+    set_loading_state: &impl Fn(&str, f32),
+) -> Result<LanguagePack, LanguageDataError> {
+    let _perf_timer = utils::PerfTimer::new("load_language_pack_core");
+    let (core_meta, _sentences_meta) = language_data_hashes_for_course(course)?;
+    let mut language_directory = course_data_directory(data_directory_handle, course).await?;
+
+    let core = load_part(
+        &mut language_directory,
+        course,
+        PackPart::Core,
+        core_meta,
+        set_loading_state,
+        deserialize_core,
+    )
+    .await?;
+
+    Ok(LanguagePack::from_parts(core, None))
+}
+
 pub(crate) async fn load_language_pack(
     data_directory_handle: &DirectoryHandle,
     course: Course,
     set_loading_state: &impl Fn(&str, f32),
 ) -> Result<LanguagePack, LanguageDataError> {
     let _perf_timer = utils::PerfTimer::new("load_language_pack");
-    let course_directory = course_directory_slug(course);
-    let mut language_directory = data_directory_handle
+    let (core_meta, sentences_meta) = language_data_hashes_for_course(course)?;
+    let mut language_directory = course_data_directory(data_directory_handle, course).await?;
+
+    let core = load_part(
+        &mut language_directory,
+        course,
+        PackPart::Core,
+        core_meta,
+        set_loading_state,
+        deserialize_core,
+    )
+    .await?;
+    let sentences = load_part(
+        &mut language_directory,
+        course,
+        PackPart::Sentences,
+        sentences_meta,
+        set_loading_state,
+        deserialize_sentences,
+    )
+    .await?;
+
+    // Both halves are cached and valid: anything else is a previous version.
+    remove_stale_language_data_files(
+        &mut language_directory,
+        &current_language_data_filenames(core_meta, sentences_meta),
+    )
+    .await?;
+
+    set_loading_state("Preparing language data", 100.0);
+    let assemble_timer = utils::PerfTimer::new("Assembling language pack");
+    let pack = LanguagePack::from_parts(core, Some(sentences));
+    drop(assemble_timer);
+    Ok(pack)
+}
+
+async fn course_data_directory(
+    data_directory_handle: &DirectoryHandle,
+    course: Course,
+) -> Result<DirectoryHandle, LanguageDataError> {
+    data_directory_handle
         .get_directory_handle_with_options(
-            &course_directory,
+            &course_directory_slug(course),
             &opfs::GetDirectoryHandleOptions { create: true },
         )
         .await
-        .map_err(LanguageDataError::Persistent)?;
+        .map_err(LanguageDataError::Persistent)
+}
 
-    let (language_data_hash, language_data_size) = parse_hash_metadata(
-        language_data_hash_for_course(course)
-            .ok_or(LanguageDataError::UnsupportedCourse(course))?,
-    );
+fn deserialize_core(bytes: &[u8]) -> Result<LanguagePackCore, rkyv::rancor::Error> {
+    let archived = rkyv::access::<ArchivedLanguagePackCore, rkyv::rancor::Error>(bytes)?;
+    rkyv::deserialize::<LanguagePackCore, rkyv::rancor::Error>(archived)
+}
 
-    log::info!(
-        "expected language_data_hash for {:?}->{:?}: {language_data_hash}",
-        course.native_language,
-        course.target_language
-    );
-    {
-        let mut files = language_directory
-            .entries()
-            .await
-            .map_err(LanguageDataError::Persistent)?;
-        while let Some(Ok((filename, _))) = files.next().await {
-            log::info!("Found language data file: {filename}");
-        }
-    }
+fn deserialize_sentences(bytes: &[u8]) -> Result<LanguagePackSentences, rkyv::rancor::Error> {
+    let archived = rkyv::access::<ArchivedLanguagePackSentences, rkyv::rancor::Error>(bytes)?;
+    rkyv::deserialize::<LanguagePackSentences, rkyv::rancor::Error>(archived)
+}
 
-    let bytes = match read_cached_language_data(
-        &mut language_directory,
-        language_data_hash,
-        language_data_size,
-        set_loading_state,
-    )
-    .await?
-    {
-        Some(bytes) => {
-            log::info!("Language data from chunked local storage hash matches expectation");
-            bytes
-        }
-        None => {
-            let _perf_timer = utils::PerfTimer::new("downloading and caching language data");
-            log::info!(
-                "Downloading and caching language data because the chunked language data cache was missing or invalid"
-            );
-            download_and_cache_language_data(
-                &mut language_directory,
-                course,
-                language_data_hash,
-                language_data_size,
-                set_loading_state,
-            )
-            .await?
-        }
-    };
+/// Get one part's bytes (cache or network) and deserialize them. A cached
+/// copy that fails to deserialize is discarded and re-downloaded once.
+async fn load_part<T>(
+    language_directory: &mut DirectoryHandle,
+    course: Course,
+    part: PackPart,
+    meta: PartMeta,
+    set_loading_state: &impl Fn(&str, f32),
+    deserialize: impl Fn(&[u8]) -> Result<T, rkyv::rancor::Error>,
+) -> Result<T, LanguageDataError> {
+    let bytes =
+        ensure_part_bytes(language_directory, course, part, meta, set_loading_state).await?;
 
     set_loading_state("Deserializing language data", 100.0);
-    let loading_perf_timer = utils::PerfTimer::new("Deserializing language data");
-    // Common deserialization logic for both cache hit and miss
-    let archived = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..]);
-
-    let deserialized = match archived {
-        Ok(archived) => rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-            .inspect_err(|e| {
-                log::error!("Error deserializing language data: {e:?}");
-            })
-            .map_err(LanguageDataError::Rkyv)?,
+    let _perf_timer = utils::PerfTimer::new("Deserializing language data part");
+    match deserialize(&bytes) {
+        Ok(value) => Ok(value),
         Err(e) => {
-            log::error!("Error when accessing language data: {e}\nre-downloading language data");
-            let bytes = download_and_cache_language_data(
-                &mut language_directory,
-                course,
-                language_data_hash,
-                language_data_size,
-                set_loading_state,
+            log::error!(
+                "Error deserializing language data part {}: {e}\nre-downloading",
+                part.slug()
+            );
+            remove_language_data_files(
+                language_directory,
+                &language_data_chunk_filenames(part, meta),
             )
-            .await?;
-            let archived = rkyv::access::<ArchivedLanguagePack, rkyv::rancor::Error>(&bytes[..])
-                .inspect_err(|e| {
-                    log::error!("2nd error accessing language data: {e:?}");
-                })
-                .map_err(LanguageDataError::Rkyv)?;
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-                .inspect_err(|e| {
-                    log::error!("Error deserializing language data: {e:?}");
-                })
-                .map_err(LanguageDataError::Rkyv)?
+            .await;
+            let bytes =
+                ensure_part_bytes(language_directory, course, part, meta, set_loading_state)
+                    .await?;
+            deserialize(&bytes).map_err(LanguageDataError::Rkyv)
         }
-    };
+    }
+}
 
-    drop(loading_perf_timer);
-
-    Ok(deserialized)
+async fn ensure_part_bytes(
+    language_directory: &mut DirectoryHandle,
+    course: Course,
+    part: PackPart,
+    meta: PartMeta,
+    set_loading_state: &impl Fn(&str, f32),
+) -> Result<Vec<u8>, LanguageDataError> {
+    if let Some(bytes) =
+        read_cached_language_data(language_directory, part, meta, set_loading_state).await?
+    {
+        log::info!(
+            "Language data part {} from chunked local storage hash matches expectation",
+            part.slug()
+        );
+        return Ok(bytes);
+    }
+    let _perf_timer = utils::PerfTimer::new("downloading and caching language data part");
+    log::info!(
+        "Downloading language data part {} because the chunked cache was missing or invalid",
+        part.slug()
+    );
+    download_and_cache_language_data(language_directory, course, part, meta, set_loading_state)
+        .await
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -342,11 +443,11 @@ impl From<LanguageDataError> for wasm_bindgen::JsValue {
 
 async fn read_cached_language_data(
     language_directory_handle: &mut DirectoryHandle,
-    expected_hash: u64,
-    expected_size: usize,
+    part: PackPart,
+    meta: PartMeta,
     set_loading_state: &impl Fn(&str, f32),
 ) -> Result<Option<Vec<u8>>, LanguageDataError> {
-    let chunk_filenames = language_data_chunk_filenames(expected_hash, expected_size);
+    let chunk_filenames = language_data_chunk_filenames(part, meta);
 
     for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
         let file_handle = match language_directory_handle
@@ -357,7 +458,7 @@ async fn read_cached_language_data(
             Err(_) => return Ok(None),
         };
 
-        let expected_chunk_len = language_data_chunk_len(expected_size, chunk_index);
+        let expected_chunk_len = language_data_chunk_len(meta.size, chunk_index);
         let actual_chunk_len = file_handle
             .size()
             .await
@@ -374,12 +475,12 @@ async fn read_cached_language_data(
         }
     }
 
-    let mut bytes = Vec::with_capacity(expected_size);
+    let mut bytes = Vec::with_capacity(meta.size);
     for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
         let chunk_bytes = match get_cached_chunk_bytes(
             language_directory_handle,
             filename,
-            language_data_chunk_len(expected_size, chunk_index),
+            language_data_chunk_len(meta.size, chunk_index),
         )
         .await
         {
@@ -389,14 +490,15 @@ async fn read_cached_language_data(
         };
 
         bytes.extend_from_slice(&chunk_bytes);
-        let progress = (bytes.len() as f64 / expected_size.max(1) as f64) * 100.0;
+        let progress = (bytes.len() as f64 / meta.size.max(1) as f64) * 100.0;
         set_loading_state("Loading...", progress as f32);
     }
 
     let computed_hash = const_xxh3(&bytes);
-    if computed_hash != expected_hash {
+    if computed_hash != meta.hash {
         log::warn!(
-            "Chunked language data hash mismatch! Expected: {expected_hash}, Got: {computed_hash}. Removing cached chunks."
+            "Chunked language data hash mismatch! Expected: {expected}, Got: {computed_hash}. Removing cached chunks.",
+            expected = meta.hash
         );
         remove_language_data_files(language_directory_handle, &chunk_filenames).await;
         return Ok(None);
@@ -408,38 +510,34 @@ async fn read_cached_language_data(
 async fn download_and_cache_language_data(
     language_directory_handle: &mut DirectoryHandle,
     course: Course,
-    expected_hash: u64,
-    expected_size: usize,
+    part: PackPart,
+    meta: PartMeta,
     set_loading_state: &impl Fn(&str, f32),
 ) -> Result<Vec<u8>, LanguageDataError> {
-    let chunk_size = language_data_chunk_size(expected_size);
-    let chunk_filenames = language_data_chunk_filenames(expected_hash, expected_size);
+    let chunk_filenames = language_data_chunk_filenames(part, meta);
     let mut downloaded_bytes = 0usize;
-    let mut bytes = Vec::with_capacity(expected_size);
+    let mut bytes = Vec::with_capacity(meta.size);
 
     for (chunk_index, filename) in chunk_filenames.iter().enumerate() {
-        let expected_chunk_len = language_data_chunk_len(expected_size, chunk_index);
+        let expected_chunk_len = language_data_chunk_len(meta.size, chunk_index);
 
         if let Some(chunk_bytes) =
             get_cached_chunk_bytes(language_directory_handle, filename, expected_chunk_len).await?
         {
             bytes.extend_from_slice(&chunk_bytes);
             downloaded_bytes += chunk_bytes.len();
-            let progress = (downloaded_bytes as f64 / expected_size.max(1) as f64) * 100.0;
-            set_loading_state(
-                &format!("Downloading {:?} language data", course.target_language),
-                progress as f32,
-            );
+            let progress = (downloaded_bytes as f64 / meta.size.max(1) as f64) * 100.0;
+            set_loading_state(&part.describe(course), progress as f32);
             continue;
         }
 
         let chunk_bytes = download_language_data_chunk(
             course,
+            part,
             chunk_index,
-            chunk_size,
             expected_chunk_len,
             downloaded_bytes,
-            expected_size,
+            meta.size,
             set_loading_state,
         )
         .await?;
@@ -451,27 +549,25 @@ async fn download_and_cache_language_data(
 
     set_loading_state("Verifying language data", 100.0);
     let computed_hash = const_xxh3(&bytes);
-    if computed_hash != expected_hash {
+    if computed_hash != meta.hash {
         remove_language_data_files(language_directory_handle, &chunk_filenames).await;
         return Err(LanguageDataError::InvalidData(format!(
-            "Downloaded language data hash mismatch. Expected {expected_hash}, got {computed_hash}"
+            "Downloaded language data hash mismatch. Expected {expected}, got {computed_hash}",
+            expected = meta.hash
         )));
     }
 
-    remove_stale_language_data_files(
-        language_directory_handle,
-        &current_language_data_filenames(expected_hash, expected_size),
-    )
-    .await?;
-
-    log::info!("Language data successfully loaded and cached in chunks!");
+    log::info!(
+        "Language data part {} successfully loaded and cached in chunks!",
+        part.slug()
+    );
     Ok(bytes)
 }
 
 async fn download_language_data_chunk(
     course: Course,
+    part: PackPart,
     chunk_index: usize,
-    chunk_size: usize,
     expected_chunk_len: usize,
     downloaded_before_chunk: usize,
     expected_total_size: usize,
@@ -481,8 +577,9 @@ async fn download_language_data_chunk(
         let path: &str = "/language-data";
         let request = LanguageDataRequest {
             course,
-            chunk_index: Some(chunk_index),
-            chunk_size: Some(chunk_size),
+            part,
+            chunk_index,
+            chunk_size: LANGUAGE_DATA_CHUNK_SIZE,
         };
         async move {
             let client = fetch_happen::Client;
@@ -496,7 +593,8 @@ async fn download_language_data_chunk(
 
     if !response.ok() {
         log::error!(
-            "Server returned error while fetching chunk {}: {}",
+            "Server returned error while fetching {} chunk {}: {}",
+            part.slug(),
             chunk_index,
             response.status()
         );
@@ -519,10 +617,7 @@ async fn download_language_data_chunk(
                     * 100.0;
                 let progress_int = progress as usize;
                 if progress_int > last_logged_percent {
-                    set_loading_state(
-                        &format!("Downloading {:?} language data", course.target_language),
-                        progress as f32,
-                    );
+                    set_loading_state(&part.describe(course), progress as f32);
                     last_logged_percent = progress_int;
                 }
             }

@@ -9,7 +9,6 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
-use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
 use generate_data::cache_remote;
 
@@ -1162,9 +1161,6 @@ async fn main() -> anyhow::Result<()> {
 
         // We'll calculate pattern frequencies after loading word_to_pronunciation data later
 
-        // Consolidate all JSON files into a single rkyv file
-        let rkyv_file = native_specific_dir.join("language_data.rkyv");
-
         // The pack only ships sentences that have translations; the filter
         // against `target_language_sentences` below is where untranslatable
         // sentences (which the segmented corpus deliberately includes) fall
@@ -1731,23 +1727,10 @@ async fn main() -> anyhow::Result<()> {
         let language_pack =
             language_utils::language_pack::LanguagePack::new(consolidated_data, *course);
 
-        // Serialize with rkyv
-        let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&language_pack)
-            .context("Failed to serialize language pack with rkyv")?;
-        std::fs::write(&rkyv_file, bytes).context("Failed to write rkyv file")?;
-
-        // Generate hash of the rkyv file
-        let hash_file = native_specific_dir.join("language_data.hash");
-
-        // Read the rkyv file and compute hash
-        let rkyv_bytes =
-            std::fs::read(&rkyv_file).context("Failed to read rkyv file for hashing")?;
-        let hash = const_xxh3(&rkyv_bytes);
-        let size = rkyv_bytes.len();
-
-        // Write hash and size to file in format: hash;size_in_bytes
-        std::fs::write(&hash_file, format!("{hash};{size}"))
-            .context("Failed to write hash file")?;
+        // Split into core/sentences halves and write both archives + the
+        // hash metadata file.
+        language_utils::language_pack::write_split_dir(&native_specific_dir, language_pack)
+            .context("Failed to write split language pack")?;
     }
 
     // Push any new cache entries (LLM responses, translations, TTS, …) to the bucket.

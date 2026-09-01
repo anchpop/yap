@@ -112,22 +112,13 @@ impl PackCache {
 
 /// Load the `.rkyv` language pack for a course from the `out/` directory.
 pub fn load_language_pack(out_dir: &Path, course: &Course) -> anyhow::Result<Arc<LanguagePack>> {
-    let path = out_dir
-        .join(format!(
-            "{}_for_{}",
-            course.target_language.code(),
-            course.native_language.code()
-        ))
-        .join("language_data.rkyv");
-    let bytes = std::fs::read(&path)
-        .with_context(|| format!("failed to read language pack at {}", path.display()))?;
-    let archived = rkyv::access::<
-        language_utils::language_pack::ArchivedLanguagePack,
-        rkyv::rancor::Error,
-    >(&bytes)
-    .map_err(|e| anyhow::anyhow!("failed to access language pack archive: {e}"))?;
-    let pack = rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-        .map_err(|e| anyhow::anyhow!("failed to deserialize language pack: {e}"))?;
+    let dir = out_dir.join(format!(
+        "{}_for_{}",
+        course.target_language.code(),
+        course.native_language.code()
+    ));
+    let pack = language_utils::language_pack::load_split_dir(&dir)
+        .map_err(|e| anyhow::anyhow!("failed to load language pack in {}: {e}", dir.display()))?;
     Ok(Arc::new(pack))
 }
 

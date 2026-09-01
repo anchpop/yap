@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
@@ -32,14 +32,22 @@ export function PlacementTest({
   const [knownWords, setKnownWords] = useState<string[]>([]);
   const [unknownWords, setUnknownWords] = useState<string[]>([]);
 
-  // Load words for the current round
+  // Load words for the current round. The deck prop can be swapped mid-round
+  // (the sentence half of the language pack finishing its background download
+  // rebuilds the deck), which re-runs this effect with an identical word list
+  // — only reset the selection when the words actually change.
+  const wordsRef = useRef<PlacementTestWord[]>([]);
   useEffect(() => {
     if (round <= NUM_ROUNDS) {
       // Use accumulated known/unknown words for adaptive word selection
       const placementWords = deck.get_placement_test(knownWords, unknownWords);
       if (placementWords.length === 0) {
         setRound(NUM_ROUNDS + 1);
-      } else {
+      } else if (
+        wordsRef.current.length !== placementWords.length ||
+        !wordsRef.current.every((w, i) => w.word === placementWords[i].word)
+      ) {
+        wordsRef.current = placementWords;
         setWords(placementWords);
         setSelectedWords(new Set());
       }

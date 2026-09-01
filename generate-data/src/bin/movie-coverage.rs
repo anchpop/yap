@@ -182,20 +182,11 @@ fn main() -> Result<()> {
 }
 
 fn load_pack(out_dir: &std::path::Path, course: &Course) -> Result<LanguagePack> {
-    let path = out_dir
-        .join(format!(
-            "{}_for_{}",
-            course.target_language.code(),
-            course.native_language.code()
-        ))
-        .join("language_data.rkyv");
-    let bytes = std::fs::read(&path)
-        .with_context(|| format!("reading language pack {}", path.display()))?;
-    let archived = rkyv::access::<
-        language_utils::language_pack::ArchivedLanguagePack,
-        rkyv::rancor::Error,
-    >(&bytes)
-    .map_err(|e| anyhow::anyhow!("accessing language pack: {e}"))?;
-    rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-        .map_err(|e| anyhow::anyhow!("deserializing language pack: {e}"))
+    let dir = out_dir.join(format!(
+        "{}_for_{}",
+        course.target_language.code(),
+        course.native_language.code()
+    ));
+    language_utils::language_pack::load_split_dir(&dir)
+        .map_err(|e| anyhow::anyhow!("loading language pack in {}: {e}", dir.display()))
 }

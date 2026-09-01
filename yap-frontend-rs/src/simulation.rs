@@ -376,19 +376,14 @@ mod tests {
     use std::sync::Arc;
 
     fn load_language_pack(course: &language_utils::Course) -> Arc<LanguagePack> {
-        let path = format!(
-            "../out/{}_for_{}/language_data.rkyv",
+        let dir = format!(
+            "../out/{}_for_{}",
             course.target_language.code(),
             course.native_language.code()
         );
-        let bytes = std::fs::read(&path).unwrap_or_else(|e| panic!("Failed to read {path}: {e}"));
-        let archived = rkyv::access::<
-            language_utils::language_pack::ArchivedLanguagePack,
-            rkyv::rancor::Error,
-        >(&bytes)
-        .unwrap();
-        let language_pack: LanguagePack =
-            rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        let language_pack =
+            language_utils::language_pack::load_split_dir(std::path::Path::new(&dir))
+                .unwrap_or_else(|e| panic!("Failed to load language pack in {dir}: {e}"));
         Arc::new(language_pack)
     }
 

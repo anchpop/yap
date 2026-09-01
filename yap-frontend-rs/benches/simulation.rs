@@ -12,15 +12,9 @@ use yap_frontend_rs::{Context, Deck, DeckEvent, DeckState};
 /// Load the language pack and replay real user events to get a realistic deck.
 fn load_deck_from_test_data() -> Deck {
     // Load language pack
-    let bytes = std::fs::read("../out/fra_for_eng/language_data.rkyv")
-        .expect("Failed to read language data - run `cargo run --bin generate-data` first");
-    let archived = rkyv::access::<
-        language_utils::language_pack::ArchivedLanguagePack,
-        rkyv::rancor::Error,
-    >(&bytes)
-    .unwrap();
     let language_pack: LanguagePack =
-        rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived).unwrap();
+        language_utils::language_pack::load_split_dir(std::path::Path::new("../out/fra_for_eng"))
+            .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
     let language_pack = Arc::new(language_pack);
 
     // Set up event store and replay real events

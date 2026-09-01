@@ -380,65 +380,13 @@ async fn analyze_course(course: Course) -> Result<CourseAnalysis> {
 }
 
 fn create_deck_for_course(course: Course) -> Result<Deck> {
-    let language_data = match (course.native_language, course.target_language) {
-        (Language::English, Language::French) => {
-            include_bytes!("../../../out/fra_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::French, Language::English) => {
-            include_bytes!("../../../out/eng_for_fra/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Spanish) => {
-            include_bytes!("../../../out/spa_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Korean) => {
-            include_bytes!("../../../out/kor_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::German) => {
-            include_bytes!("../../../out/deu_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Italian) => {
-            include_bytes!("../../../out/ita_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Portuguese) => {
-            include_bytes!("../../../out/por_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::French, Language::Portuguese) => {
-            include_bytes!("../../../out/por_for_fra/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Russian) => {
-            include_bytes!("../../../out/rus_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Hindi) => {
-            include_bytes!("../../../out/hin_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Thai) => {
-            include_bytes!("../../../out/tha_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::ChineseSimplified) => {
-            include_bytes!("../../../out/zho-hans_for_eng/language_data.rkyv").to_vec()
-        }
-        (Language::English, Language::Japanese) => {
-            include_bytes!("../../../out/jpn_for_eng/language_data.rkyv").to_vec()
-        }
-        _ => {
-            return Err(anyhow::anyhow!(
-                "Unsupported course: {:?} -> {:?}",
-                course.native_language,
-                course.target_language
-            ));
-        }
-    };
-
-    let archived = rkyv::access::<
-        language_utils::language_pack::ArchivedLanguagePack,
-        rkyv::rancor::Error,
-    >(&language_data)?;
-
-    let language_pack: language_utils::language_pack::LanguagePack = rkyv::deserialize::<
-        language_utils::language_pack::LanguagePack,
-        rkyv::rancor::Error,
-    >(archived)?;
-
+    let dir =
+        std::path::Path::new(concat!(env!("CARGO_MANIFEST_DIR"), "/../../out")).join(format!(
+            "{}_for_{}",
+            course.target_language.code(),
+            course.native_language.code()
+        ));
+    let language_pack = language_utils::language_pack::load_split_dir(&dir)?;
     let language_pack = std::sync::Arc::new(language_pack);
 
     let context = yap_frontend_rs::Context {

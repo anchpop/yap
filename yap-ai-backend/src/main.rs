@@ -57,111 +57,67 @@ static TRANSLATION_CLIENT: LazyLock<ChatClient> = LazyLock::new(|| {
 
 const PERSONALITY: &str = r#"You are a helpful assistant that helps users learn languages. You are friendly and encouraging, and you always try to help the user learn from their mistakes. When correcting the user's mistakes, first congratulate them on the parts they did well on, and then explain the mistakes they made and how they can improve. But the main thing to do is to explain the mistakes in a helpful (but concise) way, and encourage the user. You speak conversationally, as if you were speaking to the user directly. You don't use bullet points or headings, but you do break concepts into individual lines as necessary."#;
 
-fn language_data_for_course(course: &Course) -> Option<&'static [u8]> {
-    LANGUAGE_DATA.get(course).copied()
+fn language_data_for_course(course: &Course, part: LanguageDataPart) -> Option<&'static [u8]> {
+    LANGUAGE_DATA.get(course).map(|parts| match part {
+        LanguageDataPart::Core => parts.core,
+        LanguageDataPart::Sentences => parts.sentences,
+    })
+}
+
+#[derive(Debug, Clone, Copy, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum LanguageDataPart {
+    Core,
+    Sentences,
 }
 
 #[derive(Debug, Deserialize)]
 struct LanguageDataRequest {
     course: Course,
+    part: LanguageDataPart,
     chunk_index: Option<usize>,
     chunk_size: Option<usize>,
 }
 
-// Include the language data rkyv file at compile time
-static LANGUAGE_DATA: LazyLock<BTreeMap<Course, &'static [u8]>> = LazyLock::new(|| {
+struct LanguageDataParts {
+    core: &'static [u8],
+    sentences: &'static [u8],
+}
+
+// Include the split language pack archives at compile time
+static LANGUAGE_DATA: LazyLock<BTreeMap<Course, LanguageDataParts>> = LazyLock::new(|| {
+    macro_rules! course {
+        ($map:ident, $native:ident, $target:ident, $dir:literal) => {
+            $map.insert(
+                Course {
+                    native_language: Language::$native,
+                    target_language: Language::$target,
+                },
+                LanguageDataParts {
+                    core: include_bytes!(concat!("../../out/", $dir, "/language_data_core.rkyv")),
+                    sentences: include_bytes!(concat!(
+                        "../../out/",
+                        $dir,
+                        "/language_data_sentences.rkyv"
+                    )),
+                },
+            );
+        };
+    }
     let mut data = BTreeMap::new();
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::French,
-        },
-        include_bytes!("../../out/fra_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::French,
-            target_language: Language::English,
-        },
-        include_bytes!("../../out/eng_for_fra/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Spanish,
-        },
-        include_bytes!("../../out/spa_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Korean,
-        },
-        include_bytes!("../../out/kor_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::German,
-        },
-        include_bytes!("../../out/deu_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Italian,
-        },
-        include_bytes!("../../out/ita_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Portuguese,
-        },
-        include_bytes!("../../out/por_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::French,
-            target_language: Language::Portuguese,
-        },
-        include_bytes!("../../out/por_for_fra/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Russian,
-        },
-        include_bytes!("../../out/rus_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Hindi,
-        },
-        include_bytes!("../../out/hin_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Thai,
-        },
-        include_bytes!("../../out/tha_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::ChineseSimplified,
-        },
-        include_bytes!("../../out/zho-hans_for_eng/language_data.rkyv") as &'static [u8],
-    );
-    data.insert(
-        Course {
-            native_language: Language::English,
-            target_language: Language::Japanese,
-        },
-        include_bytes!("../../out/jpn_for_eng/language_data.rkyv") as &'static [u8],
-    );
+    course!(data, English, French, "fra_for_eng");
+    course!(data, French, English, "eng_for_fra");
+    course!(data, English, Spanish, "spa_for_eng");
+    course!(data, English, Korean, "kor_for_eng");
+    course!(data, English, German, "deu_for_eng");
+    course!(data, English, Italian, "ita_for_eng");
+    course!(data, English, Portuguese, "por_for_eng");
+    course!(data, French, Portuguese, "por_for_fra");
+    course!(data, English, Russian, "rus_for_eng");
+    course!(data, English, Hindi, "hin_for_eng");
+    course!(data, English, Thai, "tha_for_eng");
+    course!(data, English, ChineseSimplified, "zho-hans_for_eng");
+    course!(data, English, Japanese, "jpn_for_eng");
     data
 });
 
@@ -1925,7 +1881,7 @@ async fn update_language_stats(
 }
 
 async fn serve_language_data(Json(request): Json<LanguageDataRequest>) -> Response {
-    if let Some(language_data) = language_data_for_course(&request.course) {
+    if let Some(language_data) = language_data_for_course(&request.course, request.part) {
         let body = match (request.chunk_index, request.chunk_size) {
             (Some(chunk_index), Some(chunk_size)) => {
                 if chunk_size == 0 {
@@ -2638,19 +2594,23 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn language_data_serves_first_chunk() {
-        let body = serde_json::json!({
-            "course": Course {
-                native_language: Language::English,
-                target_language: Language::French,
-            },
-            "chunk_index": 0,
-            "chunk_size": 1024,
-        });
-        assert_eq!(
-            smoke("POST", "/language-data", Some(body)).await,
-            StatusCode::OK
-        );
+    async fn language_data_serves_first_chunk_of_both_parts() {
+        for part in ["core", "sentences"] {
+            let body = serde_json::json!({
+                "course": Course {
+                    native_language: Language::English,
+                    target_language: Language::French,
+                },
+                "part": part,
+                "chunk_index": 0,
+                "chunk_size": 1024,
+            });
+            assert_eq!(
+                smoke("POST", "/language-data", Some(body)).await,
+                StatusCode::OK,
+                "part {part}"
+            );
+        }
     }
 
     /// The jsonwebtoken outage was misreported by browsers as a CORS failure

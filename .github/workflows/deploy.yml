@@ -27,7 +27,7 @@ jobs:
           lfs: false
 
       - name: Pull LFS rkyv files
-        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+        run: git lfs pull --include="out/*_for_*/language_data_*.rkyv"
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -83,7 +83,7 @@ jobs:
           lfs: false
 
       - name: Pull LFS rkyv files
-        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+        run: git lfs pull --include="out/*_for_*/language_data_*.rkyv"
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@master
@@ -196,7 +196,7 @@ jobs:
           lfs: false
 
       - name: Pull LFS rkyv files
-        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+        run: git lfs pull --include="out/*_for_*/language_data_*.rkyv"
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v4
@@ -228,7 +228,7 @@ jobs:
           lfs: false
 
       - name: Pull LFS rkyv files
-        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+        run: git lfs pull --include="out/*_for_*/language_data_*.rkyv"
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@master

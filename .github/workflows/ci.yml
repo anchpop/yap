@@ -19,7 +19,7 @@ jobs:
       # Only the rkyv packs are needed to build (ai-backend include_bytes!s
       # them); pulling all of LFS is several GB slower.
       - name: Pull LFS rkyv files
-        run: git lfs pull --include="out/*_for_*/language_data.rkyv"
+        run: git lfs pull --include="out/*_for_*/language_data_*.rkyv"
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@master

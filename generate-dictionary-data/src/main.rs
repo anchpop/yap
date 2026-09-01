@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use language_utils::features::Morphology;
 use language_utils::language_pack::LanguagePack;
 use language_utils::{Atom, COURSES, Course, GramDefinition, PartOfSpeech, SentenceGram, WordType};
@@ -247,14 +247,13 @@ fn course_dir_name(course: &Course) -> String {
 
 use language_utils::dictionary_entry_slug as text_to_slug;
 
-fn load_language_pack(rkyv_path: &Path) -> Result<LanguagePack> {
-    let bytes = std::fs::read(rkyv_path)
-        .with_context(|| format!("Failed to read {}", rkyv_path.display()))?;
-    let archived = rkyv::access::<rkyv::Archived<LanguagePack>, rkyv::rancor::Error>(&bytes)
-        .map_err(|e| anyhow::anyhow!("Failed to access rkyv archive: {e}"))?;
-    let language_pack = rkyv::deserialize::<LanguagePack, rkyv::rancor::Error>(archived)
-        .map_err(|e| anyhow::anyhow!("Failed to deserialize language pack: {e}"))?;
-    Ok(language_pack)
+fn load_language_pack(course_dir: &Path) -> Result<LanguagePack> {
+    language_utils::language_pack::load_split_dir(course_dir).map_err(|e| {
+        anyhow::anyhow!(
+            "Failed to load language pack in {}: {e}",
+            course_dir.display()
+        )
+    })
 }
 
 fn extract_pages(language_pack: &LanguagePack, course: &Course) -> CourseData {
@@ -825,19 +824,22 @@ fn main() -> Result<()> {
 
     for course in COURSES {
         let dir_name = course_dir_name(course);
-        let rkyv_path = out_dir.join(&dir_name).join("language_data.rkyv");
+        let course_dir = out_dir.join(&dir_name);
 
-        if !rkyv_path.exists() {
+        if !course_dir
+            .join(language_utils::language_pack::CORE_FILENAME)
+            .exists()
+        {
             eprintln!(
-                "Skipping {} (no rkyv file at {})",
+                "Skipping {} (no language pack in {})",
                 dir_name,
-                rkyv_path.display()
+                course_dir.display()
             );
             continue;
         }
 
         eprintln!("Loading {dir_name} ...");
-        let language_pack = load_language_pack(&rkyv_path)?;
+        let language_pack = load_language_pack(&course_dir)?;
 
         eprintln!("Extracting dictionary data for {dir_name} ...");
         let course_data = extract_pages(&language_pack, course);
@@ -1028,12 +1030,9 @@ mod tests {
 
     fn load_and_extract(course: &Course) -> CourseData {
         let dir_name = course_dir_name(course);
-        let rkyv_path = repo_root()
-            .join("out")
-            .join(&dir_name)
-            .join("language_data.rkyv");
-        let language_pack = load_language_pack(&rkyv_path)
-            .unwrap_or_else(|e| panic!("Failed to load {}: {e}", rkyv_path.display()));
+        let course_dir = repo_root().join("out").join(&dir_name);
+        let language_pack = load_language_pack(&course_dir)
+            .unwrap_or_else(|e| panic!("Failed to load {}: {e}", course_dir.display()));
         extract_pages(&language_pack, course)
     }
 

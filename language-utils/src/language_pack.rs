@@ -19,7 +19,10 @@ pub struct FrequencyList {
     pub total_count: u64,
 }
 
-#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+/// The assembled runtime pack. Never serialized itself — the on-disk/wire
+/// format is the [`LanguagePackCore`] + [`LanguagePackSentences`] pair, put
+/// back together by [`LanguagePack::from_parts`].
+#[derive(Debug)]
 pub struct LanguagePack {
     pub string_rodeo: lasso::RodeoReader,
     pub gram_rodeo: lasso::RodeoReader<Gram<Spur>>,
@@ -1017,4 +1020,677 @@ fn is_dictionary_entry_easy(entry: &DictionaryEntry) -> bool {
         return false;
     }
     definition.cognate && !definition.false_cognate
+}
+
+/// The word-level half of a language pack: dictionary, frequency,
+/// pronunciation and morphology data. Small enough (~5x smaller than the
+/// sentence half) to download first, so the placement test can run before
+/// the sentence data has arrived.
+///
+/// The two halves share one spur space: `string_rodeo` holds strings `0..N`
+/// and `gram_rodeo` grams `0..G`; [`LanguagePackSentences`] carries the
+/// extensions (`N..M` strings, `G..H` grams). A core and a sentences part
+/// only fit together when they come from the same [`LanguagePack::split`]
+/// call — the pair must be versioned and shipped as one unit.
+#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+pub struct LanguagePackCore {
+    /// Fingerprint of this core's spur space (see [`spur_space_fingerprint`]).
+    /// [`LanguagePack::from_parts`] refuses a sentences half whose
+    /// fingerprint differs, so halves from different builds can't be
+    /// silently combined.
+    pub spur_space_fingerprint: u64,
+    pub string_rodeo: lasso::RodeoReader,
+    pub gram_rodeo: lasso::RodeoReader<Gram<Spur>>,
+    pub words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>>,
+    pub word_to_pronunciation: FxHashMap<Spur, Spur>,
+    pub pronunciation_to_words: FxHashMap<Spur, Vec<Spur>>,
+    pub minimal_pairs: MinimalPairs,
+    pub pronunciation_data: PronunciationData,
+    pub pattern_frequency_map: FxHashMap<(Spur, PatternPosition), u32>,
+    pub pronunciation_max_freq_cache: FxHashMap<Spur, Frequency>,
+    pub proper_noun_definitions: BTreeMap<Spur, ProperNounDefinition>,
+    pub gram_frequencies: FrequencyList,
+    pub gram_definitions: FxHashMap<SpurGram, GramDefinition>,
+    pub heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>>,
+    pub string_to_grams: FxHashMap<String, Vec<SpurGram>>,
+    pub morphemes: FxHashMap<MorphemeSegment<Spur>, MorphemeInfo<Spur>>,
+}
+
+/// The sentence half of a language pack: sentence texts, translations,
+/// per-sentence gram encodings and indexes, source metadata and human audio.
+/// See [`LanguagePackCore`] for the spur-space contract between the halves.
+#[derive(Debug, rkyv::Archive, rkyv::Serialize, rkyv::Deserialize)]
+pub struct LanguagePackSentences {
+    /// Fingerprint of the core spur space this half was built against.
+    pub spur_space_fingerprint: u64,
+    /// Strings `N..M` of the shared spur space, in spur order.
+    pub string_extension: Vec<String>,
+    /// Grams `G..H` of the shared spur space, in spur order. Their atoms may
+    /// reference extension strings.
+    pub gram_extension: Vec<Gram<Spur>>,
+    pub translations: FxHashMap<Spur, Vec<Spur>>,
+    pub source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList>,
+    pub homophone_practice: FxHashMap<HomophoneWordPair<Spur>, HomophonePractice<Spur>>,
+    pub movies: FxHashMap<String, MovieMetadata>,
+    pub books: FxHashMap<String, BookMetadata>,
+    pub sentence_sources: FxHashMap<Spur, SentenceSource>,
+    pub encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>>,
+    pub sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>>,
+    pub human_audio: FxHashMap<VoiceActor, FxHashMap<String, Audio>>,
+}
+
+/// Fingerprint of a core spur space: every core string and every core gram,
+/// in spur order. A sentences half fits a core exactly when the core's spur
+/// space (both interners' contents *and* key assignment) matches the one it
+/// was split against, which is precisely what this hashes — identical strings
+/// alone are not enough, since e.g. a reordered frequency list reassigns gram
+/// spurs without changing any string. Identical content keeps producing
+/// identical fingerprints across rebuilds (the archives stay reproducible).
+fn spur_space_fingerprint(core_strings: &[String], core_grams: &[Gram<Spur>]) -> u64 {
+    let mut hasher = xxhash_rust::xxh3::Xxh3::new();
+    hasher.update(&(core_strings.len() as u64).to_le_bytes());
+    hasher.update(&(core_grams.len() as u64).to_le_bytes());
+    for s in core_strings {
+        hasher.update(&(s.len() as u64).to_le_bytes());
+        hasher.update(s.as_bytes());
+    }
+    for g in core_grams {
+        // A gram is atoms over the (already-hashed) string spur space; its
+        // rkyv encoding is a stable byte form of exactly that.
+        let bytes = rkyv::to_bytes::<rkyv::rancor::Error>(g)
+            .expect("gram serialization for fingerprint cannot fail");
+        hasher.update(&(bytes.len() as u64).to_le_bytes());
+        hasher.update(&bytes);
+    }
+    hasher.digest()
+}
+
+/// Re-interns spurs from an existing pack's rodeos into a fresh, ordered
+/// spur space. Interning order is what establishes the core/extension
+/// partition: everything interned before the cutoff snapshot lands in the
+/// core, everything after in the extension.
+struct SpurRemapper<'a> {
+    old_strings: &'a lasso::RodeoReader,
+    old_grams: &'a lasso::RodeoReader<Gram<Spur>>,
+    strings: lasso::Rodeo,
+    grams: lasso::Rodeo<Gram<Spur>>,
+}
+
+impl SpurRemapper<'_> {
+    fn s(&mut self, spur: Spur) -> Spur {
+        self.strings.get_or_intern(self.old_strings.resolve(&spur))
+    }
+
+    fn het(&mut self, h: &Heteronym<Spur>) -> Heteronym<Spur> {
+        Heteronym {
+            word: self.s(h.word),
+            lemma: self.s(h.lemma),
+            pos: h.pos,
+        }
+    }
+
+    fn atom(&mut self, a: &Atom<Spur>) -> Atom<Spur> {
+        match a {
+            Atom::Tok(word) => Atom::Tok(crate::Word {
+                text: self.s(word.text),
+                word_type: match &word.word_type {
+                    WordType::Heteronym(h) => WordType::Heteronym(self.het(h)),
+                    WordType::Other(o) => WordType::Other(*o),
+                },
+            }),
+            Atom::Control(c) => Atom::Control(*c),
+        }
+    }
+
+    fn g(&mut self, g: SpurGram) -> SpurGram {
+        let atoms: Vec<Atom<Spur>> = self
+            .old_grams
+            .resolve(&g)
+            .atoms()
+            .iter()
+            .map(|a| self.atom(a))
+            .collect();
+        self.grams.get_or_intern(Gram(atoms))
+    }
+
+    fn seg(&mut self, s: &MorphemeSegment<Spur>) -> MorphemeSegment<Spur> {
+        MorphemeSegment {
+            surface: self.s(s.surface),
+            canonical: self.s(s.canonical),
+            tag: s.tag.map(|t| self.s(t)),
+        }
+    }
+}
+
+/// Sort a hash map's entries by key so remapping (and therefore spur
+/// assignment) is deterministic across builds.
+fn sorted<K: Ord, V>(map: FxHashMap<K, V>) -> Vec<(K, V)> {
+    let mut entries: Vec<(K, V)> = map.into_iter().collect();
+    entries.sort_by(|a, b| a.0.cmp(&b.0));
+    entries
+}
+
+impl LanguagePack {
+    /// Split this pack into its core (word-level) and sentence halves,
+    /// re-interning everything into a fresh spur space where all core
+    /// strings/grams come before all sentence-side ones. The partition is
+    /// established purely by processing order, so a future field added to
+    /// the pack just needs to be handled on the correct side of the cutoff —
+    /// the exhaustive destructure below makes forgetting one a compile error.
+    pub fn split(self) -> (LanguagePackCore, LanguagePackSentences) {
+        let LanguagePack {
+            string_rodeo,
+            gram_rodeo,
+            translations,
+            words_to_heteronyms,
+            source_gram_frequencies,
+            word_to_pronunciation,
+            pronunciation_to_words,
+            minimal_pairs,
+            pronunciation_data,
+            pattern_frequency_map,
+            homophone_practice,
+            pronunciation_max_freq_cache,
+            movies,
+            books,
+            sentence_sources,
+            proper_noun_definitions,
+            gram_frequencies,
+            encoded_sentences,
+            gram_definitions,
+            heteronym_to_grams,
+            sentences_containing_gram_index,
+            string_to_grams,
+            morphemes,
+            human_audio,
+        } = self;
+
+        let mut r = SpurRemapper {
+            old_strings: &string_rodeo,
+            old_grams: &gram_rodeo,
+            strings: lasso::Rodeo::new(),
+            grams: lasso::Rodeo::new(),
+        };
+
+        // ---- Core phase: everything interned here lands below the cutoff. ----
+
+        // Frequencies first so the most common words get the densest spurs.
+        let gram_frequencies = FrequencyList {
+            entries: gram_frequencies
+                .entries
+                .iter()
+                .map(|(g, freq)| (r.g(*g), *freq))
+                .collect(),
+            total_count: gram_frequencies.total_count,
+        };
+
+        let gram_definitions: FxHashMap<SpurGram, GramDefinition> = sorted(gram_definitions)
+            .into_iter()
+            .map(|(g, def)| (r.g(g), def))
+            .collect();
+
+        let words_to_heteronyms: FxHashMap<Spur, Vec<Heteronym<Spur>>> =
+            sorted(words_to_heteronyms)
+                .into_iter()
+                .map(|(w, hets)| (r.s(w), hets.iter().map(|h| r.het(h)).collect()))
+                .collect();
+
+        let word_to_pronunciation: FxHashMap<Spur, Spur> = sorted(word_to_pronunciation)
+            .into_iter()
+            .map(|(w, p)| (r.s(w), r.s(p)))
+            .collect();
+
+        let pronunciation_to_words: FxHashMap<Spur, Vec<Spur>> = sorted(pronunciation_to_words)
+            .into_iter()
+            .map(|(p, ws)| (r.s(p), ws.into_iter().map(|w| r.s(w)).collect()))
+            .collect();
+
+        let minimal_pairs = MinimalPairs {
+            by_phoneme_pair: sorted(minimal_pairs.by_phoneme_pair)
+                .into_iter()
+                .map(|((a, b), pairs)| {
+                    (
+                        (r.s(a), r.s(b)),
+                        pairs.into_iter().map(|(x, y)| (r.s(x), r.s(y))).collect(),
+                    )
+                })
+                .collect(),
+            by_word: sorted(minimal_pairs.by_word)
+                .into_iter()
+                .map(|(w, ns)| (r.s(w), ns.into_iter().map(|n| r.s(n)).collect()))
+                .collect(),
+        };
+
+        let pattern_frequency_map: FxHashMap<(Spur, PatternPosition), u32> =
+            sorted(pattern_frequency_map)
+                .into_iter()
+                .map(|((p, pos), f)| ((r.s(p), pos), f))
+                .collect();
+
+        let pronunciation_max_freq_cache: FxHashMap<Spur, Frequency> =
+            sorted(pronunciation_max_freq_cache)
+                .into_iter()
+                .map(|(p, f)| (r.s(p), f))
+                .collect();
+
+        let proper_noun_definitions: BTreeMap<Spur, ProperNounDefinition> = proper_noun_definitions
+            .into_iter()
+            .map(|(n, d)| (r.s(n), d))
+            .collect();
+
+        let heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>> =
+            sorted(heteronym_to_grams)
+                .into_iter()
+                .map(|(h, gs)| (r.het(&h), gs.into_iter().map(|g| r.g(g)).collect()))
+                .collect();
+
+        let string_to_grams: FxHashMap<String, Vec<SpurGram>> = sorted(string_to_grams)
+            .into_iter()
+            .map(|(s, gs)| (s, gs.into_iter().map(|g| r.g(g)).collect()))
+            .collect();
+
+        let morphemes: FxHashMap<MorphemeSegment<Spur>, MorphemeInfo<Spur>> = sorted(morphemes)
+            .into_iter()
+            .map(|(seg, info)| {
+                let info = match info {
+                    MorphemeInfo::Root { heteronym } => MorphemeInfo::Root {
+                        heteronym: r.het(&heteronym),
+                    },
+                    MorphemeInfo::Bound { meaning } => MorphemeInfo::Bound {
+                        meaning: meaning.map(|m| r.s(m)),
+                    },
+                    MorphemeInfo::Derivation { meaning } => MorphemeInfo::Derivation {
+                        meaning: meaning.map(|m| r.s(m)),
+                    },
+                    MorphemeInfo::Inflection { meaning } => MorphemeInfo::Inflection {
+                        meaning: meaning.map(|m| r.s(m)),
+                    },
+                };
+                (r.seg(&seg), info)
+            })
+            .collect();
+
+        // ---- Cutoff: spurs below these counts are the core's. ----
+        let core_string_count = r.strings.len();
+        let core_gram_count = r.grams.len();
+
+        // ---- Sentence phase: everything from here lands in the extension. ----
+
+        let encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>> = sorted(encoded_sentences)
+            .into_iter()
+            .map(|(sentence, sg)| {
+                (
+                    r.s(sentence),
+                    SentenceGrams {
+                        grams: sg
+                            .grams
+                            .into_iter()
+                            .map(|g| match g {
+                                SentenceGram::Learnable(g) => SentenceGram::Learnable(r.g(g)),
+                                SentenceGram::Obvious(g) => SentenceGram::Obvious(r.g(g)),
+                            })
+                            .collect(),
+                        capitalize_first: sg.capitalize_first,
+                        multiword_terms: sg
+                            .multiword_terms
+                            .into_iter()
+                            .map(|t| MultiwordTermMatch {
+                                gram: r.g(t.gram),
+                                matched_word_indices: t.matched_word_indices,
+                            })
+                            .collect(),
+                        low_confidence_multiword_terms: sg
+                            .low_confidence_multiword_terms
+                            .into_iter()
+                            .map(|t| MultiwordTermMatch {
+                                gram: r.g(t.gram),
+                                matched_word_indices: t.matched_word_indices,
+                            })
+                            .collect(),
+                    },
+                )
+            })
+            .collect();
+
+        let translations: FxHashMap<Spur, Vec<Spur>> = sorted(translations)
+            .into_iter()
+            .map(|(s, ts)| (r.s(s), ts.into_iter().map(|t| r.s(t)).collect()))
+            .collect();
+
+        let sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>> =
+            sorted(sentences_containing_gram_index)
+                .into_iter()
+                .map(|(g, ss)| (r.g(g), ss.into_iter().map(|s| r.s(s)).collect()))
+                .collect();
+
+        let sentence_sources: FxHashMap<Spur, SentenceSource> = sorted(sentence_sources)
+            .into_iter()
+            .map(|(s, src)| (r.s(s), src))
+            .collect();
+
+        let source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList> =
+            sorted(source_gram_frequencies)
+                .into_iter()
+                .map(|(id, list)| {
+                    (
+                        id,
+                        FrequencyList {
+                            entries: list.entries.iter().map(|(g, f)| (r.g(*g), *f)).collect(),
+                            total_count: list.total_count,
+                        },
+                    )
+                })
+                .collect();
+
+        let homophone_practice: FxHashMap<HomophoneWordPair<Spur>, HomophonePractice<Spur>> =
+            sorted(homophone_practice)
+                .into_iter()
+                .map(|(pair, practice)| {
+                    (
+                        HomophoneWordPair {
+                            word1: r.s(pair.word1),
+                            word2: r.s(pair.word2),
+                        },
+                        HomophonePractice {
+                            sentence_pairs: practice
+                                .sentence_pairs
+                                .into_iter()
+                                .map(|p| crate::HomophoneSentencePair {
+                                    sentence1: r.s(p.sentence1),
+                                    sentence2: r.s(p.sentence2),
+                                })
+                                .collect(),
+                        },
+                    )
+                })
+                .collect();
+
+        // Sweep everything else the old rodeos held (strings/grams referenced
+        // by no field) into the extension, so the assembled pack's rodeos
+        // resolve exactly the same set as the original.
+        for i in 0..string_rodeo.len() {
+            let spur = <Spur as lasso::Key>::try_from_usize(i).unwrap();
+            r.s(spur);
+        }
+        for i in 0..gram_rodeo.len() {
+            let spur = <SpurGram as lasso::Key>::try_from_usize(i).unwrap();
+            r.g(spur);
+        }
+
+        let SpurRemapper { strings, grams, .. } = r;
+        let full_strings = strings.into_reader();
+        let full_grams = grams.into_reader();
+
+        let resolve_range_strings = |from: usize, to: usize| -> Vec<String> {
+            (from..to)
+                .map(|i| {
+                    full_strings
+                        .resolve(&<Spur as lasso::Key>::try_from_usize(i).unwrap())
+                        .to_owned()
+                })
+                .collect()
+        };
+        let resolve_range_grams = |from: usize, to: usize| -> Vec<Gram<Spur>> {
+            (from..to)
+                .map(|i| {
+                    Gram(
+                        full_grams
+                            .resolve(&<SpurGram as lasso::Key>::try_from_usize(i).unwrap())
+                            .atoms()
+                            .to_vec(),
+                    )
+                })
+                .collect()
+        };
+
+        // The core ships rodeos holding only the below-cutoff entries.
+        let core_strings = resolve_range_strings(0, core_string_count);
+        let core_grams = resolve_range_grams(0, core_gram_count);
+        let fingerprint = spur_space_fingerprint(&core_strings, &core_grams);
+        let core_string_rodeo = {
+            let mut rodeo = lasso::Rodeo::new();
+            for s in core_strings {
+                rodeo.get_or_intern(s);
+            }
+            rodeo.into_reader()
+        };
+        let core_gram_rodeo = {
+            let mut rodeo: lasso::Rodeo<Gram<Spur>> = lasso::Rodeo::new();
+            for g in core_grams {
+                rodeo.get_or_intern(g);
+            }
+            rodeo.into_reader()
+        };
+
+        let string_extension = resolve_range_strings(core_string_count, full_strings.len());
+        let gram_extension = resolve_range_grams(core_gram_count, full_grams.len());
+
+        (
+            LanguagePackCore {
+                spur_space_fingerprint: fingerprint,
+                string_rodeo: core_string_rodeo,
+                gram_rodeo: core_gram_rodeo,
+                words_to_heteronyms,
+                word_to_pronunciation,
+                pronunciation_to_words,
+                minimal_pairs,
+                pronunciation_data,
+                pattern_frequency_map,
+                pronunciation_max_freq_cache,
+                proper_noun_definitions,
+                gram_frequencies,
+                gram_definitions,
+                heteronym_to_grams,
+                string_to_grams,
+                morphemes,
+            },
+            LanguagePackSentences {
+                spur_space_fingerprint: fingerprint,
+                string_extension,
+                gram_extension,
+                translations,
+                source_gram_frequencies,
+                homophone_practice,
+                movies,
+                books,
+                sentence_sources,
+                encoded_sentences,
+                sentences_containing_gram_index,
+                human_audio,
+            },
+        )
+    }
+
+    /// Assemble a runtime pack from its halves. With `sentences: None`, the
+    /// result has empty sentence-side maps — enough for the placement test
+    /// and dictionary lookups, but no comprehensible-sentence search.
+    pub fn from_parts(core: LanguagePackCore, sentences: Option<LanguagePackSentences>) -> Self {
+        let LanguagePackCore {
+            spur_space_fingerprint,
+            string_rodeo,
+            gram_rodeo,
+            words_to_heteronyms,
+            word_to_pronunciation,
+            pronunciation_to_words,
+            minimal_pairs,
+            pronunciation_data,
+            pattern_frequency_map,
+            pronunciation_max_freq_cache,
+            proper_noun_definitions,
+            gram_frequencies,
+            gram_definitions,
+            heteronym_to_grams,
+            string_to_grams,
+            morphemes,
+        } = core;
+
+        if let Some(sentences) = &sentences {
+            assert_eq!(
+                spur_space_fingerprint, sentences.spur_space_fingerprint,
+                "language pack halves are from different builds (core spur-space fingerprint \
+                 doesn't match the one the sentences half was split against)"
+            );
+        }
+
+        let Some(sentences) = sentences else {
+            return LanguagePack {
+                string_rodeo,
+                gram_rodeo,
+                translations: FxHashMap::default(),
+                words_to_heteronyms,
+                source_gram_frequencies: FxHashMap::default(),
+                word_to_pronunciation,
+                pronunciation_to_words,
+                minimal_pairs,
+                pronunciation_data,
+                pattern_frequency_map,
+                homophone_practice: FxHashMap::default(),
+                pronunciation_max_freq_cache,
+                movies: FxHashMap::default(),
+                books: FxHashMap::default(),
+                sentence_sources: FxHashMap::default(),
+                proper_noun_definitions,
+                gram_frequencies,
+                encoded_sentences: FxHashMap::default(),
+                gram_definitions,
+                heteronym_to_grams,
+                sentences_containing_gram_index: FxHashMap::default(),
+                string_to_grams,
+                morphemes,
+                human_audio: FxHashMap::default(),
+            };
+        };
+
+        // Rebuild the full rodeos: core entries keep their spurs (lasso
+        // assigns keys sequentially in interning order), extension entries
+        // take the spurs after the cutoff. The length asserts catch a
+        // mismatched core/sentences pair.
+        let core_string_count = string_rodeo.len();
+        let string_rodeo = {
+            let mut rodeo = lasso::Rodeo::new();
+            for i in 0..core_string_count {
+                let spur = <Spur as lasso::Key>::try_from_usize(i).unwrap();
+                let interned = rodeo.get_or_intern(string_rodeo.resolve(&spur));
+                debug_assert_eq!(interned, spur);
+            }
+            for s in &sentences.string_extension {
+                rodeo.get_or_intern(s.as_str());
+            }
+            assert_eq!(
+                rodeo.len(),
+                core_string_count + sentences.string_extension.len(),
+                "language pack core/sentences string spaces overlap — mismatched halves?"
+            );
+            rodeo.into_reader()
+        };
+
+        let core_gram_count = gram_rodeo.len();
+        let gram_rodeo = {
+            let mut rodeo: lasso::Rodeo<Gram<Spur>> = lasso::Rodeo::new();
+            for i in 0..core_gram_count {
+                let spur = <SpurGram as lasso::Key>::try_from_usize(i).unwrap();
+                let gram = Gram(gram_rodeo.resolve(&spur).atoms().to_vec());
+                let interned = rodeo.get_or_intern(gram);
+                debug_assert_eq!(interned, spur);
+            }
+            for g in &sentences.gram_extension {
+                rodeo.get_or_intern(g.clone());
+            }
+            assert_eq!(
+                rodeo.len(),
+                core_gram_count + sentences.gram_extension.len(),
+                "language pack core/sentences gram spaces overlap — mismatched halves?"
+            );
+            rodeo.into_reader()
+        };
+
+        LanguagePack {
+            string_rodeo,
+            gram_rodeo,
+            translations: sentences.translations,
+            words_to_heteronyms,
+            source_gram_frequencies: sentences.source_gram_frequencies,
+            word_to_pronunciation,
+            pronunciation_to_words,
+            minimal_pairs,
+            pronunciation_data,
+            pattern_frequency_map,
+            homophone_practice: sentences.homophone_practice,
+            pronunciation_max_freq_cache,
+            movies: sentences.movies,
+            books: sentences.books,
+            sentence_sources: sentences.sentence_sources,
+            proper_noun_definitions,
+            gram_frequencies,
+            encoded_sentences: sentences.encoded_sentences,
+            gram_definitions,
+            heteronym_to_grams,
+            sentences_containing_gram_index: sentences.sentences_containing_gram_index,
+            string_to_grams,
+            morphemes,
+            human_audio: sentences.human_audio,
+        }
+    }
+}
+
+/// Filenames of the two halves of a split language pack, relative to a
+/// course's data directory. Shared by the generator, the converters, the
+/// backend and every native loader so they can't drift apart.
+pub const CORE_FILENAME: &str = "language_data_core.rkyv";
+pub const SENTENCES_FILENAME: &str = "language_data_sentences.rkyv";
+
+/// Load and assemble a full language pack from a course directory holding
+/// the split `language_data_core.rkyv` + `language_data_sentences.rkyv` pair.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn load_split_dir(dir: &std::path::Path) -> Result<LanguagePack, std::io::Error> {
+    let read = |filename: &str| {
+        std::fs::read(dir.join(filename)).map_err(|e| {
+            std::io::Error::new(
+                e.kind(),
+                format!("failed to read {filename} in {}: {e}", dir.display()),
+            )
+        })
+    };
+    let rkyv_err = |e: rkyv::rancor::Error| std::io::Error::other(e.to_string());
+    let core_bytes = read(CORE_FILENAME)?;
+    let sentences_bytes = read(SENTENCES_FILENAME)?;
+    let core = rkyv::access::<ArchivedLanguagePackCore, rkyv::rancor::Error>(&core_bytes)
+        .map_err(rkyv_err)?;
+    let core =
+        rkyv::deserialize::<LanguagePackCore, rkyv::rancor::Error>(core).map_err(rkyv_err)?;
+    let sentences =
+        rkyv::access::<ArchivedLanguagePackSentences, rkyv::rancor::Error>(&sentences_bytes)
+            .map_err(rkyv_err)?;
+    let sentences = rkyv::deserialize::<LanguagePackSentences, rkyv::rancor::Error>(sentences)
+        .map_err(rkyv_err)?;
+    Ok(LanguagePack::from_parts(core, Some(sentences)))
+}
+
+/// Split `pack` and write the pair plus the `language_data.hash` metadata
+/// file (line 1: core `hash;size`, line 2: sentences `hash;size`) into a
+/// course directory. The one writer shared by the generator and the
+/// converter, so the on-disk layout has a single source of truth.
+#[cfg(not(target_arch = "wasm32"))]
+pub fn write_split_dir(dir: &std::path::Path, pack: LanguagePack) -> Result<(), std::io::Error> {
+    use xxhash_rust::const_xxh3::xxh3_64;
+
+    let (core, sentences) = pack.split();
+    let core_bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&core)
+        .expect("failed to serialize language pack core");
+    let sentences_bytes = rkyv::to_bytes::<rkyv::rancor::Error>(&sentences)
+        .expect("failed to serialize language pack sentences");
+
+    std::fs::write(dir.join(CORE_FILENAME), &core_bytes)?;
+    std::fs::write(dir.join(SENTENCES_FILENAME), &sentences_bytes)?;
+    std::fs::write(
+        dir.join("language_data.hash"),
+        format!(
+            "{};{}\n{};{}",
+            xxh3_64(&core_bytes),
+            core_bytes.len(),
+            xxh3_64(&sentences_bytes),
+            sentences_bytes.len()
+        ),
+    )?;
+    Ok(())
 }
