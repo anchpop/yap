@@ -223,27 +223,6 @@ fn invoke_failure_context(binary: &str) -> String {
     )
 }
 
-/// Phonemize a single phrase using espeak-ng. Returns the per-token IPA
-/// sequence, tokenized identically to the model's training labels (see
-/// module docs): stress markers dropped, continuation diacritics attached
-/// to the preceding phoneme. Call sites further fold length etc. via
-/// [`normalize_phoneme`].
-///
-/// Returns `Ok(None)` if `language` has no [`Language::espeak_code`] —
-/// caller should fall back to wikipron word-by-word.
-///
-/// Returns `Err(_)` only on espeak-ng failure (missing binary, segfault,
-/// non-zero exit). An empty output is `Ok(Some(vec![]))`.
-///
-/// **Environment overrides:**
-/// - `ESPEAK_NG_BIN` (preferred, matches the lexide training pipeline) /
-///   `ESPEAK_NG_BINARY` (alias) — full path to the espeak-ng binary.
-///   Defaults to `espeak-ng` (resolved via PATH). Useful for pointing at
-///   a custom build (e.g. one with French phrase-level liaison/stress
-///   patches).
-/// - `ESPEAK_NG_DATA_PATH` — directory containing the `espeak-ng-data`
-///   subdirectory. Passed as `--path=…` when set. Required for custom
-///   builds that don't install data to `/usr/local/share/espeak-ng-data`.
 /// A digest identifying *which* espeak produces this process's phonemes:
 /// the resolved binary's bytes, plus the phoneme table when a data path is
 /// pinned. Cached artifacts stamped with this can never be mistaken for the
@@ -277,6 +256,27 @@ pub fn identity() -> Result<String> {
     Ok(format!("{h:016x}"))
 }
 
+/// Phonemize a single phrase using espeak-ng. Returns the per-token IPA
+/// sequence, tokenized identically to the model's training labels (see
+/// module docs): stress markers dropped, continuation diacritics attached
+/// to the preceding phoneme. Call sites further fold length etc. via
+/// [`normalize_phoneme`].
+///
+/// Returns `Ok(None)` if `language` has no [`Language::espeak_code`] —
+/// caller should fall back to wikipron word-by-word.
+///
+/// Returns `Err(_)` only on espeak-ng failure (missing binary, segfault,
+/// non-zero exit). An empty output is `Ok(Some(vec![]))`.
+///
+/// **Environment overrides:**
+/// - `ESPEAK_NG_BIN` (preferred, matches the lexide training pipeline) /
+///   `ESPEAK_NG_BINARY` (alias) — full path to the espeak-ng binary.
+///   Defaults to `espeak-ng` (resolved via PATH). Useful for pointing at
+///   a custom build (e.g. one with French phrase-level liaison/stress
+///   patches).
+/// - `ESPEAK_NG_DATA_PATH` — directory containing the `espeak-ng-data`
+///   subdirectory. Passed as `--path=…` when set. Required for custom
+///   builds that don't install data to `/usr/local/share/espeak-ng-data`.
 pub fn phonemize_phrase(text: &str, language: Language) -> Result<Option<Vec<String>>> {
     let Some(code) = language.espeak_code() else {
         return Ok(None);
