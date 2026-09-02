@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use anyhow::Context;
 use language_utils::{Course, Language, SentenceSource};
 use movie_subtitles::SubtitleLine;
+use movie_subtitles::segment::SubtitleSegmenter;
 pub use movie_subtitles::sentences::{
     has_encoding_corruption, has_quote_apostrophe, is_proper_sentence, should_include_sentence,
 };
-use movie_subtitles::segment::SubtitleSegmenter;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]

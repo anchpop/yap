@@ -48,8 +48,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::cues::{
     agreement_tokens, align_sentence, load_transcript, parse_cues, slice_wav_padded,
-    tokenization_for, AUDIO_PAD_MS, MATCH_SLOP_MS, MAX_CUE_MS, MIN_CUE_MS,
-    MIN_TOKENS, POS_WER,
+    tokenization_for, AUDIO_PAD_MS, MATCH_SLOP_MS, MAX_CUE_MS, MIN_CUE_MS, MIN_TOKENS, POS_WER,
 };
 use crate::library::{course_dir, read_plan, Movie};
 use crate::transcript::{Kind, Spoken};
@@ -327,7 +326,13 @@ fn voiced_fraction(samples: &[i16], sample_rate: usize) -> Option<f64> {
             continue;
         }
         let peak = (lag_lo..lag_hi.min(x.len()))
-            .map(|lag| x[..x.len() - lag].iter().zip(&x[lag..]).map(|(a, b)| a * b).sum::<f64>())
+            .map(|lag| {
+                x[..x.len() - lag]
+                    .iter()
+                    .zip(&x[lag..])
+                    .map(|(a, b)| a * b)
+                    .sum::<f64>()
+            })
             .fold(f64::NEG_INFINITY, f64::max);
         if peak / ac0 > 0.45 {
             voiced += 1;
@@ -557,9 +562,15 @@ async fn clips_one(
     let placed: Vec<(String, Placed)> = sentences
         .iter()
         .filter_map(|k| {
-            place(&k.sentence, k.start_ms.into(), k.end_ms.into(), &transcript, code)
-                .ok()
-                .map(|p| (k.sentence.clone(), p))
+            place(
+                &k.sentence,
+                k.start_ms.into(),
+                k.end_ms.into(),
+                &transcript,
+                code,
+            )
+            .ok()
+            .map(|p| (k.sentence.clone(), p))
         })
         .collect();
     summary.aligned = placed.len();
@@ -686,12 +697,14 @@ async fn clips_one(
                 let lead_frames = (pad_before_ms as f64 / frame_ms) as usize;
                 let tail_frames = (pad_after_ms as f64 / frame_ms) as usize;
                 clip.lead_speech = frames.speech_fraction(0, lead_frames);
-                clip.tail_speech =
-                    frames.speech_fraction(frames.frames.saturating_sub(tail_frames), frames.frames);
+                clip.tail_speech = frames
+                    .speech_fraction(frames.frames.saturating_sub(tail_frames), frames.frames);
                 if let Some(samples) = wav_samples(&wav) {
                     let n = |ms: f64| (ms * samples.len() as f64 / padded_ms) as usize;
-                    let (lead_n, span_to) = (n(pad_before_ms as f64), n(padded_ms - pad_after_ms as f64));
-                    let span_samples = &samples[lead_n.min(samples.len())..span_to.min(samples.len())];
+                    let (lead_n, span_to) =
+                        (n(pad_before_ms as f64), n(padded_ms - pad_after_ms as f64));
+                    let span_samples =
+                        &samples[lead_n.min(samples.len())..span_to.min(samples.len())];
                     let span = rms(span_samples);
                     if lead_n > 0 && span > 0.0 {
                         clip.lead_rms = Some(rms(&samples[..lead_n.min(samples.len())]) / span);
@@ -735,12 +748,18 @@ async fn clips_one(
                             clip.edge_logp_end.unwrap()
                         ))
                     }
-                    _ if clip.lead_speech.is_some_and(|v| v > gate.max_pad_speech) => Some(
-                        format!("voices in the lead-in (speech {:.2})", clip.lead_speech.unwrap()),
-                    ),
-                    _ if clip.tail_speech.is_some_and(|v| v > gate.max_pad_speech) => Some(
-                        format!("voices in the tail (speech {:.2})", clip.tail_speech.unwrap()),
-                    ),
+                    _ if clip.lead_speech.is_some_and(|v| v > gate.max_pad_speech) => {
+                        Some(format!(
+                            "voices in the lead-in (speech {:.2})",
+                            clip.lead_speech.unwrap()
+                        ))
+                    }
+                    _ if clip.tail_speech.is_some_and(|v| v > gate.max_pad_speech) => {
+                        Some(format!(
+                            "voices in the tail (speech {:.2})",
+                            clip.tail_speech.unwrap()
+                        ))
+                    }
                     _ if clip.lead_rms.is_some_and(|v| v > gate.max_lead_rms) => Some(format!(
                         "lead-in louder than the dialogue (rms x{:.2})",
                         clip.lead_rms.unwrap()

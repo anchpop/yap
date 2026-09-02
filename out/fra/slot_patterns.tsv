@@ -1,22 +1,21 @@
 term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
-dire quelque chose	filled	9210	11	12	0.92	yes	Qu'est-ce que ça veut dire, ça ?	Qu' … dire
-dire quelque chose	clitic	2379	11	12	0.92	yes	Je crois que nous nous sommes déjà dit au revoir, camarade Novoseltsev.	nous … dit
-sa mère	clitic	2099	12	12	1.00	yes		
+dire quelque chose	filled	9296	10	12	0.83	yes	Ce nom ne vous dit rien ?	dit … rien
+dire quelque chose	clitic	2382	11	12	0.92	yes	Il m'a à peine dit bonjour ce matin.	m' … dit
+sa mère	clitic	2100	12	12	1.00	yes		
 sortir quelque chose	filled	680	10	12	0.83	yes	A t on une chance de faire sortir Bohr du Danemark ?	sortir … Bohr
-arriver à quelqu'un	filled	596	5	12	0.42	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
-arriver à quelqu'un	clitic	537	12	12	1.00	yes		
+arriver à quelqu'un	filled	599	7	12	0.58	no	Alors que le procès du siècle arrive finalement à son terme.	arrive … à … terme
+arriver à quelqu'un	clitic	539	12	12	1.00	yes		
 sortir quelque chose	clitic	347	7	12	0.58	no	Comment vas-tu t'en sortir sans boulot ?	t' … sortir
 désolé de faire quelque chose	infinitive	241	12	12	1.00	yes		
 ravi de faire quelque chose	infinitive	198	12	12	1.00	yes		
-être heureux de rencontrer quelqu'un	infinitive	158	3	12	0.25	no	Après son accident, il est heureux d'être en vie.	est … heureux … d' … être
 faire de son mieux	clitic	155	12	12	1.00	yes		
 sa mère	filled	126	11	12	0.92	yes	La guerre est mère de toute chose.	mère … chose
 bien dans ses baskets	clitic	87	0	12	0.00	no	A l'époque, les gens pouvaient oublier leur nom, jamais leurs biens.	leurs … biens
 but contre son camp	clitic	65	0	12	0.00	no	Ainsi c'est là votre but, entrer dans la montagne.	votre … but
-prendre son temps	clitic	56	11	12	0.92	yes	L'immobilier lui prend tout son temps.	prend … son … temps
+prendre son temps	clitic	57	11	12	0.92	yes	Les affaires lui prennent tout son temps.	prennent … son … temps
 faire son possible	clitic	50	12	12	1.00	yes		
-enchanté de faire quelque chose	infinitive	34	11	12	0.92	yes	Cela m'enchante de vous voir.	enchante … de … voir
-y être pour quelque chose	filled	33	9	12	0.75	yes	Je n'y suis pour personne.	y … suis … pour … personne
+enchanté de faire quelque chose	infinitive	35	12	12	1.00	yes		
+y être pour quelque chose	filled	35	10	12	0.83	yes	Elle y était pour lui, son fiancé était via Tasso.	y … était … pour … lui
 donner sa parole	clitic	31	12	12	1.00	yes		
 faire ses valises	clitic	28	12	12	1.00	yes		
 dans son monde	filled	25	2	12	0.17	no	Bienvenue dans le monde à l'intérieur du tableau.	dans … monde … intérieur
@@ -29,12 +28,14 @@ mettre fin à ses jours	filled	16	4	12	0.33	no	Et cela aurait également contrib
 ouvrir ses portes	filled	16	0	12	0.00	no	Ce mariage ouvrira la porte de votre prison.	ouvrira … porte … prison
 régler ses comptes	clitic	16	12	12	1.00	yes		
 régler son compte	clitic	16	12	12	1.00	yes		
+tirer quelque chose au clair	filled	15	12	12	1.00	yes		
 faire son affaire	clitic	13	5	12	0.42	no	Alors comme ça au premier coup d’œil Vous faites pas mon affaire.	faites … mon … affaire
 perdre son chemin	clitic	12	12	12	1.00	yes		
 dans son coin	clitic	11	8	11	0.73	yes	Pas dans mon coin.	dans … mon … coin
 être victime de son succès	filled	11	0	11	0.00	no	Ce criminel est une victime de ses gènes.	est … victime … de … gènes
 avoir ses règles	filled	10	0	10	0.00	no	De bons conducteurs, il y en a des tonnes.	conducteurs … a
 dans son coin	filled	10	0	10	0.00	no	Aujourd'hui, je veux te baiser dans chaque coin de cette pièce.	dans … coin … pièce
+en croire ses yeux	clitic	10	10	10	1.00	yes		
 faire sa B.A.	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
 faire son apparition	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
 faire son entrée	filled	10	0	10	0.00	no	Alors je gagne ma vie comme homme à tout faire.	tout … faire
@@ -47,9 +48,9 @@ avoir son compte	filled	8	1	8	0.12	no	Avons-nous le compte des prisonniers ?	A
 avoir son mot à dire	clitic	8	8	8	1.00	yes		
 dans son ensemble	clitic	8	8	8	1.00	yes		
 passer son chemin	clitic	8	8	8	1.00	yes		
+passer son tour	clitic	8	8	8	1.00	yes		
 prendre son parti	clitic	8	1	8	0.12	no	J'ai décidé de prendre son parti contre les autres.	prendre … son … parti
 heureux de faire quelque chose	infinitive	7	7	7	1.00	yes		
-passer son tour	clitic	7	7	7	1.00	yes		
 de son propre chef	clitic	6	6	6	1.00	yes		
 mettre tous ses œufs dans le même panier	clitic	5	5	5	1.00	yes		
 ne pas en croire ses yeux	clitic	5	5	5	1.00	yes		
@@ -58,8 +59,10 @@ porter dans son cœur	clitic	5	4	5	0.80	yes	Mais nous portons des armes dans nos
 refaire sa vie	clitic	5	5	5	1.00	yes		
 avoir fait son temps	clitic	4	4	4	1.00	yes		
 creuser sa tombe	clitic	4	4	4	1.00	yes		
+faire savoir quelque chose à quelqu’un	clitic	4	4	4	1.00	yes		
 faire ses comptes	clitic	4	2	4	0.50	no	Comment avons-nous fait notre compte pour ne pas le voir ?	fait … notre … compte
 faire son compte	clitic	4	2	4	0.50	no	Est-ce que tu ne fais pas tes comptes aujourd'hui ?	fais … tes … comptes
+le bonjour de quelqu'un	filled	4	3	4	0.75	yes	Le premier bonjour de la journée vient toujours de lui.	Le … bonjour … de … journée
 ne pas en croire ses oreilles	clitic	4	4	4	1.00	yes		
 prendre sous son aile	clitic	4	4	4	1.00	yes		
 prunelle de ses yeux	clitic	4	4	4	1.00	yes		
@@ -118,6 +121,7 @@ faire son intéressant	clitic	1	1	1	1.00	yes
 faire son marché	clitic	1	1	1	1.00	yes		
 faire son maximum	filled	1	1	1	1.00	yes		
 faire son retour	clitic	1	1	1	1.00	yes		
+l'heure de quelqu'un viendra	filled	1	0	1	0.00	no	Voici venue pour vous l'heure de vérité.	venue … l' … heure … de … vérité
 manger à sa faim	clitic	1	0	1	0.00	no	Son manger, ses habits, c'est vous qui payez.	Son … manger
 mettre sa main au feu	filled	1	0	1	0.00	no	J'ai envie de tous leur mettre des droites dans la face.	tous … mettre
 mettre sa main à couper	clitic	1	1	1	1.00	yes		

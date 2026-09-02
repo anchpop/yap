@@ -93,7 +93,9 @@ fn eval_model(
     let mut token_counts = Vec::with_capacity(corpus.len());
 
     for atoms in corpus {
-        let segments = model.segment(atoms);
+        let segments = model
+            .segment(atoms)
+            .expect("every training-corpus atom has a single-token vocabulary entry");
         let n_tokens = segments.len();
         token_counts.push(n_tokens);
         total_tokens += n_tokens;

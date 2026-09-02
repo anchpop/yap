@@ -19,9 +19,11 @@ pub struct SentenceEncoder {
 }
 
 impl SentenceEncoder {
-    /// Encode a sentence's words. `None` if any atom was never seen in the
-    /// training corpus (such a sentence is not expressible in the gram
-    /// system) or a segment has no vocabulary key.
+    /// Encode a sentence's words. `None` if the sentence is not expressible
+    /// in the gram system: an atom's text was never interned, an atom has no
+    /// single-token vocabulary entry (e.g. an X-tagged digit — the corpus
+    /// filters those sentences out before training, so they never earn a
+    /// fallback entry), or a segment has no vocabulary key.
     pub fn encode(
         &self,
         words: &[Literal<String>],
@@ -36,7 +38,7 @@ impl SentenceEncoder {
             .collect::<Option<Vec<_>>>()?;
         let tokens: Vec<SpurGram> = self
             .model
-            .segment(&interned)
+            .segment(&interned)?
             .iter()
             .map(|seq| {
                 self.model
@@ -160,6 +162,7 @@ pub fn train_supertokens_and_write_diagnostics(
         .map(|((sentence_text, _, capitalize_first), interned_atoms)| {
             let tokens: Vec<SpurGram> = model
                 .segment(interned_atoms)
+                .expect("every training-corpus atom has a single-token vocabulary entry")
                 .iter()
                 .filter_map(|seq| {
                     let id = model.get_token_id(seq)?;

@@ -22,11 +22,11 @@ use sha2::{Digest, Sha256};
 use unicode_normalization::UnicodeNormalization;
 
 use crate::clips::{clips_path, read_clips, subtitle_sentences, Clip, Provenance};
-use movie_subtitles::sentences::KeyedSentence;
 use crate::cues::{load_transcript, parse_cues, repair_latin_homoglyphs, slice_wav_padded};
 use crate::library::{course_dir, read_plan, truncate, Movie};
 use crate::sync::Cue;
 use crate::transcript::{Kind, Spoken};
+use movie_subtitles::sentences::KeyedSentence;
 
 /// Loudness target for the served clips, measured over the critical span.
 const TARGET_I: f64 = -18.0;
@@ -131,7 +131,10 @@ pub async fn export_clips(
             Ok(f) => {
                 written += f.written;
                 skipped += f.skipped;
-                println!("{title} ✓ {} exported, {} already current", f.written, f.skipped);
+                println!(
+                    "{title} ✓ {} exported, {} already current",
+                    f.written, f.skipped
+                );
                 valid.entry(f.code).or_default().extend(f.ids);
             }
             Err(e) => {
@@ -219,8 +222,15 @@ async fn export_film(
 
     use futures::StreamExt;
     let results: Vec<Result<()>> = futures::stream::iter(passing.iter().map(|clip| {
-        let (ctx, movie, provenance, clips, sentences, cues, transcript) =
-            (&ctx, movie, &provenance, &clips, &sentences, &cues, &transcript);
+        let (ctx, movie, provenance, clips, sentences, cues, transcript) = (
+            &ctx,
+            movie,
+            &provenance,
+            &clips,
+            &sentences,
+            &cues,
+            &transcript,
+        );
         let stamp = &stamp;
         let (lang_dir, audio_opus, video) = (&lang_dir, &audio_opus, &video);
         let (done, skipped) = (&done, &skipped);
@@ -244,8 +254,19 @@ async fn export_film(
                 .iter()
                 .any(|k| k.course_worthy && k.sentence == clip.sentence);
             let r = export_one(
-                ctx, movie, provenance, clip, &id, course_sentence, stamp, cues,
-                transcript, audio_opus, video, audio_stream, &clip_dir,
+                ctx,
+                movie,
+                provenance,
+                clip,
+                &id,
+                course_sentence,
+                stamp,
+                cues,
+                transcript,
+                audio_opus,
+                video,
+                audio_stream,
+                &clip_dir,
             )
             .await;
             let n = done.fetch_add(1, Ordering::Relaxed) + 1;
@@ -582,9 +603,24 @@ fn upload_lang(lang_dir: &Path, code: &str, bucket: &str) -> Result<()> {
             skipped += 1;
             continue;
         }
-        put(&dir.join("hi.mp4"), &format!("{code}/{id}/hi.mp4"), "video/mp4", IMMUTABLE)?;
-        put(&dir.join("lo.mp4"), &format!("{code}/{id}/lo.mp4"), "video/mp4", IMMUTABLE)?;
-        put(&dir.join("meta.json"), &format!("{code}/{id}/meta.json"), "application/json", IMMUTABLE)?;
+        put(
+            &dir.join("hi.mp4"),
+            &format!("{code}/{id}/hi.mp4"),
+            "video/mp4",
+            IMMUTABLE,
+        )?;
+        put(
+            &dir.join("lo.mp4"),
+            &format!("{code}/{id}/lo.mp4"),
+            "video/mp4",
+            IMMUTABLE,
+        )?;
+        put(
+            &dir.join("meta.json"),
+            &format!("{code}/{id}/meta.json"),
+            "application/json",
+            IMMUTABLE,
+        )?;
         std::fs::write(dir.join(".uploaded"), serde_json::to_vec(&hashes)?)?;
         uploaded += 1;
         if uploaded % 25 == 0 {
@@ -593,7 +629,12 @@ fn upload_lang(lang_dir: &Path, code: &str, bucket: &str) -> Result<()> {
     }
     let index = lang_dir.join("index.jsonl");
     if index.exists() {
-        put(&index, &format!("{code}/index.jsonl"), "application/x-ndjson", "public, max-age=60")?;
+        put(
+            &index,
+            &format!("{code}/index.jsonl"),
+            "application/x-ndjson",
+            "public, max-age=60",
+        )?;
     }
     println!("{code}: {uploaded} clip dirs uploaded, {skipped} already up");
     Ok(())
@@ -629,7 +670,9 @@ fn context_bounds(
     let bounds = |before: &[&Cue], after: &[&Cue]| {
         let s = before
             .last()
-            .map_or(scored_start, |c| (c.start_ms - CTX_PAD_MS).min(scored_start))
+            .map_or(scored_start, |c| {
+                (c.start_ms - CTX_PAD_MS).min(scored_start)
+            })
             .max(0);
         let e = after
             .last()
@@ -749,7 +792,12 @@ fn audio_stream_index(audio_json: &Path, video: &Path) -> Result<u32> {
 
 /// EBU R128 integrated loudness + true peak of one span, through the same
 /// stereo downmix the encode applies.
-fn measure_loudness(path: &Path, audio_stream: u32, start_ms: i64, dur_ms: i64) -> Result<(f64, f64)> {
+fn measure_loudness(
+    path: &Path,
+    audio_stream: u32,
+    start_ms: i64,
+    dur_ms: i64,
+) -> Result<(f64, f64)> {
     let out = Command::new("ffmpeg")
         .args(["-nostats", "-hide_banner", "-ss"])
         .arg(format!("{:.3}", start_ms as f64 / 1000.0))
@@ -814,7 +862,10 @@ fn encode_renditions(
     let status = Command::new("ffmpeg")
         .args(["-v", "error", "-y", "-ss"])
         .arg(format!("{:.3}", cut_start as f64 / 1000.0))
-        .args(["-t", &format!("{:.3}", (cut_end - cut_start) as f64 / 1000.0)])
+        .args([
+            "-t",
+            &format!("{:.3}", (cut_end - cut_start) as f64 / 1000.0),
+        ])
         .arg("-i")
         .arg(path)
         .args(["-filter_complex", &filter])

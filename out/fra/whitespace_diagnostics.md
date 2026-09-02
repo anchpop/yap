@@ -1,7 +1,7 @@
 # Whitespace Prediction Diagnostics
 
-Total predictions: 4575365
-Total errors: 1631
+Total predictions: 4598748
+Total errors: 1662
 Accuracy: 99.96%
 
 ## Error Patterns (sorted by frequency)
@@ -13,6 +13,14 @@ Accuracy: 99.96%
   - Ah, but it's the tie that makes the man !
   - Ah, this time it's working.
   - Because it's a holiday.
+
+### "'" + "?" (27 occurrences)
+- Predicted: None
+- Actual: NarrowNbsp
+- Examples:
+  - Alors, tu disais 'meilleures intentions' ?
+  - C'est donc le célèbre 'Livre des Frères' ?
+  - C'est donc le fameux 'Livre des Frères' ?
 
 ### "C" + "‘" (26 occurrences)
 - Predicted: Space
@@ -54,14 +62,6 @@ Accuracy: 99.96%
   - Alors, laisse—moi.
   - Arrête—moi ça.
 
-### "'" + "?" (18 occurrences)
-- Predicted: None
-- Actual: NarrowNbsp
-- Examples:
-  - Alors, tu disais 'meilleures intentions' ?
-  - C'est donc le célèbre 'Livre des Frères' ?
-  - C'est donc le fameux 'Livre des Frères' ?
-
 ### "do" + "n't" (17 occurrences)
 - Predicted: Space
 - Actual: None
@@ -94,6 +94,14 @@ Accuracy: 99.96%
   - As you're texting friends, tell her, an SMS, that's more practical.
   - Dites, actually, I believe that you're right.
 
+### "," + "'" (10 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - C'est qui, 'on' ?
+  - Comment ça, 'encore' ?
+  - Comment ça, 'nous' ?
+
 ### "," + "p'" (10 occurrences)
 - Predicted: None
 - Actual: Space
@@ -118,6 +126,14 @@ Accuracy: 99.96%
   - C’est intéressant, non ?
   - Elle est super, non ?
 
+### "," + "«" (8 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Ah, « tu ne verras pas d'ici » ?
+  - C'est moi, « L'Élu ».
+  - C'est qui, « moi » ?
+
 ### "ça" + "," (8 occurrences)
 - Predicted: None
 - Actual: Space
@@ -125,14 +141,6 @@ Accuracy: 99.96%
   - C'est ça , fais-lui un garrot au bras.
   - C'est ça , ramènes ton gros cul chez maman.
   - Comment tu sais ça, toi ?
-
-### "," + "«" (7 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Ah, « tu ne verras pas d'ici » ?
-  - C'est moi, « L'Élu ».
-  - C'est qui, « moi » ?
 
 ### "Here" + "'s" (7 occurrences)
 - Predicted: Space
@@ -222,6 +230,14 @@ Accuracy: 99.96%
   - We'll make the shellfish grin.
   - We'll see when the children will leave.
 
+### "a" + "ida" (5 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Elle l'aida elle-même car personne d'autre ne voulait le faire.
+  - Elle l'aida à nouer sa cravate car il ignorait comment faire.
+  - Il m'aida à porter le sac.
+
 ### "presser" + ";" (5 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -245,14 +261,6 @@ Accuracy: 99.96%
   - When you'll be retired, you'll do sports all the time.
   - When you'll be retired, you'll do sports all the time.
   - When you'll be retired.
-
-### "," + "'" (4 occurrences)
-- Predicted: None
-- Actual: Space
-- Examples:
-  - Comment ça, 'encore' ?
-  - Comment ça, 'nous' ?
-  - Je passe après 'tasse', 'piscine' et 'girafe'.
 
 ### "," + "c’" (4 occurrences)
 - Predicted: None
@@ -294,14 +302,6 @@ Accuracy: 99.96%
   - You're in a temp staffing agency.
   - You're kidding !
 
-### "a" + "ida" (4 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Elle l'aida elle-même car personne d'autre ne voulait le faire.
-  - Elle l'aida à nouer sa cravate car il ignorait comment faire.
-  - Il m'aida à réparer ma montre.
-
 ### "d" + "‘" (4 occurrences)
 - Predicted: Space
 - Actual: None
@@ -317,6 +317,14 @@ Accuracy: 99.96%
   - Je m‘appelle pas Bocuse.
   - Je m‘appelle pas Malik Oussekine.
   - Je m‘en fous.
+
+### "nous" + "'" (4 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - C'est qui 'nous' ?
+  - Comment ça, 'nous' ?
+  - Qu'est-ce que tu veux dire par 'nous' ?
 
 ### "pas" + ";" (4 occurrences)
 - Predicted: NarrowNbsp
@@ -510,6 +518,14 @@ Accuracy: 99.96%
   - Magnifique, hein ?
   - Vous ne comprenez pas, hein ?
 
+### "il" + "'" (3 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Ce n'est pas : 'Où est-il' ?
+  - Qui 'il' ?
+  - Qui ça, 'il' ?
+
 ### "libre" + ";" (3 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -534,13 +550,13 @@ Accuracy: 99.96%
   - Quel stylo, monsieur ?
   - Savez vous ce que vous prendrez ce soir, monsieur ?
 
-### "nous" + "'" (3 occurrences)
+### "on" + "'" (3 occurrences)
 - Predicted: Space
 - Actual: None
 - Examples:
-  - C'est qui 'nous' ?
-  - Comment ça, 'nous' ?
-  - Qu'est-ce que tu veux dire par 'nous' ?
+  - C'est qui, 'on' ?
+  - Comment ça, 'on' ?
+  - Qui ça, 'on' ?
 
 ### "pas" + "." (3 occurrences)
 - Predicted: None
@@ -946,13 +962,6 @@ Accuracy: 99.96%
   - En avez-vous tous fini, ici ?
   - Pourquoi ce rendez-vous ici ?
 
-### "il" + "'" (2 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Ce n'est pas : 'Où est-il' ?
-  - Qui 'il' ?
-
 ### "jeune" + ";" (2 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -994,6 +1003,13 @@ Accuracy: 99.96%
 - Examples:
   - Celui qui avait formé Matias c'était moi , mon pote.
   - Tu as besoin de moi , Guido ?
+
+### "n" + "'" (2 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - L'avenir du rock 'n' roll.
+  - Let's rock'n'roll !
 
 ### "non" + "," (2 occurrences)
 - Predicted: None
@@ -1239,6 +1255,12 @@ Accuracy: 99.96%
 - Actual: Space
 - Examples:
   - Sauf que 'toi' ne veut plus rien dire.
+
+### "'" + "roll" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - L'avenir du rock 'n' roll.
 
 ### "'" + "sur" (1 occurrences)
 - Predicted: None
@@ -1834,6 +1856,12 @@ Accuracy: 99.96%
 - Examples:
   - Ouvre la porte, Benni !
 
+### "Big Apple" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - M'sieur, vous voulez apprendre le 'Big Apple' ?
+
 ### "Black Kite" + "," (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -1959,6 +1987,12 @@ Accuracy: 99.96%
 - Actual: Space
 - Examples:
   - Dhanbad ..
+
+### "Doc" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Qui vous a dit qu'on l'appelle 'Doc' ?
 
 ### "Donnez" + "—" (1 occurrences)
 - Predicted: Space
@@ -2217,6 +2251,12 @@ Accuracy: 99.96%
 - Actual: None
 - Examples:
   - Ça s'appelle 'L'océan de Lily'.
+
+### "Loyal" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Et le second prénom, ce sera 'Loyal' ?
 
 ### "Lui" + "," (1 occurrences)
 - Predicted: None
@@ -4372,6 +4412,12 @@ Accuracy: 99.96%
 - Examples:
   - On le voit d'ici .
 
+### "ils" + "'" (1 occurrences)
+- Predicted: Space
+- Actual: None
+- Examples:
+  - Qui ça, 'ils' ?
+
 ### "immense" + ";" (1 occurrences)
 - Predicted: NarrowNbsp
 - Actual: Space
@@ -4953,12 +4999,6 @@ Accuracy: 99.96%
 - Actual: Space
 - Examples:
   - Regarde-toi toi-même, épouvantail !
-
-### "n" + "'" (1 occurrences)
-- Predicted: Space
-- Actual: None
-- Examples:
-  - Let's rock'n'roll !
 
 ### "nana" + "'" (1 occurrences)
 - Predicted: Space
@@ -6550,6 +6590,12 @@ Accuracy: 99.96%
 - Examples:
   - J'ai dit « disparu ».
 
+### "«" + "d’" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Lors de son combat contre Rengoku-san, Akaza a parlé « d’esprit combatif ».
+
 ### "«" + "exilés" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6652,6 +6698,12 @@ Accuracy: 99.96%
 - Examples:
   - Je ne prends pas « non » pour une réponse.
 
+### "«" + "nègre" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Tom a utilisé le mot « nègre ».
+
 ### "«" + "o" (1 occurrences)
 - Predicted: None
 - Actual: Space
@@ -6687,6 +6739,12 @@ Accuracy: 99.96%
 - Actual: Space
 - Examples:
   - Je n'aime même pas prononcer le mot « smoothie ».
+
+### "«" + "solution" (1 occurrences)
+- Predicted: None
+- Actual: Space
+- Examples:
+  - Non, « solution finale ».
 
 ### "«" + "synonyme" (1 occurrences)
 - Predicted: None

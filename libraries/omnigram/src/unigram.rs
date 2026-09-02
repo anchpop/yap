@@ -385,10 +385,14 @@ impl<T: UnigramToken> UnigramModel<T> {
     }
 
     /// Segment a sequence of tokens using Viterbi algorithm.
-    /// Returns a list of sequences, where each sequence is a segment.
-    pub fn segment(&self, tokens: &[T]) -> Vec<Seq<T>> {
+    /// Returns a list of sequences, where each sequence is a segment, or
+    /// `None` when no path exists through the lattice — i.e. some token has
+    /// no single-token vocabulary entry. Every token of the training corpus
+    /// has one (the trainer guarantees it), so `None` can only arise for
+    /// input minted after training.
+    pub fn segment(&self, tokens: &[T]) -> Option<Vec<Seq<T>>> {
         if tokens.is_empty() {
-            return Vec::new();
+            return Some(Vec::new());
         }
 
         let n = tokens.len();
@@ -423,15 +427,9 @@ impl<T: UnigramToken> UnigramModel<T> {
         let mut result = Vec::new();
         let mut pos = n;
 
-        assert!(
-            best_score[n].is_finite(),
-            "UnigramModel::segment found no path through the lattice.\n\
-             sentence_len={n}\n\
-             max_piece_length={}\n\
-             sentence_tokens={:#?}",
-            self.max_piece_length,
-            tokens
-        );
+        if !best_score[n].is_finite() {
+            return None;
+        }
 
         while pos > 0 {
             let prev_pos = best_prev[pos].take().unwrap_or_else(|| {
@@ -451,7 +449,7 @@ impl<T: UnigramToken> UnigramModel<T> {
         }
 
         result.reverse();
-        result
+        Some(result)
     }
 
     /// Get vocabulary size
@@ -471,7 +469,9 @@ impl<T: UnigramToken> UnigramModel<T> {
         let mut usage_counts: Vec<u64> = vec![0; self.id_to_seq.len()];
 
         for sentence in corpus {
-            let segments = self.segment(sentence);
+            let segments = self
+                .segment(sentence)
+                .expect("single-token fallback should always permit segmentation");
             for seq in &segments {
                 if let Some(&(id, _)) = self.vocab.get(seq) {
                     usage_counts[id as usize] += 1;
@@ -1007,7 +1007,7 @@ mod tests {
 
         // The model should have learned that "je suis" is common
         let tokens = vec![make_token("je"), make_token("suis"), make_token("content")];
-        let segmented = model.segment(&tokens);
+        let segmented = model.segment(&tokens).unwrap();
 
         // Should have fewer segments than tokens due to merging
         assert!(segmented.len() <= tokens.len());
@@ -1026,7 +1026,7 @@ mod tests {
         let model = UnigramModel::new(vocab, 0.0);
 
         let tokens = vec![make_token("je"), make_token("suis"), make_token("content")];
-        let segmented = model.segment(&tokens);
+        let segmented = model.segment(&tokens).unwrap();
 
         // Should prefer "je suis" as a merged token since it has higher probability
         assert_eq!(segmented.len(), 2); // "je suis" + "content"
@@ -1041,7 +1041,7 @@ mod tests {
 
         let model = UnigramModel::new(vocab, 0.0);
         let tokens = vec![make_token("new"), make_token("york")];
-        let segmented = model.segment(&tokens);
+        let segmented = model.segment(&tokens).unwrap();
 
         assert_eq!(segmented.len(), 2);
         assert_eq!(segmented[0].len(), 1);
@@ -1076,7 +1076,7 @@ mod tests {
         ];
 
         let model = UnigramModel::new(vocab, 0.0);
-        let segmented = model.segment(&tokens);
+        let segmented = model.segment(&tokens).unwrap();
 
         assert_eq!(segmented.len(), 1);
         assert_eq!(segmented[0].len(), 20);

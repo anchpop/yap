@@ -191,7 +191,9 @@ impl FrameMatrix {
             return None;
         }
         let half = 0.5f64.ln();
-        let speech = (from..to).filter(|&t| self.lp(t, self.blank_id) < half).count();
+        let speech = (from..to)
+            .filter(|&t| self.lp(t, self.blank_id) < half)
+            .count();
         Some(speech as f64 / (to - from) as f64)
     }
 

@@ -237,7 +237,10 @@ fn render_piece(seq: &[PChar]) -> String {
 
 fn display_segmentation(model: &UnigramModel<PChar>, word: &str) {
     let pchars = PChar::from_word(word);
-    let segments = model.segment(&pchars);
+    let Some(segments) = model.segment(&pchars) else {
+        println!("  {word}: not segmentable (contains a character the model never saw)");
+        return;
+    };
     let pieces: Vec<String> = segments
         .iter()
         .map(|seq| PChar::seq_to_string(&seq.0))
