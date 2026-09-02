@@ -338,14 +338,70 @@ pub fn classify(
 
 /// A subtitle file sitting next to the video in one of `codes`.
 ///
+/// Every code any course's `stream_codes` answers with, so a filename token
+/// naming *some other* language is recognized as such rather than read as
+/// release-name junk. Without this, `Haider...en.hi.srt` walks past `en`
+/// (not a Hindi code, so "junk") and lands on the `hi` fallback — an English
+/// subtitle adopted as Hindi, which is how four English SDH tracks ended up
+/// as hin/jpn corpus subtitles (found by the 2026-09-01 transcript audit).
+const LANGUAGE_CODES: &[&str] = &[
+    "eng", "en", "fra", "fre", "fr", "deu", "ger", "de", "spa", "es", "ita", "it", "por", "pt",
+    "pob", "rus", "ru", "jpn", "ja", "jp", "kor", "ko", "tha", "th", "hin", "hi", "zho", "chi",
+    "zh", "cmn", "yue", "cn", "mar", "mr", "swe", "sv", "dan", "da", "nld", "dut", "nl", "pol",
+    "pl", "tur", "tr", "heb", "he", "ara", "ar", "tel", "te", "tam", "ta", "fas", "per", "fa",
+];
+
+/// Does this text plausibly carry the course's writing system?
+///
+/// A sidecar's language tag is a claim, not a fact: `Audition...jpn.srt` and
+/// `Dil.Chahta.Hai...hin.srt` both carried English. For a course whose script
+/// is not Latin the check is trivial and decisive — most letters must come
+/// from the expected ranges. Latin-script courses pass unchecked (French vs
+/// English can't be told apart this cheaply; the transcript cross-check
+/// catches those downstream).
+fn script_plausible(course_code: &str, text: &str) -> bool {
+    let expected: fn(char) -> bool = match course_code {
+        "hin" => |c| ('\u{0900}'..='\u{097F}').contains(&c),
+        "tha" => |c| ('\u{0E00}'..='\u{0E7F}').contains(&c),
+        "kor" => {
+            |c| ('\u{AC00}'..='\u{D7AF}').contains(&c) || ('\u{1100}'..='\u{11FF}').contains(&c)
+        }
+        "rus" => |c| ('\u{0400}'..='\u{04FF}').contains(&c),
+        "jpn" => {
+            |c| ('\u{3040}'..='\u{30FF}').contains(&c) || ('\u{4E00}'..='\u{9FFF}').contains(&c)
+        }
+        "zho" => |c| ('\u{4E00}'..='\u{9FFF}').contains(&c),
+        _ => return true,
+    };
+    let letters = text.chars().filter(|c| c.is_alphabetic());
+    let (mut hits, mut total) = (0usize, 0usize);
+    for c in letters.take(20_000) {
+        total += 1;
+        if expected(c) {
+            hits += 1;
+        }
+    }
+    // An empty or unreadable file is not evidence either way; let the sync
+    // gates deal with it rather than silently skipping the tier.
+    total == 0 || hits * 10 >= total * 3
+}
+
 /// Names look like `Movie (1999).fr.srt`, often with modifiers appended:
 /// `.en.hi.srt` is *English, hearing-impaired*, not Hindi — so the tokens are
 /// walked from the right, skipping modifiers, and `hi` is only read as Hindi
-/// when nothing else in the name identifies a language.
+/// when no token anywhere in the name identifies *any* language. A candidate
+/// must also carry the course's writing system ([`script_plausible`]) — the
+/// tag on the filename is a claim the bytes get to veto.
 fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
     const MODIFIERS: &[&str] = &["forced", "sdh", "cc", "hi", "default", "full"];
     let stem = video.file_stem()?.to_str()?;
     let dir = video.parent()?;
+    let course = codes.first().copied().unwrap_or_default();
+    let plausible = |path: &Path| {
+        std::fs::read_to_string(path)
+            .map(|text| script_plausible(course, &text))
+            .unwrap_or(true)
+    };
 
     let mut hindi_fallback = None;
     for entry in std::fs::read_dir(dir).ok()? {
@@ -374,16 +430,32 @@ fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
         if tokens.iter().any(|t| t == "yap") {
             continue;
         }
+        let mut saw_hi = false;
         for token in tokens.iter().rev() {
             if MODIFIERS.contains(&token.as_str()) {
-                if token == "hi" && codes.contains(&"hin") {
-                    hindi_fallback = Some(entry.path());
-                }
+                saw_hi |= token == "hi";
                 continue;
             }
             if codes.contains(&token.as_str()) {
-                return Some(entry.path());
+                if plausible(&entry.path()) {
+                    return Some(entry.path());
+                }
+                break;
             }
+            if LANGUAGE_CODES.contains(&token.as_str()) {
+                // Another language's file; it cannot be ours, and its `hi`
+                // (if any) meant hearing-impaired.
+                break;
+            }
+        }
+        if saw_hi
+            && codes.contains(&"hin")
+            && !tokens
+                .iter()
+                .any(|t| t != "hi" && LANGUAGE_CODES.contains(&t.as_str()))
+            && plausible(&entry.path())
+        {
+            hindi_fallback = Some(entry.path());
         }
     }
     hindi_fallback

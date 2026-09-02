@@ -399,6 +399,46 @@ enum Command_ {
         #[arg(long, default_value = "yap-clips")]
         bucket: String,
     },
+    /// Transcribe course films until the ElevenLabs balance runs low, then
+    /// publish the resulting clips.
+    ///
+    /// The plan's credits reset monthly and do not carry over, so anything
+    /// unused is lost — but anything spent past the allowance bills the card.
+    /// This queues every course film that has extracted audio and a synced
+    /// subtitle but no transcript, round-robin across original languages so a
+    /// budget that cannot cover everything still leaves every language with
+    /// roughly the same number of new films, refuses to start a film it
+    /// cannot afford, and finishes with the serve pipeline (clips,
+    /// export-clips, R2 upload) over whatever landed.
+    SpendCredits {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Never spend below this many credits.
+        #[arg(long, default_value_t = 15_000)]
+        floor: i64,
+        /// Hard ceiling on this run's own spend, independent of the balance
+        /// API. The floor trusts a number fetched over the network and a
+        /// per-hour estimate; this trusts neither, so a wrong estimate or a
+        /// stale balance cannot run away.
+        #[arg(long, default_value_t = 130_000)]
+        max_credits: i64,
+        /// Print what would be transcribed without spending anything.
+        #[arg(long)]
+        dry_run: bool,
+        /// Stop after transcription; skip clip mapping, encoding and upload.
+        #[arg(long)]
+        no_publish: bool,
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus/export")]
+        dest: PathBuf,
+        /// Clips encoded at once (each is one ffmpeg run).
+        #[arg(long, default_value_t = 8)]
+        jobs: usize,
+        /// Comma-separated course codes (fra,spa,…); default every language.
+        #[arg(long, value_delimiter = ',')]
+        langs: Option<Vec<String>>,
+        #[arg(long, default_value = "yap-clips")]
+        bucket: String,
+    },
     /// Flag extracted subtitles that are too sparse to be real dialogue.
     Verify {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
@@ -471,6 +511,11 @@ const SIDECAR_UNTRUSTED: &[&str] = &[
     "tt0112913", // Fallen Angels (1995)
     "tt3398268", // When Marnie Was There (2014)
     "tt1568921", // The Secret World of Arrietty (2010) — +28.5s over 257/262 anchors
+    // Convicted 2026-09-01 by the subtitle-vs-transcript audit (bigram match
+    // peaks far off zero; the transcript's clock is the film's by construction):
+    "tt0120915", // Phantom Menace — −60s
+    "tt1183252", // Chocolate (2008) — −5s
+    "tt6788942", // Bad Genius (2017) — +5s
 ];
 
 fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
@@ -579,7 +624,18 @@ fn film_stamp(movie: &Movie) -> Result<FilmStamp> {
 /// evicts it when the file changes underneath — which matters even for films
 /// with no finished subtitle yet, where only the profile exists.
 fn cached_speech_profile(movie: &Movie, dir: &std::path::Path) -> Result<Vec<f32>> {
-    let path = dir.join("speech-profile.f32");
+    Ok(vad::bucketed(
+        &fine_speech_profile(movie, dir)?,
+        vad::FRAMES_PER_BUCKET,
+    ))
+}
+
+/// earshot's native 16 ms profile, cached beside the film. The `-16ms` in the
+/// name is the cache key: it retires the old 96 ms `speech-profile.f32` files
+/// so a refresh recomputes them at full resolution rather than mistaking a
+/// coarse profile for a fine one.
+fn fine_speech_profile(movie: &Movie, dir: &std::path::Path) -> Result<Vec<f32>> {
+    let path = dir.join("speech-profile-16ms.f32");
     if let Some(p) = vad::read_profile(&path) {
         return Ok(p);
     }
@@ -777,7 +833,7 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
     if !old.matches(&current) {
         // The video changed: everything derived from it is stale.
         let _ = std::fs::remove_file(dir.join("subtitle.srt"));
-        let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
+        let _ = std::fs::remove_file(dir.join("speech-profile-16ms.f32"));
         let _ = std::fs::remove_file(dir.join("references.json"));
         let _ = std::fs::remove_file(dir.join("transcript.jsonl"));
         let _ = std::fs::remove_file(dir.join("audio.opus"));
@@ -1245,8 +1301,23 @@ fn extract_audio_one(movie: &Movie, dir: &std::path::Path) -> AudioOutcome {
                 &format!("0:a:{stream}"),
                 "-vn",
                 "-sn",
+                // aresample=async=1 locks the output timeline to the film's.
+                // Some source tracks drop packets across silence; ffmpeg then
+                // concatenates the audio and every later sample slides earlier,
+                // so the opus ends up shorter than the film and progressively
+                // out of sync (Run Lola Run: 165s short, 19s off by minute 5).
+                // async=1 fills each gap with silence and first_pts=0 anchors
+                // the start, so a timestamp in the opus is a timestamp in the
+                // film — which every downstream stage assumes. Found 2026-09-01
+                // by the subtitle-vs-transcript audit; `check` reads the video,
+                // not this artifact, which is why it never caught the drift.
+                // aresample must run *before* aformat: a track can carry an
+                // unknown channel layout (God of Cookery's 6ch AC3), which
+                // aformat cannot name, and feeding that into libopus fails the
+                // whole extraction. aresample normalizes it first, then aformat
+                // maps to an opus-legal name.
                 "-af",
-                "aformat=channel_layouts=7.1|6.1|5.1|5.0|quad|3.0|stereo|mono",
+                "aresample=async=1:first_pts=0,aformat=channel_layouts=7.1|6.1|5.1|5.0|quad|3.0|stereo|mono",
                 "-c:a",
                 "libopus",
                 "-b:a",
@@ -2351,6 +2422,165 @@ async fn export_clips(
     subtitle_corpus::export::export_clips(out, dest, jobs, limit, imdb, langs).await
 }
 
+/// Measured twice on this account, over 27.7h and 21.1h of audio: 1,579/hour.
+/// Deliberately rounded up — an over-estimate stops early, an under-estimate
+/// spends money.
+const CREDITS_PER_HOUR: f64 = 1580.0;
+
+#[allow(clippy::too_many_arguments)]
+#[tokio::main]
+async fn spend_credits(
+    out: PathBuf,
+    floor: i64,
+    max_credits: i64,
+    dry_run: bool,
+    no_publish: bool,
+    dest: PathBuf,
+    jobs: usize,
+    langs: Option<Vec<String>>,
+    bucket: String,
+) -> Result<()> {
+    let account = transcript::ScribeAccount::from_env()?;
+    let http = reqwest::Client::new();
+
+    // Same eligibility as `transcribe`, then round-robin across original
+    // languages: films the pipeline can finish, interleaved so the floor
+    // cuts off evenly instead of exhausting the budget on one course.
+    let mut by_language: std::collections::BTreeMap<String, Vec<Movie>> = Default::default();
+    for movie in read_plan(&out)? {
+        let dir = out.join(&movie.imdb_id);
+        if library::course_dir(&movie.original_language).is_some()
+            && dir.join("subtitle.srt").exists()
+            && transcript_is_stale(&movie, &dir)
+            && extracted_audio(&movie, &dir).is_some()
+        {
+            by_language
+                .entry(movie.original_language.clone())
+                .or_default()
+                .push(movie);
+        }
+    }
+    let mut queue = Vec::new();
+    let mut round = 0;
+    loop {
+        let before = queue.len();
+        for films in by_language.values() {
+            if let Some(movie) = films.get(round) {
+                queue.push(movie.clone());
+            }
+        }
+        if queue.len() == before {
+            break;
+        }
+        round += 1;
+    }
+
+    let start = account.remaining_credits(&http).await?;
+    println!(
+        "{} films queued round-robin over {} languages",
+        queue.len(),
+        by_language.len()
+    );
+    println!(
+        "balance {start} credits, floor {floor}, budget {} (~{:.0}h)\n",
+        start - floor,
+        (start - floor) as f64 / CREDITS_PER_HOUR
+    );
+
+    // Live balance, reconciled with the API only as often as it allows;
+    // between reconciliations the estimate moves by the same per-hour figure
+    // used to decide affordability.
+    let mut estimate = start;
+    let mut since_reconcile = 0;
+    let mut spent_here = 0i64;
+    let mut done = 0;
+    let mut failed = 0;
+    let mut skipped = 0;
+    let store = osmo::Store::open("./.cache");
+    let total = queue.len();
+
+    for (n, movie) in queue.iter().enumerate() {
+        let dir = out.join(&movie.imdb_id);
+        let hours = match read_audio_stamp(&dir) {
+            Some(stamp) => stamp.duration_ms as f64 / 3_600_000.0,
+            None => {
+                println!("[{}/{total}] {} lost its audio stamp", n + 1, movie.imdb_id);
+                continue;
+            }
+        };
+        let need = (hours * CREDITS_PER_HOUR) as i64;
+        if spent_here + need > max_credits {
+            skipped = total - n;
+            println!(
+                "\nSTOPPING: run ceiling reached — {spent_here} spent, {} needs \
+                 ~{need}, ceiling {max_credits}. {skipped} films left unrun.",
+                movie.imdb_id
+            );
+            break;
+        }
+        if since_reconcile >= 5 {
+            match account.remaining_credits(&http).await {
+                Ok(actual) => {
+                    estimate = actual;
+                    since_reconcile = 0;
+                }
+                Err(e) => println!("          (balance check failed, using estimate: {e:#})"),
+            }
+        }
+        if estimate - need < floor {
+            skipped = total - n;
+            println!(
+                "\nSTOPPING: {} needs ~{need}, balance {estimate}, floor {floor}. \
+                 {skipped} films left unrun.",
+                movie.imdb_id
+            );
+            break;
+        }
+        println!(
+            "[{}/{total}] {} ({}) {hours:.2}h ~{need} credits (balance {estimate})",
+            n + 1,
+            truncate(&movie.title, 34),
+            movie.imdb_id
+        );
+        if dry_run {
+            estimate -= need;
+            spent_here += need;
+            done += 1;
+            continue;
+        }
+        match transcribe_one(&http, &account, &store, movie, &out).await {
+            Ok(words) => {
+                println!("          ✓ {words} words");
+                estimate -= need;
+                since_reconcile += 1;
+                spent_here += need;
+                done += 1;
+            }
+            Err(e) => {
+                println!("          ✗ {e:#}");
+                failed += 1;
+            }
+        }
+    }
+
+    let end = account.remaining_credits(&http).await?;
+    println!("\ntranscribed {done}, failed {failed}, skipped {skipped}");
+    println!(
+        "credits: {start} -> {end}  (spent {}, ~{:.1}h)",
+        start - end,
+        (start - end) as f64 / CREDITS_PER_HOUR
+    );
+
+    if dry_run || no_publish {
+        return Ok(());
+    }
+    // Everything downstream of the transcripts — clip mapping, encoding, R2
+    // upload. Resumable and free to re-run, so a failure here just means
+    // running `publish` again.
+    println!("\npublishing clips for the new transcripts...");
+    subtitle_corpus::export::publish(out, dest, jobs, langs, bucket).await
+}
+
 #[tokio::main]
 async fn publish(
     out: PathBuf,
@@ -3291,6 +3521,27 @@ fn main() -> Result<()> {
             langs,
             bucket,
         } => publish(out, dest, jobs, langs, bucket),
+        Command_::SpendCredits {
+            out,
+            floor,
+            max_credits,
+            dry_run,
+            no_publish,
+            dest,
+            jobs,
+            langs,
+            bucket,
+        } => spend_credits(
+            out,
+            floor,
+            max_credits,
+            dry_run,
+            no_publish,
+            dest,
+            jobs,
+            langs,
+            bucket,
+        ),
         Command_::Verify { out, min_density } => verify(out, min_density),
         Command_::ExportSidecars { out } => export_sidecars(out),
         Command_::PgsStats {

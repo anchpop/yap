@@ -22,8 +22,12 @@ use crate::sync::Cue;
 const FRAME: usize = 256;
 const SAMPLE_RATE: usize = 16_000;
 /// Frames per bucket. Six is ~96 ms — fine enough for an offset (a cue lasts
-/// seconds) and six times cheaper to search than the raw frame rate.
-const FRAMES_PER_BUCKET: usize = 6;
+/// seconds) and six times cheaper to search than the raw frame rate. This is a
+/// *read-time* view now: the persisted profile keeps earshot's native 16 ms
+/// (see [`speech_profile`]) and the offset search buckets it down on the way
+/// in ([`bucketed`]), so nothing that needs finer resolution — a clip's
+/// clean-cut margin is a ~100 ms question — has to re-decode the film.
+pub const FRAMES_PER_BUCKET: usize = 6;
 
 /// Milliseconds per bucket, *derived* from the frame arithmetic rather than
 /// chosen.
@@ -34,7 +38,13 @@ const FRAMES_PER_BUCKET: usize = 6;
 /// collapsed to 0.07 on a subtitle known to be correctly timed.
 pub const BUCKET_MS: i64 = (FRAMES_PER_BUCKET * FRAME * 1000 / SAMPLE_RATE) as i64;
 
-/// Fraction of each bucket that earshot judged to be speech.
+/// earshot's speech score for each native 16 ms frame of the film.
+///
+/// One value per [`FRAME`], not per bucket: earshot resolves at 16 ms and
+/// that is what gets persisted, because throwing five sixths of it away to
+/// save ~1.5 MB would make the cached profile useless for anything finer than
+/// an offset — and re-deriving it costs minutes of audio decode. Consumers
+/// that only need a coarse view call [`bucketed`] on the way in.
 pub fn speech_profile(video: &Path, audio_stream: usize) -> Result<Vec<f32>> {
     let mut child = Command::new("ffmpeg")
         .args(["-v", "error", "-i"])
@@ -56,14 +66,10 @@ pub fn speech_profile(video: &Path, audio_stream: usize) -> Result<Vec<f32>> {
         .context("ffmpeg failed to start")?;
     let mut stdout = child.stdout.take().context("no ffmpeg output")?;
 
-    let frames_per_bucket = FRAMES_PER_BUCKET;
-
     let mut detector = earshot::Detector::default_boxed();
     let mut profile: Vec<f32> = Vec::new();
     let mut raw = vec![0u8; FRAME * 2 * 64];
     let mut pending: Vec<i16> = Vec::new();
-    let mut bucket_sum = 0.0f32;
-    let mut bucket_n = 0usize;
 
     use std::io::Read;
     loop {
@@ -78,13 +84,7 @@ pub fn speech_profile(video: &Path, audio_stream: usize) -> Result<Vec<f32>> {
         );
         let usable = pending.len() - pending.len() % FRAME;
         for frame in pending[..usable].chunks_exact(FRAME) {
-            bucket_sum += detector.predict_i16(frame);
-            bucket_n += 1;
-            if bucket_n == frames_per_bucket {
-                profile.push(bucket_sum / bucket_n as f32);
-                bucket_sum = 0.0;
-                bucket_n = 0;
-            }
+            profile.push(detector.predict_i16(frame));
         }
         pending.drain(..usable);
     }
@@ -119,6 +119,23 @@ pub fn write_profile(path: &Path, profile: &[f32]) -> Result<()> {
         raw.extend_from_slice(&v.to_le_bytes());
     }
     Ok(std::fs::write(path, raw)?)
+}
+
+/// Average `factor` native frames into each coarse bucket.
+///
+/// The offset search runs on ~96 ms buckets (`factor = 6`): a cue lasts
+/// seconds, so that resolution loses nothing and is six times cheaper to
+/// correlate. This is applied on *read*, not on write — the persisted profile
+/// stays at 16 ms so a finer question can still be answered without decoding
+/// the film again. A trailing partial bucket is kept, averaged over whatever
+/// frames it has.
+pub fn bucketed(fine: &[f32], factor: usize) -> Vec<f32> {
+    if factor <= 1 {
+        return fine.to_vec();
+    }
+    fine.chunks(factor)
+        .map(|c| c.iter().sum::<f32>() / c.len() as f32)
+        .collect()
 }
 
 /// The same profile, as the subtitle claims it: 1 where a cue is on screen.

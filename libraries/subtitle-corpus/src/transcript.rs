@@ -88,6 +88,36 @@ impl ScribeAccount {
     fn key(&self) -> &str {
         &self.key
     }
+
+    /// Credits left in this billing period, straight from the account.
+    ///
+    /// The number that matters is the one ElevenLabs will bill on, not local
+    /// arithmetic, which drifts. Backs off on 429: the subscription endpoint
+    /// rate-limits well below one call per film, and a budget guard that
+    /// crashes is worse than no guard.
+    pub async fn remaining_credits(&self, http: &reqwest::Client) -> Result<i64> {
+        #[derive(serde::Deserialize)]
+        struct Subscription {
+            character_count: i64,
+            character_limit: i64,
+        }
+        let mut delay = std::time::Duration::from_secs(5);
+        for _ in 0..6 {
+            let response = http
+                .get("https://api.elevenlabs.io/v1/user/subscription")
+                .header("xi-api-key", self.key())
+                .send()
+                .await?;
+            if response.status() == reqwest::StatusCode::TOO_MANY_REQUESTS {
+                tokio::time::sleep(delay).await;
+                delay *= 2;
+                continue;
+            }
+            let sub: Subscription = response.error_for_status()?.json().await?;
+            return Ok(sub.character_limit - sub.character_count);
+        }
+        anyhow::bail!("subscription endpoint still rate-limited after backoff")
+    }
 }
 
 /// How long a chunk runs before we start looking for somewhere to cut.

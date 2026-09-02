@@ -623,7 +623,7 @@ fn upload_lang(lang_dir: &Path, code: &str, bucket: &str) -> Result<()> {
         )?;
         std::fs::write(dir.join(".uploaded"), serde_json::to_vec(&hashes)?)?;
         uploaded += 1;
-        if uploaded % 25 == 0 {
+        if uploaded.is_multiple_of(25) {
             println!("  {uploaded} uploaded (last: {id})");
         }
     }
