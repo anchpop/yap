@@ -392,7 +392,7 @@ fn script_plausible(course_code: &str, text: &str) -> bool {
 /// when no token anywhere in the name identifies *any* language. A candidate
 /// must also carry the course's writing system ([`script_plausible`]) — the
 /// tag on the filename is a claim the bytes get to veto.
-fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
+pub fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
     const MODIFIERS: &[&str] = &["forced", "sdh", "cc", "hi", "default", "full"];
     let stem = video.file_stem()?.to_str()?;
     let dir = video.parent()?;

@@ -16,4 +16,5 @@ pub mod pgs;
 pub mod sync;
 pub mod transcript;
 pub mod vad;
+pub mod verbatim;
 pub mod vobsub;

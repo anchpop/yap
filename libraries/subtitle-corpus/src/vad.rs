@@ -19,8 +19,8 @@ use anyhow::{bail, Context, Result};
 use crate::sync::Cue;
 
 /// earshot's native frame: 256 samples at 16 kHz, i.e. 16 ms.
-const FRAME: usize = 256;
-const SAMPLE_RATE: usize = 16_000;
+pub const FRAME: usize = 256;
+pub const SAMPLE_RATE: usize = 16_000;
 /// Frames per bucket. Six is ~96 ms — fine enough for an offset (a cue lasts
 /// seconds) and six times cheaper to search than the raw frame rate. This is a
 /// *read-time* view now: the persisted profile keeps earshot's native 16 ms

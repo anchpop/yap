@@ -235,6 +235,67 @@ enum Command_ {
     /// Score how well a subtitle's timing agrees with where speech actually is.
     ///
     /// Reports the shift that best matches, so a subtitle already believed
+    /// Build earshot's 16 ms speech profile for every film with extracted
+    /// audio (`speech-profile-16ms.f32` beside it).
+    ///
+    /// The profile used to be computed only when a syncer asked for one, so
+    /// finished films — the ones clip cutting works on — never got the fine
+    /// version and kept their retired 96 ms file. Films with a current
+    /// profile are skipped, so a refresh only pays for new audio.
+    SpeechProfiles {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Films profiled at once (each is one ffmpeg decode).
+        #[arg(long, default_value_t = 6)]
+        jobs: usize,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+    },
+    /// Judge every transcribed film's subtitle against what is actually
+    /// said, and replace the ones that fail.
+    ///
+    /// Sync gates only ask *when*; this asks *what*. A rewrite into another
+    /// variety, a condensed SDH track or a paraphrasing fansub can be
+    /// perfectly timed and still place almost none of its sentences in the
+    /// transcript — and then it is not a source of sentences for this audio.
+    /// Verdicts go to `transcript-check.json` beside each film; `clips` maps
+    /// only films judged verbatim. A verbatim subtitle on another clock is
+    /// re-timed in place (unless it came off the disc, where the *audio* is
+    /// then the suspect). For the rest, every other subtitle already on
+    /// hand for the film is measured the same way, then OpenSubtitles is
+    /// asked for more (spending at most `--max-downloads`), and the best
+    /// one that clears the bar is adopted as the film's subtitle.
+    TranscriptCheck {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        #[arg(long, default_value = "./generate-data/data")]
+        data_root: PathBuf,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// One film only, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+        /// Least share of eligible sentences that must place for a subtitle
+        /// to count as verbatim. Default: the per-language bar
+        /// (`verbatim::min_fraction`).
+        #[arg(long)]
+        min_verbatim: Option<f64>,
+        /// Only report; never re-time, download or adopt anything.
+        #[arg(long)]
+        dry_run: bool,
+        /// Most OpenSubtitles downloads to spend this run (0 = none; local
+        /// candidates are still tried).
+        #[arg(long, default_value_t = 0)]
+        max_downloads: usize,
+        /// Most candidates to download per film.
+        #[arg(long, default_value_t = 3)]
+        max_candidates: usize,
+    },
+    /// Score how well a subtitle's timing agrees with where speech actually is.
+    ///
+    /// Reports the shift that best matches, so a subtitle already believed
     /// correct should score near zero. Run it on the disc-sourced ones to test
     /// that belief.
     Agreement {
@@ -518,11 +579,27 @@ const SIDECAR_UNTRUSTED: &[&str] = &[
     "tt6788942", // Bad Genius (2017) — +5s
 ];
 
-fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+/// A subtitle `transcript-check` chose over the plan's source, kept beside
+/// the film's output. Present, it *is* the film's subtitle source: every
+/// resolver answers it first, and the stamp records it, so `inventory`
+/// neither evicts it as a stranger nor re-extracts the track it replaced.
+fn adopted_subtitle(dir: &std::path::Path) -> Option<PathBuf> {
+    let path = dir.join("adopted.srt");
+    path.exists().then_some(path)
+}
+
+fn subtitle_source(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+) -> Option<PathBuf> {
     // A film with no original-language audio can never yield a speech clip,
     // so aligning a subtitle for it is work spent making a number wrong.
     if matches!(movie.source, Source::NoOriginalAudio) {
         return None;
+    }
+    if let Some(adopted) = adopted_subtitle(dir) {
+        return Some(adopted);
     }
     if DIFFERENT_CUT.contains(&movie.imdb_id.as_str()) {
         return None;
@@ -589,10 +666,17 @@ fn read_stamp(dir: &std::path::Path) -> Option<FilmStamp> {
 
 /// The subtitle file the film's output *should* currently derive from, or
 /// None for disc-sourced films (their source is the video itself).
-fn expected_subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+fn expected_subtitle_source(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+) -> Option<PathBuf> {
+    if let Some(adopted) = adopted_subtitle(dir) {
+        return Some(adopted);
+    }
     match &movie.source {
         Source::DiscText { .. } | Source::DiscBitmap { .. } => None,
-        _ => subtitle_source(movie, data_root),
+        _ => subtitle_source(movie, dir, data_root),
     }
 }
 
@@ -824,7 +908,7 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
     let Some(old) = read_stamp(&dir) else {
         // Legacy output predating stamps: it was verified against what is on
         // disk today, so record today's inputs as its provenance.
-        match expected_subtitle_source(movie, data_root) {
+        match expected_subtitle_source(movie, &dir, data_root) {
             Some(p) => write_stamp(&dir, movie, StampSource::File(&p)),
             None => write_stamp(&dir, movie, StampSource::Disc),
         }
@@ -840,12 +924,14 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("audio.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
         let _ = std::fs::remove_file(dir.join("sync-failed.json"));
+        let _ = std::fs::remove_file(dir.join("adopted.srt"));
+        let _ = std::fs::remove_file(subtitle_corpus::verbatim::report_path(&dir));
         return Freshness::Evicted {
             why: format!("film changed ({} → {})", old.filename, current.filename),
         };
     }
     // Video unchanged; is the subtitle still derived from the right source?
-    let expected_path = expected_subtitle_source(movie, data_root);
+    let expected_path = expected_subtitle_source(movie, &dir, data_root);
     let expected = expected_path.as_deref().and_then(subtitle_stamp);
     match (&old.subtitle, &expected) {
         (a, b) if a == b => Freshness::Fine,
@@ -1085,6 +1171,10 @@ fn refresh(
                 }
             })
         }),
+        ("speech-profiles", {
+            let out = out.clone();
+            Box::new(move || speech_profiles(out, 6, 0))
+        }),
         ("text-sync", {
             let (out, data_root) = (out.clone(), data_root.clone());
             Box::new(move || text_sync(out, data_root, 4, 0, 300, 0.25, 0.10, false))
@@ -1127,6 +1217,10 @@ fn refresh(
                     Ok(())
                 }
             })
+        }),
+        ("transcript-check", {
+            let (out, data_root) = (out.clone(), data_root.clone());
+            Box::new(move || transcript_check(out, data_root, 0, None, None, false, 10, 3))
         }),
         ("clips", {
             let out = out.clone();
@@ -1386,6 +1480,56 @@ fn extract_audio(out: PathBuf, jobs: usize, limit: usize, imdb: Option<&str>) ->
     }
     println!(
         "\n{extracted} tracks extracted, {current} already current, {no_stream} with no original-language stream"
+    );
+    Ok(())
+}
+
+/// Build the fine speech profile for every film with extracted audio; see
+/// `Command_::SpeechProfiles`.
+fn speech_profiles(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
+    let plan = read_plan(&out)?;
+    let mut todo: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            extracted_audio(m, &dir).is_some()
+                && vad::read_profile(&dir.join("speech-profile-16ms.f32")).is_none()
+        })
+        .collect();
+    if limit > 0 {
+        todo.truncate(limit);
+    }
+    println!(
+        "{} films with audio and no 16 ms speech profile",
+        todo.len()
+    );
+    if todo.is_empty() {
+        return Ok(());
+    }
+
+    let results = parallel(todo, jobs, "profiling speech", |m| {
+        let dir = out.join(&m.imdb_id);
+        let r = fine_speech_profile(m, &dir).map(|p| p.len());
+        if let Ok(frames) = &r {
+            // The retired coarse file has nothing the fine one lacks.
+            let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
+            println!(
+                "  {} ✓ {:.0} min profiled",
+                truncate(&m.title, 40),
+                *frames as f64 * vad::FRAME as f64 / 16_000.0 / 60.0
+            );
+        }
+        (m.imdb_id.clone(), m.title.clone(), r)
+    });
+    let failed = results.iter().filter(|(_, _, r)| r.is_err()).count();
+    for (imdb, title, r) in &results {
+        if let Err(e) = r {
+            println!("  ✗ {imdb} {}: {e:#}", truncate(title, 40));
+        }
+    }
+    println!(
+        "\n{} profiles written, {failed} failed",
+        results.len() - failed
     );
     Ok(())
 }
@@ -1753,7 +1897,7 @@ async fn sync_all(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -2394,6 +2538,354 @@ async fn transcribe_all(
     Ok(())
 }
 
+/// Judge every transcribed film's subtitle against its transcript, re-time
+/// the skewed ones and replace the paraphrased ones where a better
+/// candidate can be found. See `Command_::TranscriptCheck`.
+#[allow(clippy::too_many_arguments)]
+#[tokio::main]
+async fn transcript_check(
+    out: PathBuf,
+    data_root: PathBuf,
+    limit: usize,
+    imdb: Option<String>,
+    min_verbatim: Option<f64>,
+    dry_run: bool,
+    max_downloads: usize,
+    max_candidates: usize,
+) -> Result<()> {
+    use subtitle_corpus::verbatim::{self, Verdict};
+
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.as_deref().is_none_or(|id| m.imdb_id == id))
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            dir.join("subtitle.srt").exists() && dir.join("transcript.jsonl").exists()
+        })
+        .collect();
+    // The measure is the clip mapper's own placement test, calibrated on
+    // the languages it maps; for the rest (character-tokenized scripts
+    // without a phoneme gate) it has no ground truth and `clips` would not
+    // act on the verdict anyway.
+    let ungated = queue.len();
+    queue.retain(|m| {
+        library::course_dir(&m.original_language)
+            .is_some_and(|c| subtitle_corpus::clips::default_min_ratio(c).is_some())
+    });
+    let ungated = ungated - queue.len();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!("{total} transcribed films to judge ({ungated} in languages without a phoneme gate left alone)");
+
+    let client = if !dry_run && max_downloads > 0 {
+        match opensubtitles_client().await {
+            Ok(c) => Some(c),
+            Err(e) => {
+                println!("  OpenSubtitles unavailable, local candidates only: {e:#}");
+                None
+            }
+        }
+    } else {
+        None
+    };
+    let mut downloads_left = if client.is_some() { max_downloads } else { 0 };
+
+    let mut counts: std::collections::BTreeMap<&str, usize> = Default::default();
+    let (mut retimed, mut adopted, mut failed) = (0usize, 0usize, 0usize);
+    for (n, movie) in queue.iter().enumerate() {
+        let n = n + 1;
+        let dir = out.join(&movie.imdb_id);
+        let title = truncate(&movie.title, 34);
+        let (Some(code), Some(language)) = (
+            library::course_dir(&movie.original_language),
+            library::course_dir(&movie.original_language)
+                .and_then(language_utils::Language::from_code),
+        ) else {
+            println!("[{n}/{total}] {title} ✗ unmapped language");
+            failed += 1;
+            continue;
+        };
+        let min_verbatim = min_verbatim.unwrap_or_else(|| verbatim::min_fraction(code));
+        let mut report = match verbatim::check(&dir, language, code, min_verbatim) {
+            Ok(r) => r,
+            Err(e) => {
+                println!("[{n}/{total}] {title} ✗ {e:#}");
+                failed += 1;
+                continue;
+            }
+        };
+        let mut note = String::new();
+        let disc = matches!(
+            movie.source,
+            Source::DiscText { .. } | Source::DiscBitmap { .. }
+        );
+        if report.measure.verdict == Verdict::Skewed && !dry_run {
+            if disc {
+                // Authored to this very file: if it reads as skewed, the
+                // transcript's clock (the audio extraction) is what moved.
+                note.push_str(
+                    " — disc track on another clock: audio extraction suspect, not re-timed",
+                );
+            } else if let Some(fit) = report.measure.aligned.as_ref() {
+                // The verdict already vouches for the fit: the sentences
+                // place under it. A worst-anchor residual is no extra test
+                // — PAL-rate fits carry 1.5–2 s tails on hundreds of good
+                // anchors and still place 55–65% of the film.
+                let srt = std::fs::read_to_string(dir.join("subtitle.srt"))?;
+                std::fs::write(dir.join("subtitle.srt"), verbatim::retime(&srt, fit))?;
+                write_stamp(&dir, movie, StampSource::Keep);
+                let _ = std::fs::remove_file(subtitle_corpus::clips::clips_path(&dir));
+                note.push_str(&format!(" — re-timed {:+.1}s", fit.offset_ms / 1000.0));
+                retimed += 1;
+                report = verbatim::check(&dir, language, code, min_verbatim)?;
+            }
+        }
+        if matches!(
+            report.measure.verdict,
+            Verdict::Paraphrase | Verdict::Skewed
+        ) && !dry_run
+        {
+            println!(
+                "[{n}/{total}] {title}: {} — trying other subtitles",
+                verbatim::describe(&report.measure)
+            );
+            match adopt_candidate(
+                movie,
+                &dir,
+                &data_root,
+                language,
+                code,
+                min_verbatim,
+                report.measure.best_placed(),
+                client.as_ref(),
+                &mut downloads_left,
+                max_candidates,
+            )
+            .await
+            {
+                Ok(Some(label)) => {
+                    adopted += 1;
+                    note.push_str(&format!(" — adopted {label}"));
+                    report = verbatim::check(&dir, language, code, min_verbatim)?;
+                }
+                Ok(None) => note.push_str(" — no better candidate"),
+                Err(e) => note.push_str(&format!(" — candidates: {e:#}")),
+            }
+        }
+        *counts.entry(report.measure.verdict.label()).or_default() += 1;
+        let mark = if report.measure.verdict == Verdict::Verbatim {
+            "✓"
+        } else {
+            "✗"
+        };
+        println!(
+            "[{n}/{total}] {title} {mark} {} [{}]{note}",
+            verbatim::describe(&report.measure),
+            movie.source.label()
+        );
+    }
+
+    println!();
+    for (verdict, n) in &counts {
+        println!("  {verdict:12}{n:>5}");
+    }
+    println!(
+        "{retimed} re-timed, {adopted} replaced by a better subtitle, {failed} could not be judged"
+    );
+    if let Some(n) = counts.get("paraphrase").filter(|n| **n > 0) {
+        println!(
+            "{n} films keep a subtitle that is not what is said; `clips` skips them. \
+             Re-run with --max-downloads to try more OpenSubtitles candidates."
+        );
+    }
+    Ok(())
+}
+
+async fn opensubtitles_client() -> Result<opensubtitles_downloader::OpenSubtitlesClient> {
+    let api_key =
+        std::env::var("OPENSUBTITLES_API_KEY").context("OPENSUBTITLES_API_KEY not set")?;
+    let mut client = opensubtitles_downloader::OpenSubtitlesClient::new(api_key);
+    if let (Ok(user), Ok(password)) = (
+        std::env::var("OPENSUBTITLES_USERNAME"),
+        std::env::var("OPENSUBTITLES_PASSWORD"),
+    ) {
+        client
+            .login(&user, &password)
+            .await
+            .context("OpenSubtitles login")?;
+    }
+    Ok(client)
+}
+
+/// Download up to `max_candidates` subtitles for the film that are not
+/// already under `saved`, within the run's remaining budget. Every download
+/// is kept: it cost quota, and a later re-check should not pay again.
+async fn fetch_candidates(
+    client: &opensubtitles_downloader::OpenSubtitlesClient,
+    movie: &Movie,
+    language: language_utils::Language,
+    saved: &std::path::Path,
+    downloads_left: &mut usize,
+    max_candidates: usize,
+) -> Result<()> {
+    use opensubtitles_downloader::{rank_by_quality, Throttled};
+
+    let imdb_num: u64 = movie
+        .imdb_id
+        .strip_prefix("tt")
+        .unwrap_or(&movie.imdb_id)
+        .parse()
+        .with_context(|| format!("bad IMDb id {}", movie.imdb_id))?;
+    let mut results = client
+        .search_subtitles_for_movie(imdb_num, language.opensubtitles_language_code())
+        .await
+        .context("OpenSubtitles search")?;
+    results.retain(|s| !s.attributes.ai_translated && !s.attributes.machine_translated);
+    rank_by_quality(&mut results);
+    std::fs::create_dir_all(saved)?;
+    let unseen = results
+        .iter()
+        .filter_map(|r| r.attributes.files.first())
+        .filter(|f| !saved.join(format!("{}.srt", f.file_id)).exists())
+        .count();
+    println!(
+        "      OpenSubtitles ({}): {} human-made candidates, {unseen} not yet fetched",
+        language.opensubtitles_language_code(),
+        results.len()
+    );
+
+    let mut fetched = 0usize;
+    for result in &results {
+        if fetched >= max_candidates || *downloads_left == 0 {
+            break;
+        }
+        let Some(file_id) = result.attributes.files.first().map(|f| f.file_id) else {
+            continue;
+        };
+        let path = saved.join(format!("{file_id}.srt"));
+        if path.exists() {
+            continue;
+        }
+        match client.download_subtitle(file_id).await {
+            Ok(srt) => {
+                std::fs::write(&path, srt)?;
+                fetched += 1;
+                *downloads_left -= 1;
+            }
+            Err(e) => match e.downcast_ref::<Throttled>() {
+                Some(Throttled::QuotaExhausted) => {
+                    println!("      OpenSubtitles quota exhausted; no more downloads this run");
+                    *downloads_left = 0;
+                }
+                Some(Throttled::TooManyRequests) => {
+                    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                }
+                None => return Err(e.context("OpenSubtitles download")),
+            },
+        }
+    }
+    Ok(())
+}
+
+/// Measure every other subtitle on hand for the film — the course's
+/// downloaded SRT and its recovery near-miss, a sidecar beside the video,
+/// anything fetched earlier, plus fresh OpenSubtitles candidates while the
+/// budget lasts — and install the best one that clears the bar and beats
+/// `to_beat`. Returns what was adopted.
+#[allow(clippy::too_many_arguments)]
+async fn adopt_candidate(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+    language: language_utils::Language,
+    code: &str,
+    min_verbatim: f64,
+    to_beat: usize,
+    client: Option<&opensubtitles_downloader::OpenSubtitlesClient>,
+    downloads_left: &mut usize,
+    max_candidates: usize,
+) -> Result<Option<String>> {
+    use subtitle_corpus::verbatim::{self, Verdict};
+
+    let mut candidates: Vec<(String, PathBuf)> = Vec::new();
+    if let Some(course) = library::course_dir(&movie.original_language) {
+        let movies = data_root.join(course).join("sentence-sources/movies");
+        for (label, sub) in [
+            ("course download", "subtitles-raw"),
+            ("recovery near-miss", "subtitles-unmatched"),
+        ] {
+            let path = movies.join(sub).join(format!("{}.srt", movie.imdb_id));
+            if path.exists() {
+                candidates.push((label.to_string(), path));
+            }
+        }
+    }
+    if let Some(path) =
+        library::sidecar(&movie.path, library::stream_codes(&movie.original_language))
+    {
+        candidates.push(("sidecar".to_string(), path));
+    }
+    let saved = dir.join("candidates");
+    if let Some(client) = client {
+        if *downloads_left > 0 {
+            if let Err(e) = fetch_candidates(
+                client,
+                movie,
+                language,
+                &saved,
+                downloads_left,
+                max_candidates,
+            )
+            .await
+            {
+                println!("      {e:#}");
+            }
+        }
+    }
+    for entry in std::fs::read_dir(&saved).into_iter().flatten().flatten() {
+        let path = entry.path();
+        if path.extension().is_some_and(|e| e == "srt") {
+            let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned());
+            candidates.push((format!("opensubtitles {}", stem.unwrap_or_default()), path));
+        }
+    }
+    if candidates.is_empty() {
+        return Ok(None);
+    }
+
+    let transcript = subtitle_corpus::cues::load_transcript(&dir.join("transcript.jsonl"))?;
+    let mut best: Option<(String, String, verbatim::Measure)> = None;
+    for (label, path) in candidates {
+        let text = String::from_utf8_lossy(&std::fs::read(&path)?).into_owned();
+        let measure = verbatim::measure(&text, &transcript, language, code, min_verbatim)?;
+        println!("      {label:24} {}", verbatim::describe(&measure));
+        let bar = best.as_ref().map_or(to_beat, |b| b.2.best_placed());
+        if matches!(measure.verdict, Verdict::Verbatim | Verdict::Skewed)
+            && measure.best_placed() > bar
+        {
+            best = Some((label, text, measure));
+        }
+    }
+    let Some((label, text, measure)) = best else {
+        return Ok(None);
+    };
+
+    let adopted = dir.join("adopted.srt");
+    std::fs::write(&adopted, &text)?;
+    let timed = match &measure.aligned {
+        Some(fit) if fit.fraction > measure.fraction => verbatim::retime(&text, fit),
+        _ => sync::write_cues(&sync::parse_cues(&text)),
+    };
+    std::fs::write(dir.join("subtitle.srt"), timed)?;
+    write_stamp(dir, movie, StampSource::File(&adopted));
+    let _ = std::fs::remove_file(subtitle_corpus::clips::clips_path(dir));
+    let _ = std::fs::remove_file(verbatim::report_path(dir));
+    Ok(Some(label))
+}
+
 #[tokio::main]
 async fn clips(
     out: PathBuf,
@@ -2674,7 +3166,7 @@ fn vad_sync(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -2839,7 +3331,7 @@ fn text_sync(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -3449,6 +3941,26 @@ fn main() -> Result<()> {
             limit,
             imdb,
         } => transcribe_all(out, films_in_flight, limit, imdb),
+        Command_::SpeechProfiles { out, jobs, limit } => speech_profiles(out, jobs, limit),
+        Command_::TranscriptCheck {
+            out,
+            data_root,
+            limit,
+            imdb,
+            min_verbatim,
+            dry_run,
+            max_downloads,
+            max_candidates,
+        } => transcript_check(
+            out,
+            data_root,
+            limit,
+            imdb,
+            min_verbatim,
+            dry_run,
+            max_downloads,
+            max_candidates,
+        ),
         Command_::Agreement {
             out,
             tier,
