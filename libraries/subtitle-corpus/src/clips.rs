@@ -56,7 +56,7 @@ use crate::transcript::{Kind, Spoken};
 
 /// Bump when the record format or the gating logic changes in a way that
 /// makes existing `clips.jsonl` files not comparable.
-const FORMAT_VERSION: u32 = 9;
+const FORMAT_VERSION: u32 = 10;
 
 /// How late earshot flags speech after it begins. Measured 2026-09-02 on
 /// four films: with the profile allowed to trim inside the stamped words
@@ -500,13 +500,23 @@ pub fn place(
     let audio_event_overlap = transcript
         .iter()
         .any(|w| w.kind == Kind::AudioEvent && w.at_ms < end_ms && w.until_ms > start_ms);
+    // The nearest *spoken* neighbour on each side. For the character-
+    // tokenized languages the transcript emits punctuation as its own
+    // zero-length word sharing the previous word's stamps ("。" ending
+    // exactly where the sentence ends), which as a neighbour would leave
+    // the silence search no window at all — every Japanese sentence then
+    // read as "too close" while the profile held a second of quiet.
+    let spoken =
+        |w: &&Spoken| w.kind == Kind::Word && !agreement_tokens(&w.text, tokenization).is_empty();
     let prev = transcript[..first_idx]
         .iter()
         .rev()
-        .find(|w| w.kind == Kind::Word);
+        .filter(spoken)
+        .find(|w| w.at_ms < start_ms);
     let next = transcript[last_idx + 1..]
         .iter()
-        .find(|w| w.kind == Kind::Word);
+        .filter(spoken)
+        .find(|w| w.until_ms > end_ms);
     let before = prev.map_or(i64::MAX, |w| start_ms - w.until_ms);
     let after = next.map_or(i64::MAX, |w| w.at_ms - end_ms);
     let mut speakers: Vec<&str> = span.iter().filter_map(|w| w.speaker.as_deref()).collect();
