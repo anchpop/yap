@@ -74,7 +74,10 @@ export default defineConfig({
         globIgnores: ['**/d/**', '**/blog/**'],
         importScripts: [],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024, // 4 MiB to cover the current WASM bundle
-        navigateFallbackDenylist: [/^\/d\//, /^\/blog\//, /^\/sitemap/, /^\/robots\.txt/],
+        // Match the bare path as well as the trailing-slash form: /blog and /d
+        // are real server-rendered pages, and without the $ alternative the
+        // service worker served the SPA shell for them, which 404s.
+        navigateFallbackDenylist: [/^\/d(\/|$)/, /^\/blog(\/|$)/, /^\/sitemap/, /^\/robots\.txt/],
       },
       manifest: {
         name: 'Yap.Town',
