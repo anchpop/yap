@@ -37,8 +37,10 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
+# `no-batch` was on from 2026-08-30 (every batch failed validation
+# account-side) to 2026-09-03, when a standalone probe showed the Batch API
+# healthy again. `YAP_NO_BATCH=1` remains the runtime escape hatch.
 tysm = { git = "https://github.com/anchpop/tysm.git", rev = "2c12d98cf1348434c4e872f462c6629729884e12", features = [
-    "no-batch",
     "small-batch-optimization",
 ] }
 # Local-first KV cache store synced to R2 (github.com/anchpop/osmo). All of
