@@ -49,6 +49,7 @@ COPY libraries/autograde-core libraries/autograde-core
 # all of it to the registry each deploy.
 RUN cargo build --release --bin ai-backend \
     && cp target/release/ai-backend /app/ai-backend \
+    && cp -r "$(find /usr/local/cargo/git/checkouts -type d -path '*/g2p-*/*/python' | head -1)" /app/g2p-python \
     && rm -rf target
 
 # Runtime stage with required libraries.
@@ -66,5 +67,18 @@ RUN apt-get update && apt-get install -y \
 
 # No espeak install: the engine and its data are inside the binary (g2p
 # unpacks the data into $HOME/.cache on first use).
+#
+# Thai and Korean G2P are Python inside the g2p crate: pinned uv projects it
+# unpacks beside its data and runs with `uv run --locked`. Without uv those
+# two languages lose their readable-IPA line (the crate reports the backend
+# as unavailable and the grader continues without it). Install uv and warm
+# its cache with the managed Python and every wheel the two lockfiles pin,
+# so the crate's first call builds its environment from the cache in well
+# under a second and never needs the network. Same $HOME as at runtime.
+COPY --from=ghcr.io/astral-sh/uv:0.10.2 /uv /usr/local/bin/uv
+COPY --from=builder /app/g2p-python /opt/g2p-python
+RUN uv python install 3.13 \
+    && for p in thai korean; do uv sync --locked --project /opt/g2p-python/$p; done \
+    && rm -rf /opt/g2p-python/*/.venv
 COPY --from=builder /app/ai-backend /usr/local/bin/ai-backend
 ENTRYPOINT ["/usr/local/bin/ai-backend"]

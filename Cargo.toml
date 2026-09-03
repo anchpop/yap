@@ -56,7 +56,7 @@ fetch-happen = { git = "https://github.com/anchpop/fetch-happen", rev = "879d0fa
 # shared with lexide. The rev pins which espeak build's phonemes we score
 # against; it must match the labels the deployed pronunciation model was
 # trained on. Needs cmake + a C compiler to build.
-g2p = { git = "https://github.com/anchpop/g2p", rev = "92785064f67732c2d2ba236164eaf64bd921fae3" }
+g2p = { git = "https://github.com/anchpop/g2p", rev = "3ae99aa1d12dd23962bef1882cfaba57a95d98bd" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
 indexmap = { version = "2" }
 chrono = "0.4.44"

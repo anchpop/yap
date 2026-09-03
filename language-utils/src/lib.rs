@@ -3046,19 +3046,21 @@ impl Language {
             // Traditional-script Mandarin has no corpus of its own; the
             // model never saw it, so there is no label source to name.
             Language::ChineseTraditional => PhonemeLabelSource::Unvalidated,
-            // lexide labels Korean from espeak `ko`, but that output has
-            // never been checked against a ground-truth Korean corpus.
-            // Unvalidated rather than Espeak: refusing to score is honest,
-            // scoring against an unchecked reference is not.
+            // The g2p crate labels Korean (g2pk2 + mecab-ko, 2026-09-03
+            // audit: 95.6% of Wiktionary words; espeak `ko` 47%), but the
+            // deployed model has never been trained on Korean — lexide has
+            // no Korean audio yet. Unvalidated until a model trained on the
+            // g2p-kor labels ships: refusing to score is honest, scoring
+            // against a model that never heard the language is not.
             Language::Korean => PhonemeLabelSource::Unvalidated,
         }
     }
 
     /// The language code to hand `g2p::phonemize_lang`, but **only** for
-    /// languages whose model labels the g2p crate produces (espeak-labeled
-    /// ones and Hindi). `None` for the Python-backend and unvalidated
-    /// languages, so a caller that reaches for a target on Japanese or
-    /// Korean gets nothing rather than a plausible-looking wrong answer.
+    /// languages whose deployed-model labels the g2p crate produces. `None`
+    /// for the unvalidated languages (Korean, Traditional Mandarin), so a
+    /// caller that reaches for a target there gets nothing rather than a
+    /// plausible-looking wrong answer.
     pub fn g2p_lang(&self) -> Option<&'static str> {
         self.phoneme_label_source()
             .g2p_supported()
