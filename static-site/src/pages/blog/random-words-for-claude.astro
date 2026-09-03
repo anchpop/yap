@@ -1,0 +1,113 @@
+---
+export const prerender = true;
+
+import Layout from '../../layouts/Layout.astro';
+import Author from '../../components/Author.astro';
+
+// Real output of `curl -s https://yap.town/grams/english.txt | sort -R | head -32`.
+const examples: [string, string][] = [
+  ['a favor', 'Could I ask you a favor?'],
+  ['the person who', 'Show me the person who is in love with you.'],
+  ['your answer', 'Your answer is wrong.'],
+  ['he was always', 'In rain, in wind, in snow, he was always there.'],
+  ['the table', 'Nobody wanted to get up from the table.'],
+  ['tore', 'You tore your pants.'],
+  ['have you already finished', 'Have you already finished your studies?'],
+  ['a member of', 'I accept her as a member of the Demon Slayer Corps.'],
+  ['will outlive us all', 'You will outlive us all.'],
+  ['crowded', 'The bus was very crowded.'],
+  ['right-handed', 'I am right-handed.'],
+  ['on and off', 'Little lights were blinking on and off in the distance.'],
+  ['Majesty', 'By order of His Majesty!'],
+  ['creative', 'Chess is a battle between two creative minds.'],
+  ['a loud voice', 'He has a loud voice.'],
+  ['scar', 'It is an accident scar.'],
+  ['tap', 'My nose is running like a tap.'],
+  ['statement', 'And no official statement is made.'],
+  ['this room is', 'This room is pleasant to work in.'],
+  ['comfortably', 'We were sitting comfortably.'],
+  ['this information', 'Are you sure this information is reliable?'],
+  ['I wanted to see', 'I wanted to see her.'],
+  ['I want you to', 'I want you to stop this immediately.'],
+  ['image', 'When we blow up an image, it usually loses its quality.'],
+  ['exiled', 'He was exiled to Sardinia.'],
+  ['the carriage', 'The carriage sets off, And the platform stays behind.'],
+  ['did you score', 'How many points did you score?'],
+  ['do you still', 'Do you still live at the same address?'],
+  ['I may', 'I may die tomorrow.'],
+  ['there was a big', 'Last night there was a big fire in the neighbourhood.'],
+  ['your arms', 'I feel safe in your arms.'],
+  ['nuclear war', 'We have to avoid the nuclear war by all means.']
+];
+---
+
+<Layout title="Random Words for Claude" description="Yap.Town's dictionary now publishes a plain-text list of every gram and an example sentence, in twelve languages, one curl away.">
+  <article class="prose prose-invert [&_code]:before:content-none [&_code]:after:content-none">
+    <h1 class="text-3xl font-bold mb-2">Random Words for Claude</h1>
+    <p class="text-sm text-muted-foreground mb-8">September 2, 2026</p>
+    <p>
+      <a href="https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world">Anshu Chimala pointed out</a> that LLMs are incapable of randomness. LLMs cannot really choose to do something "random" as each token is soley generated based on the ones preceeding it. This is part of why every LLM-designed website looks the same.
+    </p>
+    <p>
+      His solution was the following prompt:
+    </p>
+    <blockquote class="[&_p:first-of-type]:before:content-none [&_p:last-of-type]:after:content-none">
+      <p>I want you to build me a landing page for my productivity app.</p>
+      <p>Follow this procedure:</p>
+      <ol>
+        <li>Generate a long, random alphanumeric string using a shell script.</li>
+        <li>Define the creative direction (color scheme, layout, typography, etc.) based on the string. Look beyond the surface for subpatterns, special numbers, anything that inspires you.</li>
+        <li>Use your judgment to bring this direction to life and make it look great.</li>
+        <li>Don't reveal the string in the design. It's only for your inspiration.</li>
+      </ol>
+    </blockquote>
+    <p>
+      I liked this idea, but using a random alphanumeric string seems like it wouldn't give the LLM enough "randomness". I mean, there's a sense in which literally nothing could be more random, but there's another sense in which (almost) every random alphanumeric string looks like an unintelligible sequence of numbers and letters.
+    </p>
+    <p>
+      To give an LLM fresh ideas, I feel like you want something between total determinism and total randomness. I thought random sentences might work nicely, and of course due to Yap I have millions of random sentences. Use the following command to grab some:
+    </p>
+    <pre><code>curl -s https://yap.town/grams/english.txt | sort -R | head -32</code></pre>
+    <p>Here's an example output:</p>
+    <div class="not-prose my-6 overflow-x-auto rounded-lg border border-border">
+      <table class="w-full border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-border bg-secondary/50">
+            <th class="px-3 py-2 text-left font-semibold text-muted-foreground">Gram</th>
+            <th class="px-3 py-2 text-left font-semibold text-muted-foreground">Example sentence</th>
+          </tr>
+        </thead>
+        <tbody>
+          {examples.map(([gram, sentence]) => (
+            <tr class="border-b border-border/50 last:border-0">
+              <td class="px-3 py-1.5 align-top whitespace-nowrap font-mono text-card-foreground">{gram}</td>
+              <td class="px-3 py-1.5 align-top text-muted-foreground">{sentence}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>Of course, you can also use different languages. Change <code>english</code> to e.g. <code>italian</code> to get Italian words and sentences. Maybe this would be useful if you wanted to give an Italian sense of sprezzatura to your designs, or a French sense of romance, and so on!</p>
+    <p>Here's the prompt I use if you want to copy and paste:</p>
+    <div class="not-prose my-6 overflow-hidden rounded-lg border border-border bg-card">
+      <div class="flex items-center gap-1.5 border-b border-border px-3 py-2">
+        <span class="inline-block h-2.5 w-2.5 rounded-full bg-muted-foreground/30"></span>
+        <span class="inline-block h-2.5 w-2.5 rounded-full bg-muted-foreground/30"></span>
+        <span class="inline-block h-2.5 w-2.5 rounded-full bg-muted-foreground/30"></span>
+        <span class="ml-2 font-mono text-xs text-muted-foreground">claude</span>
+      </div>
+      <div class="space-y-4 p-4 font-mono text-sm leading-relaxed">
+        <div class="flex gap-2">
+          <span class="shrink-0 select-none text-accent-foreground">&gt;</span>
+          <span class="text-card-foreground">Run <span class="rounded bg-secondary px-1 py-0.5">curl -s https://yap.town/grams/english.txt | sort -R | head -32</span>. That will print some random words and sentences. Can you meditate on these for a while, and try to come up with interesting connections, special patterns, or anything that inspires you?</span>
+        </div>
+        <div class="text-muted-foreground italic">✻ Thinking&hellip;</div>
+        <div class="flex gap-2">
+          <span class="shrink-0 select-none text-accent-foreground">&gt;</span>
+          <span class="text-card-foreground">Beautiful. I want to make a landing page for my spaced repetition language learning flashcards app. Can you define the creative direction (color scheme, layout, typography, etc.) based on the above? Use your judgment to bring this direction to life and make it look great.</span>
+        </div>
+      </div>
+    </div>
+  </article>
+  <Author />
+</Layout>
