@@ -2667,13 +2667,11 @@ async fn transcript_check(
         })
         .collect();
     // The measure is the clip mapper's own placement test, calibrated on
-    // the languages it maps; for the rest (character-tokenized scripts
-    // without a phoneme gate) it has no ground truth and `clips` would not
-    // act on the verdict anyway.
+    // the languages it maps; for the rest it has no ground truth and
+    // `clips` would not act on the verdict anyway.
     let ungated = queue.len();
     queue.retain(|m| {
-        library::course_dir(&m.original_language)
-            .is_some_and(|c| subtitle_corpus::clips::default_min_ratio(c).is_some())
+        library::course_dir(&m.original_language).is_some_and(subtitle_corpus::clips::maps)
     });
     let ungated = ungated - queue.len();
     if limit > 0 {
