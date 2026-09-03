@@ -1,0 +1,4 @@
+{"sentence":"เพราะเหตุนี้","tokens":[{"text":{"text":"เพราะ"},"whitespace":"","pos":"SCONJ","lemma":{"lemma":"เพราะ"},"dep":"case","head":2},{"text":{"text":"เหตุ"},"whitespace":"","pos":"NOUN","lemma":{"lemma":"เหตุ"},"dep":"root","head":0},{"text":{"text":"นี้"},"whitespace":"","pos":"DET","lemma":{"lemma":"นี้"},"dep":"det","head":2}]}
+{"sentence":"หมายความว่า","tokens":[{"text":{"text":"หมายความว่า"},"whitespace":"","pos":"VERB","lemma":{"lemma":"หมายความว่า"},"dep":"root","head":0}]}
+{"sentence":"พ่อ","tokens":[{"text":{"text":"พ่อ"},"whitespace":"","pos":"NOUN","lemma":{"lemma":"พ่อ"},"dep":"root","head":0}]}
+{"sentence":"พี่","tokens":[{"text":{"text":"พี่"},"whitespace":"","pos":"NOUN","lemma":{"lemma":"พี่"},"dep":"root","head":0}]}

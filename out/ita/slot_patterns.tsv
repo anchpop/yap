@@ -1,0 +1,24 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+tirare fuori qualcosa	filled	119	12	12	1.00	yes		
+capitare a qualcuno	clitic	81	12	12	1.00	yes		
+fare del proprio meglio	clitic	79	12	12	1.00	yes		
+capitare a qualcuno	filled	60	9	12	0.75	yes	Cosa le è capitato a Boston?	capitato … a … Boston
+sangue del proprio sangue	clitic	51	0	12	0.00	no	Anche il mio sangue?	mio … sangue
+dalla propria parte	clitic	40	10	12	0.83	yes	Katherine, devo uscire dalla sua parte!	dalla … sua … parte
+fare la propria parte	clitic	16	12	12	1.00	yes		
+tirare fuori qualcosa	clitic	16	12	12	1.00	yes		
+dalla propria parte	filled	12	7	12	0.58	no	Dalla parte opposta della strada c'è una farmacia aperta anche la domenica.	Dalla … parte … strada
+fare la propria parte	filled	8	0	8	0.00	no	Diego, lei fa la parte del giovane passivo aggressivo.	fa … la … parte … giovane
+sangue del proprio sangue	filled	4	2	4	0.50	no	Dammi il sangue del vampiro!	sangue … del … vampiro
+sapere il fatto proprio	clitic	4	4	4	1.00	yes		
+aprire il proprio cuore	clitic	3	3	3	1.00	yes		
+a proprio giudizio	clitic	1	1	1	1.00	yes		
+a proprio rischio e pericolo	clitic	1	1	1	1.00	yes		
+andare per la propria strada	clitic	1	1	1	1.00	yes		
+dal canto proprio	clitic	1	1	1	1.00	yes		
+dal canto proprio	filled	1	1	1	1.00	yes		
+dire la propria	clitic	1	0	1	0.00	no	Lei era entusiasta al suo dire così.	suo … dire
+dire la propria	filled	1	0	1	0.00	no	E cosa hai detto di te?	detto … te
+fare i propri bisogni	clitic	1	1	1	1.00	yes		
+pane per i propri denti	clitic	1	1	1	1.00	yes		
+uscire dal proprio guscio	clitic	1	1	1	1.00	yes		

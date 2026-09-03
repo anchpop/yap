@@ -45,7 +45,7 @@ generate-data/data/tatoeba/links.csv filter=lfs diff=lfs merge=lfs -text
 .cache/google_translate/master_cache.json filter=lfs diff=lfs merge=lfs -text
 
 # Encrypted restricted sentence tokenization cache (derived from copyrighted sources)
-out/*/restricted_sentences_tokenization.jsonl filter=git-crypt diff=git-crypt
+out/*/restricted_sentences_tokenization.jsonl* filter=git-crypt diff=git-crypt
 
 # Encrypted movie subtitles (intentionally overrides LFS above) — the derived
 # JSONLs, the recovered raw SRTs, and the near-miss pile awaiting review alike:

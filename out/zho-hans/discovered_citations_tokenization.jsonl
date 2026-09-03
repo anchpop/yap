@@ -1,0 +1,2 @@
+{"sentence":"看这里","tokens":[{"text":{"text":"看"},"whitespace":"","pos":"VERB","lemma":{"lemma":"看"},"dep":"root","head":0},{"text":{"text":"这里"},"whitespace":"","pos":"PRON","lemma":{"lemma":"这里"},"dep":"obj","head":1}]}
+{"sentence":"觉得呢？","tokens":[{"text":{"text":"觉得"},"whitespace":"","pos":"VERB","lemma":{"lemma":"觉得"},"dep":"root","head":0},{"text":{"text":"呢"},"whitespace":"","pos":"PART","lemma":{"lemma":"呢"},"dep":"discourse","head":1},{"text":{"text":"？"},"whitespace":"","pos":"PUNCT","lemma":{"lemma":"？"},"dep":"punct","head":1}]}

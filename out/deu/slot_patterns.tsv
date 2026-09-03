@@ -1,0 +1,44 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+bei jemandem sein	filled	542	7	12	0.58	no	Die Leiche ist bei der dortigen Fischer-Kooperative.	ist … bei … Kooperative
+zeit jemandes Lebens	filled	267	1	12	0.08	no	Aber die Zeit mit diesen Jungs hat mir etwas klargemacht.	Zeit … Jungs
+jemandem Bescheid sagen	filled	69	12	12	1.00	yes		
+jemandem Bescheid sagen	clitic	58	12	12	1.00	yes		
+jemanden Bescheid geben	clitic	35	12	12	1.00	yes		
+jemanden mal können	filled	22	8	12	0.67	yes	Das kann doch verdammt noch mal nicht Ihr Ernst sein!	kann … mal … Ernst
+jemanden mal können	clitic	16	9	12	0.75	yes	Du kannst es ja nicht mal.	kannst … es … mal
+aus etwas Kapital schlagen	filled	14	1	12	0.08	no	Die Mädchen schlugen mir meine Bücher aus den Händen und lachten mich aus.	schlugen … aus … Händen
+jemandem über den Weg laufen	filled	14	12	12	1.00	yes		
+etwas im Schilde führen	filled	12	12	12	1.00	yes		
+jemanden am Arsch lecken	clitic	12	12	12	1.00	yes		
+jemanden am Arsch lecken	filled	12	12	12	1.00	yes		
+jemandem über den Weg laufen	clitic	10	10	10	1.00	yes		
+jemandem am Herzen liegen	clitic	8	8	8	1.00	yes		
+jemandem fehlen die Worte	clitic	8	8	8	1.00	yes		
+jemand in die Tasche stecken	filled	6	1	6	0.17	no	Die stecken sich das Geld selber in die Tasche.	stecken … sich … in … die … Tasche
+etwas im Zaum halten	filled	5	5	5	1.00	yes		
+ein Auge auf etwas werfen	filled	4	4	4	1.00	yes		
+jemandem zu schaffen machen	clitic	4	3	4	0.75	yes	Sie machte sich an einem Stück Papier zu schaffen.	machte … sich … zu … schaffen
+etwas am Hals haben	filled	3	3	3	1.00	yes		
+jemandem am Herzen liegen	filled	3	1	3	0.33	no	Mir liegt auch niemand sonst auf der ganzen Welt mehr am Herzen als du.	liegt … Welt … am … Herzen
+jemandem zur Seite stehen	clitic	3	3	3	1.00	yes		
+jemandem zur Seite stehen	filled	3	3	3	1.00	yes		
+auf etwas wetten	filled	2	2	2	1.00	yes		
+etwas für bare Münze nehmen	filled	2	2	2	1.00	yes		
+etwas in den Wind schlagen	filled	2	2	2	1.00	yes		
+jemand in die Tasche stecken	clitic	2	0	2	0.00	no	Die stecken sich das Geld selber in die Tasche.	stecken … sich … in … die … Tasche
+jemandem fehlen die Worte	filled	2	2	2	1.00	yes		
+jemandem zu nahe treten	clitic	2	2	2	1.00	yes		
+jemandem zu schaffen machen	filled	2	2	2	1.00	yes		
+nichts auf etwas geben	filled	2	0	2	0.00	no	Auf dem Markt gäbe es nichts von Wert.	Auf … Markt … gäbe … nichts
+was jemand nicht weiß, macht jemanden nicht heiß	filled	2	2	2	1.00	yes		
+etwas auf Eis legen	clitic	1	1	1	1.00	yes		
+etwas auf Eis legen	filled	1	1	1	1.00	yes		
+etwas im Keim ersticken	clitic	1	1	1	1.00	yes		
+etwas im Keim ersticken	filled	1	1	1	1.00	yes		
+etwas zu den Akten legen	filled	1	1	1	1.00	yes		
+etwas über die Bühne bringen	filled	1	1	1	1.00	yes		
+jemandem etwas aus der Nase ziehen	filled	1	1	1	1.00	yes		
+jemandem etwas zur Last legen	filled	1	1	1	1.00	yes		
+jemandem in den Arsch kriechen	filled	1	1	1	1.00	yes		
+jemandem stehen die Haare zu Berge	clitic	1	1	1	1.00	yes		
+jemanden Bescheid geben	filled	1	1	1	1.00	yes		

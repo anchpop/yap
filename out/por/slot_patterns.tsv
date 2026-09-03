@@ -1,0 +1,13 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+tirar algo	filled	1596	9	12	0.75	yes	A Farida que tirou carteira?	tirou … carteira
+tirar algo	clitic	127	12	12	1.00	yes		
+acontecer a alguém	clitic	49	12	12	1.00	yes		
+acontecer a alguém	filled	28	12	12	1.00	yes		
+são seus olhos	clitic	9	2	9	0.22	no	Antes me diz uma coisa, de que cor são meus olhos?	são … meus … olhos
+fazer a sua parte	clitic	8	8	8	1.00	yes		
+não é da sua conta	clitic	7	7	7	1.00	yes		
+à sua maneira	clitic	6	6	6	1.00	yes		
+fazer a sua parte	filled	5	4	5	0.80	yes	Deixe a tecnologia fazer a maior parte do trabalho.	fazer … a … parte … trabalho
+o gato comeu sua língua	clitic	3	3	3	1.00	yes		
+são seus olhos	filled	2	0	2	0.00	no	Os olhos dela são pequenos demais.	olhos … dela … são
+dar a sua opinião	filled	1	0	1	0.00	no	Que merda de dia, nada deu certo.	dia … deu
