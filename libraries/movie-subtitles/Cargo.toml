@@ -11,3 +11,5 @@ serde_json = { workspace = true }
 subparse = "0.7"
 lexide = { workspace = true }
 language-utils = { path = "../../language-utils" }
+schemars = { workspace = true }
+tysm = { workspace = true }

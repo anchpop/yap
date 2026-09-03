@@ -4,7 +4,8 @@ use std::path::PathBuf;
 use anyhow::Context;
 use language_utils::{Course, Language, SentenceSource};
 use movie_subtitles::SubtitleLine;
-use movie_subtitles::segment::SubtitleSegmenter;
+use movie_subtitles::segment::{RuleSegmenter, SubtitleSegmenter};
+use movie_subtitles::sentences::KeyedSentence;
 pub use movie_subtitles::sentences::{
     has_encoding_corruption, has_quote_apostrophe, is_proper_sentence, should_include_sentence,
 };
@@ -64,7 +65,7 @@ pub fn contains_xprotect_tripwire(s: &str) -> bool {
 /// This function collects sentences from all available sources (Anki, Tatoeba, manual, songs, movies)
 /// for a given course, split into app sentences and restricted sentences.
 /// It does not perform Google Translate translations and does not write to cache files.
-pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
+pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     let source_data_path = PathBuf::from(format!(
         "./generate-data/data/{}",
         course.target_language.code()
@@ -122,7 +123,7 @@ pub fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     });
 
     // Load movie sentences
-    let movie_sentences = load_movie_sentences(&source_data_path, course.target_language)?;
+    let movie_sentences = load_movie_sentences(&source_data_path, course.target_language).await?;
 
     // Load book sentences (translated + segmented book prose; see crate::books)
     let book_sentences = crate::books::load_book_sentences(&source_data_path)?;
@@ -301,7 +302,7 @@ fn load_manual_sentences(source_data_path: &std::path::Path) -> anyhow::Result<V
 }
 
 /// Load movie sentences from OpenSubtitles data
-fn load_movie_sentences(
+async fn load_movie_sentences(
     source_data_path: &std::path::Path,
     language: Language,
 ) -> anyhow::Result<Vec<(String, Option<String>, SentenceSource)>> {
@@ -329,11 +330,10 @@ fn load_movie_sentences(
         .collect::<anyhow::Result<_>>()?;
     let segmenter = SubtitleSegmenter::for_language(language)?;
 
-    // Segmentation is the expensive step (tens of seconds for a long film),
-    // so films are processed in parallel; results keep metadata order.
+    // Loading and the language check are per film and cheap; films are
+    // processed in parallel and results keep metadata order.
     use rayon::prelude::*;
-    type MovieSentences = Vec<(String, Option<String>, SentenceSource)>;
-    let per_movie: Vec<Option<(movie_subtitles::Source, MovieSentences)>> = movies
+    let loaded: Vec<Option<(movie_subtitles::Source, Vec<SubtitleLine>)>> = movies
         .par_iter()
         .map(|movie| {
             // Prefer the raw SRT and clean it here, in memory, so improvements to
@@ -351,15 +351,77 @@ fn load_movie_sentences(
                 );
                 return Ok(None);
             }
-
-            let sentences = filter_subtitle_sentences(&subtitles, &movie.id, language, &segmenter);
-            Ok(Some((source, sentences)))
+            Ok(Some((source, subtitles)))
         })
         .collect::<anyhow::Result<_>>()?;
+    let films: Vec<(
+        &language_utils::MovieMetadataBasic,
+        movie_subtitles::Source,
+        Vec<SubtitleLine>,
+    )> = movies
+        .iter()
+        .zip(loaded)
+        .filter_map(|(movie, loaded)| loaded.map(|(source, subtitles)| (movie, source, subtitles)))
+        .collect();
+
+    type MovieSentences = Vec<(String, Option<String>, SentenceSource)>;
+    let per_movie: Vec<(movie_subtitles::Source, MovieSentences)> = match &segmenter {
+        // Segmentation is the expensive step (tens of seconds for a long
+        // film), so films are segmented in parallel.
+        SubtitleSegmenter::Rules(rules) => films
+            .par_iter()
+            .map(|(movie, source, subtitles)| {
+                let keyed = movie_subtitles::sentences::keyed_sentences_by_rules(
+                    subtitles, language, rules,
+                );
+                (*source, attributed(keyed, &movie.id))
+            })
+            .collect(),
+        // One Batch API round trip for the whole course: every cue of every
+        // film is one request, answered from the cache after the first run.
+        SubtitleSegmenter::Llm(_) => {
+            let client = crate::apply_cache_only(movie_subtitles::llm_segment::client()?);
+            let prepared: Vec<Vec<SubtitleLine>> = films
+                .iter()
+                .map(|(_, _, subtitles)| movie_subtitles::sentences::prepared_lines(subtitles))
+                .collect();
+            let tracks: Vec<(&[SubtitleLine], Language)> =
+                prepared.iter().map(|p| (p.as_slice(), language)).collect();
+            let cues: usize = tracks.iter().map(|(t, _)| t.len()).sum();
+            println!(
+                "  segmenting {} films ({cues} cues) with {}",
+                films.len(),
+                movie_subtitles::llm_segment::MODEL
+            );
+            let (splits, report) = movie_subtitles::llm_segment::split_tracks(
+                &client,
+                &tracks,
+                movie_subtitles::llm_segment::print_progress(),
+            )
+            .await?;
+            if report.fallbacks > 0 {
+                println!(
+                    "  {} of {} cues fell back to per-cue segmentation",
+                    report.fallbacks, report.cues
+                );
+            }
+            films
+                .iter()
+                .zip(&prepared)
+                .zip(&splits)
+                .map(|(((movie, source, _), lines), splits)| {
+                    let keyed = movie_subtitles::sentences::keyed_sentences_from_splits(
+                        lines, splits, language,
+                    );
+                    (*source, attributed(keyed, &movie.id))
+                })
+                .collect()
+        }
+    };
 
     let mut all_movie_sentences = Vec::new();
     let (mut from_raw, mut from_derived) = (0usize, 0usize);
-    for (source, sentences) in per_movie.into_iter().flatten() {
+    for (source, sentences) in per_movie {
         match source {
             movie_subtitles::Source::RawSrt => from_raw += 1,
             movie_subtitles::Source::DerivedJsonl => from_derived += 1,
@@ -520,26 +582,41 @@ fn sanity_check_skip_markers(language: Language, movie_id: &str) -> Vec<&'static
 /// [`movie_subtitles::sentences::keyed_sentences`] — the same code the
 /// subtitle corpus's clip mapping runs, so a pack sentence and its clip
 /// agree byte-for-byte.
-pub fn subtitle_sentences(
+pub async fn subtitle_sentences(
     subtitles: &[SubtitleLine],
     language: Language,
     segmenter: &SubtitleSegmenter,
+) -> anyhow::Result<Vec<String>> {
+    Ok(course_sentences(
+        movie_subtitles::sentences::keyed_sentences(subtitles, language, segmenter).await?,
+    ))
+}
+
+/// [`subtitle_sentences`] for a language segmented by rules.
+pub fn subtitle_sentences_by_rules(
+    subtitles: &[SubtitleLine],
+    language: Language,
+    segmenter: &RuleSegmenter,
 ) -> Vec<String> {
-    movie_subtitles::sentences::keyed_sentences(subtitles, language, segmenter)
+    course_sentences(movie_subtitles::sentences::keyed_sentences_by_rules(
+        subtitles, language, segmenter,
+    ))
+}
+
+fn course_sentences(keyed: Vec<KeyedSentence>) -> Vec<String> {
+    keyed
         .into_iter()
         .filter(|s| s.course_worthy)
         .map(|s| s.sentence)
         .collect()
 }
 
-/// Sentences from one movie's subtitle track, tagged with the movie as source.
-fn filter_subtitle_sentences(
-    subtitles: &[SubtitleLine],
+/// A track's course-worthy sentences, tagged with the movie as source.
+fn attributed(
+    keyed: Vec<KeyedSentence>,
     movie_id: &str,
-    language: Language,
-    segmenter: &SubtitleSegmenter,
 ) -> Vec<(String, Option<String>, SentenceSource)> {
-    subtitle_sentences(subtitles, language, segmenter)
+    course_sentences(keyed)
         .into_iter()
         .map(|sentence| {
             let mut source = SentenceSource::none();
@@ -597,14 +674,18 @@ mod tests {
             eprintln!("no segmenter weights in LEXIDE_MODEL_DIR; skipping");
             return;
         }
-        let segmenter = SubtitleSegmenter::for_language(Language::French).unwrap();
+        let SubtitleSegmenter::Rules(segmenter) =
+            SubtitleSegmenter::for_language(Language::French).unwrap()
+        else {
+            panic!("French is segmented by rules")
+        };
         let cues = [
             cue("On va la dépecer vive ! Lui arracher la langue !", 0, 2_000),
             cue("M. Godefroy ! Vous voilà.", 2_100, 3_000),
             cue("- Où est mon Daniel ? - Il est là.", 3_100, 4_000),
         ];
         assert_eq!(
-            subtitle_sentences(&cues, Language::French, &segmenter),
+            subtitle_sentences_by_rules(&cues, Language::French, &segmenter),
             vec![
                 "On va la dépecer vive !",
                 "Lui arracher la langue !",

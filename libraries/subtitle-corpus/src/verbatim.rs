@@ -35,7 +35,7 @@ use crate::sync::{self, Cue, TimedWord};
 use crate::transcript::{source_digest, Kind, Spoken};
 
 /// Bump when the measure changes in a way that makes stored verdicts stale.
-pub const FORMAT: u32 = 3;
+pub const FORMAT: u32 = 4;
 
 /// Least share of eligible sentences that must place for a subtitle to
 /// count as verbatim. Measured 2026-09-02 over 69 transcribed films: every
@@ -190,15 +190,15 @@ fn heard_words(transcript: &[Spoken]) -> Vec<TimedWord> {
 }
 
 /// `(eligible, placed)` for one subtitle text at its own clock.
-fn score(
+async fn score(
     srt: &str,
     transcript: &[Spoken],
     language: Language,
     code: &str,
     segmenter: &SubtitleSegmenter,
-) -> (usize, usize) {
+) -> Result<(usize, usize)> {
     let (mut eligible, mut placed) = (0usize, 0usize);
-    for k in subtitle_sentences(srt, language, segmenter) {
+    for k in subtitle_sentences(srt, language, segmenter).await? {
         match place(
             &k.sentence,
             k.start_ms.into(),
@@ -214,7 +214,7 @@ fn score(
             Err(_) => eligible += 1,
         }
     }
-    (eligible, placed)
+    Ok((eligible, placed))
 }
 
 /// Frame-rate ratios a subtitle timed to another release commonly runs at
@@ -262,7 +262,7 @@ pub fn retime(srt: &str, fit: &Fit) -> String {
 }
 
 /// Measure one subtitle text against a transcript.
-pub fn measure(
+pub async fn measure(
     srt: &str,
     transcript: &[Spoken],
     language: Language,
@@ -270,7 +270,7 @@ pub fn measure(
     min_fraction: f64,
 ) -> Result<Measure> {
     let segmenter = SubtitleSegmenter::for_language(language)?;
-    let (eligible, placed) = score(srt, transcript, language, code, &segmenter);
+    let (eligible, placed) = score(srt, transcript, language, code, &segmenter).await?;
     let fraction = if eligible == 0 {
         0.0
     } else {
@@ -282,26 +282,27 @@ pub fn measure(
     // A fit only means something when the anchors agree on it: a different
     // cut yields hundreds of anchors of which a dozen happen to share a
     // shift, and re-timing on those is noise dressed as evidence.
-    let aligned = best_fit(&anchors)
+    let candidate = best_fit(&anchors)
         .filter(|a| a.anchors_used >= MIN_CONSENSUS && a.anchors_used * 4 >= a.anchors_seen)
-        .filter(|a| a.offset_ms.abs() >= SKEW_MS || (a.rate - 1.0).abs() > 1e-4)
-        .map(|a| {
-            let srt = sync::write_cues(&retimed(&cues, &a));
-            let (n, placed) = score(&srt, transcript, language, code, &segmenter);
-            Fit {
-                offset_ms: a.offset_ms,
-                rate: a.rate,
-                anchors_used: a.anchors_used,
-                anchors_seen: a.anchors_seen,
-                worst_residual_ms: a.worst_residual_ms,
-                placed,
-                fraction: if n == 0 {
-                    0.0
-                } else {
-                    placed as f64 / n as f64
-                },
-            }
+        .filter(|a| a.offset_ms.abs() >= SKEW_MS || (a.rate - 1.0).abs() > 1e-4);
+    let mut aligned = None;
+    if let Some(a) = candidate {
+        let srt = sync::write_cues(&retimed(&cues, &a));
+        let (n, placed) = score(&srt, transcript, language, code, &segmenter).await?;
+        aligned = Some(Fit {
+            offset_ms: a.offset_ms,
+            rate: a.rate,
+            anchors_used: a.anchors_used,
+            anchors_seen: a.anchors_seen,
+            worst_residual_ms: a.worst_residual_ms,
+            placed,
+            fraction: if n == 0 {
+                0.0
+            } else {
+                placed as f64 / n as f64
+            },
         });
+    }
 
     let verdict = if eligible < MIN_ELIGIBLE {
         Verdict::Empty
@@ -323,7 +324,12 @@ pub fn measure(
 
 /// The film's verdict, from `transcript-check.json` when it was computed
 /// from the same inputs under the same threshold, else measured and written.
-pub fn check(dir: &Path, language: Language, code: &str, min_fraction: f64) -> Result<Report> {
+pub async fn check(
+    dir: &Path,
+    language: Language,
+    code: &str,
+    min_fraction: f64,
+) -> Result<Report> {
     let subtitle = dir.join("subtitle.srt");
     let transcript_path = dir.join("transcript.jsonl");
     let subtitle_digest = source_digest(&subtitle).context("subtitle digest")?;
@@ -339,7 +345,7 @@ pub fn check(dir: &Path, language: Language, code: &str, min_fraction: f64) -> R
     }
     let transcript = load_transcript(&transcript_path)?;
     let srt = std::fs::read_to_string(&subtitle)?;
-    let measure = measure(&srt, &transcript, language, code, min_fraction)?;
+    let measure = measure(&srt, &transcript, language, code, min_fraction).await?;
     let report = Report {
         format: FORMAT,
         subtitle_digest,

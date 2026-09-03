@@ -293,6 +293,7 @@ pub fn strip_html_tags(text: &str) -> String {
     HTML_TAGS.replace_all(text, "").to_string()
 }
 
+pub mod llm_segment;
 pub mod segment;
 pub mod sentences;
 

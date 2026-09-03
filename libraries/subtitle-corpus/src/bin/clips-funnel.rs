@@ -17,7 +17,8 @@ fn fold(t: &str) -> String {
         .collect()
 }
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let out = PathBuf::from("/data/andrep/subtitle-corpus");
     let ids: Vec<String> = std::env::args().skip(1).collect();
     let samples: usize = std::env::var("SAMPLES")
@@ -32,7 +33,7 @@ fn main() -> anyhow::Result<()> {
         let segmenter = SubtitleSegmenter::for_language(language)?;
         let transcript = load_transcript(&dir.join("transcript.jsonl"))?;
         let srt = std::fs::read_to_string(dir.join("subtitle.srt"))?;
-        let sentences = subtitle_sentences(&srt, language, &segmenter);
+        let sentences = subtitle_sentences(&srt, language, &segmenter).await?;
         let mut tally: BTreeMap<&str, usize> = BTreeMap::new();
         let mut shown: BTreeMap<&str, usize> = BTreeMap::new();
         let mut worthy = 0;

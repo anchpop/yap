@@ -18,20 +18,13 @@ pub fn cache_only() -> bool {
 }
 
 /// Whether to route batches through ordinary chat completions instead of
-/// OpenAI's Batch API (`YAP_NO_BATCH=1`).
-///
-/// The Batch API is otherwise a hard dependency with no fallback: when it
-/// breaks account-side — as it did on 2026-08-28, when every batch started
-/// failing validation with "Cannot find file <its own freshly uploaded
-/// input>" — a run simply cannot finish, however healthy the rest of the
-/// pipeline is. Sending live costs about double and runs the misses
-/// sequentially, so this is an escape hatch to be switched off again once
-/// batching recovers, not a default.
+/// OpenAI's Batch API (`YAP_NO_BATCH=1`); see
+/// [`movie_subtitles::llm_segment::no_batch`], the one definition.
 ///
 /// Read from the environment at client construction, which is lazy and so
 /// always happens after `dotenvy` has loaded `.env`.
 fn no_batch() -> bool {
-    std::env::var("YAP_NO_BATCH").is_ok_and(|v| !v.is_empty() && v != "0")
+    movie_subtitles::llm_segment::no_batch()
 }
 
 /// Update an indicatif bar from a Batch API status poll. `offset` is the number

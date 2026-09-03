@@ -77,6 +77,7 @@ async fn main() -> anyhow::Result<()> {
 
         let mut timer = generate_data::StageTimer::new();
         let sentence_corpus = generate_data::target_sentences::get_target_sentences(*course)
+            .await
             .context("Failed to get target sentences")?;
         timer.lap("sentence loading");
         let segmented = generate_data::pipeline::segment_corpus(course, &sentence_corpus)

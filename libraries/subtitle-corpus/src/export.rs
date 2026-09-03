@@ -197,7 +197,7 @@ async fn export_film(
     let (provenance, clips) = read_clips_with_provenance(&clips_path(&dir))?;
     let srt = std::fs::read_to_string(dir.join("subtitle.srt"))?;
     let segmenter = SubtitleSegmenter::for_language(language)?;
-    let sentences = subtitle_sentences(&srt, language, &segmenter);
+    let sentences = subtitle_sentences(&srt, language, &segmenter).await?;
     let cues: Vec<Cue> = parse_cues(&srt)
         .into_iter()
         .filter_map(|c| {

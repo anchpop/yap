@@ -3596,9 +3596,11 @@ dependencies = [
  "language-utils",
  "lexide",
  "regex 1.12.4",
+ "schemars",
  "serde",
  "serde_json",
  "subparse",
+ "tysm",
 ]
 
 [[package]]

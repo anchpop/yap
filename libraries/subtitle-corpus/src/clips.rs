@@ -94,6 +94,10 @@ pub struct Provenance {
     /// per lexide's PHONEME_BACKENDS.md stamp here when their languages get
     /// gates). A different phonemizer can never pose as current provenance.
     pub g2p: String,
+    /// Which segmentation produced the sentences
+    /// ([`movie_subtitles::segment::provenance`]): a new prompt or model on
+    /// the model-segmented languages, or a bump of the rules, remaps.
+    pub segmentation: String,
     pub language: String,
     /// The gate the verdicts were made under. Frame matrices are cached, so
     /// re-gating under a new cut is cheap — and must happen, or a loosened
@@ -411,12 +415,17 @@ pub fn read_clips(path: &Path) -> Result<Vec<Clip>> {
 /// them ([`movie_subtitles::sentences::keyed_sentences`] — one shared
 /// implementation, so a pack sentence and its clip agree byte-for-byte).
 /// All sentences are returned, course-worthy or not; the flag rides along.
-pub fn subtitle_sentences(
+pub async fn subtitle_sentences(
     srt: &str,
     language: Language,
     segmenter: &SubtitleSegmenter,
-) -> Vec<KeyedSentence> {
-    let lines: Vec<SubtitleLine> = parse_cues(srt)
+) -> Result<Vec<KeyedSentence>> {
+    movie_subtitles::sentences::keyed_sentences(&subtitle_lines(srt), language, segmenter).await
+}
+
+/// A subtitle text as the cleaned cue lines segmentation starts from.
+pub fn subtitle_lines(srt: &str) -> Vec<SubtitleLine> {
+    parse_cues(srt)
         .into_iter()
         .filter_map(|cue| {
             let text = cleanup_subtitle_text(&cue.text);
@@ -426,8 +435,7 @@ pub fn subtitle_sentences(
                 end_ms: cue.end_ms.max(0) as u32,
             })
         })
-        .collect();
-    movie_subtitles::sentences::keyed_sentences(&lines, language, segmenter)
+        .collect()
 }
 
 /// A sentence's place in the transcript, or why it has none.
@@ -669,7 +677,7 @@ async fn clips_one(
     let min_verbatim = gate
         .min_verbatim
         .unwrap_or_else(|| crate::verbatim::min_fraction(code));
-    let check = crate::verbatim::check(dir, language, code, min_verbatim)?;
+    let check = crate::verbatim::check(dir, language, code, min_verbatim).await?;
     if check.measure.verdict != crate::verbatim::Verdict::Verbatim {
         bail!(
             "subtitle not verbatim: {}",
@@ -716,6 +724,7 @@ async fn clips_one(
         transcript_digest: crate::transcript::source_digest(&transcript_path)?,
         model: phoneme_verify::production_cache_version(),
         g2p,
+        segmentation: movie_subtitles::segment::provenance(language),
         language: code.to_string(),
         min_ratio,
         min_clear_ms: gate.min_clear_ms,
@@ -747,7 +756,8 @@ async fn clips_one(
     let ctx = VerifyContext::new(http, store.clone(), &empty, language)?;
     let segmenter = SubtitleSegmenter::for_language(language)?;
     let transcript = load_transcript(&transcript_path)?;
-    let sentences = subtitle_sentences(&std::fs::read_to_string(&subtitle)?, language, &segmenter);
+    let sentences =
+        subtitle_sentences(&std::fs::read_to_string(&subtitle)?, language, &segmenter).await?;
 
     let mut summary = FilmSummary {
         sentences: sentences.len(),

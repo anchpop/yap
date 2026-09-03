@@ -17,9 +17,12 @@
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use generate_data::target_sentences::{should_include_sentence, subtitle_sentences};
+use generate_data::target_sentences::{
+    should_include_sentence, subtitle_sentences, subtitle_sentences_by_rules,
+};
 use language_utils::language_pack::LanguagePack;
 use language_utils::{Course, Language, text_cleanup::cleanup_sentence};
+use movie_subtitles::segment::SubtitleSegmenter as Segmenter;
 use movie_subtitles::segment::{SubtitleSegmenter, subtitle_passages};
 use std::collections::{BTreeMap, HashSet};
 use std::path::PathBuf;
@@ -51,7 +54,8 @@ struct Args {
     trace: Option<String>,
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let args = Args::parse();
     let target = Language::from_code(&args.course)
@@ -100,43 +104,78 @@ fn main() -> Result<()> {
         .filter(|m| wanted.is_empty() || wanted.contains(m.id.as_str()))
         .collect();
 
-    // Segment every film in parallel (the slow step), then report in order.
-    use rayon::prelude::*;
-    let segmented: Vec<Option<(Vec<movie_subtitles::SubtitleLine>, HashSet<String>)>> = movies
-        .par_iter()
-        .map(|movie| {
-            let Some((subtitles, _)) = movie_subtitles::load(&movies_dir, &movie.id)? else {
-                return Ok(None);
-            };
-            let now: HashSet<String> = subtitle_sentences(&subtitles, target, &segmenter)
-                .into_iter()
-                .map(|s| cleanup_sentence(s, target))
-                .collect();
-            anyhow::Ok(Some((subtitles, now)))
-        })
-        .collect::<Result<_>>()?;
+    // Segment every film (the slow step), then report in order: rule-segmented
+    // languages in parallel, model-segmented ones one after another (their
+    // answers come from the cache once generate-data has run).
+    type Segmented = Option<(Vec<movie_subtitles::SubtitleLine>, HashSet<String>)>;
+    let segmented: Vec<Segmented> = match &segmenter {
+        Segmenter::Rules(rules) => {
+            use rayon::prelude::*;
+            movies
+                .par_iter()
+                .map(|movie| {
+                    let Some((subtitles, _)) = movie_subtitles::load(&movies_dir, &movie.id)?
+                    else {
+                        return Ok(None);
+                    };
+                    let now: HashSet<String> =
+                        subtitle_sentences_by_rules(&subtitles, target, rules)
+                            .into_iter()
+                            .map(|s| cleanup_sentence(s, target))
+                            .collect();
+                    anyhow::Ok(Some((subtitles, now)))
+                })
+                .collect::<Result<_>>()?
+        }
+        Segmenter::Llm(_) => {
+            let mut segmented = Vec::with_capacity(movies.len());
+            for movie in &movies {
+                let Some((subtitles, _)) = movie_subtitles::load(&movies_dir, &movie.id)? else {
+                    segmented.push(None);
+                    continue;
+                };
+                let now: HashSet<String> = subtitle_sentences(&subtitles, target, &segmenter)
+                    .await?
+                    .into_iter()
+                    .map(|s| cleanup_sentence(s, target))
+                    .collect();
+                segmented.push(Some((subtitles, now)));
+            }
+            segmented
+        }
+    };
 
     for (movie, film) in movies.iter().zip(segmented) {
         let Some((subtitles, now)) = film else {
             continue;
         };
         if let Some(needle) = &args.trace {
-            for passage in subtitle_passages(&subtitles) {
-                if !passage.contains(needle.as_str()) {
-                    continue;
+            match &segmenter {
+                Segmenter::Rules(rules) => {
+                    for passage in subtitle_passages(&subtitles) {
+                        if !passage.contains(needle.as_str()) {
+                            continue;
+                        }
+                        println!(
+                            "--- passage ({}):\n{}",
+                            movie.id,
+                            passage.replace('\n', "⏎\n")
+                        );
+                        for s in rules.segment(&passage) {
+                            let mark = if should_include_sentence(s.trim(), target) {
+                                "keep"
+                            } else {
+                                "drop"
+                            };
+                            println!("    [{mark}] {s}");
+                        }
+                    }
                 }
-                println!(
-                    "--- passage ({}):\n{}",
-                    movie.id,
-                    passage.replace('\n', "⏎\n")
-                );
-                for s in segmenter.segment(&passage) {
-                    let mark = if should_include_sentence(s.trim(), target) {
-                        "keep"
-                    } else {
-                        "drop"
-                    };
-                    println!("    [{mark}] {s}");
+                // The model's cuts are already applied; show what survived.
+                Segmenter::Llm(_) => {
+                    for s in now.iter().filter(|s| s.contains(needle.as_str())) {
+                        println!("--- sentence ({}): {s}", movie.id);
+                    }
                 }
             }
         }

@@ -252,6 +252,26 @@ enum Command_ {
         #[arg(long, default_value_t = 0)]
         limit: usize,
     },
+    /// Segment every model-segmented film's subtitle into sentences in one
+    /// Batch API round trip, so that everything downstream finds the answers
+    /// in the cache.
+    ///
+    /// Japanese, Mandarin, Korean and Thai subtitles leave statements
+    /// unpunctuated, so their sentence boundaries come from a language model
+    /// (`movie_subtitles::llm_segment`), one request per cue. Nothing is
+    /// written beside the film: tysm's response cache is the store, and
+    /// transcript-check, clips and export all read from it. Without this
+    /// step each of them would run a film-sized batch of its own, serially.
+    Segment {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// Segment this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+    },
     /// Judge every transcribed film's subtitle against what is actually
     /// said, and replace the ones that fail.
     ///
@@ -1218,6 +1238,10 @@ fn refresh(
                 }
             })
         }),
+        ("segment", {
+            let out = out.clone();
+            Box::new(move || segment_all(out, 0, None))
+        }),
         ("transcript-check", {
             let (out, data_root) = (out.clone(), data_root.clone());
             Box::new(move || transcript_check(out, data_root, 0, None, None, false, 10, 3))
@@ -1530,6 +1554,76 @@ fn speech_profiles(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
     println!(
         "\n{} profiles written, {failed} failed",
         results.len() - failed
+    );
+    Ok(())
+}
+
+/// Warm the sentence-segmentation cache for every model-segmented film; see
+/// `Command_::Segment`.
+#[tokio::main]
+async fn segment_all(out: PathBuf, limit: usize, imdb: Option<String>) -> Result<()> {
+    use movie_subtitles::llm_segment;
+    let plan = read_plan(&out)?;
+    let mut todo: Vec<(Movie, language_utils::Language)> = plan
+        .into_iter()
+        .filter(|m| imdb.as_ref().is_none_or(|id| *id == m.imdb_id))
+        .filter_map(|m| {
+            let language = library::course_dir(&m.original_language)
+                .and_then(language_utils::Language::from_code)?;
+            (llm_segment::uses_llm(language) && out.join(&m.imdb_id).join("subtitle.srt").exists())
+                .then_some((m, language))
+        })
+        .collect();
+    if limit > 0 {
+        todo.truncate(limit);
+    }
+    let lines: Vec<Vec<movie_subtitles::SubtitleLine>> = todo
+        .iter()
+        .map(|(m, _)| {
+            let srt = std::fs::read_to_string(out.join(&m.imdb_id).join("subtitle.srt"))?;
+            Ok(movie_subtitles::sentences::prepared_lines(
+                &subtitle_corpus::clips::subtitle_lines(&srt),
+            ))
+        })
+        .collect::<Result<_>>()?;
+    let tracks: Vec<(&[movie_subtitles::SubtitleLine], language_utils::Language)> = lines
+        .iter()
+        .zip(&todo)
+        .map(|(l, (_, language))| (l.as_slice(), *language))
+        .collect();
+    let cues: usize = tracks.iter().map(|(t, _)| t.len()).sum();
+    println!(
+        "{} model-segmented films with a subtitle, {cues} cues, model {}",
+        todo.len(),
+        llm_segment::MODEL
+    );
+    if todo.is_empty() {
+        return Ok(());
+    }
+    let client = llm_segment::client()?;
+    let (splits, report) =
+        llm_segment::split_tracks(&client, &tracks, llm_segment::print_progress()).await?;
+    for (((m, language), lines), splits) in todo.iter().zip(&lines).zip(&splits) {
+        let keyed =
+            movie_subtitles::sentences::keyed_sentences_from_splits(lines, splits, *language);
+        let worthy = keyed.iter().filter(|k| k.course_worthy).count();
+        println!(
+            "  {} ✓ {} cues → {} sentences ({worthy} course-worthy)",
+            truncate(&m.title, 40),
+            lines.len(),
+            keyed.len()
+        );
+        // Asked for one film: show its opening so the cuts can be eyeballed.
+        if imdb.is_some() {
+            for k in keyed.iter().take(60) {
+                let mark = if k.course_worthy { "keep" } else { "drop" };
+                println!("      [{mark}] {}", k.sentence);
+            }
+        }
+    }
+    println!(
+        "\n{} cues segmented, {} fell back to per-cue",
+        report.cues, report.fallbacks
     );
     Ok(())
 }
@@ -2609,7 +2703,7 @@ async fn transcript_check(
             continue;
         };
         let min_verbatim = min_verbatim.unwrap_or_else(|| verbatim::min_fraction(code));
-        let mut report = match verbatim::check(&dir, language, code, min_verbatim) {
+        let mut report = match verbatim::check(&dir, language, code, min_verbatim).await {
             Ok(r) => r,
             Err(e) => {
                 println!("[{n}/{total}] {title} ✗ {e:#}");
@@ -2640,7 +2734,7 @@ async fn transcript_check(
                 let _ = std::fs::remove_file(subtitle_corpus::clips::clips_path(&dir));
                 note.push_str(&format!(" — re-timed {:+.1}s", fit.offset_ms / 1000.0));
                 retimed += 1;
-                report = verbatim::check(&dir, language, code, min_verbatim)?;
+                report = verbatim::check(&dir, language, code, min_verbatim).await?;
             }
         }
         if matches!(
@@ -2669,7 +2763,7 @@ async fn transcript_check(
                 Ok(Some(label)) => {
                     adopted += 1;
                     note.push_str(&format!(" — adopted {label}"));
-                    report = verbatim::check(&dir, language, code, min_verbatim)?;
+                    report = verbatim::check(&dir, language, code, min_verbatim).await?;
                 }
                 Ok(None) => note.push_str(" — no better candidate"),
                 Err(e) => note.push_str(&format!(" — candidates: {e:#}")),
@@ -2860,7 +2954,7 @@ async fn adopt_candidate(
     let mut best: Option<(String, String, verbatim::Measure)> = None;
     for (label, path) in candidates {
         let text = String::from_utf8_lossy(&std::fs::read(&path)?).into_owned();
-        let measure = verbatim::measure(&text, &transcript, language, code, min_verbatim)?;
+        let measure = verbatim::measure(&text, &transcript, language, code, min_verbatim).await?;
         println!("      {label:24} {}", verbatim::describe(&measure));
         let bar = best.as_ref().map_or(to_beat, |b| b.2.best_placed());
         if matches!(measure.verdict, Verdict::Verbatim | Verdict::Skewed)
@@ -3942,6 +4036,7 @@ fn main() -> Result<()> {
             films_in_flight,
             limit,
         } => check_all(out, tier, windows, window_secs, films_in_flight, limit),
+        Command_::Segment { out, limit, imdb } => segment_all(out, limit, imdb),
         Command_::Transcribe {
             out,
             films_in_flight,

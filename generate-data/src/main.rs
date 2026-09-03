@@ -128,6 +128,7 @@ async fn main() -> anyhow::Result<()> {
         println!("================================================");
 
         let sentence_corpus = generate_data::target_sentences::get_target_sentences(*course)
+            .await
             .context("Failed to get target sentences")?;
         let generate_data::pipeline::SegmentedCorpus {
             mut nlp_sentences,
