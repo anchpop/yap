@@ -3593,6 +3593,7 @@ name = "movie-subtitles"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "futures",
  "language-utils",
  "lexide",
  "regex 1.12.4",

@@ -39,6 +39,14 @@ const CONTEXT_CUES: usize = 3;
 /// without flooding the log.
 const SHOWN_FALLBACKS: usize = 40;
 
+/// Requests per Batch API job. OpenAI caps a job at 50,000 requests; a whole
+/// library of subtitles is several times that.
+const BATCH_REQUESTS: usize = 20_000;
+
+/// Batch jobs in flight at once. Enough to keep a library's worth moving,
+/// few enough not to trip the enqueued-token quota.
+const BATCHES_IN_FLIGHT: usize = 4;
+
 /// A silence between cues is mentioned only from this length — a shorter
 /// one is display timing, not evidence about sentence boundaries, and
 /// leaving it out keeps the prompt identical across re-timed copies.
@@ -154,20 +162,20 @@ fn prompt_for(lines: &[SubtitleLine], index: usize, language: Language) -> Strin
     let mut out = format!("Language: {language}\n");
     if from < index {
         out.push_str("\nCues before the focus cue:\n");
-        for i in from..index {
+        for (i, line) in lines.iter().enumerate().take(index).skip(from) {
             if i > from {
                 out.extend(pause_line(i));
             }
-            out.push_str(&format!("  {}\n", lines[i].sentence));
+            out.push_str(&format!("  {}\n", line.sentence));
         }
         out.extend(pause_line(index));
     }
     out.push_str(&format!("\nFocus cue:\n  {}\n", lines[index].sentence));
     if index < to {
         out.push_str("\nCues after the focus cue:\n");
-        for i in index + 1..=to {
+        for (i, line) in lines.iter().enumerate().take(to + 1).skip(index + 1) {
             out.extend(pause_line(i));
-            out.push_str(&format!("  {}\n", lines[i].sentence));
+            out.push_str(&format!("  {}\n", line.sentence));
         }
     }
     out
@@ -233,14 +241,27 @@ pub async fn split_tracks(
             prompts.push((t, i, prompt_for(lines, i, *language)));
         }
     }
-    let answers = client
-        .batch_chat_with_system_prompt_fn::<_, _, CueSplit>(
-            SYSTEM_PROMPT,
-            &prompts,
-            |(_, _, p)| p.clone(),
-            on_progress,
-        )
-        .await?;
+    // Chunked into Batch API jobs, a few in flight at a time; answers are
+    // reassembled in prompt order.
+    let on_progress = std::sync::Mutex::new(on_progress);
+    type Answer<'a> = (
+        &'a (usize, usize, String),
+        Result<CueSplit, tysm::chat_completions::IndividualChatError>,
+    );
+    let mut answers: Vec<Answer> = Vec::with_capacity(prompts.len());
+    for wave in prompts.chunks(BATCH_REQUESTS * BATCHES_IN_FLIGHT) {
+        let jobs = wave.chunks(BATCH_REQUESTS).map(|chunk| {
+            client.batch_chat_with_system_prompt_fn::<_, _, CueSplit>(
+                SYSTEM_PROMPT,
+                chunk,
+                |(_, _, p)| p.clone(),
+                |batch| (on_progress.lock().unwrap())(batch),
+            )
+        });
+        for job in futures::future::join_all(jobs).await {
+            answers.extend(job?);
+        }
+    }
 
     let mut out: Vec<Vec<CueSplit>> = tracks
         .iter()

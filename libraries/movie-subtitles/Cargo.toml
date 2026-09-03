@@ -13,3 +13,4 @@ lexide = { workspace = true }
 language-utils = { path = "../../language-utils" }
 schemars = { workspace = true }
 tysm = { workspace = true }
+futures = { workspace = true }

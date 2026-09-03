@@ -262,9 +262,14 @@ enum Command_ {
     /// written beside the film: tysm's response cache is the store, and
     /// transcript-check, clips and export all read from it. Without this
     /// step each of them would run a film-sized batch of its own, serially.
+    /// Only transcribed films by default — nothing reads the others' sentences
+    /// yet, and a request per cue adds up.
     Segment {
         #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
         out: PathBuf,
+        /// Every film with a subtitle, transcribed or not.
+        #[arg(long)]
+        all: bool,
         /// Stop after this many films (0 = all).
         #[arg(long, default_value_t = 0)]
         limit: usize,
@@ -1240,7 +1245,7 @@ fn refresh(
         }),
         ("segment", {
             let out = out.clone();
-            Box::new(move || segment_all(out, 0, None))
+            Box::new(move || segment_all(out, false, 0, None))
         }),
         ("transcript-check", {
             let (out, data_root) = (out.clone(), data_root.clone());
@@ -1561,7 +1566,7 @@ fn speech_profiles(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
 /// Warm the sentence-segmentation cache for every model-segmented film; see
 /// `Command_::Segment`.
 #[tokio::main]
-async fn segment_all(out: PathBuf, limit: usize, imdb: Option<String>) -> Result<()> {
+async fn segment_all(out: PathBuf, all: bool, limit: usize, imdb: Option<String>) -> Result<()> {
     use movie_subtitles::llm_segment;
     let plan = read_plan(&out)?;
     let mut todo: Vec<(Movie, language_utils::Language)> = plan
@@ -1570,8 +1575,11 @@ async fn segment_all(out: PathBuf, limit: usize, imdb: Option<String>) -> Result
         .filter_map(|m| {
             let language = library::course_dir(&m.original_language)
                 .and_then(language_utils::Language::from_code)?;
-            (llm_segment::uses_llm(language) && out.join(&m.imdb_id).join("subtitle.srt").exists())
-                .then_some((m, language))
+            let dir = out.join(&m.imdb_id);
+            (llm_segment::uses_llm(language)
+                && dir.join("subtitle.srt").exists()
+                && (all || dir.join("transcript.jsonl").exists()))
+            .then_some((m, language))
         })
         .collect();
     if limit > 0 {
@@ -4036,7 +4044,12 @@ fn main() -> Result<()> {
             films_in_flight,
             limit,
         } => check_all(out, tier, windows, window_secs, films_in_flight, limit),
-        Command_::Segment { out, limit, imdb } => segment_all(out, limit, imdb),
+        Command_::Segment {
+            out,
+            all,
+            limit,
+            imdb,
+        } => segment_all(out, all, limit, imdb),
         Command_::Transcribe {
             out,
             films_in_flight,
