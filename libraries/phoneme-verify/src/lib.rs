@@ -65,6 +65,24 @@ pub fn production_cache_version() -> String {
         .unwrap_or_else(|_| WAV2VEC2_CACHE_VERSION.to_string())
 }
 
+/// The Hindi label convention the deployed model was trained on. The g2p
+/// crate's `Current` canon carries corrections (ə→[ɛ] beside ɦ and others)
+/// that lexide will relabel with before the next retrain; until a model
+/// trained on those ships, targets must use the convention the model
+/// learned, or 39% of Hindi rows would be scored against a vowel the model
+/// was taught to call something else. Bump together with
+/// [`WAV2VEC2_CACHE_VERSION`].
+pub const MODEL_HINDI_CANON: g2p::HindiCanon = g2p::HindiCanon::Legacy;
+
+/// The scoring target for `text` in `language`, in the deployed model's
+/// label space: espeak-fork phonemes for espeak-labeled languages, the Hindi
+/// chain at [`MODEL_HINDI_CANON`] for Hindi. `None` for languages the model
+/// has no g2p-produced labels for (see `Language::g2p_lang`).
+pub fn model_target(text: &str, language: Language) -> Option<Result<g2p::Phonemized, g2p::Error>> {
+    let lang = language.g2p_lang()?;
+    Some(g2p::phonemize_lang_with(lang, text, MODEL_HINDI_CANON))
+}
+
 #[derive(Debug, Clone, Deserialize)]
 struct ModalResponse {
     phonemes: Vec<ModalPhoneme>,
@@ -266,13 +284,11 @@ impl<'a> VerifyContext<'a> {
         // fallback is not "no targets" — `ground_truth_phoneme_variants`
         // would quietly fall back to wikipron, which is a *third* inventory.
         match target_language.phoneme_label_source() {
-            PhonemeLabelSource::Espeak(_) => {}
-            PhonemeLabelSource::Backend(provider) => anyhow::bail!(
-                "{:?} phoneme labels come from the {provider} backend, which we \
-                 don't run yet — refusing to verify audio against espeak or \
-                 wikipron targets. See lexide's PHONEME_BACKENDS.md.",
-                target_language
-            ),
+            PhonemeLabelSource::Espeak(_)
+            | PhonemeLabelSource::Hindi
+            | PhonemeLabelSource::Mandarin
+            | PhonemeLabelSource::Japanese
+            | PhonemeLabelSource::Thai => {}
             PhonemeLabelSource::Unvalidated => anyhow::bail!(
                 "{:?} has no validated phoneme label source — refusing to \
                  verify audio against an unchecked reference. See lexide's \
@@ -927,33 +943,31 @@ fn ground_truth_phoneme_variants(
         }
     };
 
-    // Add the espeak phrase-level variant, if espeak supports this
-    // language. Espeak runs in <10 ms; cheap enough to call inline.
-    // Failures here are *important*: when espeak silently dies (binary
-    // missing, data-path wrong) the verifier loses all phrase-level
-    // ground truth for text that wikipron can't decompose — and that's
-    // hard to notice unless we surface it. Log the first error per
-    // process so a broken environment doesn't disappear into the noise.
-    match espeak::phonemize_phrase(text, language) {
-        Ok(Some(espeak_raw)) => {
-            let espeak_seq: Vec<String> = espeak_raw
+    // Add the phrase-level g2p variant in the model's own label space, for
+    // languages the crate labels (`model_target` is `None` for the rest —
+    // Python-backend or unvalidated — and reaching for espeak there would
+    // score against the wrong phoneme inventory). Runs in-process, a few
+    // ms. Failures are *important*: without this variant the verifier loses
+    // all phrase-level ground truth for text wikipron can't decompose, so
+    // log the first error per process rather than letting it vanish.
+    match model_target(text, language) {
+        Some(Ok(phonemized)) => {
+            let g2p_seq: Vec<String> = phonemized
+                .phonemes
                 .iter()
                 .filter_map(|p| normalize_phoneme(p, language))
                 .collect();
-            if !espeak_seq.is_empty() && !candidates.contains(&espeak_seq) {
-                candidates.push(espeak_seq);
+            if !g2p_seq.is_empty() && !candidates.contains(&g2p_seq) {
+                candidates.push(g2p_seq);
             }
         }
-        Ok(None) => {
-            // language has no espeak support — expected for languages
-            // intentionally excluded (Korean, etc.), no warning needed.
-        }
-        Err(e) => {
+        Some(Err(e)) => {
             static WARNED: std::sync::Once = std::sync::Once::new();
             WARNED.call_once(|| {
-                log::warn!("espeak phonemization failed (first occurrence shown only): {e:#}");
+                log::warn!("g2p phonemization failed (first occurrence shown only): {e:#}");
             });
         }
+        None => {}
     }
 
     if candidates.is_empty() {
@@ -1385,8 +1399,8 @@ mod tests {
         wp.insert("bonjour".to_string(), ap("b ɔ̃ ʒ u ʁ", &[]));
         wp.insert("madame".to_string(), ap("m a d a m", &[]));
         // Use a language without espeak support (Korean is disabled) so
-        // the test isolates the wikipron-only path; espeak coverage is
-        // covered by the `espeak::tests` module.
+        // the test isolates the wikipron-only path; the espeak path is
+        // covered by `ground_truth_includes_espeak_variant_for_supported_languages`.
         let variants =
             ground_truth_phoneme_variants("Bonjour, madame!", &wp, Language::Korean).unwrap();
         assert_eq!(variants.len(), 1);
@@ -1439,11 +1453,9 @@ mod tests {
         assert_eq!(variants[0], vec!["X"; 5]);
     }
 
-    // Ignored in CI: requires the espeak-ng binary (and the liaison output
-    // depends on our custom French-stress-liaison build). Run locally with
-    // ESPEAK_NG_BIN set: `cargo test -p generate-data -- --ignored`.
+    // The liaison output depends on our espeak-ng fork's French patches;
+    // g2p embeds that build, so this runs everywhere, CI included.
     #[test]
-    #[ignore = "requires espeak-ng binary (custom French-liaison build)"]
     fn ground_truth_includes_espeak_variant_for_supported_languages() {
         // For French (espeak-supported), the candidate list should include
         // an espeak-derived variant in addition to the wikipron cross-product.
@@ -1460,6 +1472,46 @@ mod tests {
             variants.contains(&vec!["ɔ̃".to_string(), "n".to_string(), "ɛ".to_string()]),
             "expected espeak liaison candidate /ɔ̃ n ɛ/ in candidates: {variants:?}"
         );
+    }
+
+    #[test]
+    fn hindi_targets_use_the_deployed_models_label_canon() {
+        // The model was trained on lexide's legacy schwa-stress-hin labels
+        // (यह = /jəɦ/, no ə→ɛ raising); scoring against the corrected canon
+        // would mismatch on 39% of Hindi rows until a retrained model ships.
+        let target = model_target("यह शहर", Language::Hindi)
+            .expect("Hindi is g2p-labeled")
+            .expect("hindi chain runs");
+        assert_eq!(target.phonemes, ["j", "ə", "ɦ", "ʃ", "ə", "ɦ", "ə", "ɾ"]);
+        assert_eq!(target.word_spans, [(0, 3), (3, 8)]);
+        // Unvalidated languages get no target at all, never a
+        // plausible-looking wrong one.
+        assert!(model_target("國家", Language::ChineseTraditional).is_none());
+        assert!(model_target("안녕", Language::Korean).is_none());
+    }
+
+    #[test]
+    fn japanese_targets_come_from_jpreprocess() {
+        let target = model_target("学校", Language::Japanese)
+            .expect("Japanese is g2p-labeled")
+            .expect("japanese chain runs");
+        // Sokuon becomes length on the following obstruent, not a token.
+        assert_eq!(target.phonemes, ["ɡ", "a", "kː", "o", "o"]);
+        assert!(target.pitch.iter().flatten().count() > 0);
+    }
+
+    #[test]
+    fn mandarin_targets_come_from_the_g2pm_port() {
+        let target = model_target("你好", Language::ChineseSimplified)
+            .expect("Mandarin is g2p-labeled")
+            .expect("mandarin chain runs");
+        assert_eq!(target.phonemes, ["n", "i", "x", "au̯"]);
+        assert_eq!(target.tone, [None, Some(3), None, Some(3)]);
+        // Digits would be spoken but unlabeled: refused, not silently cut.
+        assert!(matches!(
+            model_target("我有2个", Language::ChineseSimplified),
+            Some(Err(g2p::Error::Unlabelable(_)))
+        ));
     }
 
     #[test]

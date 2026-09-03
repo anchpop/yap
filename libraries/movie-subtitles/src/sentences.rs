@@ -133,8 +133,6 @@ static TITLE_ABBREVIATION: LazyLock<Regex> = LazyLock::new(|| {
         .unwrap()
 });
 
-/// Sentences spoken in a subtitle track.
-
 /// Check if a single sentence should be included (for sources without translations like movies)
 pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
     // 1. Skip sentences that are too short or too long

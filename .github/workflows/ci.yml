@@ -47,6 +47,12 @@ jobs:
 
       - uses: taiki-e/install-action@nextest
 
+      # The g2p dependency builds the anchpop/espeak-ng fork from source with
+      # CMake (statically linked, data embedded), so the fork is compiled and
+      # exercised by the regular test run — no separate espeak job.
+      - name: Ensure cmake
+        run: command -v cmake >/dev/null || (sudo apt-get update && sudo apt-get install -y cmake)
+
       - name: Rustfmt
         run: cargo fmt --all -- --check
 
@@ -62,25 +68,3 @@ jobs:
 
       - name: Tests (no default features)
         run: cargo nextest run --all --no-default-features
-
-  # Verify the custom espeak-ng fork (anchpop/espeak-ng) still builds and can
-  # phonemize — the transcription grader shells out to it at runtime. Only the
-  # `espeak-builder` Docker stage is built here (it clones + compiles the fork);
-  # the full image build happens in deploy.yml. This catches a broken fork bump
-  # on the PR instead of at deploy time.
-  espeak:
-    runs-on: big-runner
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          lfs: false
-
-      - name: Build espeak-ng fork stage
-        run: docker build --target espeak-builder -t espeak-fork -f yap-ai-backend/Dockerfile .
-
-      - name: Verify phonemization
-        run: |
-          docker run --rm espeak-fork sh -c \
-            '/espeak-install/usr/bin/espeak-ng --path=/espeak-install/usr/share \
-             -v fr -q --ipa -x "on est" | grep -q .'

@@ -2964,24 +2964,27 @@ const TRADITIONAL_ONLY: &str = "國會這說對時們來學見還沒電車門問
 /// correctness bug rather than a quality trade-off.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PhonemeLabelSource {
-    /// espeak-ng fork, with this voice code. Must match lexide's
-    /// `LANG_TO_ESPEAK` entry for the language.
+    /// espeak-ng fork, with this voice code, via the g2p crate. Must match
+    /// `g2p::label_source` for the language.
     Espeak(&'static str),
-    /// A dedicated G2P engine, named by its lexide provider string. We do
-    /// not run these yet, so phoneme scoring must refuse rather than
-    /// substitute espeak.
-    Backend(&'static str),
+    /// The g2p crate's Hindi chain (lexide's `schwa-stress-hin`, ported).
+    Hindi,
+    /// The g2p crate's Mandarin chain (g2pM + pinyin-to-IPA, ported).
+    Mandarin,
+    /// The g2p crate's Japanese chain (OpenJTalk via jpreprocess).
+    Japanese,
+    /// The g2p crate's Thai chain (vachana-thai as an embedded pinned Python
+    /// project; needs `uv` on the machine that scores).
+    Thai,
     /// No validated label source. Scoring is not supported.
     Unvalidated,
 }
 
 impl PhonemeLabelSource {
-    /// The espeak voice, if espeak is genuinely this language's label source.
-    pub fn espeak_voice(&self) -> Option<&'static str> {
-        match self {
-            PhonemeLabelSource::Espeak(v) => Some(v),
-            _ => None,
-        }
+    /// True when the g2p crate produces this language's model labels, i.e.
+    /// `g2p::phonemize_lang` is the right way to get a scoring target.
+    pub fn g2p_supported(&self) -> bool {
+        !matches!(self, PhonemeLabelSource::Unvalidated)
     }
 }
 
@@ -3029,13 +3032,17 @@ impl Language {
             Language::Italian => PhonemeLabelSource::Espeak("it"),
             Language::Portuguese => PhonemeLabelSource::Espeak("pt-br"),
             Language::Russian => PhonemeLabelSource::Espeak("ru"),
+            // The g2p crate's port of lexide's schwa-stress-hin chain.
+            Language::Hindi => PhonemeLabelSource::Hindi,
             // espeak has voices for all of these, and using them is a bug.
             // The provider strings are lexide's
             // `build_external_phoneme_sidecars.CONFIG` keys.
-            Language::Hindi => PhonemeLabelSource::Backend("schwa-stress-hin"),
-            Language::Japanese => PhonemeLabelSource::Backend("pyopenjtalk"),
-            Language::ChineseSimplified => PhonemeLabelSource::Backend("g2pm-ipa"),
-            Language::Thai => PhonemeLabelSource::Backend("vachana-thai"),
+            // OpenJTalk via jpreprocess, inside the g2p crate.
+            Language::Japanese => PhonemeLabelSource::Japanese,
+            // The g2p crate's port of g2pM + pinyin-to-IPA.
+            Language::ChineseSimplified => PhonemeLabelSource::Mandarin,
+            // vachana-thai, run by the g2p crate as a pinned Python project.
+            Language::Thai => PhonemeLabelSource::Thai,
             // Traditional-script Mandarin has no corpus of its own; the
             // model never saw it, so there is no label source to name.
             Language::ChineseTraditional => PhonemeLabelSource::Unvalidated,
@@ -3047,21 +3054,21 @@ impl Language {
         }
     }
 
-    /// espeak-ng voice code, but **only** for languages espeak legitimately
-    /// labels. Returns `None` for backend-labeled and unvalidated languages,
-    /// so a caller that reaches for espeak on Hindi or Japanese gets nothing
-    /// rather than a plausible-looking wrong answer.
-    pub fn espeak_code(&self) -> Option<&'static str> {
-        match self.phoneme_label_source() {
-            PhonemeLabelSource::Espeak(voice) => Some(voice),
-            PhonemeLabelSource::Backend(_) | PhonemeLabelSource::Unvalidated => None,
-        }
+    /// The language code to hand `g2p::phonemize_lang`, but **only** for
+    /// languages whose model labels the g2p crate produces (espeak-labeled
+    /// ones and Hindi). `None` for the Python-backend and unvalidated
+    /// languages, so a caller that reaches for a target on Japanese or
+    /// Korean gets nothing rather than a plausible-looking wrong answer.
+    pub fn g2p_lang(&self) -> Option<&'static str> {
+        self.phoneme_label_source()
+            .g2p_supported()
+            .then(|| self.code())
     }
 
     /// Stable short code used for CLI arguments, data directories, and file
     /// names. ISO 639-3 where that's unambiguous; the Chinese variants append
     /// an ISO 15924 script subtag because 639-3 alone can't distinguish them.
-    pub fn code(&self) -> &str {
+    pub fn code(&self) -> &'static str {
         match self {
             Language::French => "fra",
             Language::English => "eng",

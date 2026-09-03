@@ -228,7 +228,7 @@ impl FrameMatrix {
             from[0][1] = 1;
         }
         let mut next = vec![f64::NEG_INFINITY; ext_len];
-        for t in 1..self.frames {
+        for (t, from_t) in from.iter_mut().enumerate().skip(1) {
             for (s, slot) in next.iter_mut().enumerate() {
                 let (mut best, mut arg) = (delta[s], s);
                 if s >= 1 && delta[s - 1] > best {
@@ -237,7 +237,7 @@ impl FrameMatrix {
                 if s >= 2 && s % 2 == 1 && label(s) != label(s - 2) && delta[s - 2] > best {
                     (best, arg) = (delta[s - 2], s - 2);
                 }
-                from[t][s] = arg;
+                from_t[s] = arg;
                 *slot = if best == f64::NEG_INFINITY {
                     best
                 } else {

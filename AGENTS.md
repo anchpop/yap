@@ -59,9 +59,10 @@ Key details:
 ### Setup and Installation
 
 ```bash
-# Install espeak-ng (required by generate-data for phrase-level phonemization
-# in audio_verification — Mac: `brew install espeak-ng`, Linux: apt/yum)
-espeak-ng --version
+# cmake is needed to build the g2p dependency (github.com/anchpop/g2p), which
+# compiles our espeak-ng fork from source and embeds it — nothing else to
+# install for phonemization. (Mac: `brew install cmake`; the nix shell has it.)
+cmake --version
 
 # Generate dictionary data from Anki decks
 cargo run --bin generate-data

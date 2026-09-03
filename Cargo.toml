@@ -5,7 +5,6 @@ members = [
     "language-utils",
     "yap-frontend-rs",
     "libraries/autograde-core",
-    "libraries/espeak",
     "libraries/weapon",
     "libraries/imdex_map",
     "libraries/eyedee",
@@ -52,6 +51,12 @@ idb = { version = "0.6.5" }
 # Native + wasm fetch wrapper (github.com/anchpop/fetch-happen). Git dep for
 # the native reqwest transport until 0.4 is published to crates.io.
 fetch-happen = { git = "https://github.com/anchpop/fetch-happen", rev = "879d0fa66bd8ae4331704c5b1d3a193427646336" }
+# Grapheme-to-phoneme (github.com/anchpop/g2p): the anchpop/espeak-ng fork,
+# statically linked with its data embedded, plus the model-label tokenizer
+# shared with lexide. The rev pins which espeak build's phonemes we score
+# against; it must match the labels the deployed pronunciation model was
+# trained on. Needs cmake + a C compiler to build.
+g2p = { git = "https://github.com/anchpop/g2p", rev = "92785064f67732c2d2ba236164eaf64bd921fae3" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
 indexmap = { version = "2" }
 chrono = "0.4.44"

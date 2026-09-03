@@ -25,6 +25,7 @@ osmo = { workspace = true }
 xxhash-rust = { workspace = true }
 tempfile = { workspace = true }
 phoneme-verify = { path = "../phoneme-verify" }
-espeak = { path = "../espeak" }
+g2p = { workspace = true }
+opensubtitles-downloader = { path = "../opensubtitles-downloader" }
 sha2 = "0.10"
 unicode-normalization = { workspace = true }
