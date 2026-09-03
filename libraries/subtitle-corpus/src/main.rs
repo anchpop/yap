@@ -2873,6 +2873,13 @@ async fn adopt_candidate(
         return Ok(None);
     };
 
+    // The subtitle being displaced may be the only copy of an OCR spend or
+    // a disc extraction; keep the first one displaced under a fixed name
+    // (later adoptions replace only what an earlier adoption installed).
+    let replaced = dir.join("subtitle.replaced.srt");
+    if !replaced.exists() {
+        let _ = std::fs::rename(dir.join("subtitle.srt"), &replaced);
+    }
     let adopted = dir.join("adopted.srt");
     std::fs::write(&adopted, &text)?;
     let timed = match &measure.aligned {
