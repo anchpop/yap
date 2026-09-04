@@ -191,6 +191,24 @@ pub struct FilmSummary {
     pub aligned: usize,
     pub scored: usize,
     pub passed: usize,
+    /// Median phoneme ratio of the scored clips, when there is a phoneme
+    /// gate. A film whose median sits far below the cut is not speaking
+    /// the language the targets were rendered in — a Cantonese track under
+    /// Mandarin subtitles, a dub — however well its subtitle placed.
+    pub median_ratio: Option<f64>,
+}
+
+/// Below this median ratio a film is flagged as not sounding like its
+/// course language. Mandarin films run −1 to −2; the Cantonese ones that
+/// slipped through in 2026-09-03 sat at −3.3 to −3.8.
+pub const FOREIGN_AUDIO_RATIO: f64 = -3.0;
+
+fn median(mut values: Vec<f64>) -> Option<f64> {
+    if values.is_empty() {
+        return None;
+    }
+    values.sort_by(|a, b| a.total_cmp(b));
+    Some(values[values.len() / 2])
 }
 
 /// Gate settings.
@@ -837,6 +855,7 @@ async fn clips_one(
             aligned: clips.len(),
             scored: clips.len(),
             passed: clips.iter().filter(|c| c.passed).count(),
+            median_ratio: median(clips.iter().filter_map(|c| c.ratio).collect()),
         });
     }
 
@@ -1040,6 +1059,7 @@ async fn clips_one(
     let clips: Vec<Clip> = clips.into_iter().flatten().collect();
     summary.scored = clips.len();
     summary.passed = clips.iter().filter(|c| c.passed).count();
+    summary.median_ratio = median(clips.iter().filter_map(|c| c.ratio).collect());
 
     let mut text = serde_json::to_string(&provenance)?;
     text.push('\n');
@@ -1114,10 +1134,19 @@ pub async fn clips_all(
                 let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
                 let title = crate::library::truncate(&movie.title, 34);
                 match &outcome {
-                    Ok(s) => println!(
-                        "[{n}/{total}] {title} ✓ {} sentences → {} placed → {} scored → {} pass",
-                        s.sentences, s.aligned, s.scored, s.passed
-                    ),
+                    Ok(s) => {
+                        println!(
+                            "[{n}/{total}] {title} ✓ {} sentences → {} placed → {} scored → {} pass",
+                            s.sentences, s.aligned, s.scored, s.passed
+                        );
+                        if let Some(m) = s.median_ratio.filter(|m| *m < FOREIGN_AUDIO_RATIO) {
+                            println!(
+                                "    ⚠ median phoneme ratio {m:.2}: the audio does not sound like \
+                                 {} — another language or variety on this track?",
+                                movie.original_language
+                            );
+                        }
+                    }
                     Err(e) => println!("[{n}/{total}] {title} ✗ {e:#}"),
                 }
                 outcome.ok()
