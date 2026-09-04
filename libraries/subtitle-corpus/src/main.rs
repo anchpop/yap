@@ -8,7 +8,7 @@
 //! authored against this exact file, so their timings need no correction at
 //! all — which is why two thirds of the library is free.
 
-use subtitle_corpus::{library, ocr, pgs, sync, transcript, vad, vobsub};
+use subtitle_corpus::{audio_check, library, ocr, pgs, sync, transcript, vad, vobsub};
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -92,6 +92,29 @@ enum Command_ {
         #[arg(long, default_value_t = 0)]
         limit: usize,
         /// Extract audio for this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+    },
+    /// Listen to each extracted track and confirm it is the film's own
+    /// dialogue in the language the library expects.
+    ///
+    /// Three windows of `audio.opus` go to Gemini, which names the language
+    /// spoken (variety included: Mandarin against Cantonese) and says whether
+    /// people are talking *about* the film — a commentary. A track that fails
+    /// is evicted along with everything derived from it, recorded in
+    /// `audio-rejected.json` so the extractor never picks it again, and the
+    /// next candidate stream on the disc is extracted and judged in turn.
+    /// The verdict is kept in `audio-check.json`, so a track is heard once.
+    AudioCheck {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Films in flight at once.
+        #[arg(long, default_value_t = 4)]
+        jobs: usize,
+        /// Stop after this many movies (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// Check this film alone, by IMDb id.
         #[arg(long)]
         imdb: Option<String>,
     },
@@ -714,13 +737,17 @@ impl FilmStamp {
     }
 }
 
+fn film_filename(movie: &Movie) -> String {
+    movie
+        .path
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default()
+}
+
 fn film_stamp(movie: &Movie) -> Result<FilmStamp> {
     Ok(FilmStamp {
-        filename: movie
-            .path
-            .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_default(),
+        filename: film_filename(movie),
         duration_ms: sync::duration_ms(&movie.path)?,
         subtitle: None,
     })
@@ -904,8 +931,34 @@ fn audio_source(movie: &Movie, dir: &std::path::Path) -> Result<(PathBuf, usize)
         return Ok((audio, 0));
     }
     let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let stream = sync::original_audio_stream(&movie.path, codes, &rejected_streams(movie, dir))?;
     Ok((movie.path.clone(), stream))
+}
+
+/// A track the listener turned down, kept so the extractor never picks it
+/// again for this file. See `Command_::AudioCheck`.
+#[derive(Serialize, Deserialize)]
+struct RejectedStream {
+    filename: String,
+    stream: sync::AudioStreamIdentity,
+    verdict: audio_check::Verdict,
+}
+
+fn read_rejected(dir: &std::path::Path) -> Vec<RejectedStream> {
+    std::fs::read(dir.join("audio-rejected.json"))
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default()
+}
+
+/// Audio positions the listener has rejected for the file now on disk.
+fn rejected_streams(movie: &Movie, dir: &std::path::Path) -> Vec<usize> {
+    let filename = film_filename(movie);
+    read_rejected(dir)
+        .into_iter()
+        .filter(|r| r.filename == filename)
+        .map(|r| r.stream.stream_index)
+        .collect()
 }
 
 enum Freshness {
@@ -947,6 +1000,8 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("transcript.jsonl"));
         let _ = std::fs::remove_file(dir.join("audio.opus"));
         let _ = std::fs::remove_file(dir.join("audio.json"));
+        let _ = std::fs::remove_file(dir.join("audio-check.json"));
+        let _ = std::fs::remove_file(dir.join("audio-rejected.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
         let _ = std::fs::remove_file(dir.join("sync-failed.json"));
         let _ = std::fs::remove_file(dir.join("adopted.srt"));
@@ -1196,6 +1251,10 @@ fn refresh(
                 }
             })
         }),
+        ("audio-check", {
+            let out = out.clone();
+            Box::new(move || audio_check(out, 4, 0, None))
+        }),
         ("speech-profiles", {
             let out = out.clone();
             Box::new(move || speech_profiles(out, 6, 0))
@@ -1385,7 +1444,8 @@ enum AudioOutcome {
 /// in the film.
 fn extract_audio_one(movie: &Movie, dir: &std::path::Path) -> AudioOutcome {
     let codes = library::stream_codes(&movie.original_language);
-    let Ok(stream) = sync::original_audio_stream(&movie.path, codes) else {
+    let Ok(stream) = sync::original_audio_stream(&movie.path, codes, &rejected_streams(movie, dir))
+    else {
         return AudioOutcome::NoStream;
     };
     let identity = match sync::audio_stream_identity(&movie.path, stream) {
@@ -1513,6 +1573,226 @@ fn extract_audio(out: PathBuf, jobs: usize, limit: usize, imdb: Option<&str>) ->
     Ok(())
 }
 
+/// The listener's verdict on the track now in `audio.opus`.
+#[derive(Serialize, Deserialize)]
+struct AudioCheck {
+    model: String,
+    expected: String,
+    filename: String,
+    stream: sync::AudioStreamIdentity,
+    verdict: audio_check::Verdict,
+}
+
+/// Whether the extracted track has already been heard by the current model.
+/// A rejected track is evicted on the spot, so a verdict that still matches
+/// the artifact is an acceptance.
+fn audio_checked(dir: &std::path::Path) -> bool {
+    let Some(stamp) = read_audio_stamp(dir) else {
+        return false;
+    };
+    std::fs::read(dir.join("audio-check.json"))
+        .ok()
+        .and_then(|b| serde_json::from_slice::<AudioCheck>(&b).ok())
+        .is_some_and(|c| {
+            c.model == audio_check::MODEL
+                && c.filename == stamp.filename
+                && c.stream == stamp.stream
+        })
+}
+
+/// Evict the rejected track and everything the pipeline derived from it,
+/// and record the rejection so the extractor passes the stream over.
+fn reject_audio(
+    dir: &std::path::Path,
+    stamp: AudioStamp,
+    verdict: audio_check::Verdict,
+) -> Result<()> {
+    for name in [
+        "audio.opus",
+        "audio.json",
+        "audio-check.json",
+        "speech-profile-16ms.f32",
+        "transcript.jsonl",
+        "clips.jsonl",
+    ] {
+        let _ = std::fs::remove_file(dir.join(name));
+    }
+    let _ = std::fs::remove_file(subtitle_corpus::verbatim::report_path(dir));
+    let mut rejected = read_rejected(dir);
+    rejected.push(RejectedStream {
+        filename: stamp.filename,
+        stream: stamp.stream,
+        verdict,
+    });
+    std::fs::write(
+        dir.join("audio-rejected.json"),
+        serde_json::to_vec_pretty(&rejected)?,
+    )?;
+    Ok(())
+}
+
+/// What listening to one film came to: the tracks turned down along the way,
+/// and the one accepted, if any survived.
+struct Listened {
+    rejected: Vec<audio_check::Verdict>,
+    accepted: Option<audio_check::Verdict>,
+}
+
+async fn audio_check_one(
+    http: &reqwest::Client,
+    key: &str,
+    movie: &Movie,
+    dir: &std::path::Path,
+) -> Result<Listened> {
+    let expected = audio_check::expected_language(&movie.original_language);
+    let mut rejected = Vec::new();
+    loop {
+        let stamp = read_audio_stamp(dir).context("audio.json missing")?;
+        let samples = {
+            let audio = dir.join("audio.opus");
+            let duration = stamp.duration_ms;
+            tokio::task::spawn_blocking(move || audio_check::samples(&audio, duration)).await??
+        };
+        let verdict = audio_check::judge(http, key, expected, &samples).await?;
+        let check = AudioCheck {
+            model: audio_check::MODEL.to_string(),
+            expected: expected.to_string(),
+            filename: stamp.filename.clone(),
+            stream: stamp.stream.clone(),
+            verdict: verdict.clone(),
+        };
+        std::fs::write(
+            dir.join("audio-check.json"),
+            serde_json::to_vec_pretty(&check)?,
+        )?;
+        if verdict.accepted() {
+            return Ok(Listened {
+                rejected,
+                accepted: Some(verdict),
+            });
+        }
+        println!(
+            "  {} ✗ stream {}: {} — {}",
+            truncate(&movie.title, 34),
+            stamp.stream.stream_index,
+            if verdict.commentary {
+                "commentary"
+            } else {
+                &verdict.spoken_language
+            },
+            verdict.notes
+        );
+        reject_audio(dir, stamp, verdict.clone())?;
+        rejected.push(verdict);
+        // The extractor sees the rejection and reaches for the next candidate.
+        let outcome = {
+            let (movie, dir) = (movie.clone(), dir.to_path_buf());
+            tokio::task::spawn_blocking(move || extract_audio_one(&movie, &dir)).await?
+        };
+        match outcome {
+            AudioOutcome::Extracted(id) => println!(
+                "  {} → trying stream {} ({} {}ch)",
+                truncate(&movie.title, 34),
+                id.stream_index,
+                id.codec,
+                id.channels
+            ),
+            AudioOutcome::NoStream => {
+                return Ok(Listened {
+                    rejected,
+                    accepted: None,
+                })
+            }
+            AudioOutcome::Current => bail!("the extractor re-chose a rejected stream"),
+            AudioOutcome::Failed(e) => return Err(e),
+        }
+    }
+}
+
+/// Listen to every extracted track not yet judged; see `Command_::AudioCheck`.
+#[tokio::main]
+async fn audio_check(out: PathBuf, jobs: usize, limit: usize, imdb: Option<String>) -> Result<()> {
+    use futures::stream::StreamExt;
+    use std::sync::Arc;
+
+    let key = Arc::new(std::env::var("GEMINI_API_KEY").context("GEMINI_API_KEY not set")?);
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.as_deref().is_none_or(|id| m.imdb_id == id))
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            extracted_audio(m, &dir).is_some() && !audio_checked(&dir)
+        })
+        .collect();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!(
+        "{total} extracted tracks to listen to, model {}",
+        audio_check::MODEL
+    );
+    if total == 0 {
+        return Ok(());
+    }
+
+    let http = Arc::new(reqwest::Client::new());
+    let out = Arc::new(out);
+    let progress = AtomicUsize::new(0);
+    let outcomes: Vec<Result<Listened>> = futures::stream::iter(queue)
+        .map(|movie| {
+            let (http, key, out) = (Arc::clone(&http), Arc::clone(&key), Arc::clone(&out));
+            let progress = &progress;
+            async move {
+                let outcome = audio_check_one(&http, &key, &movie, &out.join(&movie.imdb_id)).await;
+                let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
+                let title = truncate(&movie.title, 34);
+                match &outcome {
+                    Ok(Listened {
+                        accepted: Some(v),
+                        rejected,
+                    }) => println!(
+                        "[{n}/{total}] {title} ✓ {} ({} confidence){}",
+                        v.spoken_language,
+                        v.confidence,
+                        match rejected.len() {
+                            0 => String::new(),
+                            k => format!(", after rejecting {k}"),
+                        }
+                    ),
+                    Ok(Listened { accepted: None, .. }) => {
+                        println!("[{n}/{total}] {title} ✗ no usable track on the disc")
+                    }
+                    Err(e) => println!("[{n}/{total}] {title} ✗ {e:#}"),
+                }
+                outcome
+            }
+        })
+        .buffer_unordered(jobs.max(1))
+        .collect()
+        .await;
+
+    let accepted = outcomes
+        .iter()
+        .filter(|o| matches!(o, Ok(l) if l.accepted.is_some()))
+        .count();
+    let exhausted = outcomes
+        .iter()
+        .filter(|o| matches!(o, Ok(l) if l.accepted.is_none()))
+        .count();
+    let rejected: usize = outcomes
+        .iter()
+        .filter_map(|o| o.as_ref().ok())
+        .map(|l| l.rejected.len())
+        .sum();
+    println!(
+        "\n{accepted} tracks accepted, {rejected} rejected, {exhausted} films left with no usable track, {} failed",
+        outcomes.iter().filter(|o| o.is_err()).count()
+    );
+    Ok(())
+}
+
 /// Build the fine speech profile for every film with extracted audio; see
 /// `Command_::SpeechProfiles`.
 fn speech_profiles(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
@@ -1630,8 +1910,8 @@ async fn segment_all(out: PathBuf, all: bool, limit: usize, imdb: Option<String>
         }
     }
     println!(
-        "\n{} cues segmented, {} fell back to per-cue",
-        report.cues, report.fallbacks
+        "\n{} cues, {} put to the model, {} fell back to per-cue",
+        report.cues, report.asked, report.fallbacks
     );
     Ok(())
 }
@@ -2444,7 +2724,11 @@ async fn check_one(
     // Syncing against the extraction and checking against the original means
     // a defect in the extraction's timeline gets caught instead of ratified.
     let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let stream = sync::original_audio_stream(
+        &movie.path,
+        codes,
+        &rejected_streams(movie, &out.join(&movie.imdb_id)),
+    )?;
     let duration = sync::duration_ms(&movie.path)?;
     let language = library::course_dir(&movie.original_language)
         .and_then(whisper_language)
@@ -3991,6 +4275,12 @@ fn main() -> Result<()> {
             limit,
             imdb,
         } => extract_audio(out, jobs, limit, imdb.as_deref()),
+        Command_::AudioCheck {
+            out,
+            jobs,
+            limit,
+            imdb,
+        } => audio_check(out, jobs, limit, imdb),
         Command_::OcrSample {
             out,
             movies,

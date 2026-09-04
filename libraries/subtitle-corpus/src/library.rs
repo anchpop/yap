@@ -26,7 +26,7 @@ pub fn stream_codes(language: &str) -> &'static [&'static str] {
         "Thai" => &["tha", "th"],
         "Hindi" => &["hin", "hi"],
         // "cn" is not ISO anything, but rips carry it.
-        "Chinese" | "Cantonese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue", "cn"],
+        "Chinese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue", "cn"],
         "Marathi" => &["mar", "mr"],
         "Swedish" => &["swe", "sv"],
         "Danish" => &["dan", "da"],
@@ -42,31 +42,10 @@ pub fn stream_codes(language: &str) -> &'static [&'static str] {
     }
 }
 
-/// Films whose only Chinese audio is Cantonese, which no course teaches.
-/// Radarr calls every one of them "Chinese" and their discs label the
-/// track no better, so this is the place the knowledge lives. Evidence
-/// (2026-09-03): both passed the verbatim check on a Mandarin subtitle yet
-/// scored 3–15% of placed clips at phoneme ratios near −3.5, where Mandarin
-/// films run 50% at −1 to −2; A Better Tomorrow's disc also carries an
-/// "Original Cantonese Mono Track" beside its unlabelled remixes.
-const CANTONESE_ONLY: &[&str] = &[
-    "tt0093978", // A Chinese Ghost Story (1987)
-    "tt0092263", // A Better Tomorrow (1986)
-];
-
-/// The film's original language as the pipeline should treat it: Radarr's
-/// answer, corrected where the disc's audio is known to be a variety no
-/// course teaches.
-pub fn original_language(imdb_id: &str, radarr: String) -> String {
-    if CANTONESE_ONLY.contains(&imdb_id) {
-        "Cantonese".to_string()
-    } else {
-        radarr
-    }
-}
-
 /// The yap course whose downloaded subtitles would be in this language, if any.
-/// Cantonese audio serves no course: the zho-hans course is Mandarin.
+///
+/// Radarr says "Chinese" for Cantonese films too; `audio_check` is what
+/// keeps their tracks out of the Mandarin course.
 pub fn course_dir(language: &str) -> Option<&'static str> {
     Some(match language {
         "English" => "eng",
@@ -532,16 +511,12 @@ pub fn load_library(dump: &Path) -> Result<Vec<LibraryEntry>> {
         .filter_map(|m| {
             let path = m.movie_file.as_ref()?.path.as_ref()?;
             let imdb = m.imdb_id.filter(|s| !s.is_empty())?;
-            let language = original_language(
-                &imdb,
-                m.original_language.map(|l| l.name).unwrap_or_default(),
-            );
             Some(LibraryEntry {
                 imdb_id: imdb,
                 title: m.title,
                 year: m.year,
                 path: PathBuf::from(path),
-                original_language: language,
+                original_language: m.original_language.map(|l| l.name).unwrap_or_default(),
             })
         })
         .collect())

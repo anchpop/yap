@@ -233,7 +233,10 @@ fn chinese_variety(lang: &str, title: &str) -> ChineseVariety {
 /// For a Chinese film (its `codes` include "cmn") a Mandarin-labelled track
 /// beats an unlabelled one, and a Cantonese-labelled track is never taken:
 /// a disc with only Cantonese audio has no stream for the Mandarin course.
-pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
+/// `rejected` are audio positions the listener already turned down for this
+/// file (a commentary, the wrong variety) — see `audio_check`; they are
+/// passed over as if the disc did not carry them.
+pub fn original_audio_stream(video: &Path, codes: &[&str], rejected: &[usize]) -> Result<usize> {
     #[derive(Deserialize)]
     struct Stream {
         #[serde(default)]
@@ -280,7 +283,7 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
     let mut best: Option<(ChineseVariety, usize)> = None;
     let mut cantonese_only = false;
     for (i, s) in probe.streams.iter().enumerate() {
-        if s.is_commentary() {
+        if s.is_commentary() || rejected.contains(&i) {
             continue;
         }
         let lang = s.tags.get("language").cloned().unwrap_or_default();
@@ -309,7 +312,7 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
         bail!("only Cantonese audio — no track for the Mandarin course");
     }
     // Untagged audio on a single-track rip is the original often enough to try.
-    if probe.streams.len() == 1 && !probe.streams[0].is_commentary() {
+    if probe.streams.len() == 1 && !probe.streams[0].is_commentary() && !rejected.contains(&0) {
         return Ok(0);
     }
     bail!("no audio stream in the film's own language")
