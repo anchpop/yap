@@ -1,0 +1,210 @@
+/* The landing page: a night station outside, a pale page inside.
+   Fixed palette regardless of the app theme, but every colour sits on
+   the app's own hue (oklch hue 328.6, the magenta of the theme tokens). */
+
+.landing {
+  --night: #120711;
+  --paper: #f7eff6;
+  --ink: #300030;
+  --lamp: #e273df;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums lining-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Each section sets its own ground and foreground scale so children can use
+   the same token names on either. Themed sections follow the app: the hero
+   is a daytime station on paper in light mode and the night one in dark
+   mode, and the section showing the app's own card takes the app's ground so
+   the card's tokens sit on the surface they were designed for. */
+.landing-night,
+.dark .landing-themed {
+  --bg: var(--night);
+  --fg: var(--paper);
+  --lamp: #e273df;
+  --fg-soft: #e6dae5;
+  --fg-dim: #c9b7c7;
+  --rule: rgba(247, 239, 246, 0.24);
+  --rule-strong: rgba(247, 239, 246, 0.55);
+  background: var(--bg);
+  color: var(--fg);
+}
+.landing-paper,
+.landing-themed {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  /* The lamp's pink is a light on the night; on paper it needs more ink. */
+  --lamp: #b93cb6;
+  --fg-soft: #4c2f4a;
+  --fg-dim: #654b63;
+  --rule: rgba(48, 0, 48, 0.24);
+  --rule-strong: rgba(48, 0, 48, 0.55);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* The hero's lamp is off by day, lit by night; the snow shader reads this. */
+.landing-hero {
+  --fx-lamp: 0;
+}
+.dark .landing-hero {
+  --fx-lamp: 1;
+}
+
+.landing a {
+  color: inherit;
+  text-decoration: none;
+}
+.landing a:hover {
+  color: var(--lamp);
+}
+
+.landing-disp {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.landing-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.landing-tag {
+  font-size: 15px;
+  font-style: italic;
+}
+.landing .landing-ul {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--lamp);
+}
+
+/* The app's film grain, laid over the full-bleed photos so they read as
+   part of the app and not as stock images dropped into it. Same texture as
+   the shader background; blended as the app does by night (the texture
+   inverted and multiplied in), which over a near-white daytime sky is also
+   the only blend that shows at all, so it is used by day as well, lightly.
+   The app's night fog texture is left off: the night photo has its own. */
+.landing-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url(/noise.webp) center / cover no-repeat;
+  mix-blend-mode: multiply;
+  filter: invert(1);
+  opacity: 0.14;
+}
+/* The dot grid, standing still, for when the stirred one is not on. */
+.landing-dots {
+  pointer-events: none;
+  background: radial-gradient(circle, var(--fg) 1.5px, transparent 2px) center /
+    26px 26px;
+  opacity: 0.2;
+}
+
+.dark .landing-grain {
+  opacity: 0.35;
+}
+
+/* The call to action is the app's own primary button (same tokens, same
+   translucent blur), in the landing's pill and label style. */
+.landing .landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 24px;
+  background: color-mix(in oklab, var(--primary) 85%, transparent);
+  backdrop-filter: blur(16px);
+  color: var(--primary-foreground);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.landing .landing-btn:hover {
+  background: color-mix(in oklab, var(--primary) 90%, transparent);
+  color: var(--primary-foreground);
+}
+
+/* Each language in the headline fades in as it takes its turn. */
+.landing-word {
+  display: inline-block;
+  animation: landing-word-in 0.4s ease-out both;
+}
+@keyframes landing-word-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The closing photo slowly brightens and dims: by night the scene sits a
+   little darker under the text; by day the haze just drifts, kept bright. */
+.landing-breathe {
+  --breathe-from: brightness(1) saturate(1);
+  --breathe-to: brightness(1.06) saturate(1.1);
+  animation: landing-breathe 7s ease-in-out infinite alternate;
+}
+.dark .landing-breathe {
+  --breathe-from: brightness(0.78) saturate(0.78);
+  --breathe-to: brightness(0.95) saturate(0.9);
+}
+@keyframes landing-breathe {
+  from {
+    filter: var(--breathe-from);
+  }
+  to {
+    filter: var(--breathe-to);
+  }
+}
+
+/* Pressing the call to action navigates with a view transition (the only
+   link in the app that opts in), so these rules only ever run for leaving
+   the landing: the snapshot of it blurs and fades out while the app fades in
+   underneath, both over the same half second. */
+::view-transition-old(root) {
+  animation: landing-leave 0.5s ease-in both;
+}
+::view-transition-new(root) {
+  animation: landing-arrive-app 0.5s ease-out both;
+}
+@keyframes landing-leave {
+  to {
+    opacity: 0;
+    filter: blur(20px);
+  }
+}
+@keyframes landing-arrive-app {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-breathe,
+  .landing-word {
+    animation: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* Overscroll shows the root canvas, so on the landing it takes the page's
+   own ground (the app's shader is not mounted here). By night the page is
+   dark at both ends; by day the hero at the top sits on paper. */
+html:has(.landing) {
+  background: #f7eff6;
+}
+html.dark:has(.landing) {
+  background: #120711;
+}

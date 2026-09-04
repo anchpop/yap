@@ -15,6 +15,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
+  useLocation,
   useNavigate,
   useOutletContext,
   ScrollRestoration,
@@ -366,6 +367,8 @@ function AppTestWeapon({ userInfo, accessToken }: AppContextType) {
 }
 
 function AppContent({ userInfo, accessToken }: AppContextType) {
+  // The landing page is full-bleed and carries its own footer.
+  const onLanding = useLocation().pathname === "/";
   return (
     <Profiler id="App" onRender={profilerOnRender}>
       <div className="px-2 overflow-x-clip">
@@ -374,7 +377,7 @@ function AppContent({ userInfo, accessToken }: AppContextType) {
             <Profiler id="Content" onRender={profilerOnRender}>
               <AuthDialogProvider>
                 <Outlet context={{ userInfo, accessToken }} />
-                <About />
+                {!onLanding && <About />}
               </AuthDialogProvider>
             </Profiler>
             <div className="p-2"></div>
