@@ -109,9 +109,28 @@ function createProgram(
   return program;
 }
 
-function initWebGL(offscreenCanvas: OffscreenCanvas, theme: ShaderTheme) {
+/** Size the drawing buffer for a box: a capped pixel ratio and a fraction
+ *  of the resolution, since the shader is all soft gradients. */
+function fit(width: number, height: number, devicePixelRatio: number) {
+  if (!canvas) return;
+  const dpr = Math.min(devicePixelRatio, 1.5);
+  const isMobile = width < 768;
+  const scale = isMobile ? 0.35 : 0.75;
+  canvas.width = width * dpr * scale;
+  canvas.height = height * dpr * scale;
+  gl?.viewport(0, 0, canvas.width, canvas.height);
+}
+
+function initWebGL(
+  offscreenCanvas: OffscreenCanvas,
+  theme: ShaderTheme,
+  width: number,
+  height: number,
+  devicePixelRatio: number,
+) {
   canvas = offscreenCanvas;
   currentTheme = theme;
+  fit(width, height, devicePixelRatio);
 
   gl = canvas.getContext("webgl", {
     alpha: false,
@@ -571,8 +590,14 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
 
   switch (type) {
     case "init": {
-      if (offscreenCanvas && theme) {
-        initWebGL(offscreenCanvas, theme);
+      if (
+        offscreenCanvas &&
+        theme &&
+        width !== undefined &&
+        height !== undefined &&
+        devicePixelRatio !== undefined
+      ) {
+        initWebGL(offscreenCanvas, theme, width, height, devicePixelRatio);
       }
       break;
     }
@@ -585,12 +610,7 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
         height !== undefined &&
         devicePixelRatio !== undefined
       ) {
-        const dpr = Math.min(devicePixelRatio, 1.5);
-        const isMobile = width < 768;
-        const scale = isMobile ? 0.35 : 0.75;
-        canvas.width = width * dpr * scale;
-        canvas.height = height * dpr * scale;
-        gl.viewport(0, 0, canvas.width, canvas.height);
+        fit(width, height, devicePixelRatio);
         const ensureAnim = (
           self as typeof self & { ensureAnimating?: () => void }
         ).ensureAnimating;
@@ -638,7 +658,11 @@ self.addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
           setMouse?: (x: number, y: number) => void;
         }
       ).setMouse;
-      if (setMouse && event.data.x !== undefined && event.data.y !== undefined) {
+      if (
+        setMouse &&
+        event.data.x !== undefined &&
+        event.data.y !== undefined
+      ) {
         setMouse(event.data.x, event.data.y);
       }
       break;
