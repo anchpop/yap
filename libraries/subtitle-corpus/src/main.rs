@@ -1648,12 +1648,22 @@ async fn audio_check_one(
     let mut rejected = Vec::new();
     loop {
         let stamp = read_audio_stamp(dir).context("audio.json missing")?;
-        let samples = {
-            let audio = dir.join("audio.opus");
-            let duration = stamp.duration_ms;
-            tokio::task::spawn_blocking(move || audio_check::samples(&audio, duration)).await??
-        };
-        let verdict = audio_check::judge(http, key, expected, &samples).await?;
+        let mut verdict = None;
+        for points in [audio_check::SAMPLE_POINTS, audio_check::RETRY_POINTS] {
+            let samples = {
+                let audio = dir.join("audio.opus");
+                let duration = stamp.duration_ms;
+                tokio::task::spawn_blocking(move || audio_check::samples(&audio, duration, points))
+                    .await??
+            };
+            let heard = audio_check::judge(http, key, expected, &samples).await?;
+            let quiet = !heard.enough_dialogue;
+            verdict = Some(heard);
+            if !quiet {
+                break;
+            }
+        }
+        let verdict = verdict.expect("two sample sets were tried");
         let check = AudioCheck {
             model: audio_check::MODEL.to_string(),
             expected: expected.to_string(),
@@ -1753,9 +1763,14 @@ async fn audio_check(out: PathBuf, jobs: usize, limit: usize, imdb: Option<Strin
                         accepted: Some(v),
                         rejected,
                     }) => println!(
-                        "[{n}/{total}] {title} ✓ {} ({} confidence){}",
+                        "[{n}/{total}] {title} ✓ {} ({} confidence){}{}",
                         v.spoken_language,
                         v.confidence,
+                        if v.enough_dialogue {
+                            ""
+                        } else {
+                            " — too little dialogue in six windows to judge, accepted"
+                        },
                         match rejected.len() {
                             0 => String::new(),
                             k => format!(", after rejecting {k}"),
