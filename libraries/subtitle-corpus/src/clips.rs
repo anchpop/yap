@@ -10,10 +10,11 @@
 //!    of any audio event, and its word stamps give the clip its bounds. Cue
 //!    times are display times, authored for reading; word stamps come from
 //!    something that heard the speech, and a cue holding two sentences has no
-//!    per-sentence timing at all. Stamps at the span's edges are repaired
-//!    when squeezed ([`SQUEEZED_WORD_MS`]) — the transcriber fabricates
-//!    timestamps for words it inferred from context, and a boundary built on
-//!    one cuts off real speech.
+//!    per-sentence timing at all. The cut's edges and its clear margins come
+//!    from the film's earshot speech profile, not the stamps: ElevenLabs
+//!    stretches a word's end stamp up to the next onset and fabricates
+//!    stamps for words it inferred from context, so a boundary built on a
+//!    stamp cuts off real speech or reports a gap that is not there.
 //! 2. **The phoneme model.** The clip is cut and the model's per-frame
 //!    distribution fetched ([`phoneme_verify::frame_matrix`]); the espeak
 //!    rendering of the sentence is scored under CTC against the model's own
@@ -55,20 +56,21 @@ use crate::transcript::{Kind, Spoken};
 
 /// Bump when the record format or the gating logic changes in a way that
 /// makes existing `clips.jsonl` files not comparable.
-const FORMAT_VERSION: u32 = 7;
+const FORMAT_VERSION: u32 = 10;
 
-/// A transcript word shorter than this did not really fit its stamps:
-/// ElevenLabs squeezes words it inferred from context into slivers with
-/// fabricated timestamps (a 10 ms "Ele" pinned right before "carpinteiro"
-/// while the audible "Ele" sits in the pause before it). A clip boundary
-/// built on such a stamp cuts off real speech, so the boundary is widened
-/// instead ([`SQUEEZE_REPAIR_MS`] per squeezed word).
-const SQUEEZED_WORD_MS: i64 = 70;
+/// How late earshot flags speech after it begins. Measured 2026-09-02 on
+/// four films: with the profile allowed to trim inside the stamped words
+/// at threshold 0.7, the start moved a median 60 ms later than the stamp
+/// and the end 100 ms earlier, and the clips lost their first consonants
+/// (edge and ratio rejects up, net yield down 7%). So the profile only
+/// ever moves a boundary *outward*, and when it does — a squeezed or late
+/// stamp — the onset is placed this much before the frame that first read
+/// as speech.
+const ONSET_LAG_MS: i64 = 80;
 
-/// Audio reclaimed per squeezed boundary word — roughly one short spoken
-/// word. Bounded by the clear margin, so the widened cut still carries no
-/// neighbouring speech.
-const SQUEEZE_REPAIR_MS: i64 = 200;
+/// Where no neighbouring word bounds the search, how far from the stamp
+/// the silence may be looked for.
+const OPEN_SEARCH_MS: i64 = 2_000;
 
 /// How many phonemes at each end of the target the edge check averages.
 const EDGE_PHONEMES: usize = 3;
@@ -85,23 +87,32 @@ pub struct Provenance {
     pub format: u32,
     pub subtitle_digest: String,
     pub transcript_digest: String,
-    /// The phoneme model's cache partition (model revision + decoder).
+    /// The phoneme model's cache partition (model revision + decoder), or
+    /// "none" for an [`audio_only`] language.
     pub model: String,
     /// Identity of the G2P backend that rendered `target_ipa` (today the
     /// espeak fork's binary digest for every gated language; other backends
     /// per lexide's PHONEME_BACKENDS.md stamp here when their languages get
     /// gates). A different phonemizer can never pose as current provenance.
     pub g2p: String,
+    /// Which segmentation produced the sentences
+    /// ([`movie_subtitles::segment::provenance`]): a new prompt or model on
+    /// the model-segmented languages, or a bump of the rules, remaps.
+    pub segmentation: String,
     pub language: String,
     /// The gate the verdicts were made under. Frame matrices are cached, so
     /// re-gating under a new cut is cheap — and must happen, or a loosened
-    /// cut would leave old verdicts standing.
-    pub min_ratio: f64,
+    /// cut would leave old verdicts standing. `None` for an [`audio_only`]
+    /// language: no phoneme gate at all.
+    pub min_ratio: Option<f64>,
     pub min_clear_ms: i64,
     pub min_edge_logp: f64,
     pub max_pad_speech: f64,
     pub max_lead_rms: f64,
     pub min_voiced: f64,
+    /// earshot score above which a 16 ms frame counts as speech when the
+    /// clear margins are measured from the film's speech profile.
+    pub speech_threshold: f64,
 }
 
 /// One transcript word inside a clip.
@@ -127,9 +138,9 @@ pub struct Clip {
     /// tail. Cut the same way to hear exactly what was scored.
     pub pad_before_ms: i64,
     pub pad_after_ms: i64,
-    /// Widening applied to each bound where the boundary word's stamps were
-    /// squeezed ([`SQUEEZED_WORD_MS`]) — `start_ms`/`end_ms` already include
-    /// it.
+    /// How far the profile moved each bound from the boundary word's stamp
+    /// (positive = widened past the stamp, negative = trimmed inside it);
+    /// `start_ms`/`end_ms` already include it.
     pub repaired_before_ms: i64,
     pub repaired_after_ms: i64,
     pub words: Vec<ClipWord>,
@@ -180,6 +191,24 @@ pub struct FilmSummary {
     pub aligned: usize,
     pub scored: usize,
     pub passed: usize,
+    /// Median phoneme ratio of the scored clips, when there is a phoneme
+    /// gate. A film whose median sits far below the cut is not speaking
+    /// the language the targets were rendered in — a Cantonese track under
+    /// Mandarin subtitles, a dub — however well its subtitle placed.
+    pub median_ratio: Option<f64>,
+}
+
+/// Below this median ratio a film is flagged as not sounding like its
+/// course language. Mandarin films run −1 to −2; the Cantonese ones that
+/// slipped through in 2026-09-03 sat at −3.3 to −3.8.
+pub const FOREIGN_AUDIO_RATIO: f64 = -3.0;
+
+fn median(mut values: Vec<f64>) -> Option<f64> {
+    if values.is_empty() {
+        return None;
+    }
+    values.sort_by(|a, b| a.total_cmp(b));
+    Some(values[values.len() / 2])
 }
 
 /// Gate settings.
@@ -213,11 +242,27 @@ pub struct Gate {
     /// model, loudness, and ASR all comprehend whispers fine; only the
     /// missing glottal periodicity gives them away.
     pub min_voiced: f64,
+    /// Least share of a film's eligible sentences its subtitle must place
+    /// in the transcript ([`crate::verbatim`]) before the film is mapped at
+    /// all. A rewrite or another-variety translation is not a source of
+    /// sentences for this audio, however well synced.
+    pub min_verbatim: Option<f64>,
+    /// earshot score above which a 16 ms frame of the film's speech profile
+    /// counts as speech. The clear margins are measured from the profile,
+    /// not the transcript's word stamps: ElevenLabs stretches a word's end
+    /// stamp up to the next onset, so stamped gaps cluster at 30–60 ms
+    /// whatever the audio holds. On 120 stamp-rejected clips both earshot
+    /// and the phoneme model heard a ≥100 ms pause in ~75% (2026-09-02);
+    /// 0.7 matched the phoneme model on known-silent controls (92% vs 90%)
+    /// where 0.5 called a quarter of them speech.
+    pub speech_threshold: f64,
 }
 
 impl Default for Gate {
     fn default() -> Self {
         Self {
+            min_verbatim: None,
+            speech_threshold: 0.7,
             min_ratio: None,
             min_clear_ms: 100,
             min_edge_logp: -4.0,
@@ -261,14 +306,50 @@ impl Default for Gate {
 /// the espeak parser was emitting palatalization `ʲ` as its own token
 /// where the model's labels bind it to the consonant (`tʲ`), so every soft
 /// consonant was a mismatch. With the parser fixed it behaves like French.
-/// Languages absent here (hin, jpn, zho, kor, tha) have no espeak reference
-/// the model was trained on; see lexide's PHONEME_BACKENDS.md.
+/// The g2p-backed languages were audited the same way once their label
+/// chains were ported (2026-09-03, same model, `phoneme_verify::model_target`
+/// targets; Hindi had measured 0.77 against espeak, the wrong reference):
+///
+/// | lang     | AUC  | cut  | verified kept | rejected kept |
+/// |----------|------|------|---------------|---------------|
+/// | hin      | 0.86 | −2.0 | 71%           | 13%           |
+/// | jpn      | 0.87 | −1.5 | 68%           | 11%           |
+/// | zho-hans | 0.81 | −2.0 | 61%           | 15%           |
+/// | tha      | 0.88 | −2.5 | 70%           | 8%            |
+///
+/// These cuts keep rejected cues at or under the 14% English tolerates and
+/// have had no ear-test adjudication. Thai's verified cues sit a full point
+/// lower than the others (median −2.05): the model hears colloquial r as l
+/// and never emits the glottal stops its labels carry, so its cut is looser
+/// by design. Korean has no cut at all: see [`audio_only`]. Thai's backend
+/// runs through `uv`, which must be on PATH or the preflight above fails
+/// the film.
 pub fn default_min_ratio(code: &str) -> Option<f64> {
     Some(match code {
-        "spa" | "fra" | "ita" | "eng" | "rus" => -2.0,
-        "deu" | "por" => -2.5,
+        "spa" | "fra" | "ita" | "eng" | "rus" | "hin" | "zho-hans" => -2.0,
+        "deu" | "por" | "tha" => -2.5,
+        "jpn" => -1.5,
         _ => return None,
     })
+}
+
+/// Languages mapped without a phoneme gate: the clip passes on the audio
+/// gates alone (a clean pause each side from the earshot profile, no
+/// voices in the pads, a lead-in no louder than the dialogue, not
+/// whispered). Korean's phoneme labels come from the g2p crate now, but the
+/// deployed pronunciation model was never trained on Korean, so scoring
+/// against it would be scoring against a model that never heard the
+/// language. Andre's call (2026-09-03): ship Korean clips on the audio
+/// gates and turn the phoneme gate on once a model trained on the g2p-kor
+/// labels exists.
+pub fn audio_only(code: &str) -> bool {
+    code == "kor"
+}
+
+/// Whether `clips` maps this language at all — with a phoneme gate or
+/// [`audio_only`].
+pub fn maps(code: &str) -> bool {
+    default_min_ratio(code).is_some() || audio_only(code)
 }
 
 /// The 16-bit mono samples of a RIFF wav as `slice_wav_padded` emits it.
@@ -373,12 +454,17 @@ pub fn read_clips(path: &Path) -> Result<Vec<Clip>> {
 /// them ([`movie_subtitles::sentences::keyed_sentences`] — one shared
 /// implementation, so a pack sentence and its clip agree byte-for-byte).
 /// All sentences are returned, course-worthy or not; the flag rides along.
-pub fn subtitle_sentences(
+pub async fn subtitle_sentences(
     srt: &str,
     language: Language,
     segmenter: &SubtitleSegmenter,
-) -> Vec<KeyedSentence> {
-    let lines: Vec<SubtitleLine> = parse_cues(srt)
+) -> Result<Vec<KeyedSentence>> {
+    movie_subtitles::sentences::keyed_sentences(&subtitle_lines(srt), language, segmenter).await
+}
+
+/// A subtitle text as the cleaned cue lines segmentation starts from.
+pub fn subtitle_lines(srt: &str) -> Vec<SubtitleLine> {
+    parse_cues(srt)
         .into_iter()
         .filter_map(|cue| {
             let text = cleanup_subtitle_text(&cue.text);
@@ -388,21 +474,27 @@ pub fn subtitle_sentences(
                 end_ms: cue.end_ms.max(0) as u32,
             })
         })
-        .collect();
-    movie_subtitles::sentences::keyed_sentences(&lines, language, segmenter)
+        .collect()
 }
 
 /// A sentence's place in the transcript, or why it has none.
-struct Placed {
-    words: Vec<ClipWord>,
-    speaker: Option<String>,
-    wer: f64,
-    audio_event_overlap: bool,
-    clear_before_ms: i64,
-    clear_after_ms: i64,
+pub struct Placed {
+    pub words: Vec<ClipWord>,
+    pub speaker: Option<String>,
+    pub wer: f64,
+    pub audio_event_overlap: bool,
+    /// Silence between the span and the nearest other word *by the stamps*
+    /// — the transcript's opinion, kept for comparison; the cut is made
+    /// from the speech profile.
+    pub clear_before_ms: i64,
+    pub clear_after_ms: i64,
+    /// Where the neighbouring words begin and end: the silence search
+    /// never reaches into them.
+    pub prev_word_start_ms: Option<i64>,
+    pub next_word_end_ms: Option<i64>,
 }
 
-fn place(
+pub fn place(
     sentence: &str,
     passage_start: i64,
     passage_end: i64,
@@ -455,15 +547,25 @@ fn place(
     let audio_event_overlap = transcript
         .iter()
         .any(|w| w.kind == Kind::AudioEvent && w.at_ms < end_ms && w.until_ms > start_ms);
-    let before = transcript[..first_idx]
+    // The nearest *spoken* neighbour on each side. For the character-
+    // tokenized languages the transcript emits punctuation as its own
+    // zero-length word sharing the previous word's stamps ("。" ending
+    // exactly where the sentence ends), which as a neighbour would leave
+    // the silence search no window at all — every Japanese sentence then
+    // read as "too close" while the profile held a second of quiet.
+    let spoken =
+        |w: &&Spoken| w.kind == Kind::Word && !agreement_tokens(&w.text, tokenization).is_empty();
+    let prev = transcript[..first_idx]
         .iter()
         .rev()
-        .find(|w| w.kind == Kind::Word)
-        .map_or(i64::MAX, |w| start_ms - w.until_ms);
-    let after = transcript[last_idx + 1..]
+        .filter(spoken)
+        .find(|w| w.at_ms < start_ms);
+    let next = transcript[last_idx + 1..]
         .iter()
-        .find(|w| w.kind == Kind::Word)
-        .map_or(i64::MAX, |w| w.at_ms - end_ms);
+        .filter(spoken)
+        .find(|w| w.until_ms > end_ms);
+    let before = prev.map_or(i64::MAX, |w| start_ms - w.until_ms);
+    let after = next.map_or(i64::MAX, |w| w.at_ms - end_ms);
     let mut speakers: Vec<&str> = span.iter().filter_map(|w| w.speaker.as_deref()).collect();
     speakers.dedup();
     Ok(Placed {
@@ -484,6 +586,167 @@ fn place(
         audio_event_overlap,
         clear_before_ms: before,
         clear_after_ms: after,
+        prev_word_start_ms: prev.map(|w| w.at_ms),
+        next_word_end_ms: next.map(|w| w.until_ms),
+    })
+}
+
+/// The phoneme gate's verdict on a scored clip: the target must be in the
+/// model's vocabulary, score above the language's cut, and have both its
+/// edges inside the cut.
+fn phoneme_reject(clip: &Clip, min_ratio: f64, gate: &Gate) -> Option<String> {
+    match clip.ratio {
+        _ if !clip.oov.is_empty() => Some(format!(
+            "target phonemes outside the model vocabulary: {}",
+            clip.oov.join(" ")
+        )),
+        None => Some("target could not be scored".into()),
+        Some(r) if r < min_ratio => Some(format!("ratio {r:.2} below {min_ratio:.2}")),
+        _ if clip.edge_logp_start.is_none_or(|e| e < gate.min_edge_logp) => {
+            Some(match clip.edge_logp_start {
+                Some(e) => format!("sentence start not in the cut (edge logp {e:.2})"),
+                None => "target could not be aligned".into(),
+            })
+        }
+        _ if clip.edge_logp_end.is_some_and(|e| e < gate.min_edge_logp) => Some(format!(
+            "sentence end not in the cut (edge logp {:.2})",
+            clip.edge_logp_end.unwrap()
+        )),
+        _ => None,
+    }
+}
+
+/// The verdict of the gates that listen to the audio itself, phoneme model
+/// or not: voices in the pads, a lead-in louder than the dialogue,
+/// whispered delivery.
+fn audio_reject(clip: &Clip, gate: &Gate) -> Option<String> {
+    if let Some(v) = clip.lead_speech.filter(|v| *v > gate.max_pad_speech) {
+        return Some(format!("voices in the lead-in (speech {v:.2})"));
+    }
+    if let Some(v) = clip.tail_speech.filter(|v| *v > gate.max_pad_speech) {
+        return Some(format!("voices in the tail (speech {v:.2})"));
+    }
+    if let Some(v) = clip.lead_rms.filter(|v| *v > gate.max_lead_rms) {
+        return Some(format!("lead-in louder than the dialogue (rms x{v:.2})"));
+    }
+    if let Some(v) = clip.voiced.filter(|v| *v < gate.min_voiced) {
+        return Some(format!("whispered delivery (voiced {v:.2})"));
+    }
+    None
+}
+
+/// Fraction of the 16 ms frames in `[from_ms, to_ms)` the speech profile
+/// scores at or above `threshold`; `None` for an empty stretch.
+fn profile_speech_fraction(
+    profile: &[f32],
+    threshold: f32,
+    from_ms: i64,
+    to_ms: i64,
+) -> Option<f64> {
+    let frame_ms = (crate::vad::FRAME * 1000 / crate::vad::SAMPLE_RATE) as i64;
+    let lo = (from_ms.max(0) / frame_ms) as usize;
+    let hi = ((to_ms.max(0) + frame_ms - 1) / frame_ms) as usize;
+    let hi = hi.min(profile.len());
+    let lo = lo.min(hi);
+    (hi > lo).then(|| {
+        profile[lo..hi].iter().filter(|&&s| s >= threshold).count() as f64 / (hi - lo) as f64
+    })
+}
+
+/// Stretches of `[from_ms, to_ms)` at least `min_ms` long in which every
+/// 16 ms frame of the speech profile scores below `threshold`.
+fn silences(
+    profile: &[f32],
+    threshold: f32,
+    from_ms: i64,
+    to_ms: i64,
+    min_ms: i64,
+) -> Vec<(i64, i64)> {
+    let frame_ms = (crate::vad::FRAME * 1000 / crate::vad::SAMPLE_RATE) as i64;
+    let lo = (from_ms.max(0) / frame_ms) as usize;
+    let hi = ((to_ms.max(0) + frame_ms - 1) / frame_ms) as usize;
+    let hi = hi.min(profile.len());
+    let mut runs = Vec::new();
+    let mut run_start: Option<usize> = None;
+    // One frame past the end, never quiet, closes a run touching `hi`.
+    let quiet_at = profile[lo.min(hi)..hi]
+        .iter()
+        .map(|&s| s < threshold)
+        .chain(std::iter::once(false));
+    for (i, quiet) in (lo..).zip(quiet_at) {
+        match (quiet, run_start) {
+            (true, None) => run_start = Some(i),
+            (false, Some(s)) => {
+                let (a, b) = (s as i64 * frame_ms, i as i64 * frame_ms);
+                if b - a >= min_ms {
+                    runs.push((a, b));
+                }
+                run_start = None;
+            }
+            _ => {}
+        }
+    }
+    runs
+}
+
+/// Where the profile says the span really begins and ends, and how much
+/// silence lies on each side.
+struct Margins {
+    start_ms: i64,
+    end_ms: i64,
+    clear_before_ms: i64,
+    clear_after_ms: i64,
+}
+
+/// Find the pause on each side of a placed span in the film's speech
+/// profile. The search runs between the neighbouring word's stamp and the
+/// span's own stamp, never inside the span; the pause nearest the span
+/// wins. A boundary only moves outward: when the pause ends before the
+/// stamped onset, speech began earlier than the stamp says (a squeezed or
+/// late stamp) and the start moves back to it, less [`ONSET_LAG_MS`]. A
+/// stamp stretched over silence is left alone — dead air inside the span
+/// is harmless, a clipped consonant is not. `None` when either side has no
+/// pause of `min_clear_ms` next to the span, which is the transcript's
+/// "too close" verdict made against the audio instead of its own stamps.
+fn earshot_margins(
+    profile: &[f32],
+    threshold: f32,
+    p: &Placed,
+    min_clear_ms: i64,
+) -> Option<Margins> {
+    let first = &p.words[0];
+    let last = &p.words[p.words.len() - 1];
+    let head = silences(
+        profile,
+        threshold,
+        p.prev_word_start_ms.unwrap_or(first.at_ms - OPEN_SEARCH_MS),
+        first.at_ms,
+        min_clear_ms,
+    );
+    let (gap_start, gap_end) = *head.last()?;
+    // The window ends at the stamp, so a pause reaching it means the stamp
+    // is where speech begins; a pause ending short of it means speech
+    // began earlier, at (roughly) the frame that first read as speech.
+    let start_ms = if gap_end < first.at_ms {
+        (gap_end - ONSET_LAG_MS).max(gap_start)
+    } else {
+        first.at_ms
+    };
+    let clear_before_ms = start_ms - gap_start;
+    let tail = silences(
+        profile,
+        threshold,
+        last.until_ms,
+        p.next_word_end_ms.unwrap_or(last.until_ms + OPEN_SEARCH_MS),
+        min_clear_ms,
+    );
+    let (end_ms, tail_end) = *tail.first()?;
+    let clear_after_ms = tail_end - end_ms;
+    (clear_before_ms >= min_clear_ms && clear_after_ms >= min_clear_ms).then_some(Margins {
+        start_ms,
+        end_ms,
+        clear_before_ms,
+        clear_after_ms,
     })
 }
 
@@ -510,26 +773,71 @@ async fn clips_one(
             bail!("no {what}");
         }
     }
-
-    let Some(min_ratio) = gate.min_ratio.or_else(|| default_min_ratio(code)) else {
-        bail!("no calibrated phoneme gate for {code}");
-    };
-    // Fail fast if the G2P backend is broken or missing: a run that cannot
-    // phonemize must not write a clips.jsonl at all — a poisoned file with
-    // current provenance would be trusted by every later resume. (Seen live
-    // 2026-09-01: espeak absent from a nohup env produced an all-reject
-    // fra file that a re-run skipped as done.)
-    let g2p = espeak::identity().context("G2P preflight")?;
-    match espeak::phonemize_phrase("bon", language) {
-        Ok(Some(t)) if !t.is_empty() => {}
-        other => bail!("G2P preflight: espeak produced {other:?} for a canary word"),
+    // A subtitle that does not say what is said yields nothing worth the
+    // phoneme spend, and one on another clock places nothing at all.
+    let min_verbatim = gate
+        .min_verbatim
+        .unwrap_or_else(|| crate::verbatim::min_fraction(code));
+    let check = crate::verbatim::check(dir, language, code, min_verbatim).await?;
+    if check.measure.verdict != crate::verbatim::Verdict::Verbatim {
+        bail!(
+            "subtitle not verbatim: {}",
+            crate::verbatim::describe(&check.measure)
+        );
     }
+
+    let min_ratio = if audio_only(code) {
+        None
+    } else {
+        let min_ratio = gate
+            .min_ratio
+            .or_else(|| default_min_ratio(code))
+            .with_context(|| format!("no calibrated phoneme gate for {code}"))?;
+        if language.g2p_lang().is_none() {
+            bail!("{code}: the g2p crate does not produce this language's model labels");
+        }
+        // Fail fast if the G2P engine cannot run (its data unpacks into a
+        // cache dir on first use): a run that cannot phonemize must not
+        // write a clips.jsonl at all — a poisoned file with current
+        // provenance would be trusted by every later resume. (Seen live
+        // 2026-09-01, when espeak was still an external binary: absent from
+        // a nohup env, it produced an all-reject fra file that a re-run
+        // skipped as done.)
+        let canary = match language {
+            Language::Hindi => "नमस्ते",
+            Language::ChineseSimplified => "你好",
+            Language::Japanese => "こんにちは",
+            Language::Thai => "สวัสดี",
+            _ => "bon",
+        };
+        match phoneme_verify::model_target(canary, language) {
+            Some(Ok(p)) if !p.phonemes.is_empty() => {}
+            other => bail!("G2P preflight: g2p produced {other:?} for a canary word"),
+        }
+        Some(min_ratio)
+    };
+    // Which phonemizer, and for Hindi which label convention, the targets
+    // came from; either changing must re-score every clip. An audio-only
+    // language has neither a phonemizer nor a model in its provenance.
+    let (model, g2p) = match (min_ratio, language) {
+        (None, _) => ("none".to_string(), "none".to_string()),
+        (Some(_), Language::Hindi) => (
+            phoneme_verify::production_cache_version(),
+            format!(
+                "{} hindi={:?}",
+                g2p::identity(),
+                phoneme_verify::MODEL_HINDI_CANON
+            ),
+        ),
+        (Some(_), _) => (phoneme_verify::production_cache_version(), g2p::identity()),
+    };
     let provenance = Provenance {
         format: FORMAT_VERSION,
         subtitle_digest: crate::transcript::source_digest(&subtitle)?,
         transcript_digest: crate::transcript::source_digest(&transcript_path)?,
-        model: phoneme_verify::production_cache_version(),
+        model,
         g2p,
+        segmentation: movie_subtitles::segment::provenance(language),
         language: code.to_string(),
         min_ratio,
         min_clear_ms: gate.min_clear_ms,
@@ -537,6 +845,7 @@ async fn clips_one(
         max_pad_speech: gate.max_pad_speech,
         max_lead_rms: gate.max_lead_rms,
         min_voiced: gate.min_voiced,
+        speech_threshold: gate.speech_threshold,
     };
     let path = clips_path(dir);
     if stored_provenance(&path).as_ref() == Some(&provenance) {
@@ -546,14 +855,26 @@ async fn clips_one(
             aligned: clips.len(),
             scored: clips.len(),
             passed: clips.iter().filter(|c| c.passed).count(),
+            median_ratio: median(clips.iter().filter_map(|c| c.ratio).collect()),
         });
     }
 
+    // The margins come from the profile; without one there is nothing to
+    // cut against, and falling back to stamps would quietly change what a
+    // "clear" margin means from film to film.
+    let profile = crate::vad::read_profile(&dir.join("speech-profile-16ms.f32"))
+        .context("no 16 ms speech profile (run speech-profiles)")?;
+    let threshold = gate.speech_threshold as f32;
+
     let empty = std::collections::HashMap::new();
-    let ctx = VerifyContext::new(http, store.clone(), &empty, language)?;
+    let ctx = match min_ratio {
+        Some(_) => Some(VerifyContext::new(http, store.clone(), &empty, language)?),
+        None => None,
+    };
     let segmenter = SubtitleSegmenter::for_language(language)?;
     let transcript = load_transcript(&transcript_path)?;
-    let sentences = subtitle_sentences(&std::fs::read_to_string(&subtitle)?, language, &segmenter);
+    let sentences =
+        subtitle_sentences(&std::fs::read_to_string(&subtitle)?, language, &segmenter).await?;
 
     let mut summary = FilmSummary {
         sentences: sentences.len(),
@@ -581,34 +902,21 @@ async fn clips_one(
             let ctx = &ctx;
             let audio = audio.clone();
             let imdb_id = movie.imdb_id.clone();
+            let profile = &profile;
             async move {
-                // Boundary words with squeezed stamps carry fabricated
-                // timestamps; widen the cut past them, as far as the clear
-                // margin allows, keeping `min_clear_ms` of it.
-                let squeezed = |w: &ClipWord| w.until_ms - w.at_ms < SQUEEZED_WORD_MS;
-                let lead = p.words.iter().take_while(|w| squeezed(w)).count();
-                let trail = p.words.iter().rev().take_while(|w| squeezed(w)).count();
-                let repair = |n: usize, clear: i64| {
-                    (n as i64 * SQUEEZE_REPAIR_MS).min((clear - gate.min_clear_ms).max(0))
+                let stamped = (p.words[0].at_ms, p.words[p.words.len() - 1].until_ms);
+                let margins = earshot_margins(profile, threshold, &p, gate.min_clear_ms);
+                // Without a pause on both sides the stamps stand in, so the
+                // record still says where the transcript put the sentence.
+                let (start_ms, end_ms, clear_before_ms, clear_after_ms) = match &margins {
+                    Some(m) => (m.start_ms, m.end_ms, m.clear_before_ms, m.clear_after_ms),
+                    None => (stamped.0, stamped.1, p.clear_before_ms, p.clear_after_ms),
                 };
-                let (repaired_before_ms, repaired_after_ms) = if lead == p.words.len() {
-                    // Every stamp in the span is fabricated; there is no
-                    // anchor to repair from.
-                    (0, 0)
-                } else {
-                    (
-                        repair(lead, p.clear_before_ms),
-                        repair(trail, p.clear_after_ms),
-                    )
-                };
-                let clear_before_ms = p.clear_before_ms - repaired_before_ms;
-                let clear_after_ms = p.clear_after_ms - repaired_after_ms;
-                let start_ms = p.words[0].at_ms - repaired_before_ms;
-                let end_ms = p.words[p.words.len() - 1].until_ms + repaired_after_ms;
+                let (repaired_before_ms, repaired_after_ms) =
+                    (stamped.0 - start_ms, end_ms - stamped.1);
                 let pad = |target: i64, clear: i64| target.min(clear / 2).max(0);
                 let pad_before_ms = pad(LEAD_IN_MS, clear_before_ms);
                 let pad_after_ms = pad(AUDIO_PAD_MS, clear_after_ms);
-                let all_squeezed = lead == p.words.len();
                 let mut clip = Clip {
                     sentence: sentence.clone(),
                     imdb_id,
@@ -642,34 +950,10 @@ async fn clips_one(
                     clip.reject = Some("audio event inside the span".into());
                     return Some(clip);
                 }
-                if all_squeezed {
-                    clip.reject = Some("every word stamp in the span is squeezed".into());
-                    return Some(clip);
-                }
-                if clip.clear_before_ms < gate.min_clear_ms
-                    || clip.clear_after_ms < gate.min_clear_ms
-                {
+                if margins.is_none() {
                     clip.reject = Some("neighbouring speech too close to cut clean".into());
                     return Some(clip);
                 }
-                // espeak marks a language switch with `(en)`…`(fr)`; the
-                // parser leaves the parentheses as tokens, which are not
-                // phonemes.
-                let target = match espeak::phonemize_phrase(&sentence, language) {
-                    Ok(Some(t)) if !t.is_empty() => t
-                        .into_iter()
-                        .filter(|tok| tok != "(" && tok != ")")
-                        .collect::<Vec<_>>(),
-                    Ok(_) => {
-                        clip.reject = Some("espeak produced no phonemes".into());
-                        return Some(clip);
-                    }
-                    Err(e) => {
-                        clip.reject = Some(format!("espeak: {e:#}"));
-                        return Some(clip);
-                    }
-                };
-                clip.target_ipa = target.clone();
                 let wav = match tokio::task::spawn_blocking(move || {
                     slice_wav_padded(&audio, start_ms, end_ms, pad_before_ms, pad_after_ms)
                 })
@@ -682,23 +966,8 @@ async fn clips_one(
                         return Some(clip);
                     }
                 };
-                let frames: FrameMatrix = match phoneme_verify::frame_matrix(ctx, &wav).await {
-                    Ok(f) => f,
-                    Err(e) => {
-                        eprintln!("  {}: {e:#}", clip.sentence);
-                        return None;
-                    }
-                };
-                // The pads under the model's ear and the mix's loudness:
-                // frames spread evenly over the sliced audio, so the pad
-                // regions are the first and last stretches of the matrix.
                 let padded_ms = (end_ms - start_ms + pad_before_ms + pad_after_ms) as f64;
-                let frame_ms = padded_ms / frames.frames as f64;
-                let lead_frames = (pad_before_ms as f64 / frame_ms) as usize;
-                let tail_frames = (pad_after_ms as f64 / frame_ms) as usize;
-                clip.lead_speech = frames.speech_fraction(0, lead_frames);
-                clip.tail_speech = frames
-                    .speech_fraction(frames.frames.saturating_sub(tail_frames), frames.frames);
+                // The mix's loudness and voicing, straight from the samples.
                 if let Some(samples) = wav_samples(&wav) {
                     let n = |ms: f64| (ms * samples.len() as f64 / padded_ms) as usize;
                     let (lead_n, span_to) =
@@ -711,65 +980,74 @@ async fn clips_one(
                     }
                     clip.voiced = voiced_fraction(span_samples, 16_000);
                 }
-                let score = frames.score_target(&target);
-                clip.heard_ipa = frames
-                    .greedy_ids()
-                    .into_iter()
-                    .map(|id| frames.vocab[id].clone())
-                    .collect();
-                clip.oov = score.oov;
-                clip.ratio = score.ratio;
-                clip.logp_target_per_phoneme = score.logp_target_per_phoneme;
-                let ids: Vec<usize> = target.iter().filter_map(|t| frames.id(t)).collect();
-                if let Some(spans) = frames.force_align(&ids) {
-                    let k = EDGE_PHONEMES.min(spans.len());
-                    let mean = |spans: &[phoneme_verify::AlignedPhoneme]| {
-                        spans.iter().map(|s| s.logp_mean).sum::<f64>() / spans.len() as f64
+                if let Some(min_ratio) = min_ratio {
+                    let ctx = ctx.as_ref().expect("gated languages have a verify context");
+                    let target = match phoneme_verify::model_target(&sentence, language) {
+                        Some(Ok(p)) if !p.phonemes.is_empty() => p.phonemes,
+                        Some(Ok(_)) | None => {
+                            clip.reject = Some("g2p produced no phonemes".into());
+                            return Some(clip);
+                        }
+                        // Includes the Hindi chain refusing digits or Latin
+                        // script: a target with a hole where the audio has
+                        // speech would score wrong, so the clip is rejected.
+                        Some(Err(e)) => {
+                            clip.reject = Some(format!("g2p: {e:#}"));
+                            return Some(clip);
+                        }
                     };
-                    clip.edge_logp_start = Some(mean(&spans[..k]));
-                    clip.edge_logp_end = Some(mean(&spans[spans.len() - k..]));
+                    clip.target_ipa = target.clone();
+                    let frames: FrameMatrix = match phoneme_verify::frame_matrix(ctx, &wav).await {
+                        Ok(f) => f,
+                        Err(e) => {
+                            eprintln!("  {}: {e:#}", clip.sentence);
+                            return None;
+                        }
+                    };
+                    // The pads under the model's ear: frames spread evenly
+                    // over the sliced audio, so the pad regions are the
+                    // first and last stretches of the matrix.
+                    let frame_ms = padded_ms / frames.frames as f64;
+                    let lead_frames = (pad_before_ms as f64 / frame_ms) as usize;
+                    let tail_frames = (pad_after_ms as f64 / frame_ms) as usize;
+                    clip.lead_speech = frames.speech_fraction(0, lead_frames);
+                    clip.tail_speech = frames
+                        .speech_fraction(frames.frames.saturating_sub(tail_frames), frames.frames);
+                    let score = frames.score_target(&target);
+                    clip.heard_ipa = frames
+                        .greedy_ids()
+                        .into_iter()
+                        .map(|id| frames.vocab[id].clone())
+                        .collect();
+                    clip.oov = score.oov;
+                    clip.ratio = score.ratio;
+                    clip.logp_target_per_phoneme = score.logp_target_per_phoneme;
+                    let ids: Vec<usize> = target.iter().filter_map(|t| frames.id(t)).collect();
+                    if let Some(spans) = frames.force_align(&ids) {
+                        let k = EDGE_PHONEMES.min(spans.len());
+                        let mean = |spans: &[phoneme_verify::AlignedPhoneme]| {
+                            spans.iter().map(|s| s.logp_mean).sum::<f64>() / spans.len() as f64
+                        };
+                        clip.edge_logp_start = Some(mean(&spans[..k]));
+                        clip.edge_logp_end = Some(mean(&spans[spans.len() - k..]));
+                    }
+                    if let Some(reason) = phoneme_reject(&clip, min_ratio, gate) {
+                        clip.reject = Some(reason);
+                        return Some(clip);
+                    }
+                } else {
+                    // No model to listen to the pads: the earshot profile
+                    // says whether anyone speaks in them.
+                    clip.lead_speech = profile_speech_fraction(
+                        profile,
+                        threshold,
+                        start_ms - pad_before_ms,
+                        start_ms,
+                    );
+                    clip.tail_speech =
+                        profile_speech_fraction(profile, threshold, end_ms, end_ms + pad_after_ms);
                 }
-                clip.reject = match clip.ratio {
-                    _ if !clip.oov.is_empty() => Some(format!(
-                        "target phonemes outside the model vocabulary: {}",
-                        clip.oov.join(" ")
-                    )),
-                    None => Some("target could not be scored".into()),
-                    Some(r) if r < min_ratio => Some(format!("ratio {r:.2} below {min_ratio:.2}")),
-                    _ if clip.edge_logp_start.is_none_or(|e| e < gate.min_edge_logp) => {
-                        Some(match clip.edge_logp_start {
-                            Some(e) => format!("sentence start not in the cut (edge logp {e:.2})"),
-                            None => "target could not be aligned".into(),
-                        })
-                    }
-                    _ if clip.edge_logp_end.is_some_and(|e| e < gate.min_edge_logp) => {
-                        Some(format!(
-                            "sentence end not in the cut (edge logp {:.2})",
-                            clip.edge_logp_end.unwrap()
-                        ))
-                    }
-                    _ if clip.lead_speech.is_some_and(|v| v > gate.max_pad_speech) => {
-                        Some(format!(
-                            "voices in the lead-in (speech {:.2})",
-                            clip.lead_speech.unwrap()
-                        ))
-                    }
-                    _ if clip.tail_speech.is_some_and(|v| v > gate.max_pad_speech) => {
-                        Some(format!(
-                            "voices in the tail (speech {:.2})",
-                            clip.tail_speech.unwrap()
-                        ))
-                    }
-                    _ if clip.lead_rms.is_some_and(|v| v > gate.max_lead_rms) => Some(format!(
-                        "lead-in louder than the dialogue (rms x{:.2})",
-                        clip.lead_rms.unwrap()
-                    )),
-                    _ if clip.voiced.is_some_and(|v| v < gate.min_voiced) => Some(format!(
-                        "whispered delivery (voiced {:.2})",
-                        clip.voiced.unwrap()
-                    )),
-                    Some(_) => None,
-                };
+                clip.reject = audio_reject(&clip, gate);
                 clip.passed = clip.reject.is_none();
                 Some(clip)
             }
@@ -781,6 +1059,7 @@ async fn clips_one(
     let clips: Vec<Clip> = clips.into_iter().flatten().collect();
     summary.scored = clips.len();
     summary.passed = clips.iter().filter(|c| c.passed).count();
+    summary.median_ratio = median(clips.iter().filter_map(|c| c.ratio).collect());
 
     let mut text = serde_json::to_string(&provenance)?;
     text.push('\n');
@@ -855,10 +1134,19 @@ pub async fn clips_all(
                 let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
                 let title = crate::library::truncate(&movie.title, 34);
                 match &outcome {
-                    Ok(s) => println!(
-                        "[{n}/{total}] {title} ✓ {} sentences → {} placed → {} scored → {} pass",
-                        s.sentences, s.aligned, s.scored, s.passed
-                    ),
+                    Ok(s) => {
+                        println!(
+                            "[{n}/{total}] {title} ✓ {} sentences → {} placed → {} scored → {} pass",
+                            s.sentences, s.aligned, s.scored, s.passed
+                        );
+                        if let Some(m) = s.median_ratio.filter(|m| *m < FOREIGN_AUDIO_RATIO) {
+                            println!(
+                                "    ⚠ median phoneme ratio {m:.2}: the audio does not sound like \
+                                 {} — another language or variety on this track?",
+                                movie.original_language
+                            );
+                        }
+                    }
                     Err(e) => println!("[{n}/{total}] {title} ✗ {e:#}"),
                 }
                 outcome.ok()

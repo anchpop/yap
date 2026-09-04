@@ -17,4 +17,4 @@ xxhash-rust = { workspace = true }
 osmo = { workspace = true }
 language-utils = { path = "../../language-utils" }
 google-tts = { path = "../google-tts" }
-espeak = { path = "../espeak" }
+g2p = { workspace = true }

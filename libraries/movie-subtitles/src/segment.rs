@@ -45,16 +45,27 @@ pub fn lexide_language(language: Language) -> Option<lexide::Language> {
 /// utterances.
 const PASSAGE_GAP_MS: u32 = 2_000;
 
+/// Sentence-final marks: Western, fullwidth CJK, the Devanagari danda.
+pub const TERMINALS: &[char] = &['.', '!', '?', '…', '。', '！', '？', '।'];
+
 /// A dialogue dash that opens a speaker turn: at the start of the cue or after
 /// whitespace (where a line break used to be), with or without a following
 /// space. `-` before a digit is a number, and a hyphen inside a word
 /// (`cache-col`) never follows whitespace, so neither is touched.
 static DIALOGUE_DASH: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"(?:^|\s)[-–—]\s*(?P<rest>[^\s\d-])").unwrap());
+    LazyLock::new(|| Regex::new(r"(?:^|\s)[-–—‐‑]\s*(?P<rest>[^\s\d-])").unwrap());
 
-/// Sentence segmentation for subtitle ingestion: the parsley segmenter when the
-/// language has one, else each speaker turn taken as it is.
+/// Sentence segmentation for subtitle ingestion: punctuation rules plus the
+/// parsley segmenter for languages whose subtitles punctuate, the language
+/// model ([`crate::llm_segment`]) for those whose subtitles don't.
 pub enum SubtitleSegmenter {
+    Rules(RuleSegmenter),
+    Llm(Box<tysm::chat_completions::ChatClient>),
+}
+
+/// The rule-based segmenter: the parsley model when lexide has one for the
+/// language, else each speaker turn taken as it is.
+pub enum RuleSegmenter {
     Parsley {
         segmenter: Box<lexide::Segmenter>,
         language: lexide::Language,
@@ -63,21 +74,39 @@ pub enum SubtitleSegmenter {
 }
 
 impl SubtitleSegmenter {
-    /// The segmenter for `language`, loading parsley's weights from the HF
-    /// cache (or `LEXIDE_MODEL_DIR`) on first use.
+    /// The segmenter for `language`: the model client for
+    /// [`crate::llm_segment::uses_llm`] languages, else the rules, loading
+    /// parsley's weights from the HF cache (or `LEXIDE_MODEL_DIR`) on first
+    /// use.
     pub fn for_language(language: Language) -> anyhow::Result<Self> {
-        Ok(match lexide_language(language) {
-            Some(lexide_language) => Self::Parsley {
+        if crate::llm_segment::uses_llm(language) {
+            return Ok(Self::Llm(Box::new(crate::llm_segment::client()?)));
+        }
+        Ok(Self::Rules(match lexide_language(language) {
+            Some(lexide_language) => RuleSegmenter::Parsley {
                 segmenter: Box::new(
                     lexide::Segmenter::from_pretrained()
                         .context("loading the parsley sentence segmenter")?,
                 ),
                 language: lexide_language,
             },
-            None => Self::PerCue,
-        })
+            None => RuleSegmenter::PerCue,
+        }))
     }
+}
 
+/// Identity of the segmentation a language gets, for provenance stamps.
+/// The rules half is versioned by hand: bump it when the passage builder or
+/// the sentence filter changes what comes out.
+pub fn provenance(language: Language) -> String {
+    if crate::llm_segment::uses_llm(language) {
+        crate::llm_segment::provenance()
+    } else {
+        "rules/2".to_string()
+    }
+}
+
+impl RuleSegmenter {
     /// Split one passage into sentences.
     ///
     /// The segmenter is trained on prose and can return nothing at all for a
@@ -128,15 +157,16 @@ impl SubtitleSegmenter {
 /// exactly the case the segmenter is for.
 fn has_internal_boundary(passage: &str) -> bool {
     let trimmed = passage.trim_end();
-    let body = trimmed.trim_end_matches(['.', '!', '?', '…', '"', '»', ')']);
-    body.contains(['.', '!', '?', '…'])
+    let body = trimmed
+        .trim_end_matches(|c| TERMINALS.contains(&c) || matches!(c, '"' | '»' | ')' | '」' | '』'));
+    body.contains(TERMINALS)
 }
 
 /// Split one cue into speaker turns at its dialogue dashes.
 ///
 /// `- Where? - Nobody!` and `-Ah, d'accord.` both mark a change of speaker;
 /// the dash itself is dropped so the turn reads as a plain sentence.
-fn speaker_turns(cue: &str) -> Vec<String> {
+pub(crate) fn speaker_turns(cue: &str) -> Vec<String> {
     let marked = DIALOGUE_DASH.replace_all(cue, "\n$rest");
     marked
         .split('\n')
@@ -204,7 +234,7 @@ pub fn timed_passages(subtitles: &[SubtitleLine]) -> Vec<Passage> {
             // belongs together.
             let continues = t == 0
                 && !passage.text.is_empty()
-                && !passage.text.ends_with(['.', '!', '?', '…'])
+                && !passage.text.ends_with(TERMINALS)
                 && cue.start_ms.saturating_sub(prev_end_ms) <= PASSAGE_GAP_MS
                 && turn
                     .chars()

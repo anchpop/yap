@@ -5,7 +5,6 @@ members = [
     "language-utils",
     "yap-frontend-rs",
     "libraries/autograde-core",
-    "libraries/espeak",
     "libraries/weapon",
     "libraries/imdex_map",
     "libraries/eyedee",
@@ -38,8 +37,10 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
+# `no-batch` was on from 2026-08-30 (every batch failed validation
+# account-side) to 2026-09-03, when a standalone probe showed the Batch API
+# healthy again. `YAP_NO_BATCH=1` remains the runtime escape hatch.
 tysm = { git = "https://github.com/anchpop/tysm.git", rev = "2c12d98cf1348434c4e872f462c6629729884e12", features = [
-    "no-batch",
     "small-batch-optimization",
 ] }
 # Local-first KV cache store synced to R2 (github.com/anchpop/osmo). All of
@@ -52,6 +53,12 @@ idb = { version = "0.6.5" }
 # Native + wasm fetch wrapper (github.com/anchpop/fetch-happen). Git dep for
 # the native reqwest transport until 0.4 is published to crates.io.
 fetch-happen = { git = "https://github.com/anchpop/fetch-happen", rev = "879d0fa66bd8ae4331704c5b1d3a193427646336" }
+# Grapheme-to-phoneme (github.com/anchpop/g2p): the anchpop/espeak-ng fork,
+# statically linked with its data embedded, plus the model-label tokenizer
+# shared with lexide. The rev pins which espeak build's phonemes we score
+# against; it must match the labels the deployed pronunciation model was
+# trained on. Needs cmake + a C compiler to build.
+g2p = { git = "https://github.com/anchpop/g2p", rev = "3ae99aa1d12dd23962bef1882cfaba57a95d98bd" }
 xxhash-rust = { version = "0.8.15", features = ["xxh3", "const_xxh3"] }
 indexmap = { version = "2" }
 chrono = "0.4.44"

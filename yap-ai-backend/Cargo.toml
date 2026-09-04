@@ -30,7 +30,7 @@ dotenvy = "0.15.7"
 uuid = { version = "1.23", features = ["serde", "v4"] }
 language-utils = { path = "../language-utils" }
 autograde-core = { path = "../libraries/autograde-core" }
-espeak = { path = "../libraries/espeak" }
+g2p.workspace = true
 tsify.workspace = true
 wasm-bindgen.workspace = true
 postgrest = "1.6"

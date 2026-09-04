@@ -7,6 +7,7 @@
 //! pieces other tools build on (the pronunciation corpus extractor and eval
 //! harness in `generate-data`).
 
+pub mod audio_check;
 pub mod clips;
 pub mod cues;
 pub mod export;
@@ -16,4 +17,5 @@ pub mod pgs;
 pub mod sync;
 pub mod transcript;
 pub mod vad;
+pub mod verbatim;
 pub mod vobsub;

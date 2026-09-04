@@ -32,7 +32,6 @@
 //! WAV bytes), so re-runs and later analysis passes cost nothing.
 //!
 //! Usage (from the repo root, so `.cache` resolves):
-//!     ESPEAK_NG_BIN=... ESPEAK_NG_DATA_PATH=... \
 //!     cargo run --release --bin phoneme-corpus-eval -- [--langs fra,deu] [--max-films 2]
 
 use anyhow::{Context, Result};
@@ -46,8 +45,8 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use subtitle_corpus::cues::{
-    Candidate, CueLabel, MIN_FILM_POSITIVES, Tokenization, course_code_espeak as course_code,
-    label_cues, load_transcript, parse_cues, sample, slice_wav,
+    Candidate, CueLabel, MIN_FILM_POSITIVES, course_code_g2p as course_code, label_cues,
+    load_transcript, parse_cues, sample, slice_wav, tokenization_for,
 };
 
 #[derive(Parser, Debug)]
@@ -191,7 +190,9 @@ async fn main() -> Result<()> {
         let language = Language::from_code(code).context("unreachable: unmapped course code")?;
         let cues = parse_cues(&std::fs::read_to_string(&srt)?);
         let transcript = load_transcript(&transcript_path)?;
-        let candidates = label_cues(&cues, &transcript, Tokenization::Words);
+        // Character units for the space-less scripts: under word tokens a
+        // Japanese or Mandarin cue is one token and never matches anything.
+        let candidates = label_cues(&cues, &transcript, tokenization_for(code));
         let count = |l: CueLabel| candidates.iter().filter(|c| c.label == l).count();
         let (n_pos, n_extra, n_mismatch, n_silent) = (
             count(CueLabel::Pos),
@@ -287,15 +288,11 @@ async fn main() -> Result<()> {
                         return None;
                     }
                 };
-                // The CTC ratio scores the raw espeak sequence (the model's
-                // own label space); `(`/`)` are language-switch markers, not
-                // phonemes.
-                let ctc = match espeak::phonemize_phrase(&c.cleaned_text, language) {
-                    Ok(Some(target)) if !target.is_empty() => {
-                        let target: Vec<String> = target
-                            .into_iter()
-                            .filter(|t| t != "(" && t != ")")
-                            .collect();
+                // The CTC ratio scores the raw g2p sequence (the model's
+                // own label space).
+                let ctc = match phoneme_verify::model_target(&c.cleaned_text, language) {
+                    Some(Ok(p)) if !p.phonemes.is_empty() => {
+                        let target = p.phonemes;
                         match phoneme_verify::frame_matrix(ctx, &wav).await {
                             Ok(frames) => Some(frames.score_target(&target)),
                             Err(e) => {

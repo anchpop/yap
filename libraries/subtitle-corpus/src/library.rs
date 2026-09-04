@@ -26,7 +26,7 @@ pub fn stream_codes(language: &str) -> &'static [&'static str] {
         "Thai" => &["tha", "th"],
         "Hindi" => &["hin", "hi"],
         // "cn" is not ISO anything, but rips carry it.
-        "Chinese" | "Cantonese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue", "cn"],
+        "Chinese" | "Mandarin" => &["zho", "chi", "zh", "cmn", "yue", "cn"],
         "Marathi" => &["mar", "mr"],
         "Swedish" => &["swe", "sv"],
         "Danish" => &["dan", "da"],
@@ -43,6 +43,9 @@ pub fn stream_codes(language: &str) -> &'static [&'static str] {
 }
 
 /// The yap course whose downloaded subtitles would be in this language, if any.
+///
+/// Radarr says "Chinese" for Cantonese films too; `audio_check` is what
+/// keeps their tracks out of the Mandarin course.
 pub fn course_dir(language: &str) -> Option<&'static str> {
     Some(match language {
         "English" => "eng",
@@ -56,7 +59,7 @@ pub fn course_dir(language: &str) -> Option<&'static str> {
         "Korean" => "kor",
         "Thai" => "tha",
         "Hindi" => "hin",
-        "Chinese" | "Cantonese" | "Mandarin" => "zho-hans",
+        "Chinese" | "Mandarin" => "zho-hans",
         _ => return None,
     })
 }
@@ -392,7 +395,7 @@ fn script_plausible(course_code: &str, text: &str) -> bool {
 /// when no token anywhere in the name identifies *any* language. A candidate
 /// must also carry the course's writing system ([`script_plausible`]) — the
 /// tag on the filename is a claim the bytes get to veto.
-fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
+pub fn sidecar(video: &Path, codes: &[&str]) -> Option<PathBuf> {
     const MODIFIERS: &[&str] = &["forced", "sdh", "cc", "hi", "default", "full"];
     let stem = video.file_stem()?.to_str()?;
     let dir = video.parent()?;

@@ -1,7 +1,8 @@
 //! Stage-by-stage sentence counts for one subtitle file, to localize where
 //! sentences disappear. Usage: debug_sentences <srt> <lang-code>
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let mut args = std::env::args().skip(1);
     let srt_path = args.next().expect("srt path");
     let code = args.next().expect("lang code");
@@ -28,7 +29,7 @@ fn main() -> anyhow::Result<()> {
         println!("  sample passage: {:?}", &p.text[..p.text.len().min(80)]);
     }
     let segmenter = movie_subtitles::segment::SubtitleSegmenter::for_language(language)?;
-    let keyed = movie_subtitles::sentences::keyed_sentences(&lines, language, &segmenter);
+    let keyed = movie_subtitles::sentences::keyed_sentences(&lines, language, &segmenter).await?;
     println!("keyed: {}", keyed.len());
     for k in keyed.iter().take(5) {
         println!("  keyed: {:?}", k.sentence);

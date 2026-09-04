@@ -196,8 +196,47 @@ pub fn duration_ms(video: &Path) -> Result<i64> {
     Ok((secs * 1000.0) as i64)
 }
 
+/// Which Chinese a track is labelled as, from its language tag and title.
+///
+/// Discs of Hong Kong films carry both (Kung Fu Hustle: 粤语 then 国语;
+/// The Mermaid: "Cantonese" then "Mandarin"), and the Mandarin course must
+/// take the Mandarin one: transcribing the Cantonese track gives a
+/// transcript the Mandarin subtitle only paraphrases, and any clip that
+/// does place scores far below the phoneme cut (ratios near −3.5, seen
+/// 2026-09-03 on The Mermaid, whose first track is Cantonese).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+enum ChineseVariety {
+    Cantonese,
+    Unlabelled,
+    Mandarin,
+}
+
+fn chinese_variety(lang: &str, title: &str) -> ChineseVariety {
+    let text = format!("{lang} {title}").to_lowercase();
+    if ["mandarin", "国语", "國語", "普通话", "普通話", "cmn"]
+        .iter()
+        .any(|m| text.contains(m))
+    {
+        ChineseVariety::Mandarin
+    } else if ["cantonese", "粤语", "粵語", "yue"]
+        .iter()
+        .any(|m| text.contains(m))
+    {
+        ChineseVariety::Cantonese
+    } else {
+        ChineseVariety::Unlabelled
+    }
+}
+
 /// The index of the audio stream in the language the film was made in.
-pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
+///
+/// For a Chinese film (its `codes` include "cmn") a Mandarin-labelled track
+/// beats an unlabelled one, and a Cantonese-labelled track is never taken:
+/// a disc with only Cantonese audio has no stream for the Mandarin course.
+/// `rejected` are audio positions the listener already turned down for this
+/// file (a commentary, the wrong variety) — see `audio_check`; they are
+/// passed over as if the disc did not carry them.
+pub fn original_audio_stream(video: &Path, codes: &[&str], rejected: &[usize]) -> Result<usize> {
     #[derive(Deserialize)]
     struct Stream {
         #[serde(default)]
@@ -237,23 +276,83 @@ pub fn original_audio_stream(video: &Path, codes: &[&str]) -> Result<usize> {
         .arg(video)
         .output()?;
     let probe: Probe = serde_json::from_slice(&out.stdout).unwrap_or(Probe { streams: vec![] });
+    let chinese = codes.contains(&"cmn");
     // Position among *audio* streams, which is what `-map 0:a:N` counts.
+    // Ties keep disc order; a Cantonese-labelled track of a Chinese film
+    // is dropped rather than ranked.
+    let mut best: Option<(ChineseVariety, usize)> = None;
+    let mut cantonese_only = false;
     for (i, s) in probe.streams.iter().enumerate() {
-        if s.is_commentary() {
+        if s.is_commentary() || rejected.contains(&i) {
             continue;
         }
         let lang = s.tags.get("language").cloned().unwrap_or_default();
         let lang = lang.trim().to_lowercase();
         // "mul" is the original mixed track of a multilingual film.
-        if codes.contains(&lang.as_str()) || lang == "mul" {
-            return Ok(i);
+        if !(codes.contains(&lang.as_str()) || lang == "mul") {
+            continue;
+        }
+        let variety = if chinese {
+            chinese_variety(&lang, s.tags.get("title").map_or("", String::as_str))
+        } else {
+            ChineseVariety::Unlabelled
+        };
+        if variety == ChineseVariety::Cantonese {
+            cantonese_only = best.is_none();
+            continue;
+        }
+        if best.is_none_or(|(v, _)| variety > v) {
+            best = Some((variety, i));
         }
     }
+    if let Some((_, i)) = best {
+        return Ok(i);
+    }
+    if cantonese_only {
+        bail!("only Cantonese audio — no track for the Mandarin course");
+    }
     // Untagged audio on a single-track rip is the original often enough to try.
-    if probe.streams.len() == 1 && !probe.streams[0].is_commentary() {
+    if probe.streams.len() == 1 && !probe.streams[0].is_commentary() && !rejected.contains(&0) {
         return Ok(0);
     }
     bail!("no audio stream in the film's own language")
+}
+
+#[cfg(test)]
+mod variety_tests {
+    use super::{chinese_variety, ChineseVariety};
+
+    #[test]
+    fn disc_labels_name_the_variety_in_either_script() {
+        assert_eq!(
+            chinese_variety("chi", "Cantonese"),
+            ChineseVariety::Cantonese
+        );
+        assert_eq!(
+            chinese_variety("chi", "粤语,DTS音效"),
+            ChineseVariety::Cantonese
+        );
+        assert_eq!(
+            chinese_variety("chi", "国语,DTS音效"),
+            ChineseVariety::Mandarin
+        );
+        assert_eq!(
+            chinese_variety("chi", "普通话ATMOS"),
+            ChineseVariety::Mandarin
+        );
+        assert_eq!(
+            chinese_variety("chi", "DTS-HD MA 2.0 (Mandarin)"),
+            ChineseVariety::Mandarin
+        );
+        assert_eq!(
+            chinese_variety("chi", "Surround 5.1"),
+            ChineseVariety::Unlabelled
+        );
+        assert_eq!(chinese_variety("cmn", ""), ChineseVariety::Mandarin);
+        // Mandarin outranks unlabelled outranks Cantonese.
+        assert!(ChineseVariety::Mandarin > ChineseVariety::Unlabelled);
+        assert!(ChineseVariety::Unlabelled > ChineseVariety::Cantonese);
+    }
 }
 
 /// The exact audio stream an extraction came from, for its provenance stamp.

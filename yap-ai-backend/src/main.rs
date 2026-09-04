@@ -947,13 +947,20 @@ async fn autograde_translation(
 
 /// Best-effort readable IPA for a sentence (word boundaries kept — the
 /// model-label tokenization exists for the pronunciation verifier, not
-/// for an LLM). Pure enrichment: if espeak is unavailable, the language
-/// is unsupported, or anything fails, returns `None` and grading
-/// proceeds without the IPA line.
-async fn readable_ipa(sentence: &str, language: Language) -> Option<String> {
-    match espeak::phonemize_phrase_ipa(sentence, language).await {
-        Ok(Some(ipa)) if !ipa.is_empty() => Some(ipa),
-        _ => None,
+/// for an LLM). Pure enrichment: if the g2p crate has no G2P for the
+/// language or anything fails, returns `None` and grading proceeds without
+/// the IPA line. In-process and a few milliseconds, so it runs inline. Uses
+/// the crate's current (corrected) Hindi labels: this is for reading, not
+/// for scoring against the model.
+fn readable_ipa(sentence: &str, language: Language) -> Option<String> {
+    let lang = language.g2p_lang()?;
+    match g2p::phonemize_lang(lang, sentence) {
+        Ok(p) if !p.raw.is_empty() => Some(p.raw),
+        Ok(_) => None,
+        Err(e) => {
+            eprintln!("readable IPA unavailable: {e:#}");
+            None
+        }
     }
 }
 
@@ -1105,11 +1112,9 @@ P.S. Don't bother giving the user IPA-style phonetic transcriptions as they may 
     // espeak applies connected-speech rules (liaison, elision) that
     // per-word pronunciation data can't.
     let heard_ipa_line = readable_ipa(&full_sentence, target_language)
-        .await
         .map(|ipa| format!("User heard IPA: /{ipa}/\n"))
         .unwrap_or_default();
     let wrote_ipa_line = readable_ipa(&user_sentence, target_language)
-        .await
         .map(|ipa| {
             format!(
                 "User wrote IPA: /{ipa}/ (reminder: potentially incorrect if the user's submission contains typos)\n"

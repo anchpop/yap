@@ -605,7 +605,7 @@ fn base_output_directory(language: Language) -> PathBuf {
     PathBuf::from(format!("./out/clean-nlp-data/{}", language.code()))
 }
 
-fn ensure_target_sentences_file(
+async fn ensure_target_sentences_file(
     course: Course,
     target_sentences_path: &Path,
 ) -> anyhow::Result<()> {
@@ -614,6 +614,7 @@ fn ensure_target_sentences_file(
         course.target_language
     );
     let target_sentences = target_sentences::get_target_sentences(course)
+        .await
         .context("Failed to load target sentences")?;
 
     if target_sentences.app_sentences.is_empty() {
@@ -663,7 +664,7 @@ async fn ensure_nlp_file(language: Language) -> anyhow::Result<PathBuf> {
 
     let target_sentences_path = base_dir.join("target_language_sentences.jsonl");
     if !target_sentences_path.exists() {
-        ensure_target_sentences_file(course, &target_sentences_path)?;
+        ensure_target_sentences_file(course, &target_sentences_path).await?;
     }
 
     let nlp_file_path = base_dir.join("target_language_sentences_nlp.jsonl");
@@ -972,6 +973,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
 
     println!("Loading target sentences for {language:?}...");
     let target_sentences = target_sentences::get_target_sentences(course)
+        .await
         .context("Failed to load target sentences")?;
     // Book-only sentences are excluded from the language packs but belong in the gold
     // pool: labeling them is how the models learn the book distribution.

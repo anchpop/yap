@@ -15,7 +15,8 @@ use std::sync::LazyLock;
 use language_utils::Language;
 use regex::Regex;
 
-use crate::segment::{timed_passages, SubtitleSegmenter};
+use crate::llm_segment::CueSplit;
+use crate::segment::{timed_passages, RuleSegmenter, SubtitleSegmenter};
 use crate::SubtitleLine;
 
 /// One sentence of a subtitle track, with the span of the passage it came
@@ -30,18 +31,13 @@ pub struct KeyedSentence {
     pub course_worthy: bool,
 }
 
-/// Sentences of a subtitle track, keyed as the language pack keys them.
-///
-/// Expects cue text already through [`crate::cleanup_subtitle_text`] (both
-/// [`crate::parse_srt`] and the corpus's cue parser do this). Cues shorter
-/// than 3 bytes are dropped here so callers whose parsers keep them agree
-/// with [`crate::parse_srt`], which drops them at parse time.
-pub fn keyed_sentences(
-    lines: &[SubtitleLine],
-    language: Language,
-    segmenter: &SubtitleSegmenter,
-) -> Vec<KeyedSentence> {
-    let repaired: Vec<SubtitleLine> = lines
+/// The cues [`keyed_sentences`] works from: cues shorter than 3 bytes
+/// dropped (so callers whose parsers keep them agree with
+/// [`crate::parse_srt`], which drops them at parse time) and copy-protection
+/// homoglyphs repaired. The model path segments exactly this list, so its
+/// answers line up with it index for index.
+pub fn prepared_lines(lines: &[SubtitleLine]) -> Vec<SubtitleLine> {
+    lines
         .iter()
         .filter(|l| l.sentence.len() >= 3)
         .map(|l| SubtitleLine {
@@ -49,26 +45,107 @@ pub fn keyed_sentences(
             start_ms: l.start_ms,
             end_ms: l.end_ms,
         })
-        .collect();
+        .collect()
+}
+
+/// Sentences of a subtitle track, keyed as the language pack keys them.
+///
+/// Expects cue text already through [`crate::cleanup_subtitle_text`] (both
+/// [`crate::parse_srt`] and the corpus's cue parser do this). Async because
+/// the model-segmented languages go to the Batch API for every cue not yet
+/// in the cache; a caller with many tracks of such a language should batch
+/// them together instead ([`crate::llm_segment::split_tracks`] then
+/// [`keyed_sentences_from_splits`]).
+pub async fn keyed_sentences(
+    lines: &[SubtitleLine],
+    language: Language,
+    segmenter: &SubtitleSegmenter,
+) -> anyhow::Result<Vec<KeyedSentence>> {
+    match segmenter {
+        SubtitleSegmenter::Rules(rules) => Ok(keyed_sentences_by_rules(lines, language, rules)),
+        SubtitleSegmenter::Llm(client) => {
+            let prepared = prepared_lines(lines);
+            let (splits, _) = crate::llm_segment::split(client, &prepared, language).await?;
+            Ok(keyed_sentences_from_splits(&prepared, &splits, language))
+        }
+    }
+}
+
+/// [`keyed_sentences`] for a language segmented by punctuation rules.
+pub fn keyed_sentences_by_rules(
+    lines: &[SubtitleLine],
+    language: Language,
+    segmenter: &RuleSegmenter,
+) -> Vec<KeyedSentence> {
+    let repaired = prepared_lines(lines);
     let mut out = Vec::new();
     for passage in timed_passages(&repaired) {
         for sentence in segmenter.segment(&passage.text) {
-            let sentence = sentence.trim();
-            if sentence.is_empty() {
-                continue;
-            }
-            out.push(KeyedSentence {
-                course_worthy: should_include_sentence(sentence, language),
-                sentence: language_utils::text_cleanup::cleanup_sentence(
-                    sentence.to_string(),
-                    language,
-                ),
-                start_ms: passage.start_ms,
-                end_ms: passage.end_ms,
-            });
+            keyed(
+                &mut out,
+                sentence.trim(),
+                passage.start_ms,
+                passage.end_ms,
+                language,
+            );
         }
     }
     out
+}
+
+/// [`keyed_sentences`] for a track the model has segmented: `splits` are the
+/// answers for `lines` (already [`prepared_lines`]), one per cue. A sentence
+/// the cue break split is joined back together ([`crate::llm_segment::joiner`])
+/// and spans the cues it came from.
+pub fn keyed_sentences_from_splits(
+    lines: &[SubtitleLine],
+    splits: &[CueSplit],
+    language: Language,
+) -> Vec<KeyedSentence> {
+    assert_eq!(lines.len(), splits.len(), "one split per cue");
+    let joiner = crate::llm_segment::joiner(language);
+    let mut out = Vec::new();
+    // The sentence still open from the previous cue, with when it started.
+    let mut open: Option<(String, u32)> = None;
+    for (cue, split) in lines.iter().zip(splits) {
+        let last = split.sentences.len().saturating_sub(1);
+        for (i, piece) in split.sentences.iter().enumerate() {
+            let (text, start_ms) = match (i, open.take()) {
+                (0, Some((prefix, start_ms))) => (format!("{prefix}{joiner}{piece}"), start_ms),
+                _ => (piece.clone(), cue.start_ms),
+            };
+            if i == last && split.unfinished {
+                open = Some((text, start_ms));
+            } else {
+                keyed(&mut out, text.trim(), start_ms, cue.end_ms, language);
+            }
+        }
+    }
+    // A track can end mid-sentence (the model's call); keep what there is.
+    if let Some((text, start_ms)) = open {
+        let end_ms = lines.last().map_or(start_ms, |l| l.end_ms);
+        keyed(&mut out, text.trim(), start_ms, end_ms, language);
+    }
+    out
+}
+
+/// Key one segmented sentence and push it, unless it is empty.
+fn keyed(
+    out: &mut Vec<KeyedSentence>,
+    sentence: &str,
+    start_ms: u32,
+    end_ms: u32,
+    language: Language,
+) {
+    if sentence.is_empty() {
+        return;
+    }
+    out.push(KeyedSentence {
+        course_worthy: should_include_sentence(sentence, language),
+        sentence: language_utils::text_cleanup::cleanup_sentence(sentence.to_string(), language),
+        start_ms,
+        end_ms,
+    });
 }
 
 /// Undo subtitle copy-protection homoglyphs: Greek/Cyrillic characters that
@@ -135,8 +212,14 @@ static TITLE_ABBREVIATION: LazyLock<Regex> = LazyLock::new(|| {
 
 /// Check if a single sentence should be included (for sources without translations like movies)
 pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
-    // 1. Skip sentences that are too short or too long
-    if sentence.len() < 5 || sentence.len() > 80 {
+    // 1. Skip sentences that are too short or too long. The cap is in
+    // characters, about fifteen words: Japanese and Chinese say that in
+    // half the characters an alphabet needs.
+    let max_chars = match language {
+        Language::Japanese | Language::ChineseSimplified | Language::ChineseTraditional => 40,
+        _ => 80,
+    };
+    if sentence.len() < 5 || sentence.chars().count() > max_chars {
         return false;
     }
 
@@ -168,7 +251,7 @@ pub fn should_include_sentence(sentence: &str, language: Language) -> bool {
     let punct_count = without_titles
         .chars()
         .fold((0, false), |(count, in_run), c| {
-            let terminal = matches!(c, '.' | '!' | '?');
+            let terminal = matches!(c, '.' | '!' | '?' | '。' | '！' | '？' | '।');
             (count + usize::from(terminal && !in_run), terminal)
         })
         .0;
@@ -320,16 +403,9 @@ pub fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
 
-            // Must end with Chinese or Western punctuation
-            if last_char != '。'
-                && last_char != '！'
-                && last_char != '？'
-                && last_char != '.'
-                && last_char != '!'
-                && last_char != '?'
-            {
-                return false;
-            }
+            // No requirement on the last character: subtitles leave
+            // statements unpunctuated, and the model segmenter has vouched
+            // that this is a whole sentence.
         }
         Language::Japanese => {
             // Japanese sentences should not contain Latin letters (except maybe proper nouns)
@@ -341,16 +417,7 @@ pub fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
 
-            // Must end with Japanese or Western punctuation
-            if last_char != '。'
-                && last_char != '！'
-                && last_char != '？'
-                && last_char != '.'
-                && last_char != '!'
-                && last_char != '?'
-            {
-                return false;
-            }
+            // As for Chinese: no final mark required.
         }
         Language::Korean => {
             // Korean sentences should not contain Latin letters
@@ -361,10 +428,7 @@ pub fn is_proper_sentence(text: &str, language: Language) -> bool {
                 return false;
             }
 
-            // Must end with appropriate Korean punctuation or period/exclamation/question
-            if last_char != '.' && last_char != '!' && last_char != '?' {
-                return false;
-            }
+            // As for Chinese: no final mark required.
         }
         Language::Hindi => {
             // Devanagari script — reject sentences with Latin letters
@@ -423,4 +487,74 @@ pub fn is_proper_sentence(text: &str, language: Language) -> bool {
     }
 
     true
+}
+
+#[cfg(test)]
+mod split_tests {
+    use super::*;
+
+    fn cue(sentence: &str, start_ms: u32, end_ms: u32) -> SubtitleLine {
+        SubtitleLine {
+            sentence: sentence.to_string(),
+            start_ms,
+            end_ms,
+        }
+    }
+
+    fn split(sentences: &[&str], unfinished: bool) -> CueSplit {
+        CueSplit {
+            sentences: sentences.iter().map(|s| s.to_string()).collect(),
+            unfinished,
+        }
+    }
+
+    #[test]
+    fn model_cuts_are_assembled_across_cues() {
+        let lines = [
+            cue("嫁给什么人能由得了我吗？", 0, 1_000),
+            cue("你一直在提钱", 1_100, 2_000),
+            cue("就嫁个有钱人吧", 2_100, 3_000),
+            cue("安静！别敲了！", 3_100, 4_000),
+        ];
+        let splits = [
+            split(&["嫁给什么人能由得了我吗？"], false),
+            // Runs on into the next cue.
+            split(&["你一直在提钱"], true),
+            split(&["就嫁个有钱人吧"], false),
+            split(&["安静！", "别敲了！"], false),
+        ];
+        let keyed = keyed_sentences_from_splits(&lines, &splits, Language::ChineseSimplified);
+        let texts: Vec<&str> = keyed.iter().map(|k| k.sentence.as_str()).collect();
+        assert_eq!(
+            texts,
+            vec![
+                "嫁给什么人能由得了我吗？",
+                "你一直在提钱就嫁个有钱人吧",
+                "安静！",
+                "别敲了！"
+            ]
+        );
+        // The joined sentence spans both cues it came from.
+        assert_eq!((keyed[1].start_ms, keyed[1].end_ms), (1_100, 3_000));
+        // Unpunctuated statements are course-worthy now that the model has
+        // vouched for them; a two-mark sentence would not be.
+        assert!(keyed[1].course_worthy);
+        assert!(!should_include_sentence(
+            "安静！别敲了！",
+            Language::ChineseSimplified
+        ));
+    }
+
+    #[test]
+    fn spaced_scripts_join_with_a_space_and_a_track_may_end_open() {
+        let lines = [
+            cue("ลิน แกต้องไป", 0, 1_000),
+            cue("สมัครสอบใหม่นะ", 1_100, 2_000),
+        ];
+        let splits = [split(&["ลิน แกต้องไป"], true), split(&["สมัครสอบใหม่นะ"], true)];
+        let keyed = keyed_sentences_from_splits(&lines, &splits, Language::Thai);
+        assert_eq!(keyed.len(), 1);
+        assert_eq!(keyed[0].sentence, "ลิน แกต้องไป สมัครสอบใหม่นะ");
+        assert_eq!((keyed[0].start_ms, keyed[0].end_ms), (0, 2_000));
+    }
 }

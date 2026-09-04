@@ -18,19 +18,19 @@ use std::path::Path;
 use std::process::Command;
 
 /// Inventory language names → course codes, restricted to languages whose
-/// phoneme labels genuinely come from espeak.
+/// model labels the g2p crate produces (espeak-labeled ones and Hindi).
 ///
 /// Derived from [`Language::phoneme_label_source`] rather than hand-listed, so
 /// it cannot drift from the table that defines which G2P source each language
-/// is allowed to use. Hindi is excluded despite espeak having a `hi` voice —
-/// its labels come from `schwa-stress-hin`, and scoring hin against espeak was
-/// measurably wrong (see the enum's docs). This is the phoneme-scoring gate;
-/// the clip extractor uses [`course_code_full`], since selection is
-/// transcript-driven and needs no phoneme reference at all.
-pub fn course_code_espeak(original_language: &str) -> Option<&'static str> {
+/// is allowed to use. Japanese, Mandarin, and Thai are excluded despite espeak
+/// having voices for them — their labels come from Python backends the crate
+/// does not run, and scoring against espeak was measurably wrong for Hindi
+/// before its chain was ported (see the enum's docs). This is the
+/// phoneme-scoring gate; the clip extractor uses [`course_code_full`], since
+/// selection is transcript-driven and needs no phoneme reference at all.
+pub fn course_code_g2p(original_language: &str) -> Option<&'static str> {
     let code = course_code_full(original_language)?;
-    let language = Language::from_code(code)?;
-    language.phoneme_label_source().espeak_voice().map(|_| code)
+    Language::from_code(code)?.g2p_lang()
 }
 
 /// Full mapping to pronunciation-corpus lang codes, mirroring

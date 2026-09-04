@@ -8,7 +8,7 @@
 //! authored against this exact file, so their timings need no correction at
 //! all — which is why two thirds of the library is free.
 
-use subtitle_corpus::{library, ocr, pgs, sync, transcript, vad, vobsub};
+use subtitle_corpus::{audio_check, library, ocr, pgs, sync, transcript, vad, vobsub};
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -92,6 +92,29 @@ enum Command_ {
         #[arg(long, default_value_t = 0)]
         limit: usize,
         /// Extract audio for this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+    },
+    /// Listen to each extracted track and confirm it is the film's own
+    /// dialogue in the language the library expects.
+    ///
+    /// Three windows of `audio.opus` go to Gemini, which names the language
+    /// spoken (variety included: Mandarin against Cantonese) and says whether
+    /// people are talking *about* the film — a commentary. A track that fails
+    /// is evicted along with everything derived from it, recorded in
+    /// `audio-rejected.json` so the extractor never picks it again, and the
+    /// next candidate stream on the disc is extracted and judged in turn.
+    /// The verdict is kept in `audio-check.json`, so a track is heard once.
+    AudioCheck {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Films in flight at once.
+        #[arg(long, default_value_t = 4)]
+        jobs: usize,
+        /// Stop after this many movies (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// Check this film alone, by IMDb id.
         #[arg(long)]
         imdb: Option<String>,
     },
@@ -231,6 +254,92 @@ enum Command_ {
         /// Transcribe this film alone, by IMDb id.
         #[arg(long)]
         imdb: Option<String>,
+    },
+    /// Score how well a subtitle's timing agrees with where speech actually is.
+    ///
+    /// Reports the shift that best matches, so a subtitle already believed
+    /// Build earshot's 16 ms speech profile for every film with extracted
+    /// audio (`speech-profile-16ms.f32` beside it).
+    ///
+    /// The profile used to be computed only when a syncer asked for one, so
+    /// finished films — the ones clip cutting works on — never got the fine
+    /// version and kept their retired 96 ms file. Films with a current
+    /// profile are skipped, so a refresh only pays for new audio.
+    SpeechProfiles {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Films profiled at once (each is one ffmpeg decode).
+        #[arg(long, default_value_t = 6)]
+        jobs: usize,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+    },
+    /// Segment every model-segmented film's subtitle into sentences in one
+    /// Batch API round trip, so that everything downstream finds the answers
+    /// in the cache.
+    ///
+    /// Japanese, Mandarin, Korean and Thai subtitles leave statements
+    /// unpunctuated, so their sentence boundaries come from a language model
+    /// (`movie_subtitles::llm_segment`), one request per cue. Nothing is
+    /// written beside the film: tysm's response cache is the store, and
+    /// transcript-check, clips and export all read from it. Without this
+    /// step each of them would run a film-sized batch of its own, serially.
+    /// Only transcribed films by default — nothing reads the others' sentences
+    /// yet, and a request per cue adds up.
+    Segment {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        /// Every film with a subtitle, transcribed or not.
+        #[arg(long)]
+        all: bool,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// Segment this film alone, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+    },
+    /// Judge every transcribed film's subtitle against what is actually
+    /// said, and replace the ones that fail.
+    ///
+    /// Sync gates only ask *when*; this asks *what*. A rewrite into another
+    /// variety, a condensed SDH track or a paraphrasing fansub can be
+    /// perfectly timed and still place almost none of its sentences in the
+    /// transcript — and then it is not a source of sentences for this audio.
+    /// Verdicts go to `transcript-check.json` beside each film; `clips` maps
+    /// only films judged verbatim. A verbatim subtitle on another clock is
+    /// re-timed in place (unless it came off the disc, where the *audio* is
+    /// then the suspect). For the rest, every other subtitle already on
+    /// hand for the film is measured the same way, then OpenSubtitles is
+    /// asked for more (spending at most `--max-downloads`), and the best
+    /// one that clears the bar is adopted as the film's subtitle.
+    TranscriptCheck {
+        #[arg(long, default_value = "/data/andrep/subtitle-corpus")]
+        out: PathBuf,
+        #[arg(long, default_value = "./generate-data/data")]
+        data_root: PathBuf,
+        /// Stop after this many films (0 = all).
+        #[arg(long, default_value_t = 0)]
+        limit: usize,
+        /// One film only, by IMDb id.
+        #[arg(long)]
+        imdb: Option<String>,
+        /// Least share of eligible sentences that must place for a subtitle
+        /// to count as verbatim. Default: the per-language bar
+        /// (`verbatim::min_fraction`).
+        #[arg(long)]
+        min_verbatim: Option<f64>,
+        /// Only report; never re-time, download or adopt anything.
+        #[arg(long)]
+        dry_run: bool,
+        /// Most OpenSubtitles downloads to spend this run (0 = none; local
+        /// candidates are still tried).
+        #[arg(long, default_value_t = 0)]
+        max_downloads: usize,
+        /// Most candidates to download per film.
+        #[arg(long, default_value_t = 3)]
+        max_candidates: usize,
     },
     /// Score how well a subtitle's timing agrees with where speech actually is.
     ///
@@ -518,11 +627,27 @@ const SIDECAR_UNTRUSTED: &[&str] = &[
     "tt6788942", // Bad Genius (2017) — +5s
 ];
 
-fn subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+/// A subtitle `transcript-check` chose over the plan's source, kept beside
+/// the film's output. Present, it *is* the film's subtitle source: every
+/// resolver answers it first, and the stamp records it, so `inventory`
+/// neither evicts it as a stranger nor re-extracts the track it replaced.
+fn adopted_subtitle(dir: &std::path::Path) -> Option<PathBuf> {
+    let path = dir.join("adopted.srt");
+    path.exists().then_some(path)
+}
+
+fn subtitle_source(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+) -> Option<PathBuf> {
     // A film with no original-language audio can never yield a speech clip,
     // so aligning a subtitle for it is work spent making a number wrong.
     if matches!(movie.source, Source::NoOriginalAudio) {
         return None;
+    }
+    if let Some(adopted) = adopted_subtitle(dir) {
+        return Some(adopted);
     }
     if DIFFERENT_CUT.contains(&movie.imdb_id.as_str()) {
         return None;
@@ -589,10 +714,17 @@ fn read_stamp(dir: &std::path::Path) -> Option<FilmStamp> {
 
 /// The subtitle file the film's output *should* currently derive from, or
 /// None for disc-sourced films (their source is the video itself).
-fn expected_subtitle_source(movie: &Movie, data_root: &std::path::Path) -> Option<PathBuf> {
+fn expected_subtitle_source(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+) -> Option<PathBuf> {
+    if let Some(adopted) = adopted_subtitle(dir) {
+        return Some(adopted);
+    }
     match &movie.source {
         Source::DiscText { .. } | Source::DiscBitmap { .. } => None,
-        _ => subtitle_source(movie, data_root),
+        _ => subtitle_source(movie, dir, data_root),
     }
 }
 
@@ -605,13 +737,17 @@ impl FilmStamp {
     }
 }
 
+fn film_filename(movie: &Movie) -> String {
+    movie
+        .path
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default()
+}
+
 fn film_stamp(movie: &Movie) -> Result<FilmStamp> {
     Ok(FilmStamp {
-        filename: movie
-            .path
-            .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_default(),
+        filename: film_filename(movie),
         duration_ms: sync::duration_ms(&movie.path)?,
         subtitle: None,
     })
@@ -795,8 +931,34 @@ fn audio_source(movie: &Movie, dir: &std::path::Path) -> Result<(PathBuf, usize)
         return Ok((audio, 0));
     }
     let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let stream = sync::original_audio_stream(&movie.path, codes, &rejected_streams(movie, dir))?;
     Ok((movie.path.clone(), stream))
+}
+
+/// A track the listener turned down, kept so the extractor never picks it
+/// again for this file. See `Command_::AudioCheck`.
+#[derive(Serialize, Deserialize)]
+struct RejectedStream {
+    filename: String,
+    stream: sync::AudioStreamIdentity,
+    verdict: audio_check::Verdict,
+}
+
+fn read_rejected(dir: &std::path::Path) -> Vec<RejectedStream> {
+    std::fs::read(dir.join("audio-rejected.json"))
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default()
+}
+
+/// Audio positions the listener has rejected for the file now on disk.
+fn rejected_streams(movie: &Movie, dir: &std::path::Path) -> Vec<usize> {
+    let filename = film_filename(movie);
+    read_rejected(dir)
+        .into_iter()
+        .filter(|r| r.filename == filename)
+        .map(|r| r.stream.stream_index)
+        .collect()
 }
 
 enum Freshness {
@@ -824,7 +986,7 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
     let Some(old) = read_stamp(&dir) else {
         // Legacy output predating stamps: it was verified against what is on
         // disk today, so record today's inputs as its provenance.
-        match expected_subtitle_source(movie, data_root) {
+        match expected_subtitle_source(movie, &dir, data_root) {
             Some(p) => write_stamp(&dir, movie, StampSource::File(&p)),
             None => write_stamp(&dir, movie, StampSource::Disc),
         }
@@ -838,14 +1000,18 @@ fn freshen_output(movie: &Movie, out: &std::path::Path, data_root: &std::path::P
         let _ = std::fs::remove_file(dir.join("transcript.jsonl"));
         let _ = std::fs::remove_file(dir.join("audio.opus"));
         let _ = std::fs::remove_file(dir.join("audio.json"));
+        let _ = std::fs::remove_file(dir.join("audio-check.json"));
+        let _ = std::fs::remove_file(dir.join("audio-rejected.json"));
         let _ = std::fs::remove_file(dir.join("film.json"));
         let _ = std::fs::remove_file(dir.join("sync-failed.json"));
+        let _ = std::fs::remove_file(dir.join("adopted.srt"));
+        let _ = std::fs::remove_file(subtitle_corpus::verbatim::report_path(&dir));
         return Freshness::Evicted {
             why: format!("film changed ({} → {})", old.filename, current.filename),
         };
     }
     // Video unchanged; is the subtitle still derived from the right source?
-    let expected_path = expected_subtitle_source(movie, data_root);
+    let expected_path = expected_subtitle_source(movie, &dir, data_root);
     let expected = expected_path.as_deref().and_then(subtitle_stamp);
     match (&old.subtitle, &expected) {
         (a, b) if a == b => Freshness::Fine,
@@ -1085,6 +1251,14 @@ fn refresh(
                 }
             })
         }),
+        ("audio-check", {
+            let out = out.clone();
+            Box::new(move || audio_check(out, 4, 0, None))
+        }),
+        ("speech-profiles", {
+            let out = out.clone();
+            Box::new(move || speech_profiles(out, 6, 0))
+        }),
         ("text-sync", {
             let (out, data_root) = (out.clone(), data_root.clone());
             Box::new(move || text_sync(out, data_root, 4, 0, 300, 0.25, 0.10, false))
@@ -1127,6 +1301,14 @@ fn refresh(
                     Ok(())
                 }
             })
+        }),
+        ("segment", {
+            let out = out.clone();
+            Box::new(move || segment_all(out, false, 0, None))
+        }),
+        ("transcript-check", {
+            let (out, data_root) = (out.clone(), data_root.clone());
+            Box::new(move || transcript_check(out, data_root, 0, None, None, false, 10, 3))
         }),
         ("clips", {
             let out = out.clone();
@@ -1262,7 +1444,8 @@ enum AudioOutcome {
 /// in the film.
 fn extract_audio_one(movie: &Movie, dir: &std::path::Path) -> AudioOutcome {
     let codes = library::stream_codes(&movie.original_language);
-    let Ok(stream) = sync::original_audio_stream(&movie.path, codes) else {
+    let Ok(stream) = sync::original_audio_stream(&movie.path, codes, &rejected_streams(movie, dir))
+    else {
         return AudioOutcome::NoStream;
     };
     let identity = match sync::audio_stream_identity(&movie.path, stream) {
@@ -1386,6 +1569,349 @@ fn extract_audio(out: PathBuf, jobs: usize, limit: usize, imdb: Option<&str>) ->
     }
     println!(
         "\n{extracted} tracks extracted, {current} already current, {no_stream} with no original-language stream"
+    );
+    Ok(())
+}
+
+/// The listener's verdict on the track now in `audio.opus`.
+#[derive(Serialize, Deserialize)]
+struct AudioCheck {
+    model: String,
+    expected: String,
+    filename: String,
+    stream: sync::AudioStreamIdentity,
+    verdict: audio_check::Verdict,
+}
+
+/// Whether the extracted track has already been heard by the current model.
+/// A rejected track is evicted on the spot, so a verdict that still matches
+/// the artifact is an acceptance.
+fn audio_checked(dir: &std::path::Path) -> bool {
+    let Some(stamp) = read_audio_stamp(dir) else {
+        return false;
+    };
+    std::fs::read(dir.join("audio-check.json"))
+        .ok()
+        .and_then(|b| serde_json::from_slice::<AudioCheck>(&b).ok())
+        .is_some_and(|c| {
+            c.model == audio_check::MODEL
+                && c.filename == stamp.filename
+                && c.stream == stamp.stream
+        })
+}
+
+/// Evict the rejected track and everything the pipeline derived from it,
+/// and record the rejection so the extractor passes the stream over.
+fn reject_audio(
+    dir: &std::path::Path,
+    stamp: AudioStamp,
+    verdict: audio_check::Verdict,
+) -> Result<()> {
+    for name in [
+        "audio.opus",
+        "audio.json",
+        "audio-check.json",
+        "speech-profile-16ms.f32",
+        "transcript.jsonl",
+        "clips.jsonl",
+    ] {
+        let _ = std::fs::remove_file(dir.join(name));
+    }
+    let _ = std::fs::remove_file(subtitle_corpus::verbatim::report_path(dir));
+    let mut rejected = read_rejected(dir);
+    rejected.push(RejectedStream {
+        filename: stamp.filename,
+        stream: stamp.stream,
+        verdict,
+    });
+    std::fs::write(
+        dir.join("audio-rejected.json"),
+        serde_json::to_vec_pretty(&rejected)?,
+    )?;
+    Ok(())
+}
+
+/// What listening to one film came to: the tracks turned down along the way,
+/// and the one accepted, if any survived.
+struct Listened {
+    rejected: Vec<audio_check::Verdict>,
+    accepted: Option<audio_check::Verdict>,
+}
+
+async fn audio_check_one(
+    http: &reqwest::Client,
+    key: &str,
+    movie: &Movie,
+    dir: &std::path::Path,
+) -> Result<Listened> {
+    let expected = audio_check::expected_language(&movie.original_language);
+    let mut rejected = Vec::new();
+    loop {
+        let stamp = read_audio_stamp(dir).context("audio.json missing")?;
+        let samples = {
+            let audio = dir.join("audio.opus");
+            let duration = stamp.duration_ms;
+            tokio::task::spawn_blocking(move || audio_check::samples(&audio, duration)).await??
+        };
+        let verdict = audio_check::judge(http, key, expected, &samples).await?;
+        let check = AudioCheck {
+            model: audio_check::MODEL.to_string(),
+            expected: expected.to_string(),
+            filename: stamp.filename.clone(),
+            stream: stamp.stream.clone(),
+            verdict: verdict.clone(),
+        };
+        std::fs::write(
+            dir.join("audio-check.json"),
+            serde_json::to_vec_pretty(&check)?,
+        )?;
+        if verdict.accepted() {
+            return Ok(Listened {
+                rejected,
+                accepted: Some(verdict),
+            });
+        }
+        println!(
+            "  {} ✗ stream {}: {} — {}",
+            truncate(&movie.title, 34),
+            stamp.stream.stream_index,
+            if verdict.commentary {
+                "commentary"
+            } else {
+                &verdict.spoken_language
+            },
+            verdict.notes
+        );
+        reject_audio(dir, stamp, verdict.clone())?;
+        rejected.push(verdict);
+        // The extractor sees the rejection and reaches for the next candidate.
+        let outcome = {
+            let (movie, dir) = (movie.clone(), dir.to_path_buf());
+            tokio::task::spawn_blocking(move || extract_audio_one(&movie, &dir)).await?
+        };
+        match outcome {
+            AudioOutcome::Extracted(id) => println!(
+                "  {} → trying stream {} ({} {}ch)",
+                truncate(&movie.title, 34),
+                id.stream_index,
+                id.codec,
+                id.channels
+            ),
+            AudioOutcome::NoStream => {
+                return Ok(Listened {
+                    rejected,
+                    accepted: None,
+                })
+            }
+            AudioOutcome::Current => bail!("the extractor re-chose a rejected stream"),
+            AudioOutcome::Failed(e) => return Err(e),
+        }
+    }
+}
+
+/// Listen to every extracted track not yet judged; see `Command_::AudioCheck`.
+#[tokio::main]
+async fn audio_check(out: PathBuf, jobs: usize, limit: usize, imdb: Option<String>) -> Result<()> {
+    use futures::stream::StreamExt;
+    use std::sync::Arc;
+
+    let key = Arc::new(std::env::var("GEMINI_API_KEY").context("GEMINI_API_KEY not set")?);
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.as_deref().is_none_or(|id| m.imdb_id == id))
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            extracted_audio(m, &dir).is_some() && !audio_checked(&dir)
+        })
+        .collect();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!(
+        "{total} extracted tracks to listen to, model {}",
+        audio_check::MODEL
+    );
+    if total == 0 {
+        return Ok(());
+    }
+
+    let http = Arc::new(reqwest::Client::new());
+    let out = Arc::new(out);
+    let progress = AtomicUsize::new(0);
+    let outcomes: Vec<Result<Listened>> = futures::stream::iter(queue)
+        .map(|movie| {
+            let (http, key, out) = (Arc::clone(&http), Arc::clone(&key), Arc::clone(&out));
+            let progress = &progress;
+            async move {
+                let outcome = audio_check_one(&http, &key, &movie, &out.join(&movie.imdb_id)).await;
+                let n = progress.fetch_add(1, Ordering::Relaxed) + 1;
+                let title = truncate(&movie.title, 34);
+                match &outcome {
+                    Ok(Listened {
+                        accepted: Some(v),
+                        rejected,
+                    }) => println!(
+                        "[{n}/{total}] {title} ✓ {} ({} confidence){}",
+                        v.spoken_language,
+                        v.confidence,
+                        match rejected.len() {
+                            0 => String::new(),
+                            k => format!(", after rejecting {k}"),
+                        }
+                    ),
+                    Ok(Listened { accepted: None, .. }) => {
+                        println!("[{n}/{total}] {title} ✗ no usable track on the disc")
+                    }
+                    Err(e) => println!("[{n}/{total}] {title} ✗ {e:#}"),
+                }
+                outcome
+            }
+        })
+        .buffer_unordered(jobs.max(1))
+        .collect()
+        .await;
+
+    let accepted = outcomes
+        .iter()
+        .filter(|o| matches!(o, Ok(l) if l.accepted.is_some()))
+        .count();
+    let exhausted = outcomes
+        .iter()
+        .filter(|o| matches!(o, Ok(l) if l.accepted.is_none()))
+        .count();
+    let rejected: usize = outcomes
+        .iter()
+        .filter_map(|o| o.as_ref().ok())
+        .map(|l| l.rejected.len())
+        .sum();
+    println!(
+        "\n{accepted} tracks accepted, {rejected} rejected, {exhausted} films left with no usable track, {} failed",
+        outcomes.iter().filter(|o| o.is_err()).count()
+    );
+    Ok(())
+}
+
+/// Build the fine speech profile for every film with extracted audio; see
+/// `Command_::SpeechProfiles`.
+fn speech_profiles(out: PathBuf, jobs: usize, limit: usize) -> Result<()> {
+    let plan = read_plan(&out)?;
+    let mut todo: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            extracted_audio(m, &dir).is_some()
+                && vad::read_profile(&dir.join("speech-profile-16ms.f32")).is_none()
+        })
+        .collect();
+    if limit > 0 {
+        todo.truncate(limit);
+    }
+    println!(
+        "{} films with audio and no 16 ms speech profile",
+        todo.len()
+    );
+    if todo.is_empty() {
+        return Ok(());
+    }
+
+    let results = parallel(todo, jobs, "profiling speech", |m| {
+        let dir = out.join(&m.imdb_id);
+        let r = fine_speech_profile(m, &dir).map(|p| p.len());
+        if let Ok(frames) = &r {
+            // The retired coarse file has nothing the fine one lacks.
+            let _ = std::fs::remove_file(dir.join("speech-profile.f32"));
+            println!(
+                "  {} ✓ {:.0} min profiled",
+                truncate(&m.title, 40),
+                *frames as f64 * vad::FRAME as f64 / 16_000.0 / 60.0
+            );
+        }
+        (m.imdb_id.clone(), m.title.clone(), r)
+    });
+    let failed = results.iter().filter(|(_, _, r)| r.is_err()).count();
+    for (imdb, title, r) in &results {
+        if let Err(e) = r {
+            println!("  ✗ {imdb} {}: {e:#}", truncate(title, 40));
+        }
+    }
+    println!(
+        "\n{} profiles written, {failed} failed",
+        results.len() - failed
+    );
+    Ok(())
+}
+
+/// Warm the sentence-segmentation cache for every model-segmented film; see
+/// `Command_::Segment`.
+#[tokio::main]
+async fn segment_all(out: PathBuf, all: bool, limit: usize, imdb: Option<String>) -> Result<()> {
+    use movie_subtitles::llm_segment;
+    let plan = read_plan(&out)?;
+    let mut todo: Vec<(Movie, language_utils::Language)> = plan
+        .into_iter()
+        .filter(|m| imdb.as_ref().is_none_or(|id| *id == m.imdb_id))
+        .filter_map(|m| {
+            let language = library::course_dir(&m.original_language)
+                .and_then(language_utils::Language::from_code)?;
+            let dir = out.join(&m.imdb_id);
+            (llm_segment::uses_llm(language)
+                && dir.join("subtitle.srt").exists()
+                && (all || dir.join("transcript.jsonl").exists()))
+            .then_some((m, language))
+        })
+        .collect();
+    if limit > 0 {
+        todo.truncate(limit);
+    }
+    let lines: Vec<Vec<movie_subtitles::SubtitleLine>> = todo
+        .iter()
+        .map(|(m, _)| {
+            let srt = std::fs::read_to_string(out.join(&m.imdb_id).join("subtitle.srt"))?;
+            Ok(movie_subtitles::sentences::prepared_lines(
+                &subtitle_corpus::clips::subtitle_lines(&srt),
+            ))
+        })
+        .collect::<Result<_>>()?;
+    let tracks: Vec<(&[movie_subtitles::SubtitleLine], language_utils::Language)> = lines
+        .iter()
+        .zip(&todo)
+        .map(|(l, (_, language))| (l.as_slice(), *language))
+        .collect();
+    let cues: usize = tracks.iter().map(|(t, _)| t.len()).sum();
+    println!(
+        "{} model-segmented films with a subtitle, {cues} cues, model {}",
+        todo.len(),
+        llm_segment::MODEL
+    );
+    if todo.is_empty() {
+        return Ok(());
+    }
+    let client = llm_segment::client()?;
+    let (splits, report) =
+        llm_segment::split_tracks(&client, &tracks, llm_segment::print_progress()).await?;
+    for (((m, language), lines), splits) in todo.iter().zip(&lines).zip(&splits) {
+        let keyed =
+            movie_subtitles::sentences::keyed_sentences_from_splits(lines, splits, *language);
+        let worthy = keyed.iter().filter(|k| k.course_worthy).count();
+        println!(
+            "  {} ✓ {} cues → {} sentences ({worthy} course-worthy)",
+            truncate(&m.title, 40),
+            lines.len(),
+            keyed.len()
+        );
+        // Asked for one film: show its opening so the cuts can be eyeballed.
+        if imdb.is_some() {
+            for k in keyed.iter().take(60) {
+                let mark = if k.course_worthy { "keep" } else { "drop" };
+                println!("      [{mark}] {}", k.sentence);
+            }
+        }
+    }
+    println!(
+        "\n{} cues, {} put to the model, {} fell back to per-cue",
+        report.cues, report.asked, report.fallbacks
     );
     Ok(())
 }
@@ -1753,7 +2279,7 @@ async fn sync_all(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -2198,7 +2724,11 @@ async fn check_one(
     // Syncing against the extraction and checking against the original means
     // a defect in the extraction's timeline gets caught instead of ratified.
     let codes = library::stream_codes(&movie.original_language);
-    let stream = sync::original_audio_stream(&movie.path, codes)?;
+    let stream = sync::original_audio_stream(
+        &movie.path,
+        codes,
+        &rejected_streams(movie, &out.join(&movie.imdb_id)),
+    )?;
     let duration = sync::duration_ms(&movie.path)?;
     let language = library::course_dir(&movie.original_language)
         .and_then(whisper_language)
@@ -2392,6 +2922,359 @@ async fn transcribe_all(
         done.iter().filter(|ok| !**ok).count()
     );
     Ok(())
+}
+
+/// Judge every transcribed film's subtitle against its transcript, re-time
+/// the skewed ones and replace the paraphrased ones where a better
+/// candidate can be found. See `Command_::TranscriptCheck`.
+#[allow(clippy::too_many_arguments)]
+#[tokio::main]
+async fn transcript_check(
+    out: PathBuf,
+    data_root: PathBuf,
+    limit: usize,
+    imdb: Option<String>,
+    min_verbatim: Option<f64>,
+    dry_run: bool,
+    max_downloads: usize,
+    max_candidates: usize,
+) -> Result<()> {
+    use subtitle_corpus::verbatim::{self, Verdict};
+
+    let plan = read_plan(&out)?;
+    let mut queue: Vec<Movie> = plan
+        .into_iter()
+        .filter(|m| imdb.as_deref().is_none_or(|id| m.imdb_id == id))
+        .filter(|m| {
+            let dir = out.join(&m.imdb_id);
+            dir.join("subtitle.srt").exists() && dir.join("transcript.jsonl").exists()
+        })
+        .collect();
+    // The measure is the clip mapper's own placement test, calibrated on
+    // the languages it maps; for the rest it has no ground truth and
+    // `clips` would not act on the verdict anyway.
+    let ungated = queue.len();
+    queue.retain(|m| {
+        library::course_dir(&m.original_language).is_some_and(subtitle_corpus::clips::maps)
+    });
+    let ungated = ungated - queue.len();
+    if limit > 0 {
+        queue.truncate(limit);
+    }
+    let total = queue.len();
+    println!("{total} transcribed films to judge ({ungated} in languages without a phoneme gate left alone)");
+
+    let client = if !dry_run && max_downloads > 0 {
+        match opensubtitles_client().await {
+            Ok(c) => Some(c),
+            Err(e) => {
+                println!("  OpenSubtitles unavailable, local candidates only: {e:#}");
+                None
+            }
+        }
+    } else {
+        None
+    };
+    let mut downloads_left = if client.is_some() { max_downloads } else { 0 };
+
+    let mut counts: std::collections::BTreeMap<&str, usize> = Default::default();
+    let (mut retimed, mut adopted, mut failed) = (0usize, 0usize, 0usize);
+    for (n, movie) in queue.iter().enumerate() {
+        let n = n + 1;
+        let dir = out.join(&movie.imdb_id);
+        let title = truncate(&movie.title, 34);
+        let (Some(code), Some(language)) = (
+            library::course_dir(&movie.original_language),
+            library::course_dir(&movie.original_language)
+                .and_then(language_utils::Language::from_code),
+        ) else {
+            println!("[{n}/{total}] {title} ✗ unmapped language");
+            failed += 1;
+            continue;
+        };
+        let min_verbatim = min_verbatim.unwrap_or_else(|| verbatim::min_fraction(code));
+        let mut report = match verbatim::check(&dir, language, code, min_verbatim).await {
+            Ok(r) => r,
+            Err(e) => {
+                println!("[{n}/{total}] {title} ✗ {e:#}");
+                failed += 1;
+                continue;
+            }
+        };
+        let mut note = String::new();
+        let disc = matches!(
+            movie.source,
+            Source::DiscText { .. } | Source::DiscBitmap { .. }
+        );
+        if report.measure.verdict == Verdict::Skewed && !dry_run {
+            if disc {
+                // Authored to this very file: if it reads as skewed, the
+                // transcript's clock (the audio extraction) is what moved.
+                note.push_str(
+                    " — disc track on another clock: audio extraction suspect, not re-timed",
+                );
+            } else if let Some(fit) = report.measure.aligned.as_ref() {
+                // The verdict already vouches for the fit: the sentences
+                // place under it. A worst-anchor residual is no extra test
+                // — PAL-rate fits carry 1.5–2 s tails on hundreds of good
+                // anchors and still place 55–65% of the film.
+                let srt = std::fs::read_to_string(dir.join("subtitle.srt"))?;
+                std::fs::write(dir.join("subtitle.srt"), verbatim::retime(&srt, fit))?;
+                write_stamp(&dir, movie, StampSource::Keep);
+                let _ = std::fs::remove_file(subtitle_corpus::clips::clips_path(&dir));
+                note.push_str(&format!(" — re-timed {:+.1}s", fit.offset_ms / 1000.0));
+                retimed += 1;
+                report = verbatim::check(&dir, language, code, min_verbatim).await?;
+            }
+        }
+        if matches!(
+            report.measure.verdict,
+            Verdict::Paraphrase | Verdict::Skewed
+        ) && !dry_run
+        {
+            println!(
+                "[{n}/{total}] {title}: {} — trying other subtitles",
+                verbatim::describe(&report.measure)
+            );
+            match adopt_candidate(
+                movie,
+                &dir,
+                &data_root,
+                language,
+                code,
+                min_verbatim,
+                report.measure.best_placed(),
+                client.as_ref(),
+                &mut downloads_left,
+                max_candidates,
+            )
+            .await
+            {
+                Ok(Some(label)) => {
+                    adopted += 1;
+                    note.push_str(&format!(" — adopted {label}"));
+                    report = verbatim::check(&dir, language, code, min_verbatim).await?;
+                }
+                Ok(None) => note.push_str(" — no better candidate"),
+                Err(e) => note.push_str(&format!(" — candidates: {e:#}")),
+            }
+        }
+        *counts.entry(report.measure.verdict.label()).or_default() += 1;
+        let mark = if report.measure.verdict == Verdict::Verbatim {
+            "✓"
+        } else {
+            "✗"
+        };
+        println!(
+            "[{n}/{total}] {title} {mark} {} [{}]{note}",
+            verbatim::describe(&report.measure),
+            movie.source.label()
+        );
+    }
+
+    println!();
+    for (verdict, n) in &counts {
+        println!("  {verdict:12}{n:>5}");
+    }
+    println!(
+        "{retimed} re-timed, {adopted} replaced by a better subtitle, {failed} could not be judged"
+    );
+    if let Some(n) = counts.get("paraphrase").filter(|n| **n > 0) {
+        println!(
+            "{n} films keep a subtitle that is not what is said; `clips` skips them. \
+             Re-run with --max-downloads to try more OpenSubtitles candidates."
+        );
+    }
+    Ok(())
+}
+
+async fn opensubtitles_client() -> Result<opensubtitles_downloader::OpenSubtitlesClient> {
+    let api_key =
+        std::env::var("OPENSUBTITLES_API_KEY").context("OPENSUBTITLES_API_KEY not set")?;
+    let mut client = opensubtitles_downloader::OpenSubtitlesClient::new(api_key);
+    if let (Ok(user), Ok(password)) = (
+        std::env::var("OPENSUBTITLES_USERNAME"),
+        std::env::var("OPENSUBTITLES_PASSWORD"),
+    ) {
+        client
+            .login(&user, &password)
+            .await
+            .context("OpenSubtitles login")?;
+    }
+    Ok(client)
+}
+
+/// Download up to `max_candidates` subtitles for the film that are not
+/// already under `saved`, within the run's remaining budget. Every download
+/// is kept: it cost quota, and a later re-check should not pay again.
+async fn fetch_candidates(
+    client: &opensubtitles_downloader::OpenSubtitlesClient,
+    movie: &Movie,
+    language: language_utils::Language,
+    saved: &std::path::Path,
+    downloads_left: &mut usize,
+    max_candidates: usize,
+) -> Result<()> {
+    use opensubtitles_downloader::{rank_by_quality, Throttled};
+
+    let imdb_num: u64 = movie
+        .imdb_id
+        .strip_prefix("tt")
+        .unwrap_or(&movie.imdb_id)
+        .parse()
+        .with_context(|| format!("bad IMDb id {}", movie.imdb_id))?;
+    let mut results = client
+        .search_subtitles_for_movie(imdb_num, language.opensubtitles_language_code())
+        .await
+        .context("OpenSubtitles search")?;
+    results.retain(|s| !s.attributes.ai_translated && !s.attributes.machine_translated);
+    rank_by_quality(&mut results);
+    std::fs::create_dir_all(saved)?;
+    let unseen = results
+        .iter()
+        .filter_map(|r| r.attributes.files.first())
+        .filter(|f| !saved.join(format!("{}.srt", f.file_id)).exists())
+        .count();
+    println!(
+        "      OpenSubtitles ({}): {} human-made candidates, {unseen} not yet fetched",
+        language.opensubtitles_language_code(),
+        results.len()
+    );
+
+    let mut fetched = 0usize;
+    for result in &results {
+        if fetched >= max_candidates || *downloads_left == 0 {
+            break;
+        }
+        let Some(file_id) = result.attributes.files.first().map(|f| f.file_id) else {
+            continue;
+        };
+        let path = saved.join(format!("{file_id}.srt"));
+        if path.exists() {
+            continue;
+        }
+        match client.download_subtitle(file_id).await {
+            Ok(srt) => {
+                std::fs::write(&path, srt)?;
+                fetched += 1;
+                *downloads_left -= 1;
+            }
+            Err(e) => match e.downcast_ref::<Throttled>() {
+                Some(Throttled::QuotaExhausted) => {
+                    println!("      OpenSubtitles quota exhausted; no more downloads this run");
+                    *downloads_left = 0;
+                }
+                Some(Throttled::TooManyRequests) => {
+                    tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                }
+                None => return Err(e.context("OpenSubtitles download")),
+            },
+        }
+    }
+    Ok(())
+}
+
+/// Measure every other subtitle on hand for the film — the course's
+/// downloaded SRT and its recovery near-miss, a sidecar beside the video,
+/// anything fetched earlier, plus fresh OpenSubtitles candidates while the
+/// budget lasts — and install the best one that clears the bar and beats
+/// `to_beat`. Returns what was adopted.
+#[allow(clippy::too_many_arguments)]
+async fn adopt_candidate(
+    movie: &Movie,
+    dir: &std::path::Path,
+    data_root: &std::path::Path,
+    language: language_utils::Language,
+    code: &str,
+    min_verbatim: f64,
+    to_beat: usize,
+    client: Option<&opensubtitles_downloader::OpenSubtitlesClient>,
+    downloads_left: &mut usize,
+    max_candidates: usize,
+) -> Result<Option<String>> {
+    use subtitle_corpus::verbatim::{self, Verdict};
+
+    let mut candidates: Vec<(String, PathBuf)> = Vec::new();
+    if let Some(course) = library::course_dir(&movie.original_language) {
+        let movies = data_root.join(course).join("sentence-sources/movies");
+        for (label, sub) in [
+            ("course download", "subtitles-raw"),
+            ("recovery near-miss", "subtitles-unmatched"),
+        ] {
+            let path = movies.join(sub).join(format!("{}.srt", movie.imdb_id));
+            if path.exists() {
+                candidates.push((label.to_string(), path));
+            }
+        }
+    }
+    if let Some(path) =
+        library::sidecar(&movie.path, library::stream_codes(&movie.original_language))
+    {
+        candidates.push(("sidecar".to_string(), path));
+    }
+    let saved = dir.join("candidates");
+    if let Some(client) = client {
+        if *downloads_left > 0 {
+            if let Err(e) = fetch_candidates(
+                client,
+                movie,
+                language,
+                &saved,
+                downloads_left,
+                max_candidates,
+            )
+            .await
+            {
+                println!("      {e:#}");
+            }
+        }
+    }
+    for entry in std::fs::read_dir(&saved).into_iter().flatten().flatten() {
+        let path = entry.path();
+        if path.extension().is_some_and(|e| e == "srt") {
+            let stem = path.file_stem().map(|s| s.to_string_lossy().into_owned());
+            candidates.push((format!("opensubtitles {}", stem.unwrap_or_default()), path));
+        }
+    }
+    if candidates.is_empty() {
+        return Ok(None);
+    }
+
+    let transcript = subtitle_corpus::cues::load_transcript(&dir.join("transcript.jsonl"))?;
+    let mut best: Option<(String, String, verbatim::Measure)> = None;
+    for (label, path) in candidates {
+        let text = String::from_utf8_lossy(&std::fs::read(&path)?).into_owned();
+        let measure = verbatim::measure(&text, &transcript, language, code, min_verbatim).await?;
+        println!("      {label:24} {}", verbatim::describe(&measure));
+        let bar = best.as_ref().map_or(to_beat, |b| b.2.best_placed());
+        if matches!(measure.verdict, Verdict::Verbatim | Verdict::Skewed)
+            && measure.best_placed() > bar
+        {
+            best = Some((label, text, measure));
+        }
+    }
+    let Some((label, text, measure)) = best else {
+        return Ok(None);
+    };
+
+    // The subtitle being displaced may be the only copy of an OCR spend or
+    // a disc extraction; keep the first one displaced under a fixed name
+    // (later adoptions replace only what an earlier adoption installed).
+    let replaced = dir.join("subtitle.replaced.srt");
+    if !replaced.exists() {
+        let _ = std::fs::rename(dir.join("subtitle.srt"), &replaced);
+    }
+    let adopted = dir.join("adopted.srt");
+    std::fs::write(&adopted, &text)?;
+    let timed = match &measure.aligned {
+        Some(fit) if fit.fraction > measure.fraction => verbatim::retime(&text, fit),
+        _ => sync::write_cues(&sync::parse_cues(&text)),
+    };
+    std::fs::write(dir.join("subtitle.srt"), timed)?;
+    write_stamp(dir, movie, StampSource::File(&adopted));
+    let _ = std::fs::remove_file(subtitle_corpus::clips::clips_path(dir));
+    let _ = std::fs::remove_file(verbatim::report_path(dir));
+    Ok(Some(label))
 }
 
 #[tokio::main]
@@ -2674,7 +3557,7 @@ fn vad_sync(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -2839,7 +3722,7 @@ fn text_sync(
         if dir.join("subtitle.srt").exists() {
             continue;
         }
-        if let Some(raw) = subtitle_source(&movie, &data_root) {
+        if let Some(raw) = subtitle_source(&movie, &dir, &data_root) {
             if movie.path.exists() {
                 if sync_already_failed(&movie, &dir, &raw) {
                     parked += 1;
@@ -3392,6 +4275,12 @@ fn main() -> Result<()> {
             limit,
             imdb,
         } => extract_audio(out, jobs, limit, imdb.as_deref()),
+        Command_::AudioCheck {
+            out,
+            jobs,
+            limit,
+            imdb,
+        } => audio_check(out, jobs, limit, imdb),
         Command_::OcrSample {
             out,
             movies,
@@ -3443,12 +4332,38 @@ fn main() -> Result<()> {
             films_in_flight,
             limit,
         } => check_all(out, tier, windows, window_secs, films_in_flight, limit),
+        Command_::Segment {
+            out,
+            all,
+            limit,
+            imdb,
+        } => segment_all(out, all, limit, imdb),
         Command_::Transcribe {
             out,
             films_in_flight,
             limit,
             imdb,
         } => transcribe_all(out, films_in_flight, limit, imdb),
+        Command_::SpeechProfiles { out, jobs, limit } => speech_profiles(out, jobs, limit),
+        Command_::TranscriptCheck {
+            out,
+            data_root,
+            limit,
+            imdb,
+            min_verbatim,
+            dry_run,
+            max_downloads,
+            max_candidates,
+        } => transcript_check(
+            out,
+            data_root,
+            limit,
+            imdb,
+            min_verbatim,
+            dry_run,
+            max_downloads,
+            max_candidates,
+        ),
         Command_::Agreement {
             out,
             tier,
