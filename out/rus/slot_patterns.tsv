@@ -1,0 +1,3 @@
+term	realization	matches	good	total	precision	kept	example_failure	example_failure_bound_words
+расскажи это кому-нибудь другому	filled	19	12	12	1.00	yes		
+кто-нибудь здесь говорит по-английски	filled	1	1	1	1.00	yes		

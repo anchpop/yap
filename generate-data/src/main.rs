@@ -1261,7 +1261,7 @@ async fn main() -> anyhow::Result<()> {
             .map(|(sentence, _)| sentence.clone())
             .collect();
 
-        let mut target_language_sentences = target_language_sentences
+        let target_language_sentences = target_language_sentences
             .into_iter()
             .filter(|sentence| kept_sentences.contains(sentence))
             .collect::<Vec<_>>();
@@ -1383,41 +1383,6 @@ async fn main() -> anyhow::Result<()> {
             );
             groups
         };
-
-        // Sort sentences by the frequency of their least common gram
-
-        // Create a gram frequency map for quick lookup
-        let gram_frequency_map: FxHashMap<&Gram<String>, u32> = gram_frequencies
-            .iter()
-            .map(|entry| (&entry.gram, entry.count))
-            .collect();
-
-        // Create a map from sentence to its encoded grams for quick lookup
-        let sentence_to_grams: FxHashMap<&str, &SentenceGrams<Gram<String>>> =
-            encoded_sentences_with_grams
-                .iter()
-                .map(|(text, grams)| (text.as_str(), grams))
-                .collect();
-
-        // Sort target_language_sentences by the frequency of their least common gram
-        target_language_sentences.sort_by_cached_key(|sentence| {
-            if let Some(sg) = sentence_to_grams.get(sentence.as_str()) {
-                let mut freqs: Vec<u32> = sg
-                    .grams
-                    .iter()
-                    .filter_map(|g| match g {
-                        SentenceGram::Learnable(gram) => gram_frequency_map.get(gram).copied(),
-                        SentenceGram::Obvious(_) => None,
-                    })
-                    .collect();
-                freqs.sort_unstable();
-                let mut it = freqs.into_iter();
-                std::cmp::Reverse((it.next(), it.next(), it.next()))
-            } else {
-                eprintln!("No encoded grams found for sentence: {sentence}");
-                std::cmp::Reverse((None, None, None))
-            }
-        });
 
         // Load movie metadata and subtitles
         let source_data_path = std::path::PathBuf::from(format!(

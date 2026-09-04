@@ -36,6 +36,7 @@ profile.json.gz
 # Dictionary site generated data and build output
 static-site/src/data/
 static-site/public/search/
+static-site/public/grams/
 static-site/dist/
 static-site/node_modules/
 static-site/.astro/

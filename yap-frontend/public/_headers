@@ -1,3 +1,10 @@
 /*
   X-Frame-Options: DENY
   Content-Security-Policy: frame-ancestors 'none'
+
+# Generated gramlists: plain word/sentence lists that only change on deploy,
+# and where serving a slightly old list is harmless. Only reachable here
+# because /grams/* is not in _routes.json, so Pages serves it as an asset —
+# _headers does not apply to Worker-routed paths like /d/*.
+/grams/*
+  Cache-Control: public, max-age=3600, s-maxage=604800, stale-while-revalidate=86400

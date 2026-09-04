@@ -1,7 +1,9 @@
 use anyhow::Result;
 use language_utils::features::Morphology;
 use language_utils::language_pack::LanguagePack;
-use language_utils::{Atom, COURSES, Course, GramDefinition, PartOfSpeech, SentenceGram, WordType};
+use language_utils::{
+    Atom, COURSES, Course, GramDefinition, Language, PartOfSpeech, SentenceGram, WordType,
+};
 use lasso::Spur;
 use rustc_hash::FxHashMap;
 use serde::Serialize;
@@ -815,12 +817,77 @@ fn resolve_sentence(
     })
 }
 
+/// Flatten an example sentence back to plain target-language text.
+fn plain_sentence(sentence: &ExampleSentence) -> String {
+    let mut out = String::new();
+    for seg in &sentence.segments {
+        out.push_str(&seg.text);
+        out.push_str(&seg.whitespace);
+    }
+    out
+}
+
+/// Collapse whitespace so a value can sit in a tab-separated, newline-delimited
+/// record without breaking `cut -f1` / `cut -f2` apart.
+fn single_line(text: &str) -> String {
+    text.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+/// Gramlist filename for a language: lowercase English name with
+/// non-alphanumeric runs collapsed to `-` (`Chinese (Simplified)` →
+/// `chinese-simplified`), so the URL stays copy-pasteable.
+fn language_file_slug(language: Language) -> String {
+    let mut slug = String::new();
+    for ch in language.to_string().to_lowercase().chars() {
+        if ch.is_ascii_alphanumeric() {
+            slug.push(ch);
+        } else if !slug.is_empty() && !slug.ends_with('-') {
+            slug.push('-');
+        }
+    }
+    slug.trim_matches('-').to_string()
+}
+
+/// Deterministically pick one of `len` items from a string key. Deterministic
+/// rather than random so rebuilding the site doesn't churn every line of every
+/// gramlist, but keyed on the gram so the file isn't uniformly "first sentence".
+fn pick_index(key: &str, len: usize) -> usize {
+    use std::hash::{Hash, Hasher};
+    let mut hasher = rustc_hash::FxHasher::default();
+    key.hash(&mut hasher);
+    (hasher.finish() % len as u64) as usize
+}
+
+/// Choose the example sentence a gram gets in the flat gramlists: a uniform
+/// pick over the sentences the gram has. Seeded on the gram rather than drawn
+/// from a live RNG, so rebuilding the site doesn't rewrite every line of every
+/// gramlist for no reason.
+fn pick_gramlist_sentence(page: &PageEntry) -> Option<String> {
+    let mut sentences: Vec<String> = page
+        .senses
+        .iter()
+        .flat_map(|sense| sense.example_sentences.iter())
+        .map(|sentence| single_line(&plain_sentence(sentence)))
+        .filter(|text| !text.is_empty())
+        .collect();
+    if sentences.is_empty() {
+        return None;
+    }
+    let index = pick_index(&page.display_text, sentences.len());
+    Some(sentences.swap_remove(index))
+}
+
 fn main() -> Result<()> {
     let out_dir = Path::new("out");
     let data_out_dir = Path::new("static-site/src/data");
     std::fs::create_dir_all(data_out_dir)?;
 
     let mut courses_manifest: Vec<serde_json::Value> = Vec::new();
+
+    // Gramlist rows per target language, keyed by gram text so a language that
+    // is the target of more than one course contributes each gram once.
+    let mut gramlists: std::collections::BTreeMap<Language, indexmap::IndexMap<String, String>> =
+        std::collections::BTreeMap::new();
 
     for course in COURSES {
         let dir_name = course_dir_name(course);
@@ -843,6 +910,30 @@ fn main() -> Result<()> {
 
         eprintln!("Extracting dictionary data for {dir_name} ...");
         let course_data = extract_pages(&language_pack, course);
+
+        // Collect this course's contribution to its target language's gramlist.
+        {
+            let rows = gramlists.entry(course.target_language).or_default();
+            let mut kept = 0usize;
+            let mut no_sentence = 0usize;
+            for page in &course_data.pages {
+                let text = single_line(&page.display_text);
+                if text.is_empty() || rows.contains_key(&text) {
+                    continue;
+                }
+                match pick_gramlist_sentence(page) {
+                    Some(sentence) => {
+                        rows.insert(text, sentence);
+                        kept += 1;
+                    }
+                    None => no_sentence += 1,
+                }
+            }
+            eprintln!(
+                "Gramlist {}: +{kept} grams ({no_sentence} pages had no usable sentence)",
+                course.target_language,
+            );
+        }
 
         let slug = course_slug(course);
 
@@ -1005,6 +1096,27 @@ fn main() -> Result<()> {
             "total_pages": course_data.total_pages,
             "total_senses": course_data.total_senses,
         }));
+    }
+
+    // One gramlist per target language: `<gram>\t<example sentence>` per line.
+    // Deliberately plain text — the point is a copy-pasteable one-liner.
+    let grams_dir = Path::new("static-site/public/grams");
+    std::fs::create_dir_all(grams_dir)?;
+    for (language, rows) in &gramlists {
+        let path = grams_dir.join(format!("{}.txt", language_file_slug(*language)));
+        let mut body = String::new();
+        for (text, sentence) in rows {
+            body.push_str(text);
+            body.push('\t');
+            body.push_str(sentence);
+            body.push('\n');
+        }
+        std::fs::write(&path, body)?;
+        eprintln!(
+            "Wrote gramlist ({} grams) to {}",
+            rows.len(),
+            path.display()
+        );
     }
 
     let manifest_path = data_out_dir.join("courses.json");
