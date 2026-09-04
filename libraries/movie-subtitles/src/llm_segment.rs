@@ -91,7 +91,7 @@ pub fn no_batch() -> bool {
 pub fn client() -> anyhow::Result<ChatClient> {
     let client = ChatClient::from_env(MODEL)?
         .with_cache_directory("./.cache")
-        .with_reasoning_effort("low");
+        .with_reasoning_effort("none");
     Ok(if no_batch() {
         client.with_small_batch_threshold(usize::MAX)
     } else {
