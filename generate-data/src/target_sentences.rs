@@ -401,8 +401,8 @@ async fn load_movie_sentences(
             .await?;
             if report.fallbacks > 0 {
                 println!(
-                    "  {} of {} cues fell back to per-cue segmentation",
-                    report.fallbacks, report.cues
+                    "  {} of the {} cues put to the model fell back to per-cue segmentation",
+                    report.fallbacks, report.asked
                 );
             }
             films

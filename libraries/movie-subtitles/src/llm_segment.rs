@@ -133,17 +133,27 @@ impl CueSplit {
             unfinished: false,
         }
     }
+
+    /// The answer for a cue that needs no model: it ends in a sentence-final
+    /// mark and carries none inside, so it is one closed sentence (or one
+    /// per speaker turn). An ellipsis does not close a sentence — a line
+    /// trailing off usually continues in the next cue — so it does not
+    /// count. About a fifth of Japanese, Mandarin and Korean cues.
+    fn self_evident(cue: &str) -> Option<Self> {
+        const CLOSING: &[char] = &['.', '!', '?', '。', '！', '？'];
+        let trimmed = cue.trim_end_matches(['"', '”', '」', '』', ')', ' ']);
+        let body = trimmed.trim_end_matches(CLOSING);
+        (body.len() < trimmed.len() && !body.contains(CLOSING)).then(|| Self::per_cue(cue))
+    }
 }
 
-const SYSTEM_PROMPT: &str = "You are preparing film subtitles for a language-learning app that shows learners one sentence at a time, together with the film clip in which it is spoken. Subtitles break a sentence across cues for display and pack several sentences into one cue, and in some languages the cues carry no sentence-final punctuation, so the sentence boundaries have to be recovered from the words themselves.
+const SYSTEM_PROMPT: &str = "You segment film subtitles into sentences for a language-learning app that shows one sentence at a time. Subtitles split sentences across cues and pack several into one cue, and some languages write no sentence-final punctuation.
 
-You are given one focus cue, with the cues before and after it as context. Answer only about the focus cue: return its text cut into sentences, in order, and say whether the last one is unfinished. The context cues are there so you can judge whether the focus cue's first words finish a sentence begun earlier and whether its last words are left hanging; their text never belongs in the answer. Joined together, your entries must give back exactly the focus cue and nothing else.
+You get one focus cue with the cues before and after it as context. Return only the focus cue's text, cut into sentences in order, and whether the last one is unfinished, meaning the next cue completes it. Context text never belongs in the answer.
 
-Copy the text exactly: the same characters in the same order, nothing translated, corrected, added or left out — not even a final full stop or a comma at a cut. The app matches the entries back to the focus cue letter for letter and discards the whole answer if anything differs, so a helpful edit costs the cue rather than improving it. The one exception is a dash that marks a change of speaker, which may be dropped.
+Copy the text exactly: same characters, same order, nothing added, corrected or dropped, not even punctuation at a cut. The app matches entries back letter for letter and discards any answer that differs. A dash marking a change of speaker may be dropped.
 
-A sentence is a complete utterance a learner could study on its own: a statement, a question, an exclamation, a one-word reply, an interjection. Two speakers' lines in one cue are two entries. A fragment — words that only make sense together with the previous or the next cue — is also its own entry: put it first if it finishes the previous cue's sentence, last if the next cue completes it. When the next cue completes it, set unfinished; never write the next cue's words into the entry.
-
-The silence between cues is noted when it is long. A long pause usually means the sentence ended, but a speaker can also hold a pause mid-sentence; decide from the words.";
+A sentence is a complete utterance: a statement, question, exclamation, one-word reply or interjection. A fragment that belongs with the previous or next cue is its own entry: first if it finishes the previous cue, last and unfinished if the next cue completes it. Long pauses between cues are noted; they usually, not always, mean a sentence ended.";
 
 /// The prompt for `index` in `lines`: the focus cue on its own, the
 /// neighbours before and after it, and any long pauses between them.
@@ -220,6 +230,8 @@ fn validated(cue: &str, answer: CueSplit) -> Option<CueSplit> {
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct SplitReport {
     pub cues: usize,
+    /// Cues put to the model; the rest were closed by their own punctuation.
+    pub asked: usize,
     /// Answers that failed the letter-for-letter check (or the request
     /// itself failed) and fell back to the cue's speaker turns.
     pub fallbacks: usize,
@@ -236,10 +248,17 @@ pub async fn split_tracks(
     on_progress: impl FnMut(&tysm::batch::Batch),
 ) -> anyhow::Result<(Vec<Vec<CueSplit>>, SplitReport)> {
     let mut prompts: Vec<(usize, usize, String)> = Vec::new();
+    let mut evident: Vec<Vec<Option<CueSplit>>> = Vec::with_capacity(tracks.len());
     for (t, (lines, language)) in tracks.iter().enumerate() {
-        for i in 0..lines.len() {
-            prompts.push((t, i, prompt_for(lines, i, *language)));
+        let mut track = Vec::with_capacity(lines.len());
+        for (i, line) in lines.iter().enumerate() {
+            let split = CueSplit::self_evident(&line.sentence);
+            if split.is_none() {
+                prompts.push((t, i, prompt_for(lines, i, *language)));
+            }
+            track.push(split);
         }
+        evident.push(track);
     }
     // Chunked into Batch API jobs, a few in flight at a time; answers are
     // reassembled in prompt order.
@@ -263,14 +282,16 @@ pub async fn split_tracks(
         }
     }
 
-    let mut out: Vec<Vec<CueSplit>> = tracks
-        .iter()
-        .map(|(lines, _)| Vec::with_capacity(lines.len()))
-        .collect();
-    let mut report = SplitReport::default();
+    // Model answers land in their cue's slot; the self-evident cues are
+    // already there.
+    let mut out: Vec<Vec<Option<CueSplit>>> = evident;
+    let mut report = SplitReport {
+        cues: tracks.iter().map(|(lines, _)| lines.len()).sum(),
+        asked: prompts.len(),
+        fallbacks: 0,
+    };
     for ((t, i, _), answer) in answers {
         let cue = &tracks[*t].0[*i].sentence;
-        report.cues += 1;
         let split = match answer {
             Ok(answer) => {
                 let split = validated(cue, answer.clone());
@@ -287,11 +308,20 @@ pub async fn split_tracks(
                 None
             }
         };
-        out[*t].push(split.unwrap_or_else(|| {
+        out[*t][*i] = Some(split.unwrap_or_else(|| {
             report.fallbacks += 1;
             CueSplit::per_cue(cue)
         }));
     }
+    let out = out
+        .into_iter()
+        .map(|track| {
+            track
+                .into_iter()
+                .map(|s| s.expect("every cue is self-evident or answered"))
+                .collect()
+        })
+        .collect();
     Ok((out, report))
 }
 
@@ -372,6 +402,23 @@ mod tests {
             unfinished: false,
         };
         assert_eq!(validated("安静！", empty), None);
+    }
+
+    #[test]
+    fn a_closed_cue_needs_no_model() {
+        assert!(CueSplit::self_evident("嫁给什么人能由得了我吗？").is_some());
+        assert!(CueSplit::self_evident("정말 고마워요.").is_some());
+        assert_eq!(
+            CueSplit::self_evident("- 어이! - 여 봐!").map(|s| s.sentences),
+            None,
+            "an internal mark may hide a boundary"
+        );
+        assert!(CueSplit::self_evident("嫁人就嫁人吧").is_none());
+        assert!(CueSplit::self_evident("それは…").is_none());
+        assert_eq!(
+            CueSplit::self_evident("「行きます！」").map(|s| s.sentences),
+            Some(vec!["「行きます！」".to_string()])
+        );
     }
 
     #[test]
