@@ -24,7 +24,12 @@ pub const MODEL: &str = "gemini-3.1-pro-preview";
 /// Where in the runtime each sample starts, as a fraction: past the opening
 /// credits, short of the closing ones, spread so a single foreign-language
 /// scene cannot carry the verdict.
-const SAMPLE_POINTS: &[f64] = &[0.2, 0.45, 0.7];
+pub const SAMPLE_POINTS: &[f64] = &[0.2, 0.45, 0.7];
+/// A second set, for when the first three windows land on fights, music
+/// or silence: an action film can go minutes without a line. Silence is
+/// never grounds for rejection — after this set the track is accepted
+/// unheard.
+pub const RETRY_POINTS: &[f64] = &[0.3, 0.55, 0.8];
 const SAMPLE_SECS: f64 = 40.0;
 
 /// What the model heard.
@@ -34,6 +39,9 @@ pub struct Verdict {
     pub spoken_language: String,
     /// Whether that is the language the library expected.
     pub expected_language_spoken: bool,
+    /// Whether the samples carried enough dialogue to judge the track by —
+    /// a stray word in a fight scene is not evidence of anything.
+    pub enough_dialogue: bool,
     /// People talking about the film over its soundtrack, not the film.
     pub commentary: bool,
     /// "high", "medium" or "low".
@@ -43,9 +51,10 @@ pub struct Verdict {
 
 impl Verdict {
     /// Only a track the model heard as the film's own dialogue, in the
-    /// expected language, may feed the pipeline.
+    /// expected language, may feed the pipeline. A track that gave the
+    /// listener too little to go on is not evidence against it.
     pub fn accepted(&self) -> bool {
-        self.expected_language_spoken && !self.commentary
+        !self.commentary && (self.expected_language_spoken || !self.enough_dialogue)
     }
 }
 
@@ -58,16 +67,17 @@ pub fn expected_language(original_language: &str) -> &str {
     }
 }
 
-/// `SAMPLE_POINTS` windows of the track as mono 16 kHz opus, for the wire.
+/// A window of the track at each of `points` (fractions of the runtime),
+/// as mono 16 kHz opus for the wire.
 ///
 /// Reads the extracted opus, so this costs a few seeks — never a pass over
 /// the remux.
-pub fn samples(audio: &Path, duration_ms: i64) -> Result<Vec<Vec<u8>>> {
+pub fn samples(audio: &Path, duration_ms: i64, points: &[f64]) -> Result<Vec<Vec<u8>>> {
     let runtime = duration_ms as f64 / 1000.0;
     if runtime < SAMPLE_SECS * 2.0 {
         bail!("track is only {runtime:.0}s long");
     }
-    SAMPLE_POINTS
+    points
         .iter()
         .map(|point| {
             let start = (runtime * point).min(runtime - SAMPLE_SECS);
@@ -100,6 +110,10 @@ fn prompt(expected: &str) -> String {
          expected_language_spoken: whether the dialogue is mainly in {expected}. A film may \
          switch languages for a scene, so answer for the track as a whole, not for any one \
          line.\n\
+         enough_dialogue: whether the samples carried enough dialogue to judge the track \
+         by — several full lines, not a stray word or two in a fight or a chase. When there \
+         was not, say so here and leave expected_language_spoken false rather than guessing; \
+         a track is never rejected for being quiet, only for what was clearly heard.\n\
          commentary: whether this is a commentary track — a director, cast or critics talking \
          about the film over its soundtrack, with the film's own dialogue faint or absent \
          underneath — rather than the film itself.\n\
@@ -135,11 +149,12 @@ pub async fn judge(
                 "properties": {
                     "spoken_language": { "type": "STRING" },
                     "expected_language_spoken": { "type": "BOOLEAN" },
+                    "enough_dialogue": { "type": "BOOLEAN" },
                     "commentary": { "type": "BOOLEAN" },
                     "confidence": { "type": "STRING", "enum": ["high", "medium", "low"] },
                     "notes": { "type": "STRING" },
                 },
-                "required": ["spoken_language", "expected_language_spoken", "commentary", "confidence", "notes"],
+                "required": ["spoken_language", "expected_language_spoken", "enough_dialogue", "commentary", "confidence", "notes"],
             },
         },
     });
