@@ -38,7 +38,6 @@ export function Dictionary({
     RESULTS_LIMIT,
   );
 
-  // Get language codes and display names for UI
   const { badge: targetLangCode, englishName: targetLangName } =
     LANGUAGES[targetLanguage];
   const { badge: nativeLangCode, englishName: nativeLangName } =

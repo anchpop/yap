@@ -20,7 +20,6 @@ struct PimsleurSentence {
 
 pub use language_utils::PimsleurLesson;
 
-/// The result of collecting target sentences, split into app, book, and restricted sets.
 pub struct TargetSentences {
     /// Sentences that can be used in the app (Anki, Tatoeba, manual, movies, songs)
     pub app_sentences: Vec<(String, Option<String>, SentenceSource)>,
@@ -36,7 +35,6 @@ pub struct TargetSentences {
     pub restricted_sentences: Vec<(String, Vec<PimsleurLesson>)>,
 }
 
-/// Default target maximum number of sentences to import from Tatoeba
 const DEFAULT_TARGET_SENTENCE_COUNT: usize = 200_000;
 
 /// macOS XProtect's `XProtect_MACOS_DAILYDUMPLING_UNST` yara rule SIGKILLs
@@ -60,29 +58,21 @@ pub fn contains_xprotect_tripwire(s: &str) -> bool {
         .any(|tripwire| lower.contains(tripwire))
 }
 
-/// Get target language sentences with optional translations and source information.
-///
-/// This function collects sentences from all available sources (Anki, Tatoeba, manual, songs, movies)
-/// for a given course, split into app sentences and restricted sentences.
-/// It does not perform Google Translate translations and does not write to cache files.
 pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSentences> {
     let source_data_path = PathBuf::from(format!(
         "./generate-data/data/{}",
         course.target_language.code()
     ));
 
-    // Load banned sentences
     let banned_sentences = load_banned_sentences(&source_data_path, course.target_language)?;
 
     // Load manual sentences (should NEVER be filtered)
     let manual_sentences = load_manual_sentences(&source_data_path)?;
 
-    // Get all data sources
     let all_cards = crate::read_anki::get_all_cards(&source_data_path);
     let tatoeba_pairs =
         crate::tatoeba::get_tatoeba_pairs(&source_data_path, course, DEFAULT_TARGET_SENTENCE_COUNT);
 
-    // Extract target sentences from Anki cards with their native translations
     let use_native_card_side = course.native_language == language_utils::Language::English;
     let anki_sentences = all_cards
         .iter()
@@ -105,7 +95,6 @@ pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSenten
         })
         .collect::<Vec<_>>();
 
-    // Extract target sentences from Tatoeba pairs with their translations
     let tatoeba_sentences = tatoeba_pairs.iter().map(|pair| {
         let native_sentence = if course.native_language == language_utils::Language::English {
             let trimmed_native = pair.native.trim();
@@ -122,10 +111,8 @@ pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSenten
         (pair.target.clone(), native_sentence, source)
     });
 
-    // Load movie sentences
     let movie_sentences = load_movie_sentences(&source_data_path, course.target_language).await?;
 
-    // Load book sentences (translated + segmented book prose; see crate::books)
     let book_sentences = crate::books::load_book_sentences(&source_data_path)?;
 
     println!(
@@ -137,14 +124,12 @@ pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSenten
         manual_sentences.len(),
     );
 
-    // Add manual sentences with source tracking
     let manual_sentences_iter = manual_sentences.into_iter().map(|sentence| {
         let mut source = SentenceSource::none();
         source.from_manual = true;
         (sentence, None, source)
     });
 
-    // Combine all sentences
     // Apply cleanup BEFORE checking banned sentences to ensure proper matching
     let all_sentences: Vec<(String, Option<String>, SentenceSource)> = anki_sentences
         .into_iter()
@@ -216,7 +201,6 @@ pub async fn get_target_sentences(course: Course) -> anyhow::Result<TargetSenten
         })
         .partition(|(_, _, source)| source.is_book_only());
 
-    // Load restricted (Pimsleur) sentences
     let restricted_sentences = load_pimsleur_sentences(&source_data_path, course)?;
 
     println!(
@@ -247,7 +231,6 @@ fn load_banned_sentences(
             .to_lowercase()
     };
 
-    // Load manually created banned sentences
     let banned_sentences_file = source_data_path.join("banned_sentences.txt");
     if banned_sentences_file.exists() {
         let content = std::fs::read_to_string(&banned_sentences_file)
@@ -263,13 +246,11 @@ fn load_banned_sentences(
         }
     }
 
-    // Load AI-generated banned sentences
     let ai_banned_file = source_data_path.join("banned_sentences_ai.txt");
     if ai_banned_file.exists() {
         let content = std::fs::read_to_string(&ai_banned_file)
             .context("Failed to read AI banned sentences file")?;
         for line in content.lines() {
-            // Parse JSON to extract just the sentence
             if let Ok(banned_entry) = serde_json::from_str::<serde_json::Value>(line)
                 && let Some(sentence) = banned_entry.get("sentence").and_then(|s| s.as_str())
             {

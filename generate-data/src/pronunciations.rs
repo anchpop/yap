@@ -1,7 +1,7 @@
 use indicatif::{ProgressBar, ProgressStyle};
 use language_utils::{Course, Pronunciations};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap};
 use std::sync::LazyLock;
 use tysm::chat_completions::ChatClient;
 
@@ -117,8 +117,4 @@ Output format:
     pb.set_position(count as u64);
     pb.finish_with_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
     Ok(selected)
-}
-
-pub async fn load_scraped_pronunciations() -> anyhow::Result<BTreeMap<String, Vec<String>>> {
-    Ok(BTreeMap::new())
 }

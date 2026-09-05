@@ -29,7 +29,6 @@ export const Stats = memo(function Stats({ deck: deckProp, targetLanguage }: Sta
   const deck = useDeferredValue(deckProp);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
 
-  // Update timestamp periodically to keep stats fresh
   useInterval(
     () => {
       setCurrentTimestamp(Date.now());

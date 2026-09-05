@@ -34,7 +34,6 @@ export function PlayfulArrow({
     return transforms.join(" ");
   };
 
-  // Calculate dimensions based on direction
   const isVertical = direction === "up" || direction === "down";
   const width = isVertical ? size * 0.75 : size;
   const height = isVertical ? size : size * 0.75;

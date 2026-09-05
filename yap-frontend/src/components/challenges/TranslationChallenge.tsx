@@ -765,7 +765,6 @@ export function TranslationChallenge({
     if (!grade || !("graded" in grade) || "perfect" in grade.graded) return [];
     const items: GradeItem[] = [];
 
-    // Add each gradable heteronym literal
     if ("literalGrades" in grade.graded) {
       const hasAutogradingError =
         "autogradingError" in grade.graded && grade.graded.autogradingError;
@@ -793,7 +792,6 @@ export function TranslationChallenge({
       });
     }
 
-    // Add multiword phrases
     if ("phrasesRemembered" in grade.graded) {
       for (const gram of sentence.unique_target_language_phrases) {
         const display = gram_to_display_string(gram, targetLanguage);

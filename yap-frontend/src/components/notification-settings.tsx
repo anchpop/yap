@@ -30,7 +30,6 @@ export function NotificationSettings() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
 
-  // Load profile settings
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -61,7 +60,6 @@ export function NotificationSettings() {
     loadProfile();
   }, []);
 
-  // Handle toggle change
   const handleToggleChange = async (checked: boolean) => {
     setSavingProfile(true);
     setNotificationsEnabled(checked);
@@ -79,12 +77,10 @@ export function NotificationSettings() {
 
       if (error) {
         console.error("Error updating profile:", error);
-        // Revert on error
         setNotificationsEnabled(!checked);
       }
     } catch (err) {
       console.error("Error updating profile:", err);
-      // Revert on error
       setNotificationsEnabled(!checked);
     } finally {
       setSavingProfile(false);

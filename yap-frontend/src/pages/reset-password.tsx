@@ -24,7 +24,6 @@ export function ResetPassword() {
   const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // Check both query params and hash fragments
     let access_token = searchParams.get("access_token");
     let refresh_token = searchParams.get("refresh_token");
 

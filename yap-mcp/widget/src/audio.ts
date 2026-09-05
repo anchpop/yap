@@ -1,16 +1,8 @@
-// Widget replacements for yap-frontend's playAudio/playTempAudio: identical
-// signatures and playback semantics, but bytes come from the server's
-// app-only `get_audio` tool over the bridge (which runs the app's own
-// resolution: human recording first, TTS fallback) instead of the WASM/OPFS
-// path. Playback goes through the Web Audio API (decodeAudioData + buffer
-// source) rather than an <audio> element: hosts sandbox the widget iframe
-// with a media-src CSP that may allow neither data: nor blob: URIs (ChatGPT
-// blocks both), and decoding raw bytes never loads a media resource, so no
-// CSP directive applies. The one casualty is onAudioElement (the app's
-// audio visualizer hook) — there is no element to hand it, so the
-// visualizer stays static in the widget.
+// Web Audio avoids the host iframe's media-src restrictions on blob URLs.
+// There is no HTMLAudioElement, so the app's visualizer is unavailable here.
 import type { AudioRequest, VoiceActorInfo } from "../../../yap-frontend-rs/pkg";
 import { app, connectOnce, resultText } from "./bridge";
+import type { PlaybackOptions } from "../../../yap-frontend/src/lib/pure";
 
 interface CachedAudio {
   buffer: AudioBuffer;
@@ -27,10 +19,6 @@ function audioContext(): AudioContext {
   return sharedContext;
 }
 
-function cacheKey(request: AudioRequest): string {
-  return JSON.stringify(request);
-}
-
 function decodeBase64(base64: string): ArrayBuffer {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
@@ -41,7 +29,7 @@ function decodeBase64(base64: string): ArrayBuffer {
 }
 
 async function fetchAudio(request: AudioRequest): Promise<CachedAudio> {
-  const key = cacheKey(request);
+  const key = JSON.stringify(request);
   const hit = cache.get(key);
   if (hit) return hit;
   const pending = inflight.get(key);
@@ -103,10 +91,11 @@ async function ensureRunning(ctx: AudioContext): Promise<void> {
   }
 }
 
-async function playFetched(
+export async function playAudio(
   audioRequest: AudioRequest,
-  signal: AbortSignal | undefined,
-  onVoiceActor: ((info: VoiceActorInfo) => void) | undefined,
+  _accessToken: string | undefined,
+  _needsAuth: () => void,
+  { signal, onVoiceActor }: PlaybackOptions = {},
 ): Promise<void> {
   if (signal?.aborted) throw abortError();
 
@@ -132,7 +121,7 @@ async function playFetched(
     const settle = (outcome: () => void) => {
       if (settled) return;
       settled = true;
-      signal?.removeEventListener("abort", onAbort);
+      signal?.removeEventListener("abort", stop);
       if (stopCurrent === stop) stopCurrent = null;
       outcome();
     };
@@ -145,9 +134,8 @@ async function playFetched(
       }
       settle(() => reject(abortError()));
     };
-    const onAbort = () => stop();
 
-    signal?.addEventListener("abort", onAbort, { once: true });
+    signal?.addEventListener("abort", stop, { once: true });
     stopCurrent = stop;
 
     // Fires on natural end and after stop(); settle() makes the first
@@ -162,25 +150,4 @@ async function playFetched(
       );
     }
   });
-}
-
-export async function playAudio(
-  audioRequest: AudioRequest,
-  _accessToken: string | undefined,
-  _needsAuth: () => void,
-  _onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>,
-  signal?: AbortSignal,
-  onVoiceActor?: (info: VoiceActorInfo) => void,
-): Promise<void> {
-  return playFetched(audioRequest, signal, onVoiceActor);
-}
-
-export async function playTempAudio(
-  audioRequest: AudioRequest,
-  _accessToken: string | undefined,
-  _needsAuth: () => void,
-  signal?: AbortSignal,
-  onVoiceActor?: (info: VoiceActorInfo) => void,
-): Promise<void> {
-  return playFetched(audioRequest, signal, onVoiceActor);
 }

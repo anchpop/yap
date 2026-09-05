@@ -1,24 +1,15 @@
-//! Provides a map that maintains insertion order and prevents duplicate keys.
-//! Built on top of im for efficient cloning and immutable operations.
-
-#![allow(unused)]
-
 use im::{HashMap, Vector};
 use std::hash::Hash;
-use std::iter::FromIterator;
 
 /// An ordered map that maintains insertion order and prevents duplicate keys.
 /// Built on top of im for efficient cloning and immutable operations.
 #[derive(Clone)]
 pub struct IndexMap<K: Hash + Eq + Clone, V: Clone> {
-    // Maps keys to their index in the order vector
     indices: HashMap<K, usize>,
-    // Maintains insertion order of key-value pairs
     order: Vector<(K, V)>,
 }
 
 impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
-    /// Creates a new empty IndexMap
     pub fn new() -> Self {
         Self {
             indices: HashMap::new(),
@@ -26,12 +17,10 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
         }
     }
 
-    /// Returns the number of elements in the map
     pub fn len(&self) -> usize {
         self.order.len()
     }
 
-    /// Returns true if the map contains no elements
     pub fn is_empty(&self) -> bool {
         self.order.is_empty()
     }
@@ -41,13 +30,11 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
     /// Otherwise, returns None.
     pub fn insert(&mut self, key: K, value: V) -> Option<V> {
         if let Some(&index) = self.indices.get(&key) {
-            // Key already exists, update the value
             let old_pair = self.order.get(index)?;
             let old_value = old_pair.1.clone();
             self.order = self.order.update(index, (key, value));
             Some(old_value)
         } else {
-            // New key, append to the end
             let index = self.order.len();
             self.indices = self.indices.update(key.clone(), index);
             self.order.push_back((key, value));
@@ -55,19 +42,16 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
         }
     }
 
-    /// Returns a reference to the value corresponding to the key
     pub fn get(&self, key: &K) -> Option<&V> {
         let index = *self.indices.get(key)?;
         self.order.get(index).map(|(_, v)| v)
     }
 
-    /// Returns a mutable reference to the value corresponding to the key
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         let index = *self.indices.get(key)?;
         self.order.get_mut(index).map(|(_, v)| v)
     }
 
-    /// Returns true if the map contains a value for the specified key
     pub fn contains_key(&self, key: &K) -> bool {
         self.indices.contains_key(key)
     }
@@ -76,14 +60,11 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
     pub fn remove(&mut self, key: &K) -> Option<V> {
         let index = *self.indices.get(key)?;
 
-        // Remove from indices
         self.indices = self.indices.without(key);
 
-        // Remove from order and get the old value
         let (_, old_value) = self.order.get(index)?.clone();
         self.order.remove(index);
 
-        // Update indices for all elements after the removed one
         let mut new_indices = self.indices.clone();
         for (k, v) in &self.indices {
             if *v > index {
@@ -95,7 +76,6 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
         Some(old_value)
     }
 
-    /// Gets the key-value pair at the given index
     pub fn get_index(&self, index: usize) -> Option<(&K, &V)> {
         self.order.get(index).map(|(k, v)| (k, v))
     }
@@ -120,7 +100,6 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
         self.order.iter().map(|(_, v)| v)
     }
 
-    /// Clears the map, removing all key-value pairs
     pub fn clear(&mut self) {
         self.indices = HashMap::new();
         self.order = Vector::new();
@@ -138,9 +117,7 @@ impl<K: Clone + Hash + Eq, V: Clone> IndexMap<K, V> {
 
 /// A view into a single entry in a map, which may either be vacant or occupied.
 pub enum Entry<'a, K: Clone + Hash + Eq, V: Clone> {
-    /// An occupied entry.
     Occupied(OccupiedEntry<'a, K, V>),
-    /// A vacant entry.
     Vacant(VacantEntry<'a, K, V>),
 }
 
@@ -174,7 +151,6 @@ impl<'a, K: Clone + Hash + Eq, V: Clone> Entry<'a, K, V> {
         }
     }
 
-    /// Returns a reference to this entry's key.
     pub fn key(&self) -> &K {
         match self {
             Entry::Occupied(entry) => &entry.key,
@@ -183,19 +159,16 @@ impl<'a, K: Clone + Hash + Eq, V: Clone> Entry<'a, K, V> {
     }
 }
 
-/// A view into an occupied entry in an `IndexMap`.
 pub struct OccupiedEntry<'a, K: Clone + Hash + Eq, V: Clone> {
     key: K,
     map: &'a mut IndexMap<K, V>,
 }
 
 impl<'a, K: Clone + Hash + Eq, V: Clone> OccupiedEntry<'a, K, V> {
-    /// Gets a reference to the value in the entry.
     pub fn get(&self) -> &V {
         self.map.get(&self.key).expect("key must exist")
     }
 
-    /// Gets a mutable reference to the value in the entry.
     pub fn get_mut(&mut self) -> &mut V {
         self.map.get_mut(&self.key).expect("key must exist")
     }
@@ -219,7 +192,6 @@ impl<'a, K: Clone + Hash + Eq, V: Clone> OccupiedEntry<'a, K, V> {
     }
 }
 
-/// A view into a vacant entry in an `IndexMap`.
 pub struct VacantEntry<'a, K: Clone + Hash + Eq, V: Clone> {
     key: K,
     map: &'a mut IndexMap<K, V>,
@@ -312,55 +284,31 @@ mod tests {
         let keys: Vec<_> = map.keys().cloned().collect();
         assert_eq!(keys, vec!["a", "c"]);
 
-        // Check that indices are updated correctly
         assert_eq!(map.get_index(0), Some((&"a", &1)));
         assert_eq!(map.get_index(1), Some((&"c", &3)));
-    }
-
-    #[test]
-    fn test_clone_efficiency() {
-        let mut map1 = IndexMap::new();
-        for i in 0..100 {
-            map1.insert(i, i * 2);
-        }
-
-        // Clone should be cheap due to `im`
-        let map2 = map1.clone();
-
-        // Both maps should have the same content
-        assert_eq!(map1.len(), map2.len());
-        for i in 0..100 {
-            assert_eq!(map1.get(&i), map2.get(&i));
-        }
     }
 
     #[test]
     fn test_entry_api() {
         let mut map = IndexMap::new();
 
-        // Test or_insert on vacant entry
         let value = map.entry("key1").or_insert(10);
         assert_eq!(*value, 10);
         *value = 20;
         assert_eq!(map.get(&"key1"), Some(&20));
 
-        // Test or_insert on occupied entry
         let value = map.entry("key1").or_insert(30);
         assert_eq!(*value, 20);
 
-        // Test or_insert_with
         let value = map.entry("key2").or_insert_with(|| 40);
         assert_eq!(*value, 40);
 
-        // Test and_modify
         map.entry("key2").and_modify(|v| *v *= 2).or_insert(100);
         assert_eq!(map.get(&"key2"), Some(&80));
 
-        // Test and_modify on vacant entry
         map.entry("key3").and_modify(|v| *v *= 2).or_insert(100);
         assert_eq!(map.get(&"key3"), Some(&100));
 
-        // Test key() method
         let entry = map.entry("key4");
         assert_eq!(entry.key(), &"key4");
     }

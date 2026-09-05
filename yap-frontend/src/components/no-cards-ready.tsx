@@ -137,7 +137,6 @@ export const NoCardsReady = memo(function NoCardsReady({
     [nextDueCard],
   );
 
-  // Calculate if workload looks light
   const showLightWorkloadNotification =
     info.cards_added_past_16_hours < 20 &&
     (info.upcoming_total_reviews < info.past_week_challenge_average * 21 ||
@@ -298,7 +297,6 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   })();
 
-  // Check if adding cards would cross a 5% threshold
   const currentRounded = Math.floor(sentenceListPercentKnown / 5) * 5;
   const afterRounded = Math.floor(info.percent_known_after / 5) * 5;
   const crossesThreshold = afterRounded > currentRounded;

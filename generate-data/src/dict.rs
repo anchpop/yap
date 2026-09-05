@@ -87,13 +87,11 @@ async fn generate_dictionary_group(
     Ok(accepted)
 }
 
-/// Internal helper that generates dictionary definitions for a map of heteronyms with frequencies.
-/// Used by both `create_dictionary` and `create_gram_dictionary`.
-async fn generate_dictionary_definitions(
+pub async fn create_gram_dictionary(
     course: Course,
-    target_language_heteronyms: BTreeMap<Heteronym<String>, u32>,
-    progress_label: &str,
+    gram_frequencies: &[GramFrequencyEntry<String>],
 ) -> anyhow::Result<BTreeMap<Heteronym<String>, DictionaryDefinition>> {
+    let target_language_heteronyms = extract_single_atom_heteronyms(gram_frequencies);
     let Course {
         native_language,
         target_language,
@@ -104,7 +102,7 @@ async fn generate_dictionary_definitions(
     let pb = ProgressBar::new(count as u64);
     pb.set_style(
         ProgressStyle::default_bar()
-            .template(&format!("{{spinner:.green}} [{{elapsed_precise}}] [{{bar:40.cyan/blue}}] {{pos}}/{{len}} {progress_label} ({{per_sec}}, ${{msg}}, {{eta}})"))
+            .template("{spinner:.green} [{elapsed_precise}] [{bar:40.cyan/blue}] {pos}/{len} gram dictionary entries ({per_sec}, ${msg}, {eta})")
             .unwrap()
             .progress_chars("#>-"),
     );
@@ -174,15 +172,8 @@ Output the result as a JSON object containing an array of one or more definition
     Ok(entries.into_iter().collect())
 }
 
-/// Extracts unique heteronyms from single-atom grams in the gram vocabulary.
-///
-/// This function filters gram_frequencies for grams that consist of a single atom
-/// containing a heteronym, deduplicates them (taking the maximum frequency for
-/// duplicates), and returns them in a format suitable for dictionary generation.
-///
-/// For grams with multiple atoms (multiword terms), further processing is needed
-/// separately.
-pub fn extract_single_atom_heteronyms(
+/// Deduplicate single-atom heteronyms, keeping their maximum frequency.
+fn extract_single_atom_heteronyms(
     gram_frequencies: &[GramFrequencyEntry<String>],
 ) -> BTreeMap<Heteronym<String>, u32> {
     let mut heteronym_frequencies: BTreeMap<Heteronym<String>, u32> = BTreeMap::new();
@@ -190,16 +181,13 @@ pub fn extract_single_atom_heteronyms(
     for entry in gram_frequencies {
         let gram = &entry.gram;
 
-        // Only process single-atom grams
         if gram.len() != 1 {
             continue;
         }
 
-        // Extract the heteronym if this single atom is a heteronym
         if let Some(Atom::Tok(word)) = gram.first()
             && let WordType::Heteronym(heteronym) = &word.word_type
         {
-            // Keep the maximum frequency for duplicated heteronyms
             heteronym_frequencies
                 .entry(heteronym.clone())
                 .and_modify(|freq| *freq = (*freq).max(entry.count))
@@ -210,42 +198,6 @@ pub fn extract_single_atom_heteronyms(
     heteronym_frequencies
 }
 
-/// Creates dictionary definitions for heteronyms extracted from the gram vocabulary.
-///
-/// This function:
-/// 1. Extracts heteronyms from single-atom grams in the gram vocabulary
-/// 2. Generates dictionary definitions for each unique heteronym using LLM
-///
-/// For multi-atom grams (multiword terms), use a separate function.
-pub async fn create_gram_dictionary(
-    course: Course,
-    gram_frequencies: &[GramFrequencyEntry<String>],
-) -> anyhow::Result<BTreeMap<Heteronym<String>, DictionaryDefinition>> {
-    // Extract unique heteronyms from single-atom grams
-    let target_language_heteronyms = extract_single_atom_heteronyms(gram_frequencies);
-
-    generate_dictionary_definitions(
-        course,
-        target_language_heteronyms,
-        "gram dictionary entries",
-    )
-    .await
-}
-
-/// Returns a list of multi-atom grams (grams with more than one atom).
-/// These are multiword terms that need separate definition generation.
-pub fn extract_multi_atom_grams(
-    gram_frequencies: &[GramFrequencyEntry<String>],
-) -> Vec<&Gram<String>> {
-    gram_frequencies
-        .iter()
-        .filter(|entry| entry.gram.len() > 1)
-        .map(|entry| &entry.gram)
-        .collect()
-}
-
-/// Builds an index from grams to sentences containing them.
-/// This allows O(1) lookup of sentences for any gram.
 fn build_gram_to_sentences_index<'a>(
     encoded_sentences: &'a [(String, SentenceGrams<Gram<String>>)],
 ) -> FxHashMap<&'a Gram<String>, Vec<&'a str>> {
@@ -284,13 +236,6 @@ fn build_gram_to_sentences_index<'a>(
     index
 }
 
-/// Creates phrasebook entries for multi-atom grams (multiword terms) from the gram vocabulary.
-///
-/// This function:
-/// 1. Extracts multi-atom grams from the gram vocabulary
-/// 2. Finds example sentences containing each gram (using cached sentences when available)
-/// 3. Generates phrasebook entries using LLM with example sentences in the prompt
-///
 /// `gram_sentences` is a persistent cache of gram -> example sentences. Missing grams
 /// will have sentences selected from the corpus and added to this map.
 pub async fn create_gram_phrasebook(
@@ -305,10 +250,8 @@ pub async fn create_gram_phrasebook(
         ..
     } = course;
 
-    // Build index from gram -> sentences (O(n) where n = total grams across all sentences)
     let gram_to_sentences = build_gram_to_sentences_index(encoded_sentences);
 
-    // Extract multi-atom grams with their frequencies
     let mut multi_atom_grams: BTreeMap<Gram<String>, u32> = BTreeMap::new();
     for entry in gram_frequencies {
         let gram = &entry.gram;
@@ -317,7 +260,6 @@ pub async fn create_gram_phrasebook(
         }
     }
 
-    // Populate gram_sentences for any grams not already cached
     for gram in multi_atom_grams.keys() {
         gram_sentences.entry(gram.clone()).or_insert_with(|| {
             let sentences: Vec<&str> = gram_to_sentences.get(gram).cloned().unwrap_or_default();
@@ -451,7 +393,6 @@ Of course, their native language is {native_language}, so you should write the m
                         })
                 };
 
-                // If the example doesn't contain the term, retry with feedback
                 let response = if let Ok(ref resp) = response {
                     if !resp.target_language_example.to_lowercase().contains(&gram_text.to_lowercase()) {
                         let previous_json = serde_json::to_string(resp).unwrap_or_default();

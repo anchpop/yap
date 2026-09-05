@@ -123,7 +123,6 @@ impl Deck {
         // so we need to subtract it to get local time
         let local_now = now - chrono::Duration::minutes(timezone_offset_minutes as i64);
 
-        // Get all cards sorted by due date
         let cards = self.get_all_cards_summary();
 
         // Find cards that are due
@@ -134,14 +133,11 @@ impl Deck {
 
         // Helper function to get a specific hour today or in the future
         let get_next_occurrence = |hour: u32, days_ahead: i64| {
-            // Get the target date in the user's local time
             let local_target = (local_now + chrono::Duration::days(days_ahead))
                 .date_naive()
                 .and_hms_opt(hour, 0, 0)
                 .unwrap();
 
-            // Convert from local time to UTC by adding the timezone offset
-            // (opposite of the conversion to local time)
             local_target.and_utc() + chrono::Duration::minutes(timezone_offset_minutes as i64)
         };
 
@@ -227,7 +223,6 @@ impl Deck {
             }
         }
 
-        // Remove duplicate notifications at the same time
         notifications.sort_by(|a, b| a.scheduled_at.total_cmp(&b.scheduled_at));
         notifications.dedup_by(|a, b| (a.scheduled_at - b.scheduled_at).abs() < 60000.0); // Within 1 minute
 
@@ -250,11 +245,9 @@ impl Deck {
             supabase_anon_key,
         } = supabase_config();
 
-        // Get timezone offset from JS
         let timezone_offset = js_sys::Date::new_0().get_timezone_offset();
         let scheduled_notifications = self.compute_scheduled_notifications(timezone_offset as i32);
 
-        // Convert to JSON values for API with proper timestamp formatting
         let notifications_json: Vec<serde_json::Value> = scheduled_notifications
                 .into_iter()
                 .map(|n| {
@@ -325,7 +318,6 @@ impl Deck {
 
         let total_count = review_info.total_count() as i64;
 
-        // Get daily streak information
         let daily_streak = self.get_daily_streak() as i64;
         let daily_streak_expiry = self.stats.daily_streak.as_ref().map(|streak| {
             let tomorrow = streak.last_active_day + chrono::Duration::days(2);
@@ -339,12 +331,10 @@ impl Deck {
 
         let xp = self.stats.xp;
 
-        // Get percent_known from the existing method (weighted by word frequency)
         let percent_known = self.get_percent_of_words_known() * 100.0;
 
         let language = self.context.course.target_language;
 
-        // Get start_time from stats
         let start_time = self.stats.start_time.map(|time| time.to_rfc3339());
 
         let request = UpdateLanguageStatsRequest {

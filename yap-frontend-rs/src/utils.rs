@@ -3,33 +3,17 @@ use language_utils::{Atom, Literal, SentenceGrams, SpurGram};
 use lasso::Spur;
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _, persistent};
 
-/// Matches sentence grams to literals, returning each learnable gram
-/// with references to the matched literal statuses.
-///
-/// The function handles "used literal" tracking internally - each literal
-/// is matched to at most one atom across all grams.
-///
-/// # Arguments
-/// * `sentence_spur` - The interned sentence to look up
-/// * `literals` - Slice of (text_spur, status) pairs for each literal
-/// * `language_pack` - The language pack containing encoded sentences and gram data
-///
-/// # Returns
-/// A vector of (gram, matched_statuses) pairs for each learnable gram in the sentence.
-/// `matched_statuses` contains references to the status values for literals that matched
-/// atoms in the gram.
+/// Match learnable grams to literal statuses, using each literal at most once.
 #[allow(clippy::type_complexity)]
 pub fn match_grams_to_literals<'a, T>(
     encoded_sentence: &SentenceGrams<SpurGram>,
     literals: &'a [(Literal<Spur>, T)],
     language_pack: &LanguagePack,
 ) -> Vec<(SpurGram, Vec<(Literal<Spur>, &'a T)>)> {
-    // Track which literals have been used
     let mut used_literals = vec![false; literals.len()];
     let mut results = Vec::new();
 
     for sentence_gram in &encoded_sentence.grams {
-        // Only process learnable grams
         let Some(gram_spur) = sentence_gram.learnable().copied() else {
             continue;
         };
@@ -40,11 +24,10 @@ pub fn match_grams_to_literals<'a, T>(
 
         for atom in gram.iter() {
             let Atom::Tok(word) = atom else {
-                continue; // Skip control tokens
+                continue;
             };
             let word_spur = word.text;
 
-            // Find next unused literal matching this word's Spur
             for (i, (literal, status)) in literals.iter().enumerate() {
                 if !used_literals[i] && literal.word.text == word_spur {
                     used_literals[i] = true;
@@ -60,15 +43,13 @@ pub fn match_grams_to_literals<'a, T>(
     results
 }
 
-/// Performance instrumentation helper that measures time from creation to drop.
-/// Logs the duration to the console when dropped.
+/// Logs elapsed time on drop.
 pub struct PerfTimer {
     label: String,
     start_time: f64,
 }
 
 impl PerfTimer {
-    /// Create a new performance timer with the given label.
     pub fn new(label: impl Into<String>) -> Self {
         let start_time = web_sys::window()
             .and_then(|w| w.performance())
@@ -112,17 +93,6 @@ pub fn current_local_offset() -> chrono::FixedOffset {
         .unwrap_or_else(|| chrono::FixedOffset::east_opt(0).expect("UTC offset is always valid"))
 }
 
-pub fn set_panic_hook() {
-    // When the `console_error_panic_hook` feature is enabled, we can call the
-    // `set_panic_hook` function at least once during initialization, and then
-    // we will get better error messages if our code ever panics.
-    //
-    // For more details see
-    // https://github.com/rustwasm/console_error_panic_hook#readme
-    #[cfg(feature = "console_error_panic_hook")]
-    console_error_panic_hook::set_once();
-}
-
 pub(crate) async fn get_or_create_device_id(
     weapon_dir: &persistent::DirectoryHandle,
     user_id: &Option<String>,
@@ -139,7 +109,6 @@ pub(crate) async fn get_or_create_device_id(
 
     match device_id_file {
         Ok(file_handle) => {
-            // Read existing device ID
             let bytes = file_handle.read().await?;
             let device_id = String::from_utf8(bytes).unwrap_or_else(|_| {
                 log::error!("Device ID file contained invalid UTF-8 data");
@@ -148,10 +117,8 @@ pub(crate) async fn get_or_create_device_id(
             Ok(device_id)
         }
         Err(_) => {
-            // Generate new device ID
             let device_id = eyedee::generate_uuid();
 
-            // Save it to OPFS
             let mut file_handle = weapon_dir
                 .get_file_handle_with_options(
                     file_name,
@@ -213,6 +180,5 @@ pub async fn hit_ai_server(
         req = req.json(&body)?;
     }
 
-    let response = req.send().await?;
-    Ok(response)
+    req.send().await
 }

@@ -25,30 +25,25 @@ export const EngagementPrompts = memo(function EngagementPrompts({ language }: E
   const [promptsDismissed, setPromptsDismissed] = useState(false);
 
   useEffect(() => {
-    // Check dismissal count first
     const dismissalCount = parseInt(
       localStorage.getItem("engagement-prompts-dismissal-count") || "0",
       10,
     );
 
-    // If dismissed 3 or more times, never show again
     if (dismissalCount >= 3) {
       setPromptsDismissed(true);
       return;
     }
 
-    // Check if user has previously dismissed the engagement prompts
     const dismissedTime = localStorage.getItem("engagement-prompts-dismissed");
     if (dismissedTime) {
       const dismissedTimestamp = parseInt(dismissedTime, 10);
       const now = Date.now();
       const oneDayInMs = 24 * 60 * 60 * 1000;
 
-      // If less than 24 hours have passed, keep it dismissed
       if (now - dismissedTimestamp < oneDayInMs) {
         setPromptsDismissed(true);
       } else {
-        // More than 24 hours have passed, remove the dismissal
         localStorage.removeItem("engagement-prompts-dismissed");
       }
     }
@@ -57,7 +52,6 @@ export const EngagementPrompts = memo(function EngagementPrompts({ language }: E
   const handleDismiss = () => {
     setPromptsDismissed(true);
 
-    // Increment dismissal count
     const currentCount = parseInt(
       localStorage.getItem("engagement-prompts-dismissal-count") || "0",
       10,
@@ -68,14 +62,12 @@ export const EngagementPrompts = memo(function EngagementPrompts({ language }: E
       newCount.toString(),
     );
 
-    // Only set the timestamp if we haven't hit the permanent dismissal threshold
     if (newCount < 3) {
       const now = Date.now();
       localStorage.setItem("engagement-prompts-dismissed", now.toString());
     }
   };
 
-  // Calculate what to show
   const shouldShowAddToHomeScreen = !isInstalledLoading && !isInstalled;
   const shouldShowNotifications = isInitialized && isSupported && !isSubscribed;
   const shouldShowAnything =

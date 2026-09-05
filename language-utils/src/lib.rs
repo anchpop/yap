@@ -2171,18 +2171,6 @@ impl<S: Copy + Eq + std::hash::Hash + 'static> lasso::InternableRef for grm<S> {
     }
 }
 
-// Legacy function for backwards compatibility - delegates to the method
-#[deprecated(note = "Use gram.is_learnable() instead")]
-pub fn is_gram_learnable<S>(gram: &Gram<S>) -> bool {
-    gram.is_learnable()
-}
-
-// Legacy function for backwards compatibility - delegates to the method
-#[deprecated(note = "Use gram.disambiguation_key() instead")]
-pub fn get_gram_disambiguation_key(gram: &Gram<String>) -> u32 {
-    gram.disambiguation_key()
-}
-
 // By doing it like this instead of using a Boolean, we allow the Rust compiler to use the learnability in the niche left by the Gram type argument.
 #[derive(
     Clone,
@@ -4287,18 +4275,15 @@ pub fn predict_whitespace(
 
     let right_text = &right.text;
 
-    // Get the last char of left and first char of right
     let left_last = left_text.chars().last();
     let right_first = right_text.chars().next();
 
-    // Check if left ends with an attaching suffix (apostrophe, hyphen)
     if let Some(c) = left_last
         && ATTACHING_SUFFIXES.contains(&c)
     {
         return Whitespace::None;
     }
 
-    // Check if right starts with certain punctuation
     if let Some(c) = right_first {
         // No space before closing punct, commas, periods
         if NO_SPACE_BEFORE.contains(&c) {
@@ -4310,14 +4295,12 @@ pub fn predict_whitespace(
         }
     }
 
-    // Check if left ends with opening bracket/quote (no space after)
     if let Some(c) = left_last
         && NO_SPACE_AFTER.contains(&c)
     {
         return Whitespace::None;
     }
 
-    // Check if left is punctuation and right is punctuation (no space between)
     // Exception: after colon before quotes, there's a space (e.g., "dit : 'hello'")
     // Exception: Spanish inverted punctuation (¿ ¡) has space before it after comma
     let left_is_punct =
@@ -4386,7 +4369,6 @@ pub fn literals_to_atoms(
         // Emit the word token
         atoms.push(Atom::Tok(word.clone()));
 
-        // Check if we need a control token for whitespace
         let next_word = literals.get(i + 1).map(|l| &l.word);
         let predicted = predict_whitespace(&word, next_word, language);
         let actual: Whitespace = literal.whitespace.parse().unwrap();

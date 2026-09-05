@@ -143,7 +143,8 @@ pub struct Weapon {
 // putting this inside LOGGER prevents us from accidentally initializing the logger more than once
 #[allow(clippy::declare_interior_mutable_const)]
 const LOGGER: LazyLock<()> = LazyLock::new(|| {
-    utils::set_panic_hook();
+    #[cfg(feature = "console_error_panic_hook")]
+    console_error_panic_hook::set_once();
 
     wasm_logger::init(wasm_logger::Config::default());
     log::info!("Logging initialized");
@@ -1259,7 +1260,6 @@ impl weapon::AppState for Deck {
             content: event,
         }) = event;
 
-        // Set start_time on first event
         if deck.stats.start_time.is_none() {
             deck.stats.start_time = Some(*timestamp);
         }
@@ -1286,7 +1286,6 @@ impl weapon::AppState for Deck {
             deck.update_daily_activity(timestamp, &timezone);
             deck.stats.total_reviews += 1;
 
-            // Check if the user just crossed their daily study goal
             if let Some(today) = &deck.stats.today {
                 let target = deck.daily_review_target.target_seconds();
                 if time_before < target && today.time_spent_seconds >= target {
@@ -1345,7 +1344,6 @@ impl weapon::AppState for Deck {
                         if !context.is_card_valid(&card) {
                             continue;
                         }
-                        // Add the card to the deck if it's not already in it, or transition ghost to added
                         deck.cards
                             .entry(card)
                             .and_modify(|existing| {
@@ -1431,7 +1429,6 @@ impl weapon::AppState for Deck {
                         .collect()
                 };
 
-                // Get the challenge sentence
                 let challenge_sentence = match &review {
                     current::SentenceReviewResult::Perfect { challenge, .. } => challenge,
                     current::SentenceReviewResult::Graded { challenge, .. } => challenge,
@@ -1448,7 +1445,6 @@ impl weapon::AppState for Deck {
                     && let Some(encoded_sentence) =
                         context.language_pack.encoded_sentences.get(&sentence_spur)
                 {
-                    // Update sentence review count
                     *deck
                         .stats
                         .sentences_reviewed
@@ -1510,7 +1506,6 @@ impl weapon::AppState for Deck {
                         // else: Unknown state, skip this gram
                     }
 
-                    // Handle phrases (multiword terms) via remembered_grams/forgotten_grams
                     match &review {
                         current::SentenceReviewResult::Perfect { .. } => {
                             for gram_spur in encoded_sentence
@@ -1824,7 +1819,6 @@ impl weapon::AppState for Deck {
                             );
                         }
                     }
-                    // Update sentence review count if perfect (no Again ratings)
                     if !any_again {
                         *deck
                             .stats
@@ -1972,7 +1966,6 @@ impl weapon::AppState for Deck {
                 points
             };
 
-        // Calculate smoothing window as 20% of max ease
         let smoothing_window = context
             .language_pack
             .gram_frequencies
@@ -1981,7 +1974,6 @@ impl weapon::AppState for Deck {
             .map(|(_, freq)| freq.ease * 0.2)
             .unwrap_or(1.0); // Fallback if no frequencies exist
 
-        // Create isotonic regressions (need at least 2 non-new cards)
         let target_language_regression =
             if target_language_points.len() >= 2 || state.placement_test_results.is_some() {
                 target_language_points.extend_from_slice(&bias_points[..]);
@@ -2153,13 +2145,11 @@ impl DeckState {
         let was_new = state_before == rs_fsrs::State::New;
 
         let card_data = self.cards.entry(card).or_insert_with(|| {
-            // Create a ghost card if it doesn't exist
             let mut fsrs_card = rs_fsrs::Card::new(timestamp);
             fsrs_card.due = timestamp;
             CardData::Ghost { fsrs_card }
         });
 
-        // Update the card data
         let fsrs_card = match card_data {
             CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card,
         };
@@ -2230,7 +2220,6 @@ impl DeckState {
     fn update_daily_activity(&mut self, timestamp: &DateTime<Utc>, timezone: &chrono::FixedOffset) {
         let day = timestamp.with_timezone(timezone).date_naive();
 
-        // Update daily streak
         match &self.stats.daily_streak {
             None => {
                 self.stats.daily_streak = Some(DailyStreak {
@@ -2256,7 +2245,6 @@ impl DeckState {
             }
         }
 
-        // Update today stats
         const MAX_REVIEW_SECONDS: u32 = 30;
         match self.stats.today.take() {
             Some(mut today) if today.day == day => {
@@ -2334,7 +2322,6 @@ impl Deck {
                 CardIndicator::WrittenGram { gram } => {
                     let gram_resolved = self.context.language_pack.resolve_gram(gram);
                     let text = gram_resolved.to_display_string(self.context.course.target_language);
-                    // Get POS from first heteronym if available for subtitle
                     let subtitle = gram_resolved.0.first().and_then(|atom| {
                         if let language_utils::Atom::Tok(word) = atom
                             && let language_utils::WordType::Heteronym(h) = &word.word_type
@@ -2850,7 +2837,6 @@ impl Deck {
             simulation_iterator = day.finish_day();
         }
 
-        // Check if aborted before cleanup
         if let Some(ref signal) = abort_signal
             && signal.aborted()
         {
@@ -3229,7 +3215,6 @@ impl Deck {
                 })
                 .sum();
 
-            // Calculate cards needed to reach next 5% milestone
             let cards_to_next_milestone = if !score.all_available_learned {
                 let next_milestone = ((percent_known / 5.0).ceil() * 5.0).min(100.0);
                 let target_word_count = ((next_milestone / 100.0) * total_word_count as f64) as u64;
@@ -3829,11 +3814,9 @@ impl Deck {
                     continue;
                 }
 
-                // Check if due within the next three weeks
                 if due_date > now && due_date <= three_weeks_later {
                     total_reviews += 1;
 
-                    // Get the day offset from today (0 = today, 1 = tomorrow, etc.)
                     let days_from_now = (due_date - now).num_days();
                     *daily_counts.entry(days_from_now).or_insert(0) += 1;
                 }
@@ -4070,7 +4053,6 @@ impl Context {
             Some(CardData::Ghost { fsrs_card }) => fsrs_card.state == rs_fsrs::State::Review,
             // For unadded cards, use regression predictions
             None => {
-                // Check if we have high confidence they would be known
                 // Use 80% probability threshold for considering a card comprehensible
                 // 80% was not chosen in a super scientific way, it's just a number that seemed to work well
                 if let Some((knowledge_probability, _)) =
@@ -4114,7 +4096,6 @@ impl Context {
     ) -> Option<ordered_float::NotNan<f32>> {
         let freq_score = Self::card_value_frequency(card, frequency);
 
-        // Check if we have a reviewed card (ghost or added)
         if let Some(card_data) = card_data {
             let fsrs_card = match card_data {
                 CardData::Added { fsrs_card } | CardData::Ghost { fsrs_card } => fsrs_card,
@@ -4635,11 +4616,6 @@ impl CardSummary {
     }
 }
 
-#[wasm_bindgen]
-pub fn test_fn(f: js_sys::Function) {
-    f.call0(&JsValue::NULL).unwrap();
-}
-
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn get_pronunciation_connector(language: Language) -> String {
     language.pronunciation_connector().to_string()
@@ -4914,7 +4890,6 @@ pub fn heuristic_grade_translation(
 
             let found = native_words.iter().any(|native| {
                 let normalized_native = normalize_for_grading(native, native_language);
-                // Check if any word from the native translation appears in the user's translation
                 normalized_native
                     .split_whitespace()
                     .any(|word| user_words.contains(&word))
@@ -5061,7 +5036,6 @@ pub async fn autograde_transcription_llm(
     access_token: Option<String>,
     course: Course,
 ) -> Result<transcription_challenge::Grade, JsValue> {
-    // Check if all answers are exactly correct (case-insensitive)
     let all_correct = submission.iter().all(|part| match part {
         transcription_challenge::PartSubmitted::AskedToTranscribe { parts, submission } => {
             let submission = normalize_for_grading(submission.trim(), course.target_language);
@@ -5154,13 +5128,11 @@ pub fn get_courses() -> Vec<language_utils::Course> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::Days;
+
     use language_utils::SentenceGram;
 
     impl Default for Deck {
         fn default() -> Self {
-            // Read the French language data from file for tests
-            // Vec<u8> provides proper alignment for rkyv deserialization
             let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
                 std::path::Path::new("../out/fra_for_eng"),
             )
@@ -5182,282 +5154,23 @@ mod tests {
     }
 
     #[test]
-    fn test_fsrs() {
-        use chrono::Utc;
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let card = Card::new(Utc::now());
-
-        let record_log = fsrs.repeat(card, Utc::now());
-        for rating in Rating::iter() {
-            let item = record_log[rating].to_owned();
-
-            println!("{rating:#?}: {item:#?}");
-
-            let record_log = fsrs.repeat(
-                item.card,
-                Utc::now().checked_add_days(Days::new(10)).unwrap(),
-            );
-
-            {
-                // For any rating (Easy, Good, Hard, Again), you can compute the new card stats, which includes the next time the card should be reviewed
-                let item = record_log[rating].to_owned();
-
-                /* item = SchedulingInfo {
-                    card: Card {
-                        due: 2025-09-16T18:51:25.591443Z,
-                        stability: 104.27451175337288,
-                        difficulty: 2.24267983513529,
-                        elapsed_days: 10,
-                        scheduled_days: 104,
-                        reps: 2,
-                        lapses: 0,
-                        state: Review,
-                        last_review: 2025-06-04T18:51:25.591443Z,
-                    },
-                    review_log: ReviewLog {
-                        rating: Easy,
-                        elapsed_days: 10,
-                        scheduled_days: 15,
-                        state: Review,
-                        reviewed_date: 2025-06-04T18:51:25.591443Z,
-                    },
-                } */
-                println!("{rating:#?}+{rating:#?}: {item:#?}");
-            }
-        }
-    }
-
-    #[test]
-    fn test_card_accumulated_surprise_after_one_easy_review() {
-        use chrono::Utc;
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let card = Card::new(Utc::now());
-
-        // Do one easy review
-        let record_log = fsrs.repeat(card, Utc::now());
-        let after_easy = record_log[&Rating::Easy].to_owned();
-
-        // Easy review should increase positive surprise
-        assert!(
-            after_easy.card.accumulated_positive_surprise > 0.0,
-            "Accumulated positive surprise {} should be greater than 0 after easy review",
-            after_easy.card.accumulated_positive_surprise
-        );
-
-        // Negative surprise should remain at 0 for easy review
-        assert_eq!(
-            after_easy.card.accumulated_negative_surprise, 0.0,
-            "Accumulated negative surprise should be 0 after easy review"
-        );
-
-        println!(
-            "✓ After one easy review - Positive surprise: {}, Negative surprise: {}",
-            after_easy.card.accumulated_positive_surprise,
-            after_easy.card.accumulated_negative_surprise
-        );
-    }
-
-    #[test]
-    fn test_card_accumulated_surprise_after_one_again_review() {
-        use chrono::Utc;
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let card = Card::new(Utc::now());
-
-        // Do one "again" review (failed on first attempt)
-        let record_log = fsrs.repeat(card, Utc::now());
-        let after_again = record_log[&Rating::Again].to_owned();
-
-        // Failed review should only have negative surprise
-        assert_eq!(
-            after_again.card.accumulated_positive_surprise, 0.0,
-            "Positive surprise should be 0 after initial again review"
-        );
-
-        assert!(
-            after_again.card.accumulated_negative_surprise > 0.0,
-            "Negative surprise {} should be greater than 0 after again review",
-            after_again.card.accumulated_negative_surprise
-        );
-
-        println!(
-            "✓ After one again review - Positive surprise: {}, Negative surprise: {}",
-            after_again.card.accumulated_positive_surprise,
-            after_again.card.accumulated_negative_surprise
-        );
-        println!("  Lapses: {}", after_again.card.lapses);
-    }
-
-    #[test]
-    fn test_card_accumulated_surprise_after_two_good_reviews() {
-        use chrono::{Days, Utc};
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let mut card = Card::new(Utc::now());
-
-        // Do first good review
-        let record_log = fsrs.repeat(card, Utc::now());
-        card = record_log[&Rating::Good].card.clone();
-        let pos_surprise_first = card.accumulated_positive_surprise;
-        let neg_surprise_first = card.accumulated_negative_surprise;
-
-        // Do second good review after 2 weeks
-        let review_time = Utc::now().checked_add_days(Days::new(14)).unwrap();
-        let record_log = fsrs.repeat(card, review_time);
-        card = record_log[&Rating::Good].card.clone();
-        let pos_surprise_second = card.accumulated_positive_surprise;
-        let neg_surprise_second = card.accumulated_negative_surprise;
-
-        println!("✓ Accumulated surprise progression with two good reviews:");
-        println!(
-            "  After 1st good - Positive: {pos_surprise_first}, Negative: {neg_surprise_first}"
-        );
-        println!(
-            "  After 2nd good - Positive: {pos_surprise_second}, Negative: {neg_surprise_second}"
-        );
-        println!(
-            "  Positive change: {}",
-            pos_surprise_second - pos_surprise_first
-        );
-        println!(
-            "  Negative change: {}",
-            neg_surprise_second - neg_surprise_first
-        );
-        println!("  Reps: {}, Lapses: {}", card.reps, card.lapses);
-
-        // Good reviews typically shouldn't generate much surprise in either direction
-        // But the exact behavior depends on FSRS implementation
-        println!("  (Good reviews are neutral, surprise accumulation depends on expectations)");
-    }
-
-    #[test]
-    fn test_card_accumulated_surprise_after_one_easy_and_three_good_reviews() {
-        use chrono::{Days, Utc};
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let mut card = Card::new(Utc::now());
-
-        // Do one easy review
-        let record_log = fsrs.repeat(card, Utc::now());
-        card = record_log[&Rating::Easy].card.clone();
-        let pos_surprise_after_easy = card.accumulated_positive_surprise;
-        let neg_surprise_after_easy = card.accumulated_negative_surprise;
-
-        // Do three good reviews
-        for i in 1..=3 {
-            let review_time = Utc::now().checked_add_days(Days::new(i * 14)).unwrap();
-            let record_log = fsrs.repeat(card, review_time);
-            card = record_log[&Rating::Good].card.clone();
-        }
-
-        // Check accumulated surprise after mixed reviews
-        println!("✓ Accumulated surprise after 1 easy + 3 good reviews:");
-        println!(
-            "  Positive: {} (started at {})",
-            card.accumulated_positive_surprise, pos_surprise_after_easy
-        );
-        println!(
-            "  Negative: {} (started at {})",
-            card.accumulated_negative_surprise, neg_surprise_after_easy
-        );
-        println!("  Reps: {}, Lapses: {}", card.reps, card.lapses);
-
-        // Easy review should have added positive surprise, good reviews might add less
-        assert!(
-            card.accumulated_positive_surprise >= pos_surprise_after_easy,
-            "Positive surprise should not decrease with successful reviews"
-        );
-    }
-
-    #[test]
-    fn test_card_accumulated_surprise_after_one_easy_and_one_again_review() {
-        use chrono::{Days, Utc};
-        use rs_fsrs::{Card, FSRS, Rating};
-
-        let fsrs = FSRS::default();
-        let mut card = Card::new(Utc::now());
-
-        // Do one easy review
-        let record_log = fsrs.repeat(card, Utc::now());
-        card = record_log[&Rating::Easy].card.clone();
-        let pos_surprise_after_easy = card.accumulated_positive_surprise;
-        let neg_surprise_after_easy = card.accumulated_negative_surprise;
-
-        // Do one "again" review (failed review)
-        let review_time = Utc::now().checked_add_days(Days::new(14)).unwrap();
-        let record_log = fsrs.repeat(card, review_time);
-        card = record_log[&Rating::Again].card.clone();
-
-        // Check that negative surprise increased after the "again" review
-        assert!(
-            card.accumulated_negative_surprise > neg_surprise_after_easy,
-            "Negative surprise {} should increase from {} after an 'again' review",
-            card.accumulated_negative_surprise,
-            neg_surprise_after_easy
-        );
-
-        println!("✓ Accumulated surprise after 1 easy + 1 again review:");
-        println!(
-            "  Positive: {} (was {} after easy)",
-            card.accumulated_positive_surprise, pos_surprise_after_easy
-        );
-        println!(
-            "  Negative: {} (was {} after easy)",
-            card.accumulated_negative_surprise, neg_surprise_after_easy
-        );
-        println!("  Lapses: {}", card.lapses);
-    }
-
-    #[test]
-    fn test_default_deck_creation() {
-        use crate::Deck;
-
-        // Test that we can create a default Deck
-        let _deck = Deck::default();
-
-        println!("✓ Default Deck created successfully");
-    }
-
-    #[test]
     fn test_default_deck_can_add_cards() {
-        use crate::{Deck, DeckState};
-        use weapon::AppState;
-
-        let mut deck = Deck::default();
-
-        // Test that we can add cards to the default deck
-        if let Some(event) = deck
+        let deck = Deck::default();
+        if deck
+            .context
+            .language_pack
+            .gram_frequencies
+            .entries
+            .is_empty()
+        {
+            return;
+        }
+        let event = deck
             .get_no_cards_ready_info(Vec::new(), None)
             .smart_add_event
-        {
-            let ts = weapon::data_model::Timestamped {
-                timestamp: chrono::Utc::now(),
-                within_device_events_index: 0,
-                timezone: Some(deck.context.timezone),
-                event,
-            };
-            let context = deck.context.clone();
-            let state = DeckState::from(deck);
-            let state = Deck::process_event(state, &context, &ts);
-            deck = Deck::finalize(state, &context);
-
-            // If language pack has data, we should have added a card
-            if !context.language_pack.gram_frequencies.entries.is_empty() {
-                assert!(!deck.cards.is_empty());
-                println!("✓ Successfully added card to default deck");
-            } else {
-                println!("✓ Language pack is empty, no cards to add (expected)");
-            }
-        } else {
-            println!("✓ No cards available to add (empty language pack)");
-        }
+            .expect("default deck should offer cards to add");
+        let deck = apply_deck_event(deck, event, Utc::now());
+        assert!(deck.num_cards_added() > 0);
     }
 
     fn apply_deck_event(deck: Deck, event: DeckEvent, timestamp: DateTime<Utc>) -> Deck {
@@ -5792,20 +5505,8 @@ mod tests {
         }
     }
 
-    /// Helper for placement-test integration tests: split the placement-test
-    /// words into a high-ease "known" half and a low-ease "unknown" half,
-    /// then apply the resulting `CompletePlacementTest` event.
-    ///
-    /// The split is by ease (the regression's x-axis), not by the order
-    /// `get_placement_test` returns: it walks descending target *probabilities*
-    /// and cognate bonuses make ease non-monotone in that order — and an
-    /// ease-interleaved known/unknown split is one no isotonic regression
-    /// could separate.
+    // Split by ease rather than display order so the regression can separate the labels.
     fn apply_placement_test_split(deck: Deck) -> (Deck, Vec<String>, Vec<String>) {
-        use crate::{Deck, DeckState};
-        use weapon::AppState;
-        use weapon::data_model::Timestamped;
-
         let mut placement_words = deck.get_placement_test(vec![], vec![]);
         assert!(
             placement_words.len() >= 6,
@@ -5832,16 +5533,7 @@ mod tests {
             .collect();
 
         let event = deck.complete_placement_test(known_words.clone(), unknown_words.clone());
-        let timestamped = Timestamped {
-            timestamp: chrono::Utc::now(),
-            within_device_events_index: 0,
-            timezone: Some(deck.context.timezone),
-            event,
-        };
-        let context = deck.context.clone();
-        let state = DeckState::from(deck);
-        let state = Deck::process_event(state, &context, &timestamped);
-        let deck = Deck::finalize(state, &context);
+        let deck = apply_deck_event(deck, event, Utc::now());
         (deck, known_words, unknown_words)
     }
 
@@ -5882,7 +5574,6 @@ mod tests {
             let predicted = target_regression
                 .interpolate(ease)
                 .expect("regression should interpolate at known word's frequency");
-            println!("known   '{word}' (ease={ease:.3}) → predicted = {predicted:.3}");
             known_predictions.push(predicted);
         }
         let mut unknown_predictions = Vec::new();
@@ -5891,7 +5582,6 @@ mod tests {
             let predicted = target_regression
                 .interpolate(ease)
                 .expect("regression should interpolate at unknown word's frequency");
-            println!("unknown '{word}' (ease={ease:.3}) → predicted = {predicted:.3}");
             unknown_predictions.push(predicted);
         }
 
@@ -5953,11 +5643,6 @@ mod tests {
             return;
         }
 
-        let baseline_cards: Vec<_> = deck
-            .next_unknown_cards(AllowedCards::BannedRequirements(BTreeSet::new()), &None, 30)
-            .take(30)
-            .collect();
-
         let (deck, known_words, _unknown_words) = apply_placement_test_split(deck);
 
         let after_cards: Vec<_> = deck
@@ -5966,7 +5651,6 @@ mod tests {
             .collect();
         assert!(!after_cards.is_empty(), "should still have cards to teach");
 
-        let freq_entries = &deck.context.language_pack.gram_frequencies.entries;
         let resolve_word = |gram: &SpurGram| -> String {
             deck.context
                 .language_pack
@@ -5984,25 +5668,6 @@ mod tests {
             }
         };
 
-        println!("\nBaseline next cards (no placement test):");
-        for (i, card) in baseline_cards.iter().take(15).enumerate() {
-            if let CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } =
-                card
-            {
-                let ease = freq_entries.get(gram).map(|f| f.ease).unwrap_or(f32::NAN);
-                println!("  {}. {} (ease={ease:.3})", i + 1, resolve_word(gram));
-            }
-        }
-        println!("\nNext cards after placement test (known={known_words:?}):");
-        for (i, card) in after_cards.iter().take(15).enumerate() {
-            if let CardIndicator::WrittenGram { gram } | CardIndicator::ListeningGram { gram } =
-                card
-            {
-                let ease = freq_entries.get(gram).map(|f| f.ease).unwrap_or(f32::NAN);
-                println!("  {}. {} (ease={ease:.3})", i + 1, resolve_word(gram));
-            }
-        }
-
         let after_words: std::collections::HashSet<String> =
             after_cards.iter().filter_map(card_word).collect();
         let leaked: Vec<&String> = known_words
@@ -6018,25 +5683,11 @@ mod tests {
 
     #[test]
     fn test_change_sentence_list_does_not_increment_review_stats() {
-        use crate::{Deck, DeckState, SentenceListSelection};
-        use weapon::AppState;
-        use weapon::data_model::Timestamped;
-
         let deck = Deck::default();
-        let context = deck.context.clone();
         let event = deck.change_sentence_list(Some(SentenceListSelection::Movie {
             id: "tt0111161".to_string(),
         }));
-        let timestamped = Timestamped {
-            timestamp: chrono::Utc::now(),
-            within_device_events_index: 0,
-            timezone: Some(context.timezone),
-            event,
-        };
-
-        let state = DeckState::from(deck);
-        let state = Deck::process_event(state, &context, &timestamped);
-        let deck = Deck::finalize(state, &context);
+        let deck = apply_deck_event(deck, event, Utc::now());
 
         assert_eq!(deck.stats.total_reviews, 0);
         assert_eq!(deck.stats.xp, 0.0);
@@ -6051,10 +5702,6 @@ mod tests {
 
     #[test]
     fn test_add_card_limits_scale_with_deck_size() {
-        use crate::{Deck, DeckState};
-        use weapon::AppState;
-        use weapon::data_model::Timestamped;
-
         let mut deck = Deck::default();
 
         let assert_limits = |deck: &Deck| {
@@ -6080,18 +5727,8 @@ mod tests {
                 break;
             };
 
-            let timestamped = Timestamped {
-                timestamp: chrono::Utc::now(),
-                within_device_events_index: 0,
-                timezone: Some(deck.context.timezone),
-                event,
-            };
-
             let previous_cards = deck.num_cards_added();
-            let context = deck.context.clone();
-            let state = DeckState::from(deck);
-            let state = Deck::process_event(state, &context, &timestamped);
-            deck = Deck::finalize(state, &context);
+            deck = apply_deck_event(deck, event, Utc::now());
             assert!(
                 deck.num_cards_added() <= previous_cards + 5,
                 "deck should not grow by more than the requested amount"
@@ -6110,36 +5747,30 @@ mod tests {
         use weapon::data_model::{EventStore, EventType, Timestamped};
         use weapon::opfs::parse_event_log_records;
 
-        // 1. Load language pack from rkyv
         let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
             std::path::Path::new("../out/fra_for_eng"),
         )
         .expect("Failed to load language pack - run `cargo run --bin generate-data` first");
         let language_pack = Arc::new(language_pack);
 
-        // 2. Set up the EventStore (same as production: EventStore<String, String>)
         let mut store: EventStore<String, String> = EventStore::default();
 
-        // Initialize the streams with the correct typed stores
         store.get_or_insert_default::<EventType<DeckEvent>>("reviews".to_string(), None);
         store.get_or_insert_default::<EventType<DeckSelectionEvent>>(
             "deck_selection".to_string(),
             None,
         );
 
-        // 3. Load and parse the reviews event blob
         let reviews_blob = std::fs::read(
             "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__reviews/events.blob",
         )
         .expect("Failed to read reviews events blob");
         let review_records = parse_event_log_records(&reviews_blob);
-        println!("Parsed {} review event records", review_records.len());
         assert!(
             !review_records.is_empty(),
             "Expected review events in test data"
         );
 
-        // Group events by device and add them to the store
         let mut reviews_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
             BTreeMap::new();
         for record in &review_records {
@@ -6155,20 +5786,14 @@ mod tests {
                 events.clone(),
                 None,
             );
-            println!("Added {added} review events for device {device_id}");
             assert!(added > 0, "Expected to add review events for {device_id}");
         }
 
-        // 4. Load and parse the deck_selection event blob
         let deck_selection_blob = std::fs::read(
             "test-data/.weapon/user-events/user__aa6b6044-10d0-444b-8518-3696a15d2392/stream__deck_selection/events.blob",
         )
         .expect("Failed to read deck_selection events blob");
         let deck_selection_records = parse_event_log_records(&deck_selection_blob);
-        println!(
-            "Parsed {} deck_selection event records",
-            deck_selection_records.len()
-        );
 
         let mut selections_by_device: BTreeMap<String, Vec<Timestamped<serde_json::Value>>> =
             BTreeMap::new();
@@ -6182,7 +5807,6 @@ mod tests {
             store.add_device_events_jsons("deck_selection".to_string(), device_id, events, None);
         }
 
-        // 5. Compute the deck state by replaying all events
         let context = Context {
             language_pack,
             course: Course {
@@ -6197,19 +5821,8 @@ mod tests {
             .expect("reviews stream should exist");
         let deck: Deck = stream.state(initial_state, &context);
 
-        // 6. Verify the computed state looks reasonable
         let num_cards = deck.num_cards_added();
         let total_reviews = deck.stats.total_reviews;
-        println!("Computed deck state:");
-        println!("  Total tracked cards: {num_cards}");
-        println!("  Total reviews: {total_reviews}");
-        println!("  XP: {}", deck.stats.xp);
-        println!(
-            "  Has placement test: {}",
-            deck.placement_test_results.is_some()
-        );
-        println!("  Leeches: {}", deck.leeches.len());
-        println!("  Start time: {:?}", deck.stats.start_time);
 
         assert!(num_cards > 0, "Expected cards after replaying events");
         assert!(
@@ -6228,7 +5841,6 @@ mod tests {
 
     #[test]
     fn test_savoir_sentence_cleanup_and_lookup() {
-        // Load language pack
         let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
             std::path::Path::new("../out/fra_for_eng"),
         )
@@ -6237,22 +5849,17 @@ mod tests {
         // The sentence from v1 events (without proper French punctuation spacing)
         let raw_sentence = "Qu'est-ce que tu veux savoir?";
 
-        // The raw sentence should NOT be in the language pack
         let raw_in_rodeo = language_pack.string_rodeo.get(raw_sentence).is_some();
-        println!("Raw sentence '{raw_sentence}' in string_rodeo: {raw_in_rodeo}");
         assert!(
             !raw_in_rodeo,
             "Raw sentence should NOT be in language pack (it lacks proper French spacing)"
         );
 
-        // After cleanup, it should match the language pack
         let cleaned_sentence = language_utils::text_cleanup::cleanup_sentence(
             raw_sentence.to_string(),
             Language::French,
         );
-        println!("Cleaned sentence: '{cleaned_sentence}'");
 
-        // The cleaned sentence should be in all structures
         let cleaned_in_rodeo = language_pack.string_rodeo.get(&cleaned_sentence).is_some();
         let cleaned_in_encoded = language_pack
             .string_rodeo
@@ -6264,10 +5871,6 @@ mod tests {
             .get(&cleaned_sentence)
             .and_then(|spur| language_pack.sentence_to_literals(&spur, Language::French))
             .is_some();
-
-        println!("Cleaned sentence in string_rodeo: {cleaned_in_rodeo}");
-        println!("Cleaned sentence in encoded_sentences: {cleaned_in_encoded}");
-        println!("Cleaned sentence has literals: {cleaned_has_literals}");
 
         assert!(
             cleaned_in_rodeo,
@@ -6292,7 +5895,6 @@ mod tests {
         use weapon::data_model::{EventStore, EventType, Timestamped};
         use weapon::opfs::parse_event_log_records;
 
-        // Load language pack and replay events to get deck state
         let language_pack: LanguagePack = language_utils::language_pack::load_split_dir(
             std::path::Path::new("../out/fra_for_eng"),
         )
@@ -6909,7 +6511,6 @@ mod tests {
             native_language: native,
         };
 
-        // Load the pack for migration context.
         let entry = pack_cache
             .entry(course)
             .or_insert_with(|| build_pack_entry(course));

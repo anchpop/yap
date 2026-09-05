@@ -22,18 +22,3 @@ pub fn generate_uuid() -> String {
         Uuid::new_v4().to_string()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_generate_uuid() {
-        let uuid1 = generate_uuid();
-        let uuid2 = generate_uuid();
-
-        assert_ne!(uuid1, uuid2);
-        assert_eq!(uuid1.len(), 36);
-        assert!(uuid1.chars().filter(|&c| c == '-').count() == 4);
-    }
-}

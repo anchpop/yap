@@ -74,7 +74,6 @@ export function LanguageSelector({
     lang: Language,
   ) => {
     if (onboardedLanguages.includes(lang)) {
-      // Already onboarded for this language — skip straight to learning
       onLanguagesConfirmed(nativeLanguage, lang);
     } else {
       setSelectionState({
@@ -85,10 +84,8 @@ export function LanguageSelector({
     }
   };
 
-  // Get available courses
   const availableCourses = useMemo(() => get_available_courses(), []);
 
-  // Get unique native languages - memoized for stability
   const nativeLanguages = useMemo(() => {
     const uniqueNative = new Set<Language>();
     availableCourses.forEach((course) => {
@@ -97,7 +94,6 @@ export function LanguageSelector({
     return Array.from(uniqueNative);
   }, [availableCourses]);
 
-  // Detect the browser's language, but only honour it if we teach in it.
   const detectedLanguage = useMemo(() => {
     const detectedLang = detectBrowserLanguage();
     return detectedLang && nativeLanguages.includes(detectedLang)
@@ -105,7 +101,6 @@ export function LanguageSelector({
       : null;
   }, [nativeLanguages]);
 
-  // Auto-select detected language when entering native selection stage
   useEffect(() => {
     if (selectionState.stage !== "selectingNative") return;
 
@@ -117,7 +112,6 @@ export function LanguageSelector({
     }
   }, [selectionState.stage, detectedLanguage]);
 
-  // Get target languages available for selected native language
   const targetLanguages =
     selectionState.stage === "selectingNative"
       ? []
@@ -127,7 +121,6 @@ export function LanguageSelector({
           )
           .map((course) => course.targetLanguage);
 
-  // Group languages by stability status
   const stableLanguages = targetLanguages.filter(
     (lang) => LANGUAGES[lang].status === "stable",
   );
@@ -156,7 +149,6 @@ export function LanguageSelector({
     }
   }, [selectionState, weapon]);
 
-  // Determine the Yaptown title to display based on selection state
   const yaptownTitle =
     selectionState.stage === "onboarding"
       ? LANGUAGES[selectionState.targetLanguage].yaptownName
@@ -175,7 +167,6 @@ export function LanguageSelector({
       <div className="relative z-10 flex items-center justify-center">
         <AnimatePresence mode="wait">
           {selectionState.stage === "selectingNative" ? (
-            // Step 1: Select native language
             <motion.div
               key="native-selection"
               initial={{ opacity: 0, y: 20 }}
@@ -232,7 +223,6 @@ export function LanguageSelector({
               </div>
             </motion.div>
           ) : selectionState.stage === "selectingTarget" ? (
-            // Step 2: Select target language
             <div
               key="target-selection"
               className="w-full max-w-4xl gap-4 flex flex-col items-center gap-8"

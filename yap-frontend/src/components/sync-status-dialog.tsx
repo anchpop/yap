@@ -50,7 +50,6 @@ export function SyncStatusDialog() {
   const [syncInProgress, setSyncInProgress] = useState<boolean>(false);
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
 
-  // Update timestamp periodically for responsive UI
   useInterval(
     () => {
       setCurrentTimestamp(Date.now());
@@ -71,7 +70,6 @@ export function SyncStatusDialog() {
         const earliest: EarliestUnsyncedEvent | undefined =
           weapon.get_timestamp_of_earliest_unsynced_event("supabase");
         if (earliest && earliest.timestamp) {
-          // Handle timestamp - it comes as an ISO string from WASM
           const timestampMs = new Date(earliest.timestamp).getTime();
           setEarliestUnsyncedAt(timestampMs);
         } else {
@@ -99,7 +97,6 @@ export function SyncStatusDialog() {
     }
   };
 
-  // Get local and remote event counts
   const localEventCount = weapon.num_events;
   const remoteEventCount =
     weapon.num_events_on_remote_as_of_last_sync("supabase");

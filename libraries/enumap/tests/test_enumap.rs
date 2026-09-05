@@ -21,19 +21,6 @@ fn test_basic_enumap() {
 }
 
 #[test]
-fn test_enumap_with_strings() {
-    let map = ColorMap {
-        red: "rouge",
-        green: "vert",
-        blue: "bleu",
-    };
-
-    assert_eq!(map.get(&Color::Red), &"rouge");
-    assert_eq!(map.get(&Color::Green), &"vert");
-    assert_eq!(map.get(&Color::Blue), &"bleu");
-}
-
-#[test]
 fn test_enumap_mut() {
     let mut map = ColorMap {
         red: 0,

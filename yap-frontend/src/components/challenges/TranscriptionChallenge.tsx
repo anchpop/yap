@@ -316,7 +316,6 @@ export function TranscriptionChallenge({
 
         handleInputChange(targetIndex, newValue);
 
-        // Set cursor position after the inserted character
         setTimeout(() => {
           if (input) {
             const newPosition = start + char.length;
@@ -415,7 +414,6 @@ export function TranscriptionChallenge({
 
       if (e.key === "Enter") {
         if (isInputFocused) {
-          // Handle input navigation
           e.preventDefault();
 
           // Find which input is focused
@@ -434,11 +432,9 @@ export function TranscriptionChallenge({
             // Focus next input
             inputRefs.current[nextBlankIndex]?.focus();
           } else if (gradingState === null && allBlanksFilledOut) {
-            // This was the last input, submit
             handleSubmit();
           }
         } else if (gradingState && "graded" in gradingState) {
-          // Handle continue when graded and no input focused
           e.preventDefault();
           handleTranscriptionContinue();
         }
@@ -473,7 +469,6 @@ export function TranscriptionChallenge({
     );
 
   const renderSentenceWithBlanks = () => {
-    // Check if it's a single AskedToTranscribe part (full sentence transcription)
     const askedToTranscribeParts = challenge.parts.filter(
       (part) => part.type === "AskedToTranscribe",
     );
@@ -539,11 +534,9 @@ export function TranscriptionChallenge({
       const result = gradingState.graded.results[index];
 
       if (result && result.type === "AskedToTranscribe") {
-        // Check if all words are perfect
         const allPerfect = result.parts.every(
           (part) => part.grade.type === "Perfect",
         );
-        // Check for other grades
         const hasMissed = result.parts.some(
           (part) => part.grade.type === "Missed",
         );

@@ -130,7 +130,6 @@ impl LanguagePack {
                 continue;
             };
 
-            // Check that all learnable grams are comprehensible
             for sentence_gram in &sentence_grams.grams {
                 if let SentenceGram::Learnable(gram) = sentence_gram
                     && !is_comprehensible(gram)
@@ -139,7 +138,6 @@ impl LanguagePack {
                 }
             }
 
-            // Check that all multiword terms (high and low confidence) are comprehensible
             for multiword_gram in sentence_grams
                 .multiword_terms
                 .iter()
@@ -150,7 +148,6 @@ impl LanguagePack {
                 }
             }
 
-            // Check that the sentence has at least one translation
             if self
                 .translations
                 .get(&sentence)
@@ -431,7 +428,6 @@ impl LanguagePack {
                 }
             }
 
-            // Sort each list by frequency descending, then strip the frequencies
             map.into_iter()
                 .map(|(word, mut hets)| {
                     hets.sort_by_key(|b| std::cmp::Reverse(b.1));
@@ -495,16 +491,13 @@ impl LanguagePack {
             })
             .collect();
 
-        // Initialize movie and book data
         let movies = language_data.movies;
         let books = language_data.books;
 
         let human_audio = language_data.human_audio.clone();
 
-        // Store source_gram_frequencies to convert after gram_rodeo is created
         let source_gram_frequencies_data = language_data.source_gram_frequencies.clone();
 
-        // Convert sentence sources
         let sentence_sources = {
             language_data
                 .sentence_sources
@@ -513,7 +506,6 @@ impl LanguagePack {
                 .collect()
         };
 
-        // Convert proper noun definitions to use Spurs
         let proper_noun_definitions = {
             language_data
                 .proper_noun_definitions
@@ -524,7 +516,6 @@ impl LanguagePack {
                 .collect()
         };
 
-        // Convert gram vocabulary entries to use Spurs
         let gram_vocabulary: Vec<_> = language_data
             .gram_vocabulary
             .iter()
@@ -535,7 +526,6 @@ impl LanguagePack {
             })
             .collect();
 
-        // Intern all grams into the gram_rodeo
         let gram_rodeo = {
             let mut gram_rodeo: lasso::Rodeo<Gram<Spur>> = lasso::Rodeo::new();
             for entry in &gram_vocabulary {
@@ -544,10 +534,6 @@ impl LanguagePack {
             gram_rodeo.into_reader()
         };
 
-        // Convert encoded sentences to use Spurs for sentence keys
-        // The grams are looked up in gram_rodeo to get their Spur keys
-        // multiword_terms and low_confidence_multiword_terms are now Gram<String>,
-        // so they need to be interned into gram_rodeo as SpurGram
         let encoded_sentences: FxHashMap<Spur, SentenceGrams<SpurGram>> = language_data
             .encoded_sentences
             .iter()
@@ -596,8 +582,6 @@ impl LanguagePack {
             })
             .collect();
 
-        // Convert gram frequencies (pre-computed in generate-data)
-        // Each entry now has a `gram` field (Gram<String>) which we intern
         // Build as counts first; we'll compute the `easy` flag after gram_definitions is available.
         let gram_counts: IndexMap<SpurGram, (u32, u32)> = {
             let mut map = IndexMap::new();
@@ -612,11 +596,9 @@ impl LanguagePack {
             map
         };
 
-        // Build unified gram definitions map
         let gram_definitions: FxHashMap<SpurGram, GramDefinition> = {
             let mut map = FxHashMap::default();
 
-            // Add dictionary entries (keyed by Gram directly)
             for (gram, definition) in &language_data.gram_dictionary {
                 let interned_gram: Option<Gram<Spur>> =
                     gram.iter().map(|atom| atom.get_interned(&rodeo)).collect();
@@ -627,7 +609,6 @@ impl LanguagePack {
                 }
             }
 
-            // Add phrasebook entries (multi-atom grams)
             for (gram, entry) in &language_data.phrasebook {
                 let interned_gram: Option<Gram<Spur>> =
                     gram.iter().map(|atom| atom.get_interned(&rodeo)).collect();
@@ -641,7 +622,6 @@ impl LanguagePack {
             map
         };
 
-        // Now that we have definitions, convert gram_counts into gram_frequencies with `easy` and `ease` computed.
         let gram_frequencies_map: IndexMap<SpurGram, Frequency> = {
             const COGNATE_BONUS: f32 = 2.0;
 
@@ -665,7 +645,6 @@ impl LanguagePack {
                 }
             }
 
-            // Second pass: build frequency entries with ease for all grams.
             let mut map = IndexMap::new();
             for (gram_spur, (count, direct_count)) in gram_counts.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
@@ -674,7 +653,6 @@ impl LanguagePack {
 
                 let ln_count = (*count as f32).ln();
 
-                // Extract phrasebook properties for multi-atom grams
                 let definition = gram_definitions.get(gram_spur);
                 let (is_compositional, is_literally_translatable, is_cognate) = match definition {
                     Some(GramDefinition::Phrasebook(entry)) => (
@@ -687,7 +665,6 @@ impl LanguagePack {
                 let compositional = is_compositional || is_literally_translatable;
 
                 let ease = if gram.len() <= 1 {
-                    // Single-atom gram: use pre-computed ease from first pass.
                     gram.iter()
                         .next()
                         .and_then(|atom| single_atom_ease.get(atom).copied())
@@ -757,13 +734,11 @@ impl LanguagePack {
             entries: gram_frequencies_map,
         };
 
-        // Build index from heteronym to all grams composed only of that heteronym, sorted by frequency
         let heteronym_to_grams: FxHashMap<Heteronym<Spur>, Vec<SpurGram>> = {
             let mut map: FxHashMap<Heteronym<Spur>, Vec<(SpurGram, Frequency)>> =
                 FxHashMap::default();
             for (gram_spur, freq) in gram_frequencies.entries.iter() {
                 let gram = gram_rodeo.resolve(gram_spur);
-                // Check if this gram is composed of a single heteronym atom
                 if gram.len() == 1
                     && let Some(Atom::Tok(word)) = gram.iter().next()
                     && let WordType::Heteronym(heteronym) = &word.word_type
@@ -771,7 +746,6 @@ impl LanguagePack {
                     map.entry(*heteronym).or_default().push((*gram_spur, *freq));
                 }
             }
-            // Sort each list by frequency (highest first) and extract just the spurs
             map.into_iter()
                 .map(|(k, mut v)| {
                     v.sort_by_key(|b| std::cmp::Reverse(b.1.count));
@@ -780,23 +754,18 @@ impl LanguagePack {
                 .collect()
         };
 
-        // Build index from gram to sentences containing it
-        // All grams, multiword_terms, and low_confidence_multiword_terms are now unified as SpurGram
         let sentences_containing_gram_index: FxHashMap<SpurGram, Vec<Spur>> = {
             let mut map: FxHashMap<SpurGram, Vec<Spur>> = FxHashMap::default();
             for (sentence_spur, sentence_grams) in encoded_sentences.iter() {
-                // Add grams to index
                 for gram in &sentence_grams.grams {
                     let gram_spur = match gram {
                         SentenceGram::Learnable(g) | SentenceGram::Obvious(g) => *g,
                     };
                     map.entry(gram_spur).or_default().push(*sentence_spur);
                 }
-                // Add high-confidence multiword term grams to index
                 for term in &sentence_grams.multiword_terms {
                     map.entry(term.gram).or_default().push(*sentence_spur);
                 }
-                // Add low-confidence multiword term grams to index
                 for term in &sentence_grams.low_confidence_multiword_terms {
                     map.entry(term.gram).or_default().push(*sentence_spur);
                 }
@@ -804,8 +773,6 @@ impl LanguagePack {
             map
         };
 
-        // Convert per-source gram frequencies (pre-computed in generate-data)
-        // Each entry has a `gram` field (Gram<String>) which we intern
         let source_gram_frequencies: FxHashMap<crate::FrequencySourceId, FrequencyList> =
             source_gram_frequencies_data
                 .iter()
@@ -843,8 +810,6 @@ impl LanguagePack {
                 .filter(|(_, list)| !list.entries.is_empty())
                 .collect();
 
-        // Pre-compute pronunciation max frequencies for performance
-        // Look up through heteronym_to_grams -> gram_frequencies
         let pronunciation_max_freq_cache: FxHashMap<Spur, Frequency> = pronunciation_to_words
             .iter()
             .filter_map(|(pronunciation, words)| {
@@ -858,7 +823,6 @@ impl LanguagePack {
                             .flatten()
                     })
                     .filter_map(|heteronym| {
-                        // Find the max frequency among all grams for this heteronym
                         heteronym_to_grams
                             .get(heteronym)?
                             .iter()
@@ -872,14 +836,8 @@ impl LanguagePack {
             })
             .collect();
 
-        // For each word, the max frequency of any single-atom gram whose only
-        // atom is that word — used to sort minimal-pair neighbor lists so the
-        // most common standalone-usage neighbors appear first.
-        // `heteronym_to_grams` is already pre-filtered to single-atom heteronym
-        // grams (its construction at line ~536 enforces that) and sorted by
-        // frequency desc, so the top gram's frequency for each heteronym is
-        // the per-heteronym answer; we take the max across the word's
-        // heteronyms.
+        // Rank minimal pairs by standalone usage; each heteronym
+        // lists its single-atom grams in descending frequency order.
         let word_max_single_gram_freq: FxHashMap<Spur, u32> = words_to_heteronyms
             .iter()
             .filter_map(|(word, hets)| {
@@ -900,7 +858,6 @@ impl LanguagePack {
             &word_max_single_gram_freq,
         );
 
-        // Build reverse index from display string to grams
         let string_to_grams: FxHashMap<String, Vec<SpurGram>> = {
             let mut map: FxHashMap<String, Vec<SpurGram>> = FxHashMap::default();
             for &gram_spur in gram_definitions.keys() {
@@ -974,7 +931,6 @@ impl LanguagePack {
 /// Check if a resolved gram is "easy" based on its definition.
 /// Easy grams are single-word cognates with a single-word definition.
 fn is_gram_easy(gram: &grm<Spur>, definition: Option<&GramDefinition>) -> bool {
-    // Must be a single-word gram with a heteronym
     if gram.len() != 1 {
         return false;
     }

@@ -1,8 +1,6 @@
-// Helpers with no WASM/runtime dependencies, split out of utils.ts so the
-// MCP widget (which must not bundle the WASM module) can share them.
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { Language } from "../../../yap-frontend-rs/pkg";
+import type { Language, VoiceActorInfo } from "../../../yap-frontend-rs/pkg";
 import {
   LANGUAGES,
   isLanguage,
@@ -10,12 +8,17 @@ import {
   mapLanguages,
 } from "./languages";
 
+export interface PlaybackOptions {
+  temporary?: boolean;
+  onAudioElement?: (audio: HTMLAudioElement) => void | Promise<void>;
+  signal?: AbortSignal;
+  onVoiceActor?: (info: VoiceActorInfo) => void;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Language utility functions. The data itself lives in ./languages — these
-// are the shorthands that callers reach for most often.
 export const languageFlags = mapLanguages((meta) => meta.flag);
 
 export const nativeLanguageNames = mapLanguages((meta) => meta.nativeName);
@@ -55,20 +58,3 @@ export function languageToLangAttr(language: Language): string {
   const { iso6391, script } = LANGUAGES[language];
   return script ? `${iso6391}-${script}` : iso6391;
 }
-
-export const profilerOnRender = (
-  id: string,
-  phase: string,
-  actualDuration: number,
-  baseDuration: number,
-  startTime: number,
-  commitTime: number,
-) => {
-  void id;
-  void phase;
-  void actualDuration;
-  void baseDuration;
-  void startTime;
-  void commitTime;
-  // console.log(`id:`, id, `, phase:`, phase, `, actualDuration:`, actualDuration, `, baseDuration:`, baseDuration, `, startTime:`, startTime, `, commitTime:`, commitTime);
-};

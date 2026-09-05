@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Volume2 } from "lucide-react";
-import { playAudio, playTempAudio, type VoiceActorInfo } from "@/lib/utils";
+import { playAudio, type VoiceActorInfo } from "@/lib/utils";
 import { type AudioRequest } from "../../../yap-frontend-rs/pkg";
 import { isSoundEffectPlaying } from "@/lib/sound-effects";
 import { toast } from "sonner";
@@ -371,24 +371,12 @@ export function AudioButton({
               : "a volunteer voice actor";
           toast(`audio recorded by @${name}, ${credit}`);
         };
-        if (temp) {
-          await playTempAudio(
-            audioRequest,
-            accessToken,
-            authCallback,
-            signal,
-            onVoiceActor,
-          );
-        } else {
-          await playAudio(
-            audioRequest,
-            accessToken,
-            authCallback,
-            visualizer ? attachAnalyser : undefined,
-            signal,
-            onVoiceActor,
-          );
-        }
+        await playAudio(audioRequest, accessToken, authCallback, {
+          temporary: temp,
+          onAudioElement: !temp && visualizer ? attachAnalyser : undefined,
+          signal,
+          onVoiceActor,
+        });
         if (!signal.aborted) onSuccessRef.current?.();
       } catch (error) {
         if (isAbort(error) || signal.aborted) return;

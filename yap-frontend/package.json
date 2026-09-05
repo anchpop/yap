@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:audio": "node --test tests/audio.test.mjs",
     "preview": "vite preview",
     "screenshots": "playwright test",
     "analyze": "tsc -b && vite build && open bundle-analysis.html",

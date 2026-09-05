@@ -31,7 +31,6 @@ export function useOneSignalNotifications() {
   useEffect(() => {
     initializeOneSignal();
 
-    // Set up listener for subscription changes
     const handleSubscriptionChange = (event: PushSubscriptionChangeEvent) => {
       console.log("Push subscription changed", event);
       if (event.current && event.current.optedIn !== undefined) {
@@ -74,14 +73,12 @@ export function useOneSignalNotifications() {
       // Wait a bit more to ensure OneSignal is fully initialized
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // Check if notifications are supported
       console.log("Checking permission status", window.OneSignal.Notifications);
       const supported = await window.OneSignal.Notifications.isPushSupported();
       console.log("Notifications are supported: ", supported);
       setIsSupported(supported);
 
       if (supported) {
-        // Check current permission status
         const permission = window.OneSignal.Notifications.permission;
         console.log("Permission: ", permission);
 
@@ -156,7 +153,6 @@ export function useOneSignalNotifications() {
         // Continue anyway - the subscription still works
       }
 
-      // Add tags for targeting
       await window.OneSignal.User.addTags({
         app: "yap-town",
         user_id: user.id,

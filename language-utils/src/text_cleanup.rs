@@ -1,8 +1,3 @@
-//! Language-specific text cleanup utilities
-//!
-//! This module provides functions for cleaning up and normalizing text
-//! according to language-specific typographic rules.
-
 use unicode_normalization::UnicodeNormalization;
 
 use crate::Language;
@@ -16,15 +11,8 @@ pub fn remove_accents_lowercase(text: &str) -> String {
         .to_lowercase()
 }
 
-/// Normalize text for grading purposes
-///
-/// This function performs language-specific normalization:
-/// - Replaces various Unicode quote and hyphen variants with standard ASCII equivalents
-/// - For English: expands contractions (e.g., "it's" → "it is")
-/// - Converts to lowercase
-/// - Removes punctuation (except apostrophes and hyphens) and normalizes whitespace
+/// Normalize quotes, hyphens, case and punctuation; expand English contractions.
 pub fn normalize_for_grading(text: &str, language: Language) -> String {
-    // First normalize special characters
     let normalized_chars = text
         .chars()
         .map(|c| match c {
@@ -45,20 +33,16 @@ pub fn normalize_for_grading(text: &str, language: Language) -> String {
             '\u{2010}' | '\u{2011}' | '\u{2012}' | '\u{2013}' | '\u{2014}' | '\u{2015}'
             | '\u{2212}' | '\u{FE58}' | '\u{FE63}' | '\u{FF0D}' => '-',
 
-            // Keep all other characters unchanged
             _ => c,
         })
         .collect::<String>();
 
-    // Convert to lowercase
     let mut result = normalized_chars.to_lowercase();
 
-    // Expand contractions for English
     if language == Language::English {
         result = expand_english_contractions(&result);
     }
 
-    // Remove punctuation (except apostrophes and hyphens) and normalize whitespace
     result = result
         .chars()
         .map(|c| {
@@ -76,7 +60,6 @@ pub fn normalize_for_grading(text: &str, language: Language) -> String {
     result
 }
 
-/// Expand English contractions to their full forms
 fn expand_english_contractions(text: &str) -> String {
     let contractions = [
         ("won't", "will not"),
@@ -157,7 +140,6 @@ pub fn find_closest_match(
         .cloned()
 }
 
-/// Calculate Levenshtein distance between two strings
 fn levenshtein_distance(a: &str, b: &str) -> usize {
     let a_chars: Vec<char> = a.chars().collect();
     let b_chars: Vec<char> = b.chars().collect();
@@ -196,71 +178,36 @@ fn levenshtein_distance(a: &str, b: &str) -> usize {
     matrix[a_len][b_len]
 }
 
-/// Clean up text according to language-specific rules
-///
-/// For all languages:
-/// - Trims leading/trailing whitespace (including unicode whitespace like nbsp)
-/// - Normalizes non-breaking spaces (U+00A0) and thin non-breaking spaces (U+202F)
-///   between words to regular spaces
-///
-/// Language-specific:
-/// - French: Fixes spacing before high punctuation marks (re-inserts thin nbsp)
+/// Normalize whitespace, then apply language-specific punctuation spacing.
 pub fn cleanup_sentence(sentence: String, language: Language) -> String {
-    // Normalize all unicode whitespace to regular spaces and collapse runs.
-    // This handles: nbsp (U+00A0), thin nbsp (U+202F), thin space (U+2009),
-    // and any other char where char::is_whitespace() is true.
-    let normalized: String = sentence
-        .split(|c: char| c.is_whitespace())
-        .filter(|s| !s.is_empty())
-        .collect::<Vec<_>>()
-        .join(" ");
+    let normalized = sentence.split_whitespace().collect::<Vec<_>>().join(" ");
 
-    // Apply language-specific cleanup
     match language {
         Language::French => cleanup_french_sentence(normalized),
         _ => normalized,
     }
 }
 
-/// Clean up French sentence punctuation spacing
-///
-/// In French typography, high punctuation marks (! ?) should be preceded
-/// by a thin non-breaking space (U+202F). This function ensures proper spacing:
-/// - Converts regular spaces before high punctuation to thin non-breaking spaces
-/// - Inserts thin non-breaking spaces if they're missing entirely
+/// French ! and ? take a thin non-breaking space (U+202F).
 pub fn cleanup_french_sentence(sentence: String) -> String {
-    const THIN_NBSP: char = '\u{202F}'; // Thin non-breaking space
-    const NBSP: char = '\u{00A0}'; // Regular non-breaking space
+    const THIN_NBSP: char = '\u{202F}';
+    const NBSP: char = '\u{00A0}';
     const HIGH_PUNCTUATION: &[char] = &['!', '?'];
 
     let mut result = String::with_capacity(sentence.len() + 10);
     let chars: Vec<char> = sentence.chars().collect();
 
-    let mut i = 0;
-    while i < chars.len() {
-        let ch = chars[i];
-
-        // Check if this is high punctuation
-        if HIGH_PUNCTUATION.contains(&ch) {
-            // Check what comes before
-            if i > 0 {
-                let prev_char = chars[i - 1];
-                if prev_char == ' ' || prev_char == NBSP {
-                    // Replace the previous space with thin nbsp
-                    result.pop(); // Remove the space we just added
-                    result.push(THIN_NBSP);
-                } else if prev_char != THIN_NBSP {
-                    // No space at all, insert thin nbsp
-                    result.push(THIN_NBSP);
-                }
-                // If it's already a thin nbsp, do nothing
+    for (i, &ch) in chars.iter().enumerate() {
+        if HIGH_PUNCTUATION.contains(&ch) && i > 0 {
+            let prev_char = chars[i - 1];
+            if prev_char == ' ' || prev_char == NBSP {
+                result.pop();
+                result.push(THIN_NBSP);
+            } else if prev_char != THIN_NBSP {
+                result.push(THIN_NBSP);
             }
-            result.push(ch);
-        } else {
-            result.push(ch);
         }
-
-        i += 1;
+        result.push(ch);
     }
 
     result
@@ -271,163 +218,75 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_french_cleanup_regular_space() {
-        // Regular space should be converted to thin nbsp
-        let input = "Bonjour !".to_string();
-        let expected = "Bonjour\u{202F}!";
-        assert_eq!(cleanup_french_sentence(input), expected);
+    fn french_punctuation_spacing() {
+        for (input, expected) in [
+            ("Bonjour !", "Bonjour\u{202F}!"),
+            ("Bonjour!", "Bonjour\u{202F}!"),
+            ("Bonjour\u{202F}!", "Bonjour\u{202F}!"),
+            ("Bonjour\u{00A0}!", "Bonjour\u{202F}!"),
+            (
+                "Question ? Exclamation ! Colon : Semicolon ;",
+                "Question\u{202F}? Exclamation\u{202F}! Colon : Semicolon ;",
+            ),
+            ("What ?! Really !", "What\u{202F}?\u{202F}! Really\u{202F}!"),
+            (
+                "Bonjour, comment allez-vous.",
+                "Bonjour, comment allez-vous.",
+            ),
+            ("!Wow", "!Wow"),
+        ] {
+            assert_eq!(cleanup_french_sentence(input.into()), expected, "{input:?}");
+        }
     }
 
     #[test]
-    fn test_french_cleanup_no_space() {
-        // No space should insert thin nbsp
-        let input = "Bonjour!".to_string();
-        let expected = "Bonjour\u{202F}!";
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_french_cleanup_already_correct() {
-        // Already correct thin nbsp should remain unchanged
-        let input = "Bonjour\u{202F}!".to_string();
-        let expected = "Bonjour\u{202F}!".to_string();
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_french_cleanup_regular_nbsp() {
-        // Regular nbsp should be converted to thin nbsp
-        let input = "Bonjour\u{00A0}!".to_string();
-        let expected = "Bonjour\u{202F}!".to_string();
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_cleanup_trims_unicode_whitespace() {
-        // Leading/trailing nbsp and regular spaces should be trimmed
-        let input = " \u{00A0}Bonjour. ".to_string();
-        assert_eq!(cleanup_sentence(input, Language::French), "Bonjour.");
-    }
-
-    #[test]
-    fn test_cleanup_normalizes_nbsp_between_words() {
-        // Non-breaking spaces between words should become regular spaces
-        // (except before French high punctuation, which gets thin nbsp)
-        let input = "Bonjour\u{00A0}le\u{00A0}monde !".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Bonjour le monde\u{202F}!"
-        );
-    }
-
-    #[test]
-    fn test_cleanup_normalizes_thin_nbsp_between_words() {
-        let input = "Ça\u{202F}va ?".to_string();
-        assert_eq!(cleanup_sentence(input, Language::French), "Ça va\u{202F}?");
-    }
-
-    #[test]
-    fn test_french_cleanup_all_punctuation() {
-        // Test all high punctuation marks (! and ?)
-        let input = "Question ? Exclamation ! Colon : Semicolon ;".to_string();
-        let expected = "Question\u{202F}? Exclamation\u{202F}! Colon : Semicolon ;";
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_french_cleanup_multiple_punctuation() {
-        // Test multiple punctuation in one sentence
-        let input = "What ?! Really !".to_string();
-        let expected = "What\u{202F}?\u{202F}! Really\u{202F}!";
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_french_cleanup_no_change_needed() {
-        // Sentence without high punctuation should be unchanged
-        let input = "Bonjour, comment allez-vous.".to_string();
-        let expected = "Bonjour, comment allez-vous.";
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_french_cleanup_punctuation_at_start() {
-        // Edge case: punctuation at the very start (shouldn't happen in real text)
-        let input = "!Wow".to_string();
-        let expected = "!Wow";
-        assert_eq!(cleanup_french_sentence(input), expected);
-    }
-
-    #[test]
-    fn test_cleanup_sentence_french() {
-        // Test the general cleanup_sentence function with French
-        let input = "Bonjour !".to_string();
-        let expected = "Bonjour\u{202F}!";
-        assert_eq!(cleanup_sentence(input, Language::French), expected);
-    }
-
-    #[test]
-    fn test_cleanup_sentence_english() {
-        // Test the general cleanup_sentence function with English (no changes)
-        let input = "Hello!".to_string();
-        let expected = "Hello!";
-        assert_eq!(cleanup_sentence(input, Language::English), expected);
-    }
-
-    // Tests from real generate-data warnings
-    #[test]
-    fn test_cleanup_guillemets_with_nbsp() {
-        // « and » in French use nbsp around them — should normalize to regular spaces
-        let input = "Tu as dit \u{ab}\u{a0}bonjour\u{a0}\u{bb} ?".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Tu as dit \u{ab} bonjour \u{bb}\u{202F}?"
-        );
-    }
-
-    #[test]
-    fn test_cleanup_multiple_spaces_before_question_mark() {
-        // Multiple nbsp/spaces before ? should collapse to single thin nbsp
-        let input = "Voulez-vous coucher avec moi\u{a0}\u{202f}?".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Voulez-vous coucher avec moi\u{202F}?"
-        );
-    }
-
-    #[test]
-    fn test_cleanup_thin_space_u2009() {
-        // U+2009 thin space should be normalized like other unicode whitespace
-        let input = "Est-ce que tu fumes ici\u{2009}?".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Est-ce que tu fumes ici\u{202F}?"
-        );
-    }
-
-    #[test]
-    fn test_cleanup_collapses_multiple_spaces() {
-        // Multiple consecutive spaces should collapse to one
-        let input = "Bonjour  le   monde.".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Bonjour le monde."
-        );
-    }
-
-    #[test]
-    fn test_cleanup_mixed_unicode_whitespace_before_punct() {
-        // Mix of thin space + nbsp + regular space before ? should all collapse
-        let input = "Vraiment\u{2009}\u{a0} ?".to_string();
-        assert_eq!(
-            cleanup_sentence(input, Language::French),
-            "Vraiment\u{202F}?"
-        );
+    fn sentence_whitespace_and_punctuation() {
+        for (language, input, expected) in [
+            (Language::French, "Bonjour !", "Bonjour\u{202F}!"),
+            (Language::English, "Hello!", "Hello!"),
+            (Language::French, " \u{00A0}Bonjour. ", "Bonjour."),
+            (
+                Language::French,
+                "Bonjour\u{00A0}le\u{00A0}monde !",
+                "Bonjour le monde\u{202F}!",
+            ),
+            (Language::French, "Ça\u{202F}va ?", "Ça va\u{202F}?"),
+            (
+                Language::French,
+                "Tu as dit \u{ab}\u{a0}bonjour\u{a0}\u{bb} ?",
+                "Tu as dit \u{ab} bonjour \u{bb}\u{202F}?",
+            ),
+            (
+                Language::French,
+                "Voulez-vous coucher avec moi\u{a0}\u{202f}?",
+                "Voulez-vous coucher avec moi\u{202F}?",
+            ),
+            (
+                Language::French,
+                "Est-ce que tu fumes ici\u{2009}?",
+                "Est-ce que tu fumes ici\u{202F}?",
+            ),
+            (
+                Language::French,
+                "Bonjour  le   monde.",
+                "Bonjour le monde.",
+            ),
+            (
+                Language::French,
+                "Vraiment\u{2009}\u{a0} ?",
+                "Vraiment\u{202F}?",
+            ),
+        ] {
+            assert_eq!(
+                cleanup_sentence(input.into(), language),
+                expected,
+                "{language:?}: {input:?}"
+            );
+        }
     }
 
     #[test]
     fn test_normalize_for_grading_french() {
-        // French text should normalize quotes and hyphens but not expand contractions
         let input = "\u{2018}Bonjour\u{2019}, c\u{2019}est bien!";
         let result = normalize_for_grading(input, Language::French);
         assert!(result.contains("bonjour"));
@@ -436,7 +295,6 @@ mod tests {
 
     #[test]
     fn test_normalize_for_grading_english_contractions() {
-        // English should expand contractions
         assert_eq!(
             normalize_for_grading("It's a test", Language::English),
             "it is a test"
@@ -453,7 +311,6 @@ mod tests {
 
     #[test]
     fn test_normalize_for_grading_punctuation() {
-        // Should remove punctuation
         assert_eq!(
             normalize_for_grading("Hello, world!", Language::English),
             "hello world"

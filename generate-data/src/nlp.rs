@@ -129,17 +129,12 @@ pub fn load_canonicalized(
     Ok(already_processed)
 }
 
-/// Tokenize a list of sentences and write results to an output file
-/// This function implements incremental processing - it will only tokenize sentences
-/// that are not already in the output file
-///
-/// Returns a BTreeMap mapping each input sentence to its tokenization
+/// Tokenize sentences missing from the output file and return the combined results.
 pub async fn process_sentences(
     sentences: Vec<String>,
     output_file: &Path,
     language: Language,
 ) -> Result<BTreeMap<String, Vec<lexide::Token>>> {
-    // Check if language is supported
     let lexide_language = to_lexide_language(language)
         .ok_or_else(|| anyhow::anyhow!("Language {language} is not yet supported by lexide"))?;
 

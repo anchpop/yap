@@ -17,14 +17,18 @@ export const SPACING = 26;
 const STIFFNESS = 22;
 /** How quickly a dot takes on the fluid's velocity (1/s). */
 const COUPLING = 8;
-/** The matching scores a dot by where it will be this far ahead (s), so a
- *  dot in flight claims the point it is heading for. */
-const LOOKAHEAD = 0.25;
 /** Damping on top of the coupling, so the spring is about critical. */
 const EXTRA_DAMPING = 2 * Math.sqrt(STIFFNESS) - COUPLING;
 /** The fluid's decay (1/s) and diffusion (1/s). */
 const FIELD_DECAY = 1.1;
 const FIELD_DIFFUSION = 2.5;
+/** The matching scores a dot by where the fluid will have carried it this
+ *  far ahead (s), so a dot in flight claims the point it is heading for. The
+ *  guess uses the flow, not the dot's own velocity: that includes the spring
+ *  to the point it owns now, and guessing from it would chase the guess. */
+const LOOKAHEAD = 1;
+/** How far a dot rides a decaying flow in that time, per px/s of flow. */
+const DRIFT = (1 - Math.exp(-FIELD_DECAY * LOOKAHEAD)) / FIELD_DECAY;
 /** Pointer splat: gaussian radius in CSS px, and how much of the pointer's
  *  velocity a cell takes on per pointer sample. */
 const SPLAT_SIGMA = 60;
@@ -49,6 +53,8 @@ export class DotGridSim {
   /** Dot positions and velocities, interleaved x/y. */
   readonly pos: Float32Array;
   readonly vel: Float32Array;
+  /** The flow sampled at each dot on the last step, interleaved x/y. */
+  private readonly flow: Float32Array;
   /** dot → lattice point and back. */
   readonly target: Int32Array;
   private readonly owner: Int32Array;
@@ -71,6 +77,7 @@ export class DotGridSim {
     const n = (this.count = this.cols * this.rows);
     this.pos = new Float32Array(n * 2);
     this.vel = new Float32Array(n * 2);
+    this.flow = new Float32Array(n * 2);
     this.target = new Int32Array(n);
     this.owner = new Int32Array(n);
     this.fieldX = new Float32Array(n);
@@ -209,8 +216,18 @@ export class DotGridSim {
   /** Move every dot: dragged by the fluid where it stands, sprung to its
    *  point. Returns whether any dot is still moving. */
   private integrate(dt: number): boolean {
-    const { cols, rows, originX, originY, pos, vel, target, fieldX, fieldY } =
-      this;
+    const {
+      cols,
+      rows,
+      originX,
+      originY,
+      pos,
+      vel,
+      flow,
+      target,
+      fieldX,
+      fieldY,
+    } = this;
     let moving = false;
     const damping = COUPLING + EXTRA_DAMPING;
     for (let i = 0; i < this.count; i++) {
@@ -238,6 +255,8 @@ export class DotGridSim {
         fieldY[i00 + 1] * w10 +
         fieldY[i00 + cols] * w01 +
         fieldY[i00 + cols + 1] * w11;
+      flow[i * 2] = flowX;
+      flow[i * 2 + 1] = flowY;
 
       const homeX = this.pointX(target[i]);
       const homeY = this.pointY(target[i]);
@@ -263,13 +282,13 @@ export class DotGridSim {
     return moving;
   }
 
-  /** Squared distance from where a dot is heading to a point. */
+  /** Squared distance from where the flow is carrying a dot to a point. */
   farness(dot: number, cell: number) {
     const dx =
-      this.pos[dot * 2] + this.vel[dot * 2] * LOOKAHEAD - this.pointX(cell);
+      this.pos[dot * 2] + this.flow[dot * 2] * DRIFT - this.pointX(cell);
     const dy =
       this.pos[dot * 2 + 1] +
-      this.vel[dot * 2 + 1] * LOOKAHEAD -
+      this.flow[dot * 2 + 1] * DRIFT -
       this.pointY(cell);
     return dx * dx + dy * dy;
   }
@@ -319,6 +338,7 @@ export class DotGridSim {
     this.fieldX.fill(0);
     this.fieldY.fill(0);
     this.vel.fill(0);
+    this.flow.fill(0);
     for (let i = 0; i < this.count; i++) {
       this.pos[i * 2] = this.pointX(this.target[i]);
       this.pos[i * 2 + 1] = this.pointY(this.target[i]);

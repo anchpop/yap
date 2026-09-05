@@ -23,21 +23,18 @@ function getSound(type: SoundType): Howl {
   return sound;
 }
 
-// Keep track of currently playing sound effects
 let currentSoundEffect: Howl | null = null;
 
 export const playSoundEffect = (type: SoundType): Promise<void> => {
   return new Promise((resolve) => {
     const sound = getSound(type);
 
-    // Stop any currently playing sound effect
     if (currentSoundEffect && currentSoundEffect.playing()) {
       currentSoundEffect.stop();
     }
 
     currentSoundEffect = sound;
 
-    // Play the sound and resolve when it's done
     const soundId = sound.play();
 
     sound.once(
@@ -73,11 +70,4 @@ export const playSoundEffect = (type: SoundType): Promise<void> => {
 
 export const isSoundEffectPlaying = (): boolean => {
   return currentSoundEffect !== null && currentSoundEffect.playing();
-};
-
-export const stopCurrentSoundEffect = (): void => {
-  if (currentSoundEffect && currentSoundEffect.playing()) {
-    currentSoundEffect.stop();
-    currentSoundEffect = null;
-  }
 };

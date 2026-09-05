@@ -67,7 +67,6 @@ export function AcceptInvite() {
         return;
       }
 
-      // Set the password for the newly verified user
       const { error: updateError } = await supabase.auth.updateUser({
         password: password,
       });

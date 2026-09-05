@@ -25,7 +25,6 @@ fn verification_hints(
         .collect()
 }
 
-/// Metadata computed from a CardIndicator and Deck, used to build FlashCardReview
 pub struct CardContext {
     pub indicator: CardIndicator<SpurGram, Spur>,
     pub is_new: bool,
@@ -46,7 +45,6 @@ impl CardContext {
         })
     }
 
-    /// Wrap a FlashCard in a Challenge::FlashCardReview with this context's metadata
     pub fn wrap_flashcard(&self, deck: &Deck, flashcard: FlashCard) -> Challenge<Gram<String>> {
         let language_pack = &deck.context.language_pack;
         Challenge::FlashCardReview {
@@ -66,7 +64,6 @@ impl ReviewInfo {
 
         let gram_atoms = language_pack.gram_rodeo.resolve(&gram);
 
-        // Check if this is a single-heteronym gram (for homophone lookup)
         let single_heteronym: Option<Heteronym<Spur>> = match gram_atoms.atoms() {
             [Atom::Tok(word)] => match &word.word_type {
                 WordType::Heteronym(het) => Some(*het),
@@ -75,31 +72,26 @@ impl ReviewInfo {
             _ => None,
         };
 
-        // Build possible_grams based on whether this is a single-atom or multi-atom gram
         let possible_grams: Vec<(
             bool,
             Vec<Literal<String>>,
             Vec<language_utils::GramDefinition>,
         )> = if let Some(heteronym) = single_heteronym {
-            // Single-atom gram: find homophones (other grams with same pronunciation)
             let pronunciation = language_pack
                 .word_to_pronunciation
                 .get(&heteronym.word)
                 .copied();
 
             if let Some(pronunciation) = pronunciation {
-                // Get all words with the same pronunciation
                 let homophone_words = language_pack
                     .pronunciation_to_words
                     .get(&pronunciation)
                     .cloned()
                     .unwrap_or_default();
 
-                // For each word, find grams and check if user knows them
                 homophone_words
                     .iter()
                     .flat_map(|word| {
-                        // Get heteronyms for this word
                         language_pack
                             .words_to_heteronyms
                             .get(word)
@@ -107,7 +99,6 @@ impl ReviewInfo {
                             .flatten()
                     })
                     .flat_map(|het| {
-                        // Get grams for this heteronym
                         language_pack
                             .heteronym_to_grams
                             .get(het)
@@ -118,13 +109,11 @@ impl ReviewInfo {
                     .collect::<std::collections::BTreeSet<_>>()
                     .into_iter()
                     .map(|other_gram| {
-                        // Check if user knows this gram (has a non-new WrittenGram card)
                         let gram_known = deck
                             .cards
                             .get(&CardIndicator::WrittenGram { gram: other_gram })
                             .is_some_and(|card_data| !card_data.is_new());
 
-                        // Convert gram to literals (already String)
                         let gram_resolved = language_pack
                             .gram_rodeo
                             .resolve(&other_gram)
@@ -145,7 +134,6 @@ impl ReviewInfo {
                     })
                     .collect()
             } else {
-                // No pronunciation found, just show target gram
                 let gram_resolved = gram_atoms.resolve(&language_pack.string_rodeo);
                 let literals =
                     atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
@@ -158,7 +146,6 @@ impl ReviewInfo {
                 vec![(true, literals, definitions)]
             }
         } else {
-            // Multi-atom gram: no homophones, just show this one
             let gram_resolved = gram_atoms.resolve(&language_pack.string_rodeo);
             let literals =
                 atoms_to_literals(gram_resolved.as_ref(), deck.context.course.target_language);
@@ -195,7 +182,6 @@ impl ReviewInfo {
 
         let content = CardContent::Listening { possible_grams };
 
-        // Get audio text from the gram (use the target gram)
         let gram_resolved = gram_atoms.resolve(&language_pack.string_rodeo);
         let audio_text = gram_resolved.to_display_string(deck.context.course.target_language);
         let audio = AudioRequest {
@@ -305,7 +291,6 @@ impl ReviewInfo {
             }
         }
 
-        // Get movie titles from sentence_sources and movie metadata
         let movie_titles = language_pack
             .sentence_sources
             .get(&sentence.target_language)
@@ -323,7 +308,6 @@ impl ReviewInfo {
             })
             .unwrap_or_default();
 
-        // Get proper noun definitions from all literals in the parts
         let proper_noun_definitions: Vec<(String, language_utils::ProperNounDefinition)> = parts
             .iter()
             .flat_map(|part| match part {
@@ -409,7 +393,6 @@ impl ReviewInfo {
     pub fn written_gram_flashcard(&self, deck: &Deck, gram: SpurGram) -> FlashCard {
         let language_pack: &Arc<LanguagePack> = &deck.context.language_pack;
 
-        // Get definition and convert gram to literals
         let definition = language_pack
             .gram_definitions
             .get(&gram)
@@ -509,7 +492,6 @@ impl Deck {
             native_languages,
         } = crate::comprehensible_sentence_from_spur(language_pack, sentence)?;
 
-        // Convert sentence grams to literals, preserving gram group mapping
         let sentence_grams_with_literals = target_language_sentence_grams.to_literals(
             &language_pack.string_rodeo,
             &language_pack.gram_rodeo,
@@ -538,7 +520,6 @@ impl Deck {
             }
         }
 
-        // Get movie titles from sentence_sources and movie metadata
         let movie_titles = language_pack
             .sentence_sources
             .get(&target_language)
@@ -556,7 +537,6 @@ impl Deck {
             })
             .unwrap_or_default();
 
-        // Get proper noun definitions by looking at the literals and checking the global definitions map
         let proper_noun_definitions: Vec<(String, language_utils::ProperNounDefinition)> =
             target_language_literals
                 .iter()
@@ -642,14 +622,12 @@ impl ReviewInfo {
         ctx: &CardContext,
         gram: SpurGram,
     ) -> Challenge<Gram<String>> {
-        // If not new, try to create a translation challenge
         if !ctx.is_new
             && let Some(challenge) = self.translation_challenge(deck, gram)
         {
             return challenge;
         }
 
-        // Fall back to flashcard
         let flashcard = self.written_gram_flashcard(deck, gram);
         ctx.wrap_flashcard(deck, flashcard)
     }

@@ -9,8 +9,11 @@ import {
 } from "react";
 import { useNetworkState } from "react-use";
 import { supabase } from "@/lib/supabase";
-import { test_opfs, Weapon } from "../../yap-frontend-rs/pkg/yap_frontend_rs";
-import type { IUseNetworkState } from "react-use/lib/useNetworkState";
+import {
+  test_opfs,
+  Weapon,
+  type ListenerKey,
+} from "../../yap-frontend-rs/pkg/yap_frontend_rs";
 
 export type WeaponToken = {
   browserSupported: true;
@@ -21,12 +24,14 @@ type WeaponState =
   | { type: "error"; message: string }
   | { type: "ready"; weapon: Weapon };
 
-// React context for Weapon state
 const WeaponContext = createContext<WeaponState | undefined>(undefined);
 
 const ORIGINAL_SESSION_KEY = "yap-impersonation-original-session";
 
-// simple actions context to trigger syncs
+function isImpersonating() {
+  return !!localStorage.getItem(ORIGINAL_SESSION_KEY);
+}
+
 const SyncActionsContext = createContext<
   undefined | { syncNow: () => Promise<void>; forcePush: () => Promise<void> }
 >(undefined);
@@ -40,42 +45,31 @@ export function WeaponProvider({
   accessToken: string | undefined;
 }>) {
   const [state, setState] = useState<WeaponState>({ type: "loading" });
-  const stateRef = useRef<WeaponState>(null);
+  const stateRef = useRef(state);
   const accessTokenRef = useRef<string | undefined>(accessToken);
   const networkState = useNetworkState();
-  const networkStateRef = useRef<IUseNetworkState>(networkState);
+  const networkStateRef = useRef(networkState);
   stateRef.current = state;
   accessTokenRef.current = accessToken;
   networkStateRef.current = networkState;
 
-  const network = useNetworkState();
-  const realtimeChannelRef = useRef<any>(null);
-  const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
-
-  const isImpersonating = useCallback(
-    () => !!localStorage.getItem(ORIGINAL_SESSION_KEY),
-    [],
-  );
-
   const sync = useCallback(
-    async function sync(listenerId: any, stream_id: string) {
-      if (stateRef.current) {
-        if (stateRef.current.type !== "ready") return;
-        try {
-          const upload = !isImpersonating();
-          await stateRef.current.weapon.sync(
-            stream_id,
-            accessTokenRef.current,
-            networkStateRef.current.online ? true : false,
-            listenerId ?? undefined,
-            upload,
-          );
-        } catch (e: any) {
-          console.warn("sync failed after store change", e);
-        }
+    async (listenerId: ListenerKey | undefined, streamId: string) => {
+      const current = stateRef.current;
+      if (current.type !== "ready") return;
+      try {
+        await current.weapon.sync(
+          streamId,
+          accessTokenRef.current,
+          !!networkStateRef.current.online,
+          listenerId,
+          !isImpersonating(),
+        );
+      } catch (error) {
+        console.warn("sync failed after store change", error);
       }
     },
-    [isImpersonating],
+    [],
   );
 
   useEffect(() => {
@@ -115,7 +109,6 @@ export function WeaponProvider({
 
   const syncWithSupabase = useCallback(
     async (forceUpload?: boolean) => {
-      if (stateRef.current === null) return;
       if (stateRef.current.type !== "ready") return;
       if (accessTokenRef.current === undefined) return;
       try {
@@ -127,52 +120,37 @@ export function WeaponProvider({
             upload,
           );
         }
-      } catch (e: any) {
+      } catch (e) {
         console.warn("sync_with_supabase failed", e);
       }
     },
-    [isImpersonating],
+    [],
   );
 
   useEffect(() => {
-    // rerun supabase sync every 30 seconds
     const interval = setInterval(() => {
       void syncWithSupabase();
-    }, 30_000); // 30 seconds
+    }, 30_000);
 
     return () => {
       clearInterval(interval);
     };
   }, [syncWithSupabase]);
 
-  // Kick off a full sync as soon as the access token becomes available.
-  // On a cold load, the Weapon's initial per-stream sync can run before
-  // supabase.auth.getSession() has resolved (the token is fetched async,
-  // and refreshing an expired one is slow). Without this, server-only
-  // streams like deck_selection stay empty until the 30s periodic sync —
-  // which is why a logged-in user could land on "/" instead of being
-  // redirected to /learn until a manual reload.
+  // Initial stream sync may run before the auth token is available.
   useEffect(() => {
     if (!accessToken) return;
     if (state.type !== "ready") return;
     void syncWithSupabase();
   }, [accessToken, state, syncWithSupabase]);
 
-  // Set up BroadcastChannel for inter-tab sync
   useEffect(() => {
     if (!window.BroadcastChannel) {
       console.log("BroadcastChannel not supported");
       return;
     }
 
-    // Clean up existing channel if any
-    if (broadcastChannelRef.current) {
-      broadcastChannelRef.current.close();
-      broadcastChannelRef.current = null;
-    }
-
     const channel = new BroadcastChannel("weapon-opfs-sync");
-    broadcastChannelRef.current = channel;
 
     channel.onmessage = (event) => {
       if (event.data?.type === "opfs-written" && event.data?.stream_id) {
@@ -181,39 +159,26 @@ export function WeaponProvider({
           `Another tab wrote to OPFS for stream ${streamId}, reloading...`,
         );
 
-        // Load from local storage for the affected stream
         const currentState = stateRef.current;
-        if (currentState && currentState.type === "ready") {
+        if (currentState.type === "ready") {
           currentState.weapon
             .load_from_local_storage(streamId)
             .then(() => {
               console.log(`Successfully reloaded stream ${streamId} from OPFS`);
             })
-            .catch((e: any) => {
+            .catch((e) => {
               console.warn(`Failed to reload stream ${streamId} from OPFS:`, e);
             });
         }
       }
     };
 
-    return () => {
-      if (broadcastChannelRef.current) {
-        broadcastChannelRef.current.close();
-        broadcastChannelRef.current = null;
-      }
-    };
+    return () => channel.close();
   }, []);
 
-  // Realtime subscription to remote events via Supabase
   useEffect(() => {
-    // tear down existing channel if any
-    if (realtimeChannelRef.current) {
-      supabase.removeChannel(realtimeChannelRef.current);
-      realtimeChannelRef.current = null;
-    }
-
     if (!userId) return;
-    if (!network.online) return;
+    if (!networkState.online) return;
     if (isImpersonating()) return;
 
     const channel = supabase
@@ -226,7 +191,7 @@ export function WeaponProvider({
           table: "events",
           filter: `user_id=eq.${userId}`,
         },
-        (payload: any) => {
+        (payload) => {
           try {
             const row = payload?.new;
             if (!row) return;
@@ -240,9 +205,8 @@ export function WeaponProvider({
 
             const current = stateRef.current;
             if (
-              current &&
               current.type === "ready" &&
-              device_id !== current?.weapon.device_id
+              device_id !== current.weapon.device_id
             ) {
               console.log(
                 `Adding remote ${stream_id} event from ${device_id}`,
@@ -261,23 +225,14 @@ export function WeaponProvider({
       )
       .subscribe();
 
-    realtimeChannelRef.current = channel;
-
     return () => {
-      if (realtimeChannelRef.current) {
-        supabase.removeChannel(realtimeChannelRef.current);
-        realtimeChannelRef.current = null;
-      }
+      void supabase.removeChannel(channel);
     };
-  }, [userId, network.online]);
+  }, [userId, networkState.online]);
 
   const actions = {
-    syncNow: async () => {
-      await syncWithSupabase();
-    },
-    forcePush: async () => {
-      await syncWithSupabase(true);
-    },
+    syncNow: () => syncWithSupabase(),
+    forcePush: () => syncWithSupabase(true),
   };
 
   return (
@@ -289,7 +244,6 @@ export function WeaponProvider({
   );
 }
 
-// Hook to grab the weapon instance from context (ready-only)
 export function useWeapon(): Weapon {
   const ctx = useContext(WeaponContext);
   if (!ctx) throw new Error("useWeapon must be used within a WeaponProvider");
@@ -297,7 +251,6 @@ export function useWeapon(): Weapon {
   return ctx.weapon;
 }
 
-// Optional hook to read full state (loading/error/ready)
 export function useWeaponState(): WeaponState {
   const ctx = useContext(WeaponContext);
   if (!ctx)
@@ -337,7 +290,6 @@ async function checkBrowserSupport(
   setBrowserSupported: (browserSupported: boolean) => void,
 ) {
   try {
-    // Check if OPFS test has already passed
     const opfsTestPassed = localStorage.getItem("opfs-test-passed");
 
     // Reject browsers that don't support WebAssembly reference types
@@ -363,7 +315,6 @@ async function checkBrowserSupport(
       setBrowserSupported(true);
     } else {
       let timeoutId: number | undefined;
-      // Create a timeout promise that rejects after 3 seconds
       const timeoutPromise = new Promise<boolean>((resolve) => {
         timeoutId = window.setTimeout(() => {
           console.log("OPFS test timed out after 3 seconds");

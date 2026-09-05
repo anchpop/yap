@@ -16,7 +16,6 @@ export function Leeches({
     Set<string>
   >(() => new Set());
 
-  // Update timestamp periodically to keep timing fresh
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTimestamp(Date.now());

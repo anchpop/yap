@@ -403,7 +403,6 @@ impl NextCardsIterator {
             }
         }
 
-        // Calculate which type is most underrepresented based on target ratios
         let total_cards: u32 = self.card_type_counts.values().cloned().sum();
         let next_card_types = {
             let mut card_type_ratios = self
@@ -458,13 +457,11 @@ impl Iterator for NextCardsIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((card, fsrs_card)) = self.next_card() {
-            // Get card_type before moving the card
             let card_type = card.card_type();
 
             self.cards
                 .insert(card, crate::CardData::Added { fsrs_card });
 
-            // Update incremental counts
             self.added_count += 1;
             self.card_type_counts
                 .entry(card_type)

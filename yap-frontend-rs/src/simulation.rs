@@ -627,7 +627,6 @@ mod tests {
 
     #[test]
     fn test_simulator_is_deterministic() {
-        // Create a fixed start time
         let fixed_time = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
 
         // Run simulation 3 times and collect results
@@ -642,7 +641,6 @@ mod tests {
             for _ in 0..5 {
                 let mut day = simulator.next_day();
 
-                // Convert challenges to a comparable format (just count by type for simplicity)
                 let mut flash_count = 0;
                 let mut translate_count = 0;
                 let mut transcribe_count = 0;

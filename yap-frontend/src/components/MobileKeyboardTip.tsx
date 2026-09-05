@@ -18,7 +18,6 @@ export function MobileKeyboardTip({
   const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // Check if tip has been dismissed before
     const dismissed = localStorage.getItem(DISMISS_KEY) === "true";
     setIsDismissed(dismissed);
   }, []);
@@ -34,7 +33,6 @@ export function MobileKeyboardTip({
 
   const { characterType, englishName } = LANGUAGES[language];
 
-  // Languages with no special characters (English) don't need the tip.
   if (!characterType) {
     return null;
   }

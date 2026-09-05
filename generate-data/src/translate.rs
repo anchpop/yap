@@ -1,28 +1,7 @@
-//! Sentence translation with a pluggable backend behind one shared cache dir.
-//!
-//! Two backends exist, chosen in code (see the [`Translator::new`] call in
-//! `main.rs`): the Google Cloud Translation API (`translation-llm` model) and
-//! an OpenAI chat model via tysm (e.g. `gpt-5.6-luna`, which is ~50x cheaper
-//! than Google's per-character rates).
-//!
-//! ## Cache keys and provenance
-//!
-//! Every translation lives in the shared osmo store under `translate/{hash}`,
-//! where the hash input gives each model its own key so we always know (by
-//! key) which system produced a cached translation:
-//!
-//! - `{src}::{tgt}::{text}` — the legacy Google key. All historical Google
-//!   translations (NMT-era and `translation-llm`) live here, and the Google
-//!   backend still reads/writes it.
-//! - `{src}::{tgt}::{model}::{text}` — one key per OpenAI model.
-//!
-//! The OpenAI backend checks twice on lookup: its own model key first, then
-//! the legacy Google key — so everything already translated is reused for
-//! free, and only true misses are sent to the model. Legacy hits are *not*
-//! copied under the model key; provenance stays truthful.
-//!
-//! The OpenAI backend deliberately does not use tysm's own response cache:
-//! this cache is the single source of truth for translations.
+//! Translation cache keys under `translate/{hash}`:
+//! Google: `{src}::{tgt}::{text}`; OpenAI: `{src}::{tgt}::{model}::{text}`.
+//! OpenAI falls back to Google entries without relabeling their provenance.
+//! This store replaces tysm's response cache for translation requests.
 
 use anyhow::Context;
 use dashmap::DashMap;
@@ -39,56 +18,24 @@ use tokio::sync::Mutex;
 use tysm::chat_completions::ChatClient;
 use xxhash_rust::xxh3::xxh3_64;
 
-/// The Translation LLM quota is counted in *requests* per minute, not characters
-/// (`translation-llm` has no content quota), so packing many sentences into one
-/// request is the way to make throughput. A request is bounded by two per-call
-/// limits — at most 1024 strings, and at most 30,000 code points of content —
-/// whichever is hit first. `MAX_REQUEST_CHARS` leaves margin under the 30k cap.
-/// Google-only; the OpenAI backend sends one sentence per request.
+/// Google request limits: leave margin below 30,000 code points.
 const MAX_REQUEST_CHARS: usize = 28_000;
 const MAX_BATCH_STRINGS: usize = 64;
 
-/// Estimated Translation LLM price, USD per million characters, billed on input
-/// and output *separately*. Rates as published ~2026 — verify before trusting the
-/// dollar figure; the cost display is explicitly an estimate. (The OpenAI
-/// backend instead uses tysm's token-based price table.)
+/// Estimated USD per million characters, billed separately for input and output.
 const PRICE_PER_MILLION_INPUT: f64 = 10.0;
 const PRICE_PER_MILLION_OUTPUT: f64 = 10.0;
-/// How many batched Google requests to have in flight at once. The rate
-/// limiter still gates the per-minute request count; this just decides how
-/// quickly the window fills.
 const BATCH_CONCURRENCY: usize = 8;
-/// Retries for a single live request on transient failures before giving up.
 const MAX_RETRIES: u32 = 5;
-/// Sentences per OpenAI Batch API job. Well under the 50k-requests-per-batch
-/// cap, and keeps each job's enqueued-token footprint modest. Chunking is
-/// deterministic (pending texts keep first-seen order), which matters because
-/// tysm reattaches to an in-flight/completed batch whose request set hashes
-/// the same — a killed run resumes its jobs instead of paying twice.
+/// Keep chunk order stable so tysm can resume matching Batch API jobs.
 const OPENAI_BATCH_CHUNK: usize = 10_000;
 
-/// Two-stage spend fuse for translation (the only significant paid API cost),
-/// overridable via `TRANSLATE_BUDGET_USD` (the threshold) and
-/// `TRANSLATE_BUDGET_PER_LANGUAGE_USD` (the fallback cap); set either to 0 to
-/// disable that stage.
-///
-/// Below the threshold, translation runs unclamped — a legitimate bursty
-/// workflow (e.g. warming a brand-new language pair from scratch, which can cost
-/// well over the per-pair cap on its own) is expected and must not be throttled.
-/// Once cumulative spend crosses the threshold, that's past normal bursts, so a
-/// per-language-pair cap kicks in as a runaway guard. Only *paid* calls are
-/// affected; cached lookups are always free. Scope is one process run (the
-/// counter starts at 0 each invocation).
-///
-/// Caveat: OpenAI *Batch API* spend is invisible to the fuse — tysm doesn't
-/// report token usage for batch responses — so only Google and live OpenAI
-/// calls count. Batch translation at luna prices is cents per course, so the
-/// fuse guarding it matters much less than it does for Google.
+/// After process spend reaches TRANSLATE_BUDGET_USD, apply each pair's
+/// TRANSLATE_BUDGET_PER_LANGUAGE_USD cap. Zero disables a stage.
+/// Only usage reported by the backend counts toward these per-run limits.
 const DEFAULT_GLOBAL_THRESHOLD_USD: f64 = 20.0;
 const DEFAULT_PER_LANGUAGE_BUDGET_USD: f64 = 10.0;
 
-/// Process-wide translation spend in micro-USD (millionths of a dollar), summed
-/// across every language pair, compared against the global threshold.
 static TOTAL_SPENT_MICRO_USD: AtomicU64 = AtomicU64::new(0);
 
 /// Which translation system a [`Translator`] should use for cache misses.
@@ -275,26 +222,27 @@ impl Translator {
         self.api_calls.load(Ordering::Relaxed)
     }
 
-    /// Estimated USD spent on billable translations so far (cache hits excluded).
-    /// An estimate: Google spend is counted in Unicode scalar values against
-    /// possibly-drifted price constants; live OpenAI spend comes from tysm's
-    /// price table, including its discounted Batch API accounting.
+    /// Estimated USD spent by this pair, based on backend-reported usage.
     pub fn cost_estimate_usd(&self) -> f64 {
         self.spent_micro.load(Ordering::Relaxed) as f64 / 1_000_000.0
     }
 
-    /// Record `micro` micro-USD of fresh spend against both the per-pair and
-    /// process-wide counters.
     fn add_spend(&self, micro: u64) {
         self.spent_micro.fetch_add(micro, Ordering::Relaxed);
         TOTAL_SPENT_MICRO_USD.fetch_add(micro, Ordering::Relaxed);
     }
 
-    /// Whether new *paid* translations should be skipped. Two-stage: while total
-    /// process spend is below the global threshold, never — bursty single-pair
-    /// warm-ups run freely. Once total spend crosses the threshold, this pair is
-    /// clamped to its per-language cap. Cached lookups are never affected. Emits a
-    /// one-time notice per pair when the clamp first trips it.
+    fn record_openai_spend(&self, client: &ChatClient, recorded_micro: &std::sync::Mutex<u64>) {
+        if let Some(cost) = client.cost() {
+            let total_micro = (cost * 1_000_000.0) as u64;
+            let mut recorded = recorded_micro.lock().unwrap();
+            if total_micro > *recorded {
+                self.add_spend(total_micro - *recorded);
+                *recorded = total_micro;
+            }
+        }
+    }
+
     fn over_budget(&self) -> bool {
         // Below the threshold (or threshold disabled): unclamped.
         let threshold_crossed = self.global_threshold_micro > 0
@@ -321,15 +269,11 @@ impl Translator {
         over
     }
 
-    /// Hash of the legacy, model-agnostic cache key — the Google cache. All
-    /// pre-existing translations live under this key, so it must never change.
     fn google_hash(&self, text: &str) -> u64 {
         let hash_input = format!("{}::{}::{text}", self.source_code, self.target_code);
         xxh3_64(hash_input.as_bytes())
     }
 
-    /// Hash of the cache key the current backend writes to: the legacy key for
-    /// Google, a model-qualified key for OpenAI.
     fn primary_hash(&self, text: &str) -> u64 {
         match &self.backend {
             Backend::Google { .. } => self.google_hash(text),
@@ -343,8 +287,6 @@ impl Translator {
         }
     }
 
-    /// Look one hash up: the in-memory layer first, then the persistent store
-    /// (populating the in-memory layer on a hit).
     async fn cached_by_hash(&self, hash: u64) -> Option<String> {
         if let Some(t) = self.cache.get(&hash) {
             return Some(t.clone());
@@ -355,9 +297,6 @@ impl Translator {
         Some(t)
     }
 
-    /// Look `text` up in the cache: the backend's own key first, then (for
-    /// OpenAI) the legacy Google key. A legacy hit is returned as-is, not
-    /// copied under the model key — the key records which system translated it.
     async fn cached(&self, text: &str) -> Option<String> {
         if let Some(t) = self.cached_by_hash(self.primary_hash(text)).await {
             return Some(t);
@@ -368,8 +307,6 @@ impl Translator {
         None
     }
 
-    /// Persist a single translation (in-memory + the store; the store's append
-    /// log is what makes this crash-safe).
     async fn store(&self, hash: u64, translation: &str) {
         self.cache.insert(hash, translation.to_string());
         if let Err(e) = self
@@ -393,12 +330,7 @@ impl Translator {
         tokio::time::sleep(Duration::from_millis(base + jitter)).await;
     }
 
-    /// Issue one Google `translateText` request for a batch of texts and return
-    /// their translations positionally aligned with the input. The caller must
-    /// keep the batch within the per-request limits (see the `MAX_*` constants).
-    /// Retries on 429 / 5xx with backoff. Does not consult or write the cache —
-    /// that is the caller's responsibility, so this stays a pure "translate
-    /// these N strings".
+    /// Return translations in input order, retrying 429/5xx. The caller handles caching.
     async fn google_request(&self, texts: &[&str]) -> anyhow::Result<Vec<String>> {
         let Backend::Google {
             client,
@@ -503,9 +435,6 @@ impl Translator {
         }
     }
 
-    /// The system prompt for the OpenAI backend. Shared by the live and Batch
-    /// API paths so the two produce interchangeable results (and so tysm's
-    /// batch-reuse hash stays stable across code paths).
     fn openai_system_prompt(&self) -> String {
         format!(
             "You are translating sentences for a language-learning app. Translate the {} \
@@ -533,17 +462,7 @@ impl Translator {
             let result: Result<TranslationResponse, _> =
                 client.chat_with_system_prompt(&system_prompt, text).await;
 
-            // Fold whatever this attempt cost into the spend counters, success
-            // or not. tysm only exposes a running per-client total, so record
-            // the delta since the last sync.
-            if let Some(cost) = client.cost() {
-                let total_micro = (cost * 1_000_000.0) as u64;
-                let mut recorded = recorded_micro.lock().unwrap();
-                if total_micro > *recorded {
-                    self.add_spend(total_micro - *recorded);
-                    *recorded = total_micro;
-                }
-            }
+            self.record_openai_spend(client, recorded_micro);
 
             match result {
                 Ok(response) => return Ok(response.translation),
@@ -606,19 +525,7 @@ impl Translator {
         Ok(translation)
     }
 
-    /// Warm the cache for many texts in bulk, so that a subsequent per-sentence
-    /// [`translate`](Self::translate) pass is (almost) all cache hits.
-    ///
-    /// Google: uncached texts are packed into multi-sentence requests (the
-    /// quota is requests-per-minute) and sent concurrently. OpenAI: each
-    /// uncached sentence becomes its own request in an OpenAI Batch API job —
-    /// half price, no alignment ambiguity, but results can take a while
-    /// (usually minutes, worst-case 24h per job; tysm polls until done and
-    /// reattaches to matching in-flight jobs after a restart).
-    ///
-    /// Best-effort: a failed batch is logged, not fatal. Anything it leaves
-    /// uncached (a failed batch, or an empty individual result) simply stays a
-    /// miss, and the later per-sentence path will retry and report it as before.
+    /// Best-effort bulk cache warm-up; failed items remain misses for `translate`.
     pub async fn prime(&self, texts: &[String]) {
         if crate::cache_only() {
             return;
@@ -762,14 +669,7 @@ impl Translator {
                 }
             }
 
-            if let Some(cost) = client.cost() {
-                let total_micro = (cost * 1_000_000.0) as u64;
-                let mut recorded = recorded_micro.lock().unwrap();
-                if total_micro > *recorded {
-                    self.add_spend(total_micro - *recorded);
-                    *recorded = total_micro;
-                }
-            }
+            self.record_openai_spend(client, recorded_micro);
             pb.set_message(format!(
                 "{} Batch API, ~${:.4}",
                 client.model,
@@ -805,18 +705,28 @@ mod tests {
         )
     }
 
-    fn scratch_cache_dir(name: &str) -> std::path::PathBuf {
-        std::env::temp_dir().join(format!("yap-translate-{name}-{}", std::process::id()))
-    }
-
     /// Offline: an OpenAI-backed translator must fall back to the legacy
     /// Google cache key ("check twice"), without copying the hit under its
     /// own model key or touching the network.
     #[tokio::test]
     async fn openai_falls_back_to_legacy_google_cache() {
-        let cache_dir = scratch_cache_dir("fallback");
-        let Some(translator) = smoke_translator(&cache_dir).await else {
-            return;
+        let cache_dir = tempfile::tempdir().unwrap();
+        let translator = Translator {
+            backend: Backend::OpenAi {
+                client: Box::new(ChatClient::new("unused", SMOKE_MODEL).with_cached_only()),
+                recorded_micro: std::sync::Mutex::new(0),
+            },
+            source_language: Language::French,
+            target_language: Language::English,
+            source_code: "fr".into(),
+            target_code: "en".into(),
+            cache: DashMap::new(),
+            store: osmo::Store::open(cache_dir.path()),
+            api_calls: AtomicU64::new(0),
+            spent_micro: AtomicU64::new(0),
+            global_threshold_micro: 0,
+            per_language_budget_micro: 0,
+            budget_warned: AtomicBool::new(false),
         };
 
         let text = "Une phrase qui n'existe que dans ce test.";
@@ -833,9 +743,6 @@ mod tests {
                 .contains_key(&translator.primary_hash(text)),
             "legacy hit must not be copied under the model key"
         );
-
-        drop(translator);
-        let _ = std::fs::remove_dir_all(cache_dir);
     }
 
     /// Live smoke test for the OpenAI live (non-batch) path — hits the real
@@ -847,8 +754,8 @@ mod tests {
     #[tokio::test]
     #[ignore = "hits the live OpenAI API"]
     async fn openai_live_smoke() {
-        let cache_dir = scratch_cache_dir("live");
-        let Some(translator) = smoke_translator(&cache_dir).await else {
+        let cache_dir = tempfile::tempdir().unwrap();
+        let Some(translator) = smoke_translator(cache_dir.path()).await else {
             panic!("OPENAI_API_KEY required for this test");
         };
 
@@ -870,9 +777,6 @@ mod tests {
             translator.cost_estimate_usd() > 0.0,
             "spend tracking recorded nothing"
         );
-
-        drop(translator);
-        let _ = std::fs::remove_dir_all(cache_dir);
     }
 
     /// Live smoke test for the OpenAI Batch API path used by `prime`. Cheap,
@@ -880,8 +784,8 @@ mod tests {
     #[tokio::test]
     #[ignore = "hits the live OpenAI Batch API; latency is minutes+"]
     async fn openai_batch_smoke() {
-        let cache_dir = scratch_cache_dir("batch");
-        let Some(translator) = smoke_translator(&cache_dir).await else {
+        let cache_dir = tempfile::tempdir().unwrap();
+        let Some(translator) = smoke_translator(cache_dir.path()).await else {
             panic!("OPENAI_API_KEY required for this test");
         };
 
@@ -907,8 +811,5 @@ mod tests {
             calls_after_prime,
             "post-prime translations must all be cache hits"
         );
-
-        drop(translator);
-        let _ = std::fs::remove_dir_all(cache_dir);
     }
 }

@@ -1,31 +1,15 @@
-//! The shared cache store for generate-data, and its optional mirroring to a Cloudflare
-//! R2 bucket via [`osmo`].
-//!
-//! Every cache lives in one osmo store rooted at `.cache`, namespaced by key:
-//! `tysm/…` (LLM responses, via tysm), `translate/…`, `wiktionary/{lang}/{word}`,
-//! `google-tts/{hash}`, `wav2vec2/{version}/{hash}`. The store is append-only segment
-//! files; syncing exchanges whole immutable segments, so a fresh machine / CI warms the
-//! multi-GB cache from the bucket instead of recomputing LLM responses, translations, etc.
-//!
-//! Mirroring is enabled only when `YAP_CACHE_BUCKET` is set (plus R2 credentials:
-//! `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`). Without it the store is
-//! local-only and everything still works.
-//!
-//! [`warm`] also folds any pre-osmo cache layouts (tysm `NNN.kv` shards, the Google
-//! Translate `master_cache.json`, and the per-file wiktionary/TTS/wav2vec2 caches) into
-//! the store, once; migrated files are deleted. The bucket uses the `v2` prefix so
-//! objects from the old directory-mirroring scheme can't interfere.
+//! Shared osmo cache at `.cache`. Optional R2 mirroring uses `YAP_CACHE_BUCKET`
+//! and `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY`.
+//! `warm` pulls remote segments before importing and deleting pre-osmo cache files.
 
 use std::path::{Path, PathBuf};
 
 use osmo::{Bucket, Store};
 
 const CACHE_DIR: &str = ".cache";
-/// Bucket prefix for the store's segments. v1 (the old per-file mirroring) used the
-/// bucket root; its objects are ignored and can be deleted once v2 is proven.
+// v1 used the bucket root for per-file mirroring.
 const BUCKET_PREFIX: &str = "v2";
 
-/// The process-wide cache store. Cheap to call anywhere.
 pub fn store() -> Store {
     Store::open(CACHE_DIR)
 }
@@ -37,19 +21,12 @@ fn bucket() -> Option<Bucket> {
     Some(Bucket::with_prefix(name, BUCKET_PREFIX))
 }
 
-/// Whether cache mirroring is configured for this run.
 pub fn enabled() -> bool {
     bucket().is_some()
 }
 
-/// Prepare the cache for a run: download segments other machines have pushed (if a bucket
-/// is configured), then fold any legacy cache layouts into the store. Call this before
-/// anything reads the cache. Best-effort: sync failures are logged, never fatal.
-///
-/// Pull deliberately runs *before* migration: on a machine that still has pre-osmo cache
-/// files, the pulled segments already hold almost every entry (another machine migrated
-/// and pushed them), so the migration's import skips those keys instead of writing — and
-/// later pushing — duplicate segments.
+/// Pull before migration so remote keys are not imported into duplicate segments.
+/// Sync failures are logged; the local cache remains usable.
 pub async fn warm() {
     if let Some(bucket) = bucket() {
         println!(
@@ -81,10 +58,6 @@ pub async fn flush() {
     }
 }
 
-// ===================================================================================
-// One-time migration of pre-osmo cache layouts
-// ===================================================================================
-
 /// Fold every legacy cache layout under `root` into the store. Each step is a cheap
 /// no-op once its source is gone, so this is safe (and fast) to run every warm.
 async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()> {
@@ -98,10 +71,10 @@ async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()
             let dir = entry?.path();
             if dir.is_dir() {
                 imported += tysm::cache::migrate_legacy(&dir, store).await?;
-                remove_dir_if_empty(&dir);
+                let _ = std::fs::remove_dir(&dir);
             }
         }
-        remove_dir_if_empty(&ocr_root);
+        let _ = std::fs::remove_dir(&ocr_root);
     }
 
     imported += migrate_google_translate(store, &root.join("google_translate")).await?;
@@ -116,11 +89,11 @@ async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()
             };
             if lang_dir.is_dir() {
                 let prefix = format!("wiktionary/{lang}");
-                imported += import_dir_files(store, &lang_dir, &prefix, Some("html"), true).await?;
-                remove_dir_if_empty(&lang_dir);
+                imported += import_dir_files(store, &lang_dir, &prefix, "html").await?;
+                let _ = std::fs::remove_dir(&lang_dir);
             }
         }
-        remove_dir_if_empty(&wiktionary);
+        let _ = std::fs::remove_dir(&wiktionary);
     }
 
     // Google TTS: the live cache (mis-nested under wav2vec2/ by the old path derivation)
@@ -129,18 +102,10 @@ async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()
         store,
         &root.join("wav2vec2").join("google-tts"),
         "google-tts",
-        Some("json"),
-        true,
+        "json",
     )
     .await?;
-    imported += import_dir_files(
-        store,
-        &root.join("google-tts"),
-        "google-tts",
-        Some("json"),
-        true,
-    )
-    .await?;
+    imported += import_dir_files(store, &root.join("google-tts"), "google-tts", "json").await?;
     let _ = std::fs::remove_dir_all(root.join("google-tts"));
 
     // wav2vec2: `wav2vec2/<version>/<hash>.json` → `wav2vec2/{version}/{hash}`.
@@ -153,12 +118,11 @@ async fn migrate_legacy_layouts(store: &Store, root: &Path) -> anyhow::Result<()
             };
             if version_dir.is_dir() {
                 let prefix = format!("wav2vec2/{version}");
-                imported +=
-                    import_dir_files(store, &version_dir, &prefix, Some("json"), true).await?;
-                remove_dir_if_empty(&version_dir);
+                imported += import_dir_files(store, &version_dir, &prefix, "json").await?;
+                let _ = std::fs::remove_dir(&version_dir);
             }
         }
-        remove_dir_if_empty(&wav2vec2);
+        let _ = std::fs::remove_dir(&wav2vec2);
     }
 
     // Leftover control file from the old directory-mirroring osmo.
@@ -202,7 +166,7 @@ async fn migrate_google_translate(store: &Store, dir: &Path) -> anyhow::Result<u
     }
     if entries.is_empty() {
         // Nothing parsed; still drop an empty leftover dir.
-        remove_dir_if_empty(dir);
+        let _ = std::fs::remove_dir(dir);
         return Ok(0);
     }
     let imported = store.import(entries).await?;
@@ -211,14 +175,13 @@ async fn migrate_google_translate(store: &Store, dir: &Path) -> anyhow::Result<u
 }
 
 /// Import every file in `dir` (non-recursively) as `{key_prefix}/{stem-or-name}`,
-/// deleting the files afterwards. With `strip_ext`, the given extension is removed from
+/// deleting the files afterwards. The given extension is removed from
 /// the key (`abandon.html` → `abandon`); files with other extensions keep their full name.
 async fn import_dir_files(
     store: &Store,
     dir: &Path,
     key_prefix: &str,
-    ext: Option<&str>,
-    strip_ext: bool,
+    extension: &str,
 ) -> anyhow::Result<usize> {
     if !dir.is_dir() {
         return Ok(0);
@@ -232,26 +195,24 @@ async fn import_dir_files(
         let Some(name) = file_name(&path) else {
             continue;
         };
-        let key_part = match ext {
-            Some(ext) if strip_ext && path.extension().is_some_and(|e| e == ext) => {
-                name.trim_end_matches(&format!(".{ext}")).to_string()
-            }
-            _ => name,
+        let key_part = if path.extension().is_some_and(|e| e == extension) {
+            name.trim_end_matches(&format!(".{extension}")).to_string()
+        } else {
+            name
         };
         files.push((format!("{key_prefix}/{key_part}"), path));
     }
     if files.is_empty() {
         return Ok(0);
     }
-    let paths: Vec<PathBuf> = files.iter().map(|(_, p)| p.clone()).collect();
     let imported = store
         .import(
             files
-                .into_iter()
-                .filter_map(|(key, path)| Some((key, std::fs::read(&path).ok()?))),
+                .iter()
+                .filter_map(|(key, path)| Some((key.clone(), std::fs::read(path).ok()?))),
         )
         .await?;
-    for path in paths {
+    for (_, path) in files {
         let _ = std::fs::remove_file(path);
     }
     Ok(imported)
@@ -261,24 +222,9 @@ fn file_name(path: &Path) -> Option<String> {
     path.file_name().map(|n| n.to_string_lossy().into_owned())
 }
 
-fn remove_dir_if_empty(dir: &Path) {
-    let _ = std::fs::remove_dir(dir);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn unique_root(tag: &str) -> PathBuf {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        std::env::temp_dir().join(format!(
-            "yap-cache-migrate-{tag}-{}-{nanos}",
-            std::process::id()
-        ))
-    }
 
     fn v1_record(key: &str, val: &[u8]) -> Vec<u8> {
         let mut out = Vec::new();
@@ -292,10 +238,10 @@ mod tests {
     /// One synthetic `.cache` with every legacy layout, migrated end-to-end.
     #[tokio::test]
     async fn migrates_every_legacy_layout() {
-        let root = unique_root("all");
+        let cache_dir = tempfile::tempdir().unwrap();
+        let root = cache_dir.path();
 
         // tysm shard at the root + a subtitle-ocr per-model shard dir.
-        std::fs::create_dir_all(&root).unwrap();
         std::fs::write(root.join("042.kv"), v1_record("llmkey", b"llm response")).unwrap();
         let ocr_dir = root.join("subtitle-ocr").join("gpt-5.6-luna");
         std::fs::create_dir_all(&ocr_dir).unwrap();
@@ -333,8 +279,8 @@ mod tests {
 
         std::fs::write(root.join(".osmo.json"), "{}").unwrap();
 
-        let store = Store::open(&root);
-        migrate_legacy_layouts(&store, &root).await.unwrap();
+        let store = Store::open(root);
+        migrate_legacy_layouts(&store, root).await.unwrap();
 
         let read = |key: &str| {
             let store = store.clone();
@@ -394,9 +340,7 @@ mod tests {
         );
 
         // Running it again is a no-op.
-        migrate_legacy_layouts(&store, &root).await.unwrap();
+        migrate_legacy_layouts(&store, root).await.unwrap();
         assert_eq!(read("tysm/llmkey").await.as_deref(), Some("llm response"));
-
-        std::fs::remove_dir_all(&root).ok();
     }
 }

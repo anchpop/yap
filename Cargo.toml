@@ -37,9 +37,6 @@ schemars = "1"
 futures = "0.3.32"
 env_logger = "0.11.10"
 tsify = { version = "0.5.6", features = ["js"], default-features = false }
-# `no-batch` was on from 2026-08-30 (every batch failed validation
-# account-side) to 2026-09-03, when a standalone probe showed the Batch API
-# healthy again. `YAP_NO_BATCH=1` remains the runtime escape hatch.
 tysm = { git = "https://github.com/anchpop/tysm.git", rev = "2c12d98cf1348434c4e872f462c6629729884e12", features = [
     "small-batch-optimization",
 ] }
@@ -77,12 +74,10 @@ lexide = { git = "https://github.com/anchpop/lexide.git", rev = "f27160eab541c3d
 indicatif = "0.18"
 
 [workspace.dependencies.rkyv]
-# path = "../tmp/rkyv/rkyv"
 git = "https://github.com/anchpop/rkyv.git"
 rev = "3639e126c26b6071dea12eeab8b6376196eb9f59"
 
 [workspace.dependencies.lasso]
-# path = "../tmp/lasso"
 git = "https://github.com/anchpop/lasso.git"
 rev = "babd734da2646353c0924f16882bc61888ae3ba1"
 
@@ -91,7 +86,6 @@ version = "1.0"
 features = ["derive"]
 
 [profile.release]
-# Tell `rustc` to optimize for small code size.
 opt-level = "s"
 # Full LTO makes iterative native tools such as generate-data spend several
 # minutes in their final rustc invocation. Release WASM builds opt back into
