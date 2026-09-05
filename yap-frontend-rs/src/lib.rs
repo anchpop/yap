@@ -6,16 +6,47 @@ mod deck_event;
 pub mod deck_selection;
 pub mod dictionary;
 mod directories;
+mod disclosure;
 mod human_audio;
 mod language_pack;
+mod learning_metadata;
+pub use learning_metadata::{
+    CourseMaturity, DailyGoalOption, LanguageLearningMetadata, get_daily_goal_options,
+    get_language_learning_metadata,
+};
 mod next_cards;
 mod notifications;
+mod restrictions;
+pub use restrictions::{ChallengeRestrictions, get_challenge_restrictions};
 pub mod opfs_test;
+mod placement_session;
 mod placement_test;
+pub use placement_session::{
+    PlacementSession, PlacementSessionInfo, get_placement_session_info, toggle_placement_word,
+};
 pub mod profile;
 pub mod simulation;
+mod study_options;
 mod supabase;
+pub use study_options::{IdleStudyState, get_idle_study_state, next_progress_milestone};
+mod sentence_lists;
 mod tiers;
+mod transcription_review;
+pub use transcription_review::{
+    TranscriptionInput, TranscriptionSubmission, apply_transcription_grade,
+    get_transcription_review_definitions, prepare_transcription_submission,
+    transcription_is_perfect,
+};
+mod translation_review;
+pub use sentence_lists::{
+    SentenceListCategory, SentenceListNavigation, SentenceListProgress,
+    get_sentence_list_navigation,
+};
+pub use translation_review::{
+    ManualTranslationGrade, ReviewDefinition, TranslationGradeItem, TranslationReviewFeedback,
+    TranslationReviewResult, apply_translation_grade, failed_translation_review,
+    get_translation_review_feedback, prepare_translation_review,
+};
 mod utils;
 
 pub use audio::{
@@ -23,6 +54,10 @@ pub use audio::{
 };
 pub use challenge::CardContext;
 pub use deck_event::*;
+pub use disclosure::{
+    FlashcardDisclosure, ReviewPromptContext, ReviewPrompts, get_flashcard_disclosure,
+    get_review_prompts, should_show_challenge_tutorial,
+};
 pub use human_audio::{lookup as lookup_human_audio, register as register_human_audio};
 pub use utils::ai_server_url;
 
@@ -860,11 +895,7 @@ pub struct NoCardsReadyInfo {
     pub smart_add_event: Option<DeckEvent>,
     /// Current tier info
     pub tier_info: TierInfo,
-    /// Workload stats for notification
-    pub past_week_challenge_average: f64,
-    pub upcoming_total_reviews: u32,
-    pub upcoming_max_per_day: u32,
-    pub cards_added_past_16_hours: u32,
+    pub recommend_more_cards: bool,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
@@ -3563,11 +3594,29 @@ impl Deck {
             percent_known_after,
             smart_add_event,
             tier_info,
-            past_week_challenge_average,
-            upcoming_total_reviews: upcoming.total_reviews,
-            upcoming_max_per_day: upcoming.max_per_day,
-            cards_added_past_16_hours,
+            recommend_more_cards: study_options::recommend_more_cards(
+                cards_added_past_16_hours,
+                past_week_challenge_average,
+                upcoming.total_reviews,
+                upcoming.max_per_day,
+                smart_add_cards.len(),
+            ),
         }
+    }
+
+    /// Choices for the manual-add picker. Call lazily when the picker opens.
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn get_manual_add_options(
+        &self,
+        sentence_list: Option<SentenceListSelection>,
+        is_signed_in: bool,
+    ) -> Vec<ManualAddOption> {
+        CARD_TYPES
+            .into_iter()
+            .filter(|kind| is_signed_in || *kind != CardType::Listening)
+            .map(|kind| self.get_manual_add_option(kind, sentence_list.clone()))
+            .filter(|option| is_signed_in || option.count > 0)
+            .collect()
     }
 
     /// Compute a manual add option for a specific card type. Call lazily (e.g. on dropdown open).
@@ -3592,6 +3641,15 @@ impl Deck {
             card_type,
             event,
         }
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn should_offer_placement_test(&self, starting_fresh: Option<bool>) -> bool {
+        disclosure::should_offer_placement_test(
+            starting_fresh,
+            self.has_taken_placement_test(),
+            self.num_cards_added(),
+        )
     }
 
     #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]

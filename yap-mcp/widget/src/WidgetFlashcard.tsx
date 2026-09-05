@@ -84,8 +84,7 @@ export function WidgetFlashcard({ challenge }: { challenge: FlashcardChallenge }
         key={retryKey}
         audioRequest={challenge.audio}
         content={challenge.content}
-        totalCount={challenge.total_count}
-        timesTypeSeen={challenge.times_type_seen}
+        disclosure={challenge.disclosure}
         isNew={challenge.is_new}
         targetLanguage={challenge.language}
         nativeLanguage={challenge.native_language}

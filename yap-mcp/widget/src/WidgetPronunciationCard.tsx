@@ -68,7 +68,7 @@ export function WidgetPronunciationCard({
         targetLanguage={challenge.language}
         connector={challenge.connector}
         isNew={challenge.is_new}
-        timesTypeSeen={challenge.times_type_seen}
+        showGuide={challenge.show_guide}
       />
       {grading && (
         <p className="text-sm text-muted-foreground text-center font-mono pt-2">

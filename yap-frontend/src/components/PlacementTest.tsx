@@ -1,16 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import type {
   Deck,
   Language,
-  PlacementTestWord,
 } from "../../../yap-frontend-rs/pkg";
 import { Progress } from "@/components/ui/progress";
 import { TargetLanguageText } from "./TargetLanguageText";
 
-const NUM_ROUNDS = 3;
+import { get_placement_session_info, toggle_placement_word } from "../../../yap-frontend-rs/pkg";
 
 interface PlacementTestProps {
   deck: Deck;
@@ -26,88 +25,29 @@ export function PlacementTest({
   targetLanguage,
   onComplete,
 }: PlacementTestProps) {
-  const [round, setRound] = useState(1);
-  const [words, setWords] = useState<PlacementTestWord[]>([]);
-  const [selectedWords, setSelectedWords] = useState<Set<string>>(new Set());
-  const [knownWords, setKnownWords] = useState<string[]>([]);
-  const [unknownWords, setUnknownWords] = useState<string[]>([]);
+  const [session, setSession] = useState(() => deck.start_placement_session());
+  const info = get_placement_session_info(session);
+  const { round, words, known_words: knownWords, unknown_words: unknownWords } = session;
+  const selectedWords = new Set(session.selected_words);
+  const tooAdvanced = info.too_advanced;
 
-  // Load words for the current round. The deck prop can be swapped mid-round
-  // (the sentence half of the language pack finishing its background download
-  // rebuilds the deck), which re-runs this effect with an identical word list
-  // — only reset the selection when the words actually change.
-  const wordsRef = useRef<PlacementTestWord[]>([]);
   useEffect(() => {
-    if (round <= NUM_ROUNDS) {
-      // Use accumulated known/unknown words for adaptive word selection
-      const placementWords = deck.get_placement_test(knownWords, unknownWords);
-      if (placementWords.length === 0) {
-        setRound(NUM_ROUNDS + 1);
-      } else if (
-        wordsRef.current.length !== placementWords.length ||
-        !wordsRef.current.every((w, i) => w.word === placementWords[i].word)
-      ) {
-        wordsRef.current = placementWords;
-        setWords(placementWords);
-        setSelectedWords(new Set());
-      }
-    }
-  }, [round, deck, knownWords, unknownWords]);
+    setSession((previous) => deck.refresh_placement_session(previous) ?? previous);
+  }, [deck]);
 
-  const toggleWord = (word: string) => {
-    setSelectedWords((prev) => {
-      const next = new Set(prev);
-      if (next.has(word)) {
-        next.delete(word);
-      } else {
-        next.add(word);
-      }
-      return next;
-    });
-  };
-
-  const handleNext = () => {
-    // Words that were selected are known, others are unknown
-    const known = words
-      .filter((w) => selectedWords.has(w.word))
-      .map((w) => w.word);
-    const unknown = words
-      .filter((w) => !selectedWords.has(w.word))
-      .map((w) => w.word);
-
-    setKnownWords((prev) => [...prev, ...known]);
-    setUnknownWords((prev) => [...prev, ...unknown]);
-
-    if (round < NUM_ROUNDS) {
-      setRound(round + 1);
-    } else {
-      // Done with placement test
-      setRound(NUM_ROUNDS + 1);
-    }
-  };
-
-  const handleBack = () => {
-    if (round > 1 && round <= NUM_ROUNDS) {
-      // Go back to the very beginning
-      setRound(1);
-      setKnownWords([]);
-      setUnknownWords([]);
-      setSelectedWords(new Set());
-    }
-  };
+  const toggleWord = (word: string) => setSession((previous) => toggle_placement_word(previous, word));
+  const handleNext = () => setSession((previous) => deck.advance_placement_session(previous));
+  const handleBack = () => setSession(deck.start_placement_session());
 
   return (
     <Card className="max-w w-full p-0 gap-0 select-none overflow-hidden" animate>
       <Progress
-        value={(round / (NUM_ROUNDS + 1)) * 100}
+        value={info.progress_percent}
         className="rounded-none"
       />
       <div className="p-6 space-y-4">
-        {round > NUM_ROUNDS ? (
+        {info.finished ? (
           (() => {
-            const tooAdvanced =
-              knownWords.length / (knownWords.length + unknownWords.length) >
-              0.85;
             return (
               <>
                 <div className="space-y-2">
@@ -140,7 +80,7 @@ export function PlacementTest({
             <div className="space-y-2">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  {round > 1 && (
+                  {info.can_restart && (
                     <Button
                       variant="ghost"
                       size="icon"
@@ -154,7 +94,7 @@ export function PlacementTest({
                   <h2 className="text-xl font-semibold">Placement Test</h2>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  Round {round} of {NUM_ROUNDS}
+                  Round {round} of {info.total_rounds}
                 </span>
               </div>
               <p className="text-muted-foreground">

@@ -4,6 +4,7 @@
 import type {
   AudioRequest,
   CardContent,
+  FlashcardDisclosure,
   Language,
   Literal,
   PronunciationGuide,
@@ -28,9 +29,8 @@ export interface FlashcardChallenge extends ChallengeBase {
   // The exact CardContent the app builds — rendered by the app's Flashcard
   // component verbatim. Type-only import; erases at build (no WASM in the bundle).
   content: CardContent;
-  // Feed the app Flashcard's show-answer gate and tutorial, same as App.tsx.
-  total_count: number;
-  times_type_seen: number;
+  // Product policy computed by Rust, shared with the web app.
+  disclosure: FlashcardDisclosure;
 }
 
 export interface PronunciationChallenge extends ChallengeBase {
@@ -44,7 +44,7 @@ export interface PronunciationChallenge extends ChallengeBase {
   // The language's spoken "as in" connector, precomputed by the server so
   // the widget doesn't need the WASM get_pronunciation_connector.
   connector: string;
-  times_type_seen: number;
+  show_guide: boolean;
 }
 
 export interface TranslationChallenge extends ChallengeBase {

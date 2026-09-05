@@ -7,7 +7,10 @@ import {
   get_app_version,
   type TranscribeComprehensibleSentence,
   type PartGraded,
-  type PartSubmitted,
+  prepare_transcription_submission,
+  transcription_is_perfect,
+  get_transcription_review_definitions,
+  apply_transcription_grade,
   type WordGrade,
   type Language,
   type Course,
@@ -190,39 +193,12 @@ export function TranscriptionChallenge({
     return blankIndices;
   }, [challenge]);
 
-  // Definitions for literals graded as wrong (anything beyond Perfect / CorrectWithTypo).
-  // Deduplicated per gram group, preserving order.
   const wrongGramEntries = useMemo(() => {
     if (!gradingState || !("graded" in gradingState)) return [];
-    const gramDefinitions = challenge.gram_definitions_for_lookup as (
-      | GramDefinition
-      | undefined
-    )[];
-    const gramBreakdowns = challenge.gram_breakdowns_for_lookup as (
-      | BreakdownRow[]
-      | null
-      | undefined
-    )[];
-    const partGramIndices = challenge.part_gram_indices as number[][];
-    const entries: {
+    return get_transcription_review_definitions(challenge, gradingState.graded.results) as {
       definition: GramDefinition;
       breakdown: BreakdownRow[] | null | undefined;
-    }[] = [];
-    const seen = new Set<number>();
-    gradingState.graded.results.forEach((result, partIdx) => {
-      if (result.type !== "AskedToTranscribe") return;
-      result.parts.forEach((p, litIdx) => {
-        const t = p.grade.type;
-        if (t === "Perfect" || t === "CorrectWithTypo") return;
-        const gramIdx = partGramIndices[partIdx]?.[litIdx];
-        if (gramIdx === undefined || seen.has(gramIdx)) return;
-        seen.add(gramIdx);
-        const def = gramDefinitions[gramIdx];
-        if (def)
-          entries.push({ definition: def, breakdown: gramBreakdowns[gramIdx] });
-      });
-    });
-    return entries;
+    }[];
   }, [gradingState, challenge]);
 
   // Save grade to localStorage when grading completes so it survives navigation
@@ -328,11 +304,11 @@ export function TranscriptionChallenge({
     }
   };
 
-  const allBlanksFilledOut = blankIndices.every(
-    (index) =>
-      userInputs.get(index)?.trim() !== undefined &&
-      userInputs.get(index)?.trim() !== "",
-  );
+  const submission = useMemo(() => prepare_transcription_submission(
+    challenge.parts,
+    [...userInputs].map(([index, text]) => ({ index, text })),
+  ), [challenge.parts, userInputs]);
+  const allBlanksFilledOut = submission.all_blanks_filled;
 
   const handleSubmit = useCallback(async () => {
     if (gradingState !== null) return;
@@ -342,40 +318,19 @@ export function TranscriptionChallenge({
     const generation = ++gradingGenerationRef.current;
     setGradingState({ grading: null });
 
-    const request: PartSubmitted[] = challenge.parts.map((part, index) => {
-      if (part.type === "AskedToTranscribe") {
-        const submission = (userInputs.get(index) ?? "").trim();
-
-        return {
-          type: "AskedToTranscribe" as const,
-          parts: part.parts,
-          submission,
-        };
-      } else {
-        return {
-          type: "Provided" as const,
-          part: part.part,
-        };
-      }
-    });
-
     const course: Course = {
       targetLanguage: targetLanguage,
       nativeLanguage: nativeLanguage,
     };
 
-    const graded = await autograde_transcription(request, accessToken, course);
+    const graded = await autograde_transcription(submission.request, accessToken, course);
     if (generation !== gradingGenerationRef.current) return;
 
     if (graded.autograding_error) {
       reportAutogradeFailure("transcription", graded.autograding_error);
     }
 
-    const isAllCorrect = graded.results.every(
-      (result) =>
-        result.type === "Provided" ||
-        result.parts.every((part) => part.grade.type === "Perfect"),
-    );
+    const isAllCorrect = transcription_is_perfect(graded.results);
 
     setGradingState({
       graded,
@@ -388,8 +343,7 @@ export function TranscriptionChallenge({
     }
   }, [
     gradingState,
-    challenge.parts,
-    userInputs,
+    submission.request,
     accessToken,
     targetLanguage,
     nativeLanguage,
@@ -459,14 +413,9 @@ export function TranscriptionChallenge({
     handleSubmit,
   ]);
 
-  const isAllCorrect =
-    gradingState &&
-    "graded" in gradingState &&
-    gradingState.graded.results.every(
-      (result) =>
-        result.type === "Provided" ||
-        result.parts.every((part) => part.grade.type === "Perfect"),
-    );
+  const isAllCorrect = gradingState && "graded" in gradingState
+    ? transcription_is_perfect(gradingState.graded.results)
+    : false;
 
   const renderSentenceWithBlanks = () => {
     const askedToTranscribeParts = challenge.parts.filter(
@@ -891,15 +840,7 @@ function WordGrades({
     wordIndex: number,
     newGradeKey: string,
   ) => {
-    const updatedGrades = [...wordGrades];
-    const part = updatedGrades[partIndex];
-
-    if (part.type === "AskedToTranscribe") {
-      const newGrade: WordGrade = { type: newGradeKey } as WordGrade;
-      part.parts[wordIndex].grade = newGrade;
-    }
-
-    setGrade(updatedGrades);
+    setGrade(apply_transcription_grade(wordGrades, partIndex, wordIndex, { type: newGradeKey } as WordGrade));
   };
 
   const transcribedParts = wordGrades.filter(

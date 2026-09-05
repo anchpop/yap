@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/generate-learning-metadata.mjs --check && tsc -b && vite build",
     "lint": "eslint .",
     "test:audio": "node --test tests/audio.test.mjs",
     "preview": "vite preview",
     "screenshots": "playwright test",
     "analyze": "tsc -b && vite build && open bundle-analysis.html",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/yap.svg"
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/yap.svg",
+    "generate:metadata": "node scripts/generate-learning-metadata.mjs"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.2.7",

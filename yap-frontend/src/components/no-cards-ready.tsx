@@ -1,9 +1,9 @@
+import { get_idle_study_state, next_progress_milestone, get_sentence_list_navigation, type SentenceListCategory } from "../../../yap-frontend-rs/pkg";
 import { Button } from "@/components/ui/button";
 import TimeAgo from "react-timeago";
 import { EngagementPrompts } from "@/components/engagement-prompts";
 import type {
   CardSummary,
-  CardType,
   ChallengeRequirements,
   DeckEvent,
   Deck,
@@ -38,7 +38,7 @@ import { Poster } from "@/components/Poster";
 import { TargetLanguageText } from "./TargetLanguageText";
 import { ReviewPlanCard } from "./LockupOffer";
 import { WeekProgressStrip } from "./WeekProgressStrip";
-import { sentenceListToSelection, type SentenceList } from "@/hooks/useSentenceList";
+import { sentenceListSelectionToSentenceList, sentenceListToSelection, type SentenceList } from "@/hooks/useSentenceList";
 import { useNavigate } from "react-router-dom";
 
 export interface MovieWithMetadata extends MovieMetadataBasic {
@@ -82,7 +82,7 @@ export const NoCardsReady = memo(function NoCardsReady({
   const [pimsleurAcknowledged, setPimsleurAcknowledged] = useState(
     () => localStorage.getItem("yap-pimsleur-acknowledged") === "true",
   );
-  const sentenceListSelection = sentenceListToSelection(sentenceList);
+  const sentenceListSelection = useMemo(() => sentenceListToSelection(sentenceList), [sentenceList]);
 
   // One memoized call that does the expensive next_unknown_cards computation
   const info = useMemo(
@@ -94,11 +94,7 @@ export const NoCardsReady = memo(function NoCardsReady({
   const [manualAddOptions, setManualAddOptions] = useState<ManualAddOption[]>([]);
   const loadManualAddOptions = useCallback(() => {
     if (manualAddOptions.length > 0) return;
-    const types: CardType[] = ["TargetLanguage", "Listening", "LetterPronunciation"];
-    const options = types
-      .map((t) => deck.get_manual_add_option(t, sentenceListSelection))
-      .filter((o) => userInfo !== undefined || o.card_type === "TargetLanguage" || o.card_type === "LetterPronunciation")
-      .filter((o) => userInfo !== undefined || o.count > 0);
+    const options = deck.get_manual_add_options(sentenceListSelection, userInfo !== undefined);
     setManualAddOptions(options);
   }, [deck, sentenceListSelection, userInfo, manualAddOptions.length]);
 
@@ -137,12 +133,7 @@ export const NoCardsReady = memo(function NoCardsReady({
     [nextDueCard],
   );
 
-  const showLightWorkloadNotification =
-    info.cards_added_past_16_hours < 20 &&
-    (info.upcoming_total_reviews < info.past_week_challenge_average * 21 ||
-      info.upcoming_max_per_day < 10) &&
-    info.upcoming_max_per_day <= 50 &&
-    info.smart_add_count > 0;
+  const showLightWorkloadNotification = info.recommend_more_cards;
 
   const targetLanguageSpan = (
     <span style={{ fontWeight: "bold" }}>{targetLanguage} → English</span>
@@ -154,13 +145,11 @@ export const NoCardsReady = memo(function NoCardsReady({
     <span style={{ fontWeight: "bold" }}>{targetLanguage} pronunciation</span>
   );
 
-  // We're in NoCardsReady so due_count is 0; if there's also no future card,
-  // there are zero schedulable cards (deck is empty, all leeches, or all already-known).
-  const noSchedulableCards = nextDueCard === null;
-  // No more cards to schedule AND nothing left to add — we've truly run out.
-  const nothingToDo = noSchedulableCards && info.smart_add_count === 0;
-  // The user has never explicitly added a card (placement-test-only counts).
-  const hasNeverStudied = deck.num_cards_added() === 0 && !nothingToDo;
+  const {
+    no_schedulable_cards: noSchedulableCards,
+    nothing_to_do: nothingToDo,
+    has_never_studied: hasNeverStudied,
+  } = get_idle_study_state(nextDueCard !== null, deck.num_cards_added(), info.smart_add_count);
 
   // Keyboard shortcut to add cards
   useEffect(() => {
@@ -202,48 +191,19 @@ export const NoCardsReady = memo(function NoCardsReady({
     releasePlanShown,
   ]);
 
-  // Sentence list navigation — 3 tabs: essential, movie, pimsleur
-  // Each tab auto-picks the best specific sentence list within that category
-  type SentenceListCategory = "essential" | "movie" | "pimsleur";
-  const categories: SentenceListCategory[] = [
-    "essential",
-    ...(moviesWithMetadata.length > 0 ? ["movie" as const] : []),
-    ...(hasPimsleur ? ["pimsleur" as const] : []),
-  ];
-
-  const sentenceListCategory = (sl: SentenceList): SentenceListCategory => sl.type;
-
-  const currentCategory = sentenceListCategory(sentenceList);
-  const currentCategoryIndex = categories.indexOf(currentCategory);
-  // If category not found (e.g. no movies available but sentenceList is movie), fall back to essential
-  const effectiveIndex = currentCategoryIndex === -1 ? 0 : currentCategoryIndex;
-  const effectiveSentenceList: SentenceList =
-    currentCategoryIndex === -1 ? { type: "essential" } : sentenceList;
+  const navigation = useMemo(
+    () => get_sentence_list_navigation(sentenceListSelection, moviesWithMetadata.length > 0, hasPimsleur),
+    [sentenceListSelection, moviesWithMetadata, hasPimsleur],
+  );
+  const categories = navigation.categories;
+  const effectiveIndex = navigation.selected_index;
+  const effectiveSentenceList = sentenceListSelectionToSentenceList(navigation.selection);
 
   const canGoLeft = effectiveIndex > 0;
   const canGoRight = effectiveIndex < categories.length - 1;
 
-  const sentenceListForCategory = (category: SentenceListCategory): SentenceList => {
-    switch (category) {
-      case "essential":
-        return { type: "essential" };
-      case "movie": {
-        const best = deck.get_best_movie_sentence_list();
-        if (best && best.type === "Movie") {
-          return { type: "movie", movieId: best.id };
-        }
-        // Fallback to first movie
-        return { type: "movie", movieId: moviesWithMetadata[0].id };
-      }
-      case "pimsleur": {
-        const best = deck.get_best_pimsleur_sentence_list();
-        if (best && best.type === "PimsleurLesson") {
-          return { type: "pimsleur", level: best.level, lesson: best.lesson };
-        }
-        return { type: "essential" };
-      }
-    }
-  };
+  const sentenceListForCategory = (category: SentenceListCategory): SentenceList =>
+    sentenceListSelectionToSentenceList(deck.get_sentence_list_for_category(category, moviesWithMetadata[0]?.id));
 
   const navigateSentenceList = (direction: "left" | "right") => {
     const nextIndex =
@@ -255,33 +215,9 @@ export const NoCardsReady = memo(function NoCardsReady({
 
   // Sentence list progress info
   const tierInfo = info.tier_info;
-  const { sentenceListPercentKnown, sentenceListDone } = (() => {
-    switch (effectiveSentenceList.type) {
-      case "essential":
-        return { sentenceListPercentKnown: tierInfo.percent_known, sentenceListDone: false };
-      case "movie": {
-        const movie = moviesWithMetadata.find(
-          (m) => m.id === effectiveSentenceList.movieId,
-        );
-        return {
-          sentenceListPercentKnown: movie?.percent_known ?? 0,
-          sentenceListDone: movie?.all_available_learned ?? false,
-        };
-      }
-      case "pimsleur": {
-        const stats = deck.get_pimsleur_stats();
-        const lesson = stats.find(
-          (l) =>
-            l.level === effectiveSentenceList.level &&
-            l.lesson === effectiveSentenceList.lesson,
-        );
-        return {
-          sentenceListPercentKnown: lesson?.percent_known ?? 0,
-          sentenceListDone: lesson?.all_available_learned ?? false,
-        };
-      }
-    }
-  })();
+  const { percent_known: sentenceListPercentKnown, all_available_learned: sentenceListDone } =
+    useMemo(() => deck.get_sentence_list_progress(navigation.selection, tierInfo.percent_known),
+      [deck, navigation.selection, tierInfo.percent_known]);
 
   const sentenceListLabel = (() => {
     switch (effectiveSentenceList.type) {
@@ -297,10 +233,7 @@ export const NoCardsReady = memo(function NoCardsReady({
     }
   })();
 
-  const currentRounded = Math.floor(sentenceListPercentKnown / 5) * 5;
-  const afterRounded = Math.floor(info.percent_known_after / 5) * 5;
-  const crossesThreshold = afterRounded > currentRounded;
-  const thresholdTarget = crossesThreshold ? afterRounded : null;
+  const thresholdTarget = next_progress_milestone(sentenceListPercentKnown, info.percent_known_after) ?? null;
 
   const sentenceListImage = (() => {
     switch (effectiveSentenceList.type) {

@@ -1,14 +1,9 @@
-// The single source of truth for per-language presentation data.
-//
-// Everything the UI needs to know about a language lives in one row of the
-// table below. Adding a language to the Rust `Language` enum then breaks
-// exactly one place — this file — instead of a dozen scattered lookup tables,
-// several of which used to be `Record<string, ...>` and so went stale in
-// silence rather than failing the build.
-//
-// No WASM/runtime dependencies (type-only import), so the MCP widget can
-// share it — see lib/pure.ts.
-import type { Language } from "../../../yap-frontend-rs/pkg";
+// Presentation data, joined with canonical codes and course maturity generated
+// from Rust. After changing learning_metadata.rs, rebuild WASM and run
+// `pnpm generate:metadata` in yap-frontend; both builds check for stale metadata.
+// This module has no WASM runtime dependency, so the MCP widget can share it.
+import { LANGUAGE_LEARNING_METADATA } from "./learning-metadata.generated";
+import type { Language, LanguageLearningMetadata } from "../../../yap-frontend-rs/pkg";
 
 export interface LanguageColors {
   primary: string;
@@ -17,7 +12,7 @@ export interface LanguageColors {
   gradient: string;
 }
 
-export interface LanguageMeta {
+export interface LanguageMeta extends LanguageLearningMetadata {
   /** Emoji flag. */
   flag: string;
   /** The language's name in itself, e.g. "Français". */
@@ -33,15 +28,6 @@ export interface LanguageMeta {
   people: string;
   /** Short badge shown next to dictionary results. */
   badge: string;
-  /** Matches `Language::code` in language-utils: the data pipeline's code. */
-  isoCode: string;
-  /**
-   * ISO 639-1 two-letter code. The canonical code for all logic and every
-   * comparison — it matches Rust's `Language::iso_639_1` exactly, including
-   * both Chinese variants collapsing to "zh", so the two sides can't drift.
-   * Movie and book metadata's `original_language` holds these bare codes.
-   */
-  iso6391: string;
   /**
    * ISO 15924 script, set only where a bare `iso6391` would leave Han glyph
    * selection ambiguous. Presentation only: this belongs in the HTML `lang`
@@ -65,8 +51,6 @@ export interface LanguageMeta {
    * Prose for a human; unrelated to the ISO 15924 `script` above.
    */
   characterType: string | null;
-  /** How finished this language's course is, surfaced in the picker. */
-  status: "stable" | "beta" | "alpha";
   /** "I speak X", written in X. */
   iSpeak: string;
   /** "Yap.Town", localized. */
@@ -79,18 +63,16 @@ export interface LanguageMeta {
 
 export const LANGUAGES: Record<Language, LanguageMeta> = {
   English: {
+    ...LANGUAGE_LEARNING_METADATA.English,
     flag: "🇬🇧",
     nativeName: "English",
     englishName: "English",
     commonName: "English",
     people: "English",
     badge: "EN",
-    isoCode: "eng",
-    iso6391: "en",
     browserCodes: ["en"],
     accentedCharacters: [],
     characterType: null,
-    status: "stable",
     iSpeak: "I speak English",
     yaptownName: "Yap.Town",
     letsGo: "Let's go!",
@@ -103,14 +85,13 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   French: {
+    ...LANGUAGE_LEARNING_METADATA.French,
     flag: "🇫🇷",
     nativeName: "Français",
     englishName: "French",
     commonName: "French",
     people: "French",
     badge: "FR",
-    isoCode: "fra",
-    iso6391: "fr",
     browserCodes: ["fr"],
     accentedCharacters: [
       "à",
@@ -131,7 +112,6 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
       "æ",
     ],
     characterType: "accented",
-    status: "stable",
     iSpeak: "Je parle français",
     yaptownName: "Yap.Ville",
     letsGo: "Allons-y !",
@@ -144,18 +124,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Spanish: {
+    ...LANGUAGE_LEARNING_METADATA.Spanish,
     flag: "🇪🇸",
     nativeName: "Español",
     englishName: "Spanish",
     commonName: "Spanish",
     people: "Spanish",
     badge: "ES",
-    isoCode: "spa",
-    iso6391: "es",
     browserCodes: ["es"],
     accentedCharacters: ["á", "é", "í", "ó", "ú", "ü", "ñ", "¿", "¡"],
     characterType: "accented",
-    status: "stable",
     iSpeak: "Hablo español",
     yaptownName: "Yap.Ciudad",
     letsGo: "¡Vamos!",
@@ -168,18 +146,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   German: {
+    ...LANGUAGE_LEARNING_METADATA.German,
     flag: "🇩🇪",
     nativeName: "Deutsch",
     englishName: "German",
     commonName: "German",
     people: "German",
     badge: "DE",
-    isoCode: "deu",
-    iso6391: "de",
     browserCodes: ["de"],
     accentedCharacters: ["ä", "ö", "ü", "ß", "Ä", "Ö", "Ü"],
     characterType: "accented",
-    status: "stable",
     iSpeak: "Ich spreche Deutsch",
     yaptownName: "Yap.Stadt",
     letsGo: "Los geht's!",
@@ -192,18 +168,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Italian: {
+    ...LANGUAGE_LEARNING_METADATA.Italian,
     flag: "🇮🇹",
     nativeName: "Italiano",
     englishName: "Italian",
     commonName: "Italian",
     people: "Italian",
     badge: "IT",
-    isoCode: "ita",
-    iso6391: "it",
     browserCodes: ["it"],
     accentedCharacters: ["à", "è", "é", "ì", "ò", "ù"],
     characterType: "accented",
-    status: "beta",
     iSpeak: "Parlo italiano",
     yaptownName: "Yap.Città",
     letsGo: "Andiamo!",
@@ -216,18 +190,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Portuguese: {
+    ...LANGUAGE_LEARNING_METADATA.Portuguese,
     flag: "🇧🇷",
     nativeName: "Português",
     englishName: "Portuguese",
     commonName: "Portuguese",
     people: "Portuguese",
     badge: "PT",
-    isoCode: "por",
-    iso6391: "pt",
     browserCodes: ["pt"],
     accentedCharacters: ["á", "é", "í", "ó", "ú", "â", "ê", "ô", "ã", "õ", "ç"],
     characterType: "accented",
-    status: "beta",
     iSpeak: "Eu falo português",
     yaptownName: "Yap.Cidade",
     letsGo: "Vamos lá!",
@@ -240,18 +212,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Russian: {
+    ...LANGUAGE_LEARNING_METADATA.Russian,
     flag: "🇷🇺",
     nativeName: "Русский",
     englishName: "Russian",
     commonName: "Russian",
     people: "Russian",
     badge: "RU",
-    isoCode: "rus",
-    iso6391: "ru",
     browserCodes: ["ru"],
     accentedCharacters: [],
     characterType: "Cyrillic",
-    status: "alpha",
     iSpeak: "Я говорю по-русски",
     yaptownName: "Yap.Город",
     letsGo: "Пойдем!",
@@ -264,18 +234,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Korean: {
+    ...LANGUAGE_LEARNING_METADATA.Korean,
     flag: "🇰🇷",
     nativeName: "한국어",
     englishName: "Korean",
     commonName: "Korean",
     people: "Korean",
     badge: "KO",
-    isoCode: "kor",
-    iso6391: "ko",
     browserCodes: ["ko"],
     accentedCharacters: [],
     characterType: "hangul",
-    status: "alpha",
     iSpeak: "한국어를 합니다",
     yaptownName: "얍.타운",
     letsGo: "가자!",
@@ -287,18 +255,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Japanese: {
+    ...LANGUAGE_LEARNING_METADATA.Japanese,
     flag: "🇯🇵",
     nativeName: "日本語",
     englishName: "Japanese",
     commonName: "Japanese",
     people: "Japanese",
     badge: "JA",
-    isoCode: "jpn",
-    iso6391: "ja",
     browserCodes: ["ja"],
     accentedCharacters: [],
     characterType: "Japanese",
-    status: "alpha",
     iSpeak: "日本語を話します",
     yaptownName: "Yap.町",
     letsGo: "行こう！",
@@ -310,20 +276,18 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   ChineseSimplified: {
+    ...LANGUAGE_LEARNING_METADATA.ChineseSimplified,
     flag: "🇨🇳",
     nativeName: "简体中文",
     englishName: "Chinese (Simplified)",
     commonName: "Chinese",
     people: "Chinese",
     badge: "ZH",
-    isoCode: "zho-hans",
-    iso6391: "zh",
     script: "Hans",
     // Bare "zh" lands here: simplified is the majority default.
     browserCodes: ["zh", "zh-hans", "zh-cn", "zh-sg"],
     accentedCharacters: [],
     characterType: "Chinese",
-    status: "alpha",
     iSpeak: "我说中文",
     yaptownName: "Yap.城",
     letsGo: "走吧！",
@@ -335,19 +299,17 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   ChineseTraditional: {
+    ...LANGUAGE_LEARNING_METADATA.ChineseTraditional,
     flag: "🇹🇼",
     nativeName: "繁體中文",
     englishName: "Chinese (Traditional)",
     commonName: "Chinese",
     people: "Chinese",
     badge: "ZHT",
-    isoCode: "zho-hant",
-    iso6391: "zh",
     script: "Hant",
     browserCodes: ["zh-hant", "zh-tw", "zh-hk", "zh-mo"],
     accentedCharacters: [],
     characterType: "Chinese",
-    status: "alpha",
     iSpeak: "我說中文",
     yaptownName: "Yap.城",
     letsGo: "走吧！",
@@ -359,18 +321,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Hindi: {
+    ...LANGUAGE_LEARNING_METADATA.Hindi,
     flag: "🇮🇳",
     nativeName: "हिन्दी",
     englishName: "Hindi",
     commonName: "Hindi",
     people: "Hindi-speaking",
     badge: "HI",
-    isoCode: "hin",
-    iso6391: "hi",
     browserCodes: ["hi"],
     accentedCharacters: [],
     characterType: "Devanagari",
-    status: "alpha",
     iSpeak: "मैं हिन्दी बोलता हूँ",
     yaptownName: "यैप.टाउन",
     letsGo: "चलो!",
@@ -383,18 +343,16 @@ export const LANGUAGES: Record<Language, LanguageMeta> = {
     },
   },
   Thai: {
+    ...LANGUAGE_LEARNING_METADATA.Thai,
     flag: "🇹🇭",
     nativeName: "ไทย",
     englishName: "Thai",
     commonName: "Thai",
     people: "Thai",
     badge: "TH",
-    isoCode: "tha",
-    iso6391: "th",
     browserCodes: ["th"],
     accentedCharacters: [],
     characterType: "Thai",
-    status: "alpha",
     iSpeak: "ฉันพูดภาษาไทย",
     yaptownName: "Yap.เมือง",
     letsGo: "ไปกันเลย!",

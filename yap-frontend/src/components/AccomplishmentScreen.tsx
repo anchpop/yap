@@ -1,3 +1,4 @@
+import { get_daily_goal_options } from "../../../yap-frontend-rs/pkg";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { Button } from "@/components/ui/button";
@@ -17,16 +18,7 @@ import { Trophy, ChevronDown, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TargetLanguageText } from "./TargetLanguageText";
 
-const TARGET_OPTIONS: Array<{
-  value: DailyReviewTarget;
-  label: string;
-  mins: number;
-}> = [
-  { value: "Casual", label: "Casual", mins: 5 },
-  { value: "Regular", label: "Regular", mins: 10 },
-  { value: "Serious", label: "Serious", mins: 15 },
-  { value: "Intense", label: "Intense", mins: 20 },
-];
+
 
 function formatMinutes(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -187,7 +179,7 @@ export function AccomplishmentScreen({
           </CollapsibleTrigger>
           <CollapsibleContent className="flex flex-col items-center gap-3 mt-3">
             <div className="flex rounded-lg border overflow-hidden">
-              {TARGET_OPTIONS.map((opt) => (
+              {get_daily_goal_options().map((opt) => (
                 <button
                   key={opt.value}
                   onClick={() => setPendingTarget(opt.value)}
@@ -199,8 +191,8 @@ export function AccomplishmentScreen({
                       : "hover:bg-muted",
                   )}
                 >
-                  <div>{opt.label}</div>
-                  <div className="text-xs opacity-70">{opt.mins}m</div>
+                  <div>{opt.value}</div>
+                  <div className="text-xs opacity-70">{opt.minutes}m</div>
                 </button>
               ))}
             </div>

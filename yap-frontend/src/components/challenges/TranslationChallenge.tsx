@@ -19,9 +19,13 @@ import {
   type PhrasebookDefinitionEntry,
   type TargetToNativeWord,
   autograde_translation,
-  translation_is_perfect,
+  prepare_translation_review,
+  failed_translation_review,
+  apply_translation_grade,
+  get_translation_review_feedback,
+  type ManualTranslationGrade,
+  type TranslationGradeItem,
   find_closest_translation,
-  gram_to_display_string,
   get_app_version,
   type Language,
   type Course,
@@ -99,19 +103,7 @@ interface SentenceChallengeProps {
   totalReviewsCompleted: bigint;
 }
 
-type GradeItem =
-  | {
-      kind: "phrase";
-      gram: Gram<string>;
-      display: string;
-      status: boolean | null;
-    }
-  | {
-      kind: "literal";
-      literalIndex: number;
-      display: string;
-      status: boolean | null;
-    };
+type GradeItem = TranslationGradeItem;
 
 interface SwipeablePhraseProps {
   item: GradeItem;
@@ -574,14 +566,7 @@ export function TranslationChallenge({
   type GradeState =
     | {
         graded:
-          | {
-              literalGrades: LiteralGrades;
-              phrasesRemembered: Gram<string>[];
-              phrasesForgot: Gram<string>[];
-              encouragement?: string;
-              explanation?: string;
-              autogradingError?: string;
-            }
+          | ManualTranslationGrade
           | {
               perfect: string | null;
               encouragement?: string;
@@ -660,167 +645,23 @@ export function TranslationChallenge({
   }, [grade, sentence, userTranslation, tappedWords, correctTranslation]);
 
   const literalGramIndices: number[] = sentence.literal_gram_indices;
-  const gramDefinitions = sentence.gram_definitions_for_lookup as (
-    | GramDefinition
-    | undefined
-  )[];
-  const gramBreakdowns = sentence.gram_breakdowns_for_lookup as (
-    | BreakdownRow[]
-    | null
-    | undefined
-  )[];
-
   const handleWordTap = (index: number) => {
     if (!grade) {
       setTappedWords((prev) => new Set(prev).add(index));
     }
   };
 
-  // Compute which gram groups have been tapped (for highlighting all words in the gram)
-  const tappedGramGroups = useMemo(() => {
-    const groups = new Set<number>();
-    for (const i of tappedWords) {
-      const group = literalGramIndices[i];
-      if (group !== undefined) {
-        groups.add(group);
-      }
-    }
-    return groups;
-  }, [tappedWords, literalGramIndices]);
-
-  const gramEq = (a: Gram<string>, b: Gram<string>) =>
-    JSON.stringify(a) === JSON.stringify(b);
-
-  // Definitions to show for tapped gram groups, forgot literals, and forgot phrases
-  const tappedDefinitions = useMemo(() => {
-    const entries: {
-      definition: GramDefinition;
-      breakdown: BreakdownRow[] | null | undefined;
-    }[] = [];
-    const seen = new Set<number>();
-
-    const addGroup = (group: number) => {
-      if (seen.has(group)) return;
-      seen.add(group);
-      const def = gramDefinitions[group];
-      if (def)
-        entries.push({ definition: def, breakdown: gramBreakdowns[group] });
-    };
-
-    for (const group of tappedGramGroups) {
-      addGroup(group);
-    }
-
-    if (grade && "graded" in grade && "literalGrades" in grade.graded) {
-      // Show definitions for literals graded as "Forgot"
-      grade.graded.literalGrades.forEach((literalGrade, i) => {
-        if (literalGrade === "Forgot") {
-          const group = literalGramIndices[i];
-          if (group !== undefined) addGroup(group);
-        }
-      });
-
-      // Show definitions for phrases graded as "Forgot"
-      // Phrases are multiword terms separate from the sentence's gram sequence,
-      // so their definitions are in phrase_definitions (parallel to unique_target_language_phrases),
-      // not in gram_definitions_for_lookup.
-      const phraseDefinitions = sentence.phrase_definitions as (
-        | GramDefinition
-        | undefined
-      )[];
-      const phraseBreakdowns = sentence.phrase_breakdowns as (
-        | BreakdownRow[]
-        | null
-        | undefined
-      )[];
-      for (const phrase of grade.graded.phrasesForgot) {
-        const phraseIdx = sentence.unique_target_language_phrases.findIndex(
-          (p) => gramEq(p, phrase),
-        );
-        if (phraseIdx !== -1) {
-          const def = phraseDefinitions[phraseIdx];
-          if (def)
-            entries.push({
-              definition: def,
-              breakdown: phraseBreakdowns[phraseIdx],
-            });
-        }
-      }
-    }
-
-    return entries;
-  }, [
-    tappedGramGroups,
-    gramDefinitions,
-    gramBreakdowns,
-    grade,
-    literalGramIndices,
-    sentence.phrase_definitions,
-    sentence.phrase_breakdowns,
-    sentence.unique_target_language_phrases,
-  ]);
-
-  // Build grade items for manual grading UI (literals first, then phrases)
-  const gradeItems: GradeItem[] = useMemo(() => {
-    if (!grade || !("graded" in grade) || "perfect" in grade.graded) return [];
-    const items: GradeItem[] = [];
-
-    if ("literalGrades" in grade.graded) {
-      const hasAutogradingError =
-        "autogradingError" in grade.graded && grade.graded.autogradingError;
-      sentence.target_language_literals.forEach((literal, i) => {
-        if ((literal.word.word_type as { type?: string })?.type !== "Heteronym")
-          return;
-        const literalGrade =
-          grade.graded && "literalGrades" in grade.graded
-            ? grade.graded.literalGrades[i]
-            : undefined;
-        // When autograde failed, undefined heteronym grades need manual grading;
-        // when autograde succeeded, undefined means ungradable.
-        if (literalGrade === undefined && !hasAutogradingError) return;
-        items.push({
-          kind: "literal",
-          literalIndex: i,
-          display: literal.word.text,
-          status:
-            literalGrade === "Remembered"
-              ? true
-              : literalGrade === "Forgot"
-                ? false
-                : null,
-        });
-      });
-    }
-
-    if ("phrasesRemembered" in grade.graded) {
-      for (const gram of sentence.unique_target_language_phrases) {
-        const display = gram_to_display_string(gram, targetLanguage);
-        const remembered = grade.graded.phrasesRemembered.some((p) =>
-          gramEq(p, gram),
-        );
-        const forgot = grade.graded.phrasesForgot.some((p) => gramEq(p, gram));
-        items.push({
-          kind: "phrase",
-          gram,
-          display,
-          status: remembered ? true : forgot ? false : null,
-        });
-      }
-    }
-
-    return items;
-  }, [
-    grade,
-    sentence.target_language_literals,
-    sentence.unique_target_language_phrases,
+  const feedback = useMemo(() => get_translation_review_feedback(
+    sentence,
+    grade && "graded" in grade && "literalGrades" in grade.graded ? grade.graded : undefined,
+    !!(grade && "graded" in grade && "perfect" in grade.graded),
+    new Uint32Array([...tappedWords]),
     targetLanguage,
-  ]);
-
-  const canContinue =
-    grade &&
-    "graded" in grade &&
-    ("perfect" in grade.graded ||
-      gradeItems.some((item) => item.status !== null));
+  ), [sentence, grade, tappedWords, targetLanguage]);
+  const tappedGramGroups = useMemo(() => new Set(feedback.tapped_gram_groups), [feedback]);
+  const tappedDefinitions = feedback.definitions as { definition: GramDefinition; breakdown: BreakdownRow[] | null | undefined }[];
+  const gradeItems = feedback.grade_items;
+  const canContinue = feedback.can_continue;
 
   // Normalize the WASM grade shape into the single shared verdict presentation
   // (lowercase grades, one boundary). Null while grading is in flight/unstarted.
@@ -889,62 +730,23 @@ export function TranslationChallenge({
 
         if (generation !== gradingGenerationRef.current) return;
 
-        const encouragement = response.encouragement;
-        const explanation = response.explanation;
-
         playSoundEffect("aiDoneGrading");
-
-        if (response.autograding_error) {
-          reportAutogradeFailure("translation", response.autograding_error);
-          // Heuristic fallback was used — show grades for manual review
-          setGrade({
-            graded: {
-              literalGrades: response.literal_grades,
-              phrasesRemembered: response.phrases_remembered,
-              phrasesForgot: response.phrases_forgot,
-              encouragement,
-              explanation,
-              autogradingError: response.autograding_error,
-            },
-          });
-        } else if (
-          // The promotion rule (no phrase forgotten, every heteronym
-          // affirmatively "Remembered", real grading) lives in Rust so the
-          // app and yap-mcp stay in sync — see translation_is_perfect.
-          translation_is_perfect(sentence.target_language_literals, response)
-        ) {
-          setGrade({ graded: { perfect: null, encouragement, explanation } });
+        if (response.autograding_error) reportAutogradeFailure("translation", response.autograding_error);
+        const result = prepare_translation_review(sentence.target_language_literals, response);
+        if (result.type === "Perfect") {
+          setGrade({ graded: { perfect: null, encouragement: result.encouragement, explanation: result.explanation } });
           playSoundEffect("perfect");
         } else {
-          setGrade({
-            graded: {
-              literalGrades: response.literal_grades,
-              phrasesRemembered: response.phrases_remembered,
-              phrasesForgot: response.phrases_forgot,
-              encouragement,
-              explanation,
-            },
-          });
+          setGrade({ graded: result.grade });
         }
       } catch (error) {
         if (generation !== gradingGenerationRef.current) return;
         console.error("Autograde failed:", error);
         playSoundEffect("aiDoneGrading");
-        setGrade({
-          graded: {
-            literalGrades: sentence.target_language_literals.map(
-              () => undefined,
-            ),
-            phrasesRemembered: [],
-            phrasesForgot: [],
-            encouragement: undefined,
-            explanation: undefined,
-            autogradingError:
-              error instanceof Error
-                ? error.message
-                : "Failed to grade automatically",
-          },
-        });
+        setGrade({ graded: failed_translation_review(
+          sentence.target_language_literals.length,
+          error instanceof Error ? error.message : "Failed to grade automatically",
+        ) });
       }
     }
   }, [
@@ -956,17 +758,7 @@ export function TranslationChallenge({
     bumpBackground,
   ]);
 
-  const heteronymsTapped = useMemo(() => {
-    const result = new Array<Heteronym<string>>();
-    for (const index of tappedWords.values()) {
-      const literal = sentence.target_language_literals[index];
-      if (literal.word.word_type.type === "Heteronym") {
-        const heteronym = literal.word.word_type as Heteronym<string>;
-        result.push(heteronym);
-      }
-    }
-    return result;
-  }, [sentence, tappedWords]);
+  const heteronymsTapped = feedback.heteronyms_tapped;
 
   const handleContinue = useCallback(() => {
     if (canContinue) {
@@ -1007,44 +799,12 @@ export function TranslationChallenge({
 
   const handleGradeSwipe = useCallback(
     (item: GradeItem, remembered: boolean) => {
-      setGrade((prevGrade) => {
-        if (!prevGrade || !("graded" in prevGrade)) return prevGrade;
-
-        if (item.kind === "phrase" && "phrasesRemembered" in prevGrade.graded) {
-          const newRemembered = prevGrade.graded.phrasesRemembered.filter(
-            (p) => !gramEq(p, item.gram),
-          );
-          const newForgot = prevGrade.graded.phrasesForgot.filter(
-            (p) => !gramEq(p, item.gram),
-          );
-          if (remembered) newRemembered.push(item.gram);
-          else newForgot.push(item.gram);
-          return {
-            graded: {
-              ...prevGrade.graded,
-              phrasesRemembered: newRemembered,
-              phrasesForgot: newForgot,
-            },
-          };
-        }
-
-        if (item.kind === "literal" && "literalGrades" in prevGrade.graded) {
-          const newLiteralGrades = [...prevGrade.graded.literalGrades];
-          newLiteralGrades[item.literalIndex] = remembered
-            ? "Remembered"
-            : "Forgot";
-          return {
-            graded: {
-              ...prevGrade.graded,
-              literalGrades: newLiteralGrades,
-            },
-          };
-        }
-
-        return prevGrade;
+      setGrade((previous) => {
+        if (!previous || !("graded" in previous) || !("literalGrades" in previous.graded)) return previous;
+        return { graded: apply_translation_grade(previous.graded, item, remembered, sentence.target_language_literals.length) };
       });
     },
-    [],
+    [sentence.target_language_literals.length],
   );
 
   // Keyboard shortcuts

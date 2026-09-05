@@ -2,6 +2,7 @@ import {
   type AudioRequest,
   type CardContent,
   type DictionaryEntry,
+  type FlashcardDisclosure,
   type Language,
   type Literal,
   type PhrasebookDefinitionEntry,
@@ -54,7 +55,7 @@ function gramDisplayText(gram: Literal<string>[]): string {
 interface FlashcardProps {
   audioRequest: AudioRequest | undefined;
   content: CardContent;
-  totalCount: number;
+  disclosure: FlashcardDisclosure;
   onRating?: (rating: Rating) => void;
   accessToken: string | undefined;
   onCantListen?: () => void;
@@ -63,7 +64,6 @@ interface FlashcardProps {
   nativeLanguage: Language;
   autoplayed: boolean;
   setAutoplayed: () => void;
-  timesTypeSeen: number;
   /** Extra dropdown-menu items (e.g. "Report an Issue"), owned by the caller. */
   menuExtras?: ReactNode;
 }
@@ -361,7 +361,7 @@ const CardBack = ({
 export const Flashcard = function Flashcard({
   audioRequest,
   content,
-  totalCount,
+  disclosure,
   onRating,
   accessToken,
   onCantListen,
@@ -370,7 +370,6 @@ export const Flashcard = function Flashcard({
   nativeLanguage,
   autoplayed,
   setAutoplayed,
-  timesTypeSeen,
   menuExtras,
 }: FlashcardProps) {
   const x = useMotionValue(0);
@@ -389,10 +388,10 @@ export const Flashcard = function Flashcard({
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
 
-  const requireShowAnswer = totalCount < 50 || timesTypeSeen < 10;
+  const requireShowAnswer = disclosure.require_answer_reveal;
   const canGrade = hasBeenOpened || showAnswer || !requireShowAnswer;
 
-  const showTutorial = timesTypeSeen < 2;
+  const showTutorial = disclosure.show_tutorial;
 
   const tutorialText = match(content)
     .with({ type: "Gram" }, (c) => (

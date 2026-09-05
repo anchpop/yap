@@ -3,7 +3,7 @@ use language_utils::{Atom, GramDefinition, Heteronym, PartOfSpeech};
 use lasso::Spur;
 use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 
-#[derive(serde::Serialize, tsify::Tsify)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
 #[tsify(into_wasm_abi)]
 pub struct PlacementTestWord {
     pub word: String,

@@ -36,6 +36,10 @@ import {
   type Rating,
   get_pronunciation_connector,
   get_audio_cache_version,
+  get_flashcard_disclosure,
+  get_review_prompts,
+  get_challenge_restrictions,
+  should_show_challenge_tutorial,
 } from "../../yap-frontend-rs/pkg";
 import { Button } from "@/components/ui/button.tsx";
 import { Progress } from "@/components/ui/progress.tsx";
@@ -769,6 +773,23 @@ interface ReviewProps {
   setAutoplayed: () => void;
 }
 
+// Browser adapter: keep the existing device-local keys, and let Rust
+// decide which restrictions remain active and when to refresh them.
+function readChallengeRestrictions() {
+  const read = (key: string) => {
+    const raw = localStorage.getItem(key);
+    return raw ? parseInt(raw, 10) : undefined;
+  };
+  const result = get_challenge_restrictions(
+    read("yap-cant-listen-timestamp"),
+    read("yap-cant-speak-timestamp"),
+    Date.now(),
+  );
+  if (!result.banned.includes("Listening")) localStorage.removeItem("yap-cant-listen-timestamp");
+  if (!result.banned.includes("Speaking")) localStorage.removeItem("yap-cant-speak-timestamp");
+  return result;
+}
+
 function Review({
   userInfo,
   accessToken,
@@ -782,8 +803,6 @@ function Review({
 }: ReviewProps) {
   const weapon = useWeapon();
   const { sentenceList, setSentenceList } = useSentenceList(deck.get_sentence_list());
-
-  const CANT_LISTEN_DURATION_MS = 15 * 60 * 1000;
 
   const network = useNetworkState();
   const [cardsBecameDue, setCardsBecameDue] = useState<number>(0);
@@ -859,40 +878,9 @@ function Review({
     }
   }, [nextDueCard?.due_timestamp_ms]);
 
-  const computeBannedChallengeTypes = useCallback(() => {
-    const banned: ChallengeRequirements[] = [];
-
-    const cantListenTimestamp = localStorage.getItem(
-      "yap-cant-listen-timestamp",
-    );
-    if (cantListenTimestamp) {
-      const timestamp = parseInt(cantListenTimestamp);
-      const elapsed = Date.now() - timestamp;
-
-      if (elapsed < CANT_LISTEN_DURATION_MS) {
-        banned.push("Listening");
-      } else {
-        localStorage.removeItem("yap-cant-listen-timestamp");
-      }
-    }
-
-    const cantSpeakTimestamp = localStorage.getItem("yap-cant-speak-timestamp");
-    if (cantSpeakTimestamp) {
-      const timestamp = parseInt(cantSpeakTimestamp);
-      const elapsed = Date.now() - timestamp;
-
-      if (elapsed < CANT_LISTEN_DURATION_MS) {
-        banned.push("Speaking");
-      } else {
-        localStorage.removeItem("yap-cant-speak-timestamp");
-      }
-    }
-
-    return banned;
-  }, [CANT_LISTEN_DURATION_MS]);
   const [bannedChallengeTypes, setBannedChallengeTypes] = useState<
     ChallengeRequirements[]
-  >(() => computeBannedChallengeTypes());
+  >(() => readChallengeRestrictions().banned);
 
   // Challenges whose audio isn't cached yet are held back by
   // get_review_info; poll the cache version so they surface as soon as the
@@ -925,42 +913,18 @@ function Review({
   );
 
   useEffect(() => {
-    if (!currentChallenge) {
-      setBannedChallengeTypes(computeBannedChallengeTypes());
-    }
-  }, [currentChallenge, computeBannedChallengeTypes]);
-
-  useEffect(() => {
     if (currentChallenge) return;
-    const timeouts: ReturnType<typeof setTimeout>[] = [];
-
-    const scheduleRefresh = (storageKey: string) => {
-      const timestamp = localStorage.getItem(storageKey);
-      if (!timestamp) return;
-      const elapsed = Date.now() - parseInt(timestamp);
-      const remaining = CANT_LISTEN_DURATION_MS - elapsed;
-
-      if (remaining > 0) {
-        timeouts.push(
-          setTimeout(() => {
-            setBannedChallengeTypes(computeBannedChallengeTypes());
-          }, remaining),
-        );
-      } else {
-        setBannedChallengeTypes(computeBannedChallengeTypes());
-      }
-    };
-
-    scheduleRefresh("yap-cant-listen-timestamp");
-    scheduleRefresh("yap-cant-speak-timestamp");
-
-    return () => timeouts.forEach((timeout) => clearTimeout(timeout));
-  }, [
-    currentChallenge,
-    bannedChallengeTypes,
-    CANT_LISTEN_DURATION_MS,
-    computeBannedChallengeTypes,
-  ]);
+    const restrictions = readChallengeRestrictions();
+    if (restrictions.banned.length !== bannedChallengeTypes.length ||
+        restrictions.banned.some((value, i) => value !== bannedChallengeTypes[i])) {
+      setBannedChallengeTypes(restrictions.banned);
+    }
+    if (restrictions.next_expiry_ms == null) return;
+    const timeout = setTimeout(() => {
+      setBannedChallengeTypes(readChallengeRestrictions().banned);
+    }, Math.max(0, restrictions.next_expiry_ms - Date.now()));
+    return () => clearTimeout(timeout);
+  }, [currentChallenge, bannedChallengeTypes]);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -1137,19 +1101,20 @@ function Review({
     };
   }, [addSmartCards, deck]);
 
-  const shouldShowSetDisplayName =
-    reviewInfo.due_count === 0 &&
-    !currentChallenge &&
-    totalReviewsCompleted >= 25n &&
-    userInfo?.displayName === null &&
-    network.online === true &&
-    !dismissedSetDisplayName &&
-    accessToken !== undefined;
+  const reviewPrompts = get_review_prompts(
+    totalReviewsCompleted,
+    reviewInfo.total_count,
+    {
+      is_idle: reviewInfo.due_count === 0 && !currentChallenge,
+      is_online: network.online === true,
+      is_signed_in: userInfo !== undefined,
+      needs_display_name: userInfo?.displayName === null,
+      display_name_dismissed: dismissedSetDisplayName,
+      has_access_token: accessToken !== undefined,
+    },
+  );
 
-  const shouldShowPlacementTest =
-    startingFresh === false &&
-    !deck.has_taken_placement_test() &&
-    deck.num_cards_added() < 3;
+  const shouldShowPlacementTest = deck.should_offer_placement_test(startingFresh);
 
   return (
     <>
@@ -1174,7 +1139,7 @@ function Review({
             targetLanguage={targetLanguage}
             onAccept={addEvent}
           />
-        ) : shouldShowSetDisplayName ? (
+        ) : reviewPrompts.offer_display_name ? (
           <SetDisplayName
             accessToken={accessToken!}
             totalReviewsCompleted={totalReviewsCompleted}
@@ -1199,11 +1164,7 @@ function Review({
           <NoCardsReady
             nextDueCard={nextDueCard}
             addEvent={addEvent}
-            showEngagementPrompts={
-              reviewInfo.total_count > 5 &&
-              network.online === true &&
-              userInfo !== undefined
-            }
+            showEngagementPrompts={reviewPrompts.offer_engagement}
             targetLanguage={targetLanguage}
             deck={deck}
             bannedChallengeTypes={bannedChallengeTypes}
@@ -1226,7 +1187,9 @@ function Review({
               targetLanguage={targetLanguage}
               connector={get_pronunciation_connector(targetLanguage)}
               isNew={currentChallenge.is_new}
-              timesTypeSeen={currentChallenge.times_type_seen}
+              showGuide={should_show_challenge_tutorial(
+                currentChallenge.times_type_seen,
+              )}
               key={totalReviewsCompleted}
             />
           ) : currentChallenge.type === "FlashCardReview" ? (
@@ -1234,7 +1197,10 @@ function Review({
               audioRequest={currentChallenge.flashcard.audio}
               content={currentChallenge.flashcard.content}
               isNew={currentChallenge.is_new}
-              totalCount={reviewInfo.total_count}
+              disclosure={get_flashcard_disclosure(
+                reviewInfo.total_count,
+                currentChallenge.times_type_seen,
+              )}
               onRating={handleRating}
               accessToken={accessToken}
               key={totalReviewsCompleted}
@@ -1243,7 +1209,6 @@ function Review({
               nativeLanguage={nativeLanguage}
               autoplayed={autoplayed}
               setAutoplayed={setAutoplayed}
-              timesTypeSeen={currentChallenge.times_type_seen}
               menuExtras={
                 <DropdownMenuItem onClick={() => setShowReportModal(true)}>
                   Report an Issue
@@ -1741,10 +1706,7 @@ export function useDeck():
       if (!languagePackResult.full) {
         const startingFresh = deck_selection.onboardingSelections?.startingFresh;
         const wouldShowPlacementTest =
-          startingFresh === false &&
-          deck !== null &&
-          !deck.has_taken_placement_test() &&
-          deck.num_cards_added() < 3;
+          deck !== null && deck.should_offer_placement_test(startingFresh);
         if (!wouldShowPlacementTest) return null;
       }
 

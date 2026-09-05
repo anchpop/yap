@@ -1378,7 +1378,7 @@ impl YapMcp {
                     "nonce": presentation_nonce(),
                     "language": language,
                     "is_new": is_new,
-                    "times_type_seen": times_type_seen,
+                    "show_guide": yap_frontend_rs::should_show_challenge_tutorial(times_type_seen),
                     "card": card,
                     "pattern": pattern,
                     "guide": guide,
@@ -1412,7 +1412,7 @@ impl YapMcp {
         // component verbatim (full card back, morphology, homophone grid) with
         // no widget-specific projection of the content.
         let now_ms = Utc::now().timestamp_millis() as f64;
-        let (flashcard, is_new, times_type_seen, total_count) = {
+        let (flashcard, is_new, disclosure) = {
             let deck = state.deck();
             let review_info = deck.get_review_info(vec![], now_ms);
             let interned_indicator = match &card {
@@ -1439,8 +1439,10 @@ impl YapMcp {
             (
                 flashcard,
                 ctx.is_new,
-                ctx.times_type_seen,
-                review_info.total_count(),
+                yap_frontend_rs::get_flashcard_disclosure(
+                    review_info.total_count(),
+                    ctx.times_type_seen,
+                ),
             )
         };
 
@@ -1455,8 +1457,7 @@ impl YapMcp {
                 "native_language": native_language,
                 "kind": kind,
                 "is_new": is_new,
-                "total_count": total_count,
-                "times_type_seen": times_type_seen,
+                "disclosure": disclosure,
                 "card": card,
                 "content": serde_json::to_value(&flashcard.content).expect("content serializes"),
                 "audio": serde_json::to_value(&flashcard.audio).expect("audio serializes"),

@@ -1,3 +1,4 @@
+import { get_daily_goal_options } from "../../../yap-frontend-rs/pkg";
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -811,20 +812,13 @@ function DailyReviewTargetScreen({
   onChange: (v: DailyReviewTarget) => void;
   onNext: () => void;
 }) {
-  const goals: Array<{
-    key: DailyReviewTarget;
-    label: string;
-    mins: number;
-    icon: LucideIcon;
-  }> = [
-    { key: "Casual", label: "Casual", mins: 5, icon: SignalLow },
-    { key: "Regular", label: "Regular", mins: 10, icon: SignalMedium },
-    { key: "Serious", label: "Serious", mins: 15, icon: SignalHigh },
-    { key: "Intense", label: "Intense", mins: 20, icon: Signal },
-  ];
+  const icons: Record<DailyReviewTarget, LucideIcon> = {
+    Casual: SignalLow, Regular: SignalMedium, Serious: SignalHigh, Intense: Signal,
+  };
+  const goals = get_daily_goal_options();
+  const selectedGoal = goals.find((g) => g.value === value);
+  const estimatedWords = selectedGoal?.estimated_first_week_words ?? null;
 
-  const selectedGoal = goals.find((g) => g.key === value);
-  const estimatedWords = selectedGoal ? selectedGoal.mins * 5 : null;
 
   return (
     <ScreenWrapper screenKey="study-goal">
@@ -837,11 +831,11 @@ function DailyReviewTargetScreen({
       <div className="flex flex-col gap-3 w-full">
         {goals.map((goal) => (
           <OptionButton
-            key={goal.key}
-            label={`${goal.mins} min/day — ${goal.label}`}
-            icon={goal.icon}
-            selected={value === goal.key}
-            onClick={() => onChange(goal.key)}
+            key={goal.value}
+            label={`${goal.minutes} min/day — ${goal.value}`}
+            icon={icons[goal.value]}
+            selected={value === goal.value}
+            onClick={() => onChange(goal.value)}
           />
         ))}
       </div>

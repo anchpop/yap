@@ -34,7 +34,7 @@ interface PronunciationChallengeProps {
   // widget reuses it and its build bans the WASM module.
   connector: string;
   isNew: boolean;
-  timesTypeSeen: number;
+  showGuide: boolean;
 }
 
 export function PronunciationChallenge({
@@ -47,12 +47,10 @@ export function PronunciationChallenge({
   targetLanguage,
   connector,
   isNew,
-  timesTypeSeen,
+  showGuide,
 }: PronunciationChallengeProps) {
   const { bumpBackground } = useBackground();
   const [audioError, setAudioError] = useState(false);
-
-  const showGuide = timesTypeSeen < 2;
 
   const leftLabel = isNew ? "Didn't know" : "Forgot";
   const rightLabel = isNew ? "Already knew" : "Remembered";
