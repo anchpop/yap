@@ -13,11 +13,30 @@ import { useInterval } from "react-use";
 import { NumericStats } from "./numeric-stats";
 import { Card } from "@/components/ui/card";
 
+// A tab left open across a deploy can reference a chunk hash that no longer
+// exists on the server; the server then falls back to index.html, which
+// fails to parse as JS ("'text/html' is not a valid JavaScript MIME type" /
+// "Failed to fetch dynamically imported module"). Reload once to pick up
+// the current build instead of surfacing that as an app error.
+const CHUNK_RELOAD_KEY = "chunk-load-reload";
+
 // Lazy load the chart component - only loads when needed
 const FrequencyKnowledgeChart = lazy(() =>
-  import("./FrequencyKnowledgeChart").then((module) => ({
-    default: module.FrequencyKnowledgeChart,
-  })),
+  import("./FrequencyKnowledgeChart")
+    .then((module) => {
+      sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+      return { default: module.FrequencyKnowledgeChart };
+    })
+    .catch((error) => {
+      if (!sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
+        sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
+        window.location.reload();
+        // Stay pending (keep showing the Suspense fallback) until the
+        // reload takes effect, instead of flashing an error boundary.
+        return new Promise<never>(() => {});
+      }
+      throw error;
+    }),
 );
 
 interface StatsProps {
