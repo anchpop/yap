@@ -901,7 +901,7 @@ fn cost_cap_tripped() -> bool {
 
 /// Evaluate the cap and trip the breaker if exceeded. Called periodically from every
 /// spending loop; cheap while under the cap.
-fn check_cost_cap(base_dir: &std::path::Path) {
+fn enforce_cost_cap(base_dir: &std::path::Path) {
     static CAP: LazyLock<f64> = LazyLock::new(|| {
         std::env::var("CLEAN_NLP_COST_CAP")
             .ok()
@@ -1267,7 +1267,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT.cost().unwrap_or(0.0)
                         ),
                     );
-                    check_cost_cap(&status_dir);
+                    enforce_cost_cap(&status_dir);
                 }
 
                 (sentence, result)
@@ -1427,7 +1427,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                     pb_dc.set_message(format!("{:.2}", CHAT_CLIENT.cost().unwrap_or(0.0)));
                     pb_dc.inc(1);
                     if pb_dc.position().is_multiple_of(200) {
-                        check_cost_cap(&status_dir_dc);
+                        enforce_cost_cap(&status_dir_dc);
                     }
                     (sentence_text, result)
                 }
@@ -1521,7 +1521,7 @@ async fn clean_language_with_llm(language: Language) -> anyhow::Result<()> {
                             CHAT_CLIENT_MINI.cost().unwrap_or(0.0)
                         ),
                     );
-                    check_cost_cap(&status_dir2);
+                    enforce_cost_cap(&status_dir2);
                 }
 
                 (original_sentence, corrected_tokens, dep_result)
