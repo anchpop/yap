@@ -209,7 +209,12 @@ impl RemoteApp {
     /// Fixed-window per-IP rate limit. Returns false when the caller should
     /// get a 429. Best-effort: the IP comes from proxy headers, so this stops
     /// floods and accidents, not a determined attacker with many addresses.
-    async fn allow_rate(&self, endpoint: &'static str, ip: String, limit: u32) -> bool {
+    async fn check_and_record_rate_limit(
+        &self,
+        endpoint: &'static str,
+        ip: String,
+        limit: u32,
+    ) -> bool {
         let mut limits = self.rate_limits.lock().await;
         limits.retain(|_, w| w.started.elapsed() < RATE_LIMIT_WINDOW);
         let window = limits.entry((endpoint, ip)).or_insert(RateWindow {
@@ -585,7 +590,10 @@ async fn register(
     headers: axum::http::HeaderMap,
     Json(req): Json<RegistrationRequest>,
 ) -> Response {
-    if !app.allow_rate("register", client_ip(&headers), 30).await {
+    if !app
+        .check_and_record_rate_limit("register", client_ip(&headers), 30)
+        .await
+    {
         return rate_limited();
     }
     if req.redirect_uris.is_empty() {
@@ -664,7 +672,10 @@ async fn authorize_page(
     headers: axum::http::HeaderMap,
     Query(params): Query<AuthorizeParams>,
 ) -> Response {
-    if !app.allow_rate("authorize", client_ip(&headers), 60).await {
+    if !app
+        .check_and_record_rate_limit("authorize", client_ip(&headers), 60)
+        .await
+    {
         return rate_limited();
     }
     if let Err(e) = validate_authorize(&app, &params) {
@@ -786,7 +797,10 @@ async fn approve(
     headers: axum::http::HeaderMap,
     Json(req): Json<ApproveRequest>,
 ) -> Response {
-    if !app.allow_rate("approve", client_ip(&headers), 30).await {
+    if !app
+        .check_and_record_rate_limit("approve", client_ip(&headers), 30)
+        .await
+    {
         return rate_limited();
     }
     let Some(pending) = app.pending_auth.lock().await.remove(&req.request_id) else {
@@ -887,7 +901,10 @@ async fn token(
     headers: axum::http::HeaderMap,
     Form(req): Form<TokenRequest>,
 ) -> Response {
-    if !app.allow_rate("token", client_ip(&headers), 120).await {
+    if !app
+        .check_and_record_rate_limit("token", client_ip(&headers), 120)
+        .await
+    {
         return rate_limited();
     }
     match req.grant_type.as_str() {
