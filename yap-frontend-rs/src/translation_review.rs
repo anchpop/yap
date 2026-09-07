@@ -6,12 +6,11 @@ use language_utils::{
     autograde::{AutoGradeTranslationResponse, Remembered},
 };
 use std::collections::BTreeSet;
-use wasm_bindgen::prelude::*;
 
 // Preserve the field names already stored in pending translation drafts.
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ManualTranslationGrade {
     pub literal_grades: Vec<Option<Remembered>>,
     pub phrases_remembered: Vec<Gram<String>>,
@@ -24,9 +23,9 @@ pub struct ManualTranslationGrade {
     pub autograding_error: Option<String>,
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 #[serde(tag = "type")]
-#[tsify(into_wasm_abi)]
 pub enum TranslationReviewResult {
     Perfect {
         encouragement: Option<String>,
@@ -37,7 +36,7 @@ pub enum TranslationReviewResult {
     },
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn prepare_translation_review(
     literals: Vec<Literal<String>>,
     response: AutoGradeTranslationResponse,
@@ -61,7 +60,7 @@ pub fn prepare_translation_review(
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn failed_translation_review(literal_count: usize, error: String) -> ManualTranslationGrade {
     ManualTranslationGrade {
         literal_grades: vec![None; literal_count],
@@ -73,9 +72,9 @@ pub fn failed_translation_review(literal_count: usize, error: String) -> ManualT
     }
 }
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "kind", rename_all = "lowercase")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum TranslationGradeItem {
     Literal {
         #[serde(rename = "literalIndex")]
@@ -143,7 +142,7 @@ fn grade_items(
     items
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn apply_translation_grade(
     mut grade: ManualTranslationGrade,
     item: TranslationGradeItem,
@@ -176,16 +175,16 @@ pub fn apply_translation_grade(
     grade
 }
 
-#[derive(Clone, Debug, serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub struct ReviewDefinition {
     pub definition: GramDefinition,
     #[allow(clippy::type_complexity)]
     pub breakdown: Option<Vec<(String, Option<String>, Option<String>)>>,
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct TranslationReviewFeedback {
     pub grade_items: Vec<TranslationGradeItem>,
     pub can_continue: bool,
@@ -194,7 +193,7 @@ pub struct TranslationReviewFeedback {
     pub heteronyms_tapped: Vec<Heteronym<String>>,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_translation_review_feedback(
     sentence: TranslateComprehensibleSentence,
     grade: Option<ManualTranslationGrade>,

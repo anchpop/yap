@@ -1,5 +1,4 @@
 //! Decisions for the idle review screen, independent of its layout.
-use wasm_bindgen::prelude::*;
 
 pub(crate) fn recommend_more_cards(
     added: u32,
@@ -14,21 +13,21 @@ pub(crate) fn recommend_more_cards(
         && available > 0
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn next_progress_milestone(current: f64, projected: f64) -> Option<f64> {
     let after = (projected / 5.0).floor() * 5.0;
     (after > (current / 5.0).floor() * 5.0).then_some(after)
 }
 
-#[derive(Clone, Debug, serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub struct IdleStudyState {
     pub no_schedulable_cards: bool,
     pub nothing_to_do: bool,
     pub has_never_studied: bool,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_idle_study_state(
     has_future_card: bool,
     cards_added: usize,

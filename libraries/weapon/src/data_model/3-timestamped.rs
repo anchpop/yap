@@ -39,8 +39,6 @@ mod timezone_serde {
 }
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(from_wasm_abi, into_wasm_abi))]
 pub struct Timestamped<E> {
     pub timestamp: chrono::DateTime<chrono::Utc>,
     pub within_device_events_index: usize,
@@ -48,7 +46,6 @@ pub struct Timestamped<E> {
     /// events recorded before this field existed — consumers fall back to the deck's current
     /// timezone for those.
     #[serde(default, with = "timezone_serde")]
-    #[cfg_attr(target_arch = "wasm32", tsify(optional, type = "number"))]
     pub timezone: Option<chrono::FixedOffset>,
     pub event: E,
 }

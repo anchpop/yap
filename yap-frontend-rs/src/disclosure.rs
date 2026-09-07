@@ -1,17 +1,15 @@
 //! Product disclosure rules shared by web and native frontends.
 //! Hosts supply account/connectivity state; rendering and persistence stay with them.
 
-use wasm_bindgen::prelude::*;
-
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct FlashcardDisclosure {
     pub require_answer_reveal: bool,
     pub show_tutorial: bool,
 }
 
 /// `total_card_count` is the number of due + future cards, not lifetime reviews.
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_flashcard_disclosure(
     total_card_count: usize,
     times_type_seen: u32,
@@ -22,13 +20,13 @@ pub fn get_flashcard_disclosure(
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn should_show_challenge_tutorial(times_type_seen: u32) -> bool {
     times_type_seen < 2
 }
 
-#[derive(Clone, Debug, serde::Deserialize, tsify::Tsify)]
-#[tsify(from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Deserialize)]
 pub struct ReviewPromptContext {
     /// No due challenges and no current challenge.
     pub is_idle: bool,
@@ -40,8 +38,8 @@ pub struct ReviewPromptContext {
     pub has_access_token: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize)]
 pub struct ReviewPrompts {
     pub offer_display_name: bool,
     /// Eligibility for the idle screen's engagement prompts. The host still
@@ -49,7 +47,7 @@ pub struct ReviewPrompts {
     pub offer_engagement: bool,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_review_prompts(
     total_reviews_completed: u64,
     total_card_count: usize,

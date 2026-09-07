@@ -1,10 +1,9 @@
 use crate::ChallengeRequirements;
-use wasm_bindgen::prelude::*;
 
 const RESTRICTION_DURATION_MS: f64 = 15.0 * 60.0 * 1000.0;
 
-#[derive(Clone, Debug, serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize)]
 pub struct ChallengeRestrictions {
     pub banned: Vec<ChallengeRequirements>,
     pub next_expiry_ms: Option<f64>,
@@ -12,7 +11,7 @@ pub struct ChallengeRestrictions {
 
 /// Timestamps are device-local host state. Expiry is evaluated with the host's
 /// clock; an active review should finish before the host applies expired bans.
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_challenge_restrictions(
     listening_since: Option<f64>,
     speaking_since: Option<f64>,

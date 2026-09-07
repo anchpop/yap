@@ -1,6 +1,6 @@
 use crate::{CardSummary, Deck, supabase::supabase_config};
+use bridgerton::Error;
 use chrono::Utc;
-use wasm_bindgen::prelude::*;
 use weapon::supabase::SupabaseConfig;
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
@@ -230,14 +230,13 @@ impl Deck {
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub async fn submit_push_notifications(
         &self,
         access_token: &str,
         user_id: &str,
-    ) -> Result<(), JsValue> {
+    ) -> Result<(), Error> {
         let client = fetch_happen::Client;
 
         let SupabaseConfig {
@@ -245,8 +244,8 @@ impl Deck {
             supabase_anon_key,
         } = supabase_config();
 
-        let timezone_offset = js_sys::Date::new_0().get_timezone_offset();
-        let scheduled_notifications = self.compute_scheduled_notifications(timezone_offset as i32);
+        let timezone_offset = bridgerton::platform::current_local_offset().utc_minus_local() / 60;
+        let scheduled_notifications = self.compute_scheduled_notifications(timezone_offset);
 
         let notifications_json: Vec<serde_json::Value> = scheduled_notifications
                 .into_iter()
@@ -289,10 +288,10 @@ impl Deck {
                 .header("apikey", &supabase_anon_key)
                 .header("Authorization", format!("Bearer {access_token}"))
                 .json(&notifications_json)
-                .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
+                .map_err(|e| Error::new(format!("{e:?}")))?
                 .send()
                 .await
-                .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+                .map_err(|e| Error::new(format!("{e:?}")))?;
 
             if !insert_response.ok() {
                 log::warn!(
@@ -307,13 +306,12 @@ impl Deck {
         Ok(())
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-    pub async fn submit_language_stats(&self, access_token: &str) -> Result<(), JsValue> {
+    pub async fn submit_language_stats(&self, access_token: &str) -> Result<(), Error> {
         use language_utils::profile::UpdateLanguageStatsRequest;
 
         // Get current stats from the deck (locked cards still count — lockup
         // only hides cards from the review queue)
-        let now = js_sys::Date::now();
+        let now = Utc::now().timestamp_millis() as f64;
         let review_info = self.get_review_info_including_locked(now);
 
         let total_count = review_info.total_count() as i64;
@@ -354,11 +352,11 @@ impl Deck {
             Some(&access_token.to_string()),
         )
         .await
-        .map_err(|e| JsValue::from_str(&format!("Request error: {e:?}")))?;
+        .map_err(|e| Error::new(format!("Request error: {e:?}")))?;
 
         if !response.ok() {
             log::warn!("Failed to update language stats: {}", response.status());
-            return Err(JsValue::from_str(&format!(
+            return Err(Error::new(format!(
                 "Failed to update language stats: {}",
                 response.status()
             )));

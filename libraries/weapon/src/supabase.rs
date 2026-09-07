@@ -1,30 +1,44 @@
 //! Utilities for syncing against a Supabase database.
 use std::{cell::RefCell, collections::BTreeMap};
 
-use crate::data_model::{Clock, EventStore, ListenerKey, SyncTarget, Timestamped};
-use wasm_bindgen::{JsValue, prelude::wasm_bindgen};
+use crate::data_model::{
+    Clock, EventStoreWithListeners, ListenerKey, Listeners, SyncTarget, Timestamped,
+};
+#[derive(Debug, thiserror::Error)]
+#[error("{0}")]
+pub struct SyncError(String);
+impl SyncError {
+    fn new(message: impl Into<String>) -> Self {
+        Self(message.into())
+    }
+}
+impl From<SyncError> for bridgerton::Error {
+    fn from(error: SyncError) -> Self {
+        Self::new(error.to_string())
+    }
+}
 
-#[derive(serde::Serialize, serde::Deserialize, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct SupabaseConfig {
     pub supabase_url: String,
     pub supabase_anon_key: String,
 }
 
-impl EventStore<String, String> {
+impl<L: Listeners<String>> EventStoreWithListeners<String, String, L> {
     /// Sync with the server
     /// Return Ok(Some(new_events)) if we got new events from the server.
     /// Return Ok(None) if we didn't get new events from the server.
-    /// Return Err(JsValue) if there was an error.
+    /// Return Err(SyncError) if there was an error.
     pub async fn sync_with_supabase(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         access_token: &str,
         supabase_config: SupabaseConfig,
         user_id: &str,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
         upload: bool,
-    ) -> Result<SupabaseSyncResult, JsValue> {
+    ) -> Result<SupabaseSyncResult, SyncError> {
         store.borrow_mut().mark_sync_started(SyncTarget::Supabase);
 
         match Self::sync_with_supabase_inner(
@@ -48,7 +62,7 @@ impl EventStore<String, String> {
                 Ok(res)
             }
             Err(e) => {
-                let msg = e.as_string().unwrap_or_else(|| format!("{e:?}"));
+                let msg = e.to_string();
                 store
                     .borrow_mut()
                     .mark_sync_finished(SyncTarget::Supabase, Some(msg));
@@ -58,14 +72,14 @@ impl EventStore<String, String> {
     }
 
     async fn sync_with_supabase_inner(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         access_token: &str,
         supabase_config: SupabaseConfig,
         user_id: &str,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
         upload: bool,
-    ) -> Result<(SupabaseSyncResult, Clock<String, String>), JsValue> {
+    ) -> Result<(SupabaseSyncResult, Clock<String, String>), SyncError> {
         let mut sync_result = SupabaseSyncResult {
             uploaded_to_supabase: 0,
             downloaded_from_supabase: 0,
@@ -109,13 +123,13 @@ impl EventStore<String, String> {
             .header("apikey", supabase_anon_key)
             .header("Authorization", format!("Bearer {access_token}"))
             .json(&payload)
-            .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
+            .map_err(|e| SyncError::new(format!("{e:?}")))?
             .send()
             .await
-            .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+            .map_err(|e| SyncError::new(format!("{e:?}")))?;
 
         if !response.ok() {
-            return Err(JsValue::from_str(&format!(
+            return Err(SyncError::new(format!(
                 "Sync failed with status: {}",
                 response.status()
             )));
@@ -124,7 +138,7 @@ impl EventStore<String, String> {
         let body = response
             .text()
             .await
-            .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+            .map_err(|e| SyncError::new(format!("{e:?}")))?;
 
         // Parse the multi-stream response format
         #[allow(clippy::type_complexity)]
@@ -132,7 +146,7 @@ impl EventStore<String, String> {
             String,
             HashMap<String, Vec<SyncEventResponse<Timestamped<serde_json::Value>>>>,
         > = serde_json::from_str(&body).map_err(|e| {
-            JsValue::from_str(&format!(
+            SyncError::new(format!(
                 "Failed to parse sync response: {e}\nResponse body: {body}"
             ))
         })?;
@@ -211,10 +225,10 @@ impl EventStore<String, String> {
                     .header("apikey", supabase_anon_key)
                     .header("Authorization", format!("Bearer {access_token}"))
                     .json(&events_to_upload)
-                    .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
+                    .map_err(|e| SyncError::new(format!("{e:?}")))?
                     .send()
                     .await
-                    .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+                    .map_err(|e| SyncError::new(format!("{e:?}")))?;
 
                 if !upload_response.ok() {
                     let status = upload_response.status();
@@ -280,8 +294,7 @@ struct SyncEventResponse<Event> {
     within_device_events_index: u32,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, tsify::Tsify, Debug)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct SyncableEvent {
     pub user_id: String,
     pub device_id: String,
@@ -297,7 +310,7 @@ async fn get_clock(
     supabase_config: &SupabaseConfig,
     access_token: &str,
     user_id: &str,
-) -> Result<Clock<String, String>, JsValue> {
+) -> Result<Clock<String, String>, SyncError> {
     use serde_json::json;
 
     let SupabaseConfig {
@@ -313,13 +326,13 @@ async fn get_clock(
         .header("apikey", supabase_anon_key)
         .header("Authorization", format!("Bearer {access_token}"))
         .json(&body)
-        .map_err(|e| JsValue::from_str(&format!("{e:?}")))?
+        .map_err(|e| SyncError::new(format!("{e:?}")))?
         .send()
         .await
-        .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+        .map_err(|e| SyncError::new(format!("{e:?}")))?;
 
     if !resp.ok() {
-        return Err(JsValue::from_str(&format!(
+        return Err(SyncError::new(format!(
             "get_clock RPC failed with status: {}",
             resp.status()
         )));
@@ -328,10 +341,10 @@ async fn get_clock(
     let text = resp
         .text()
         .await
-        .map_err(|e| JsValue::from_str(&format!("{e:?}")))?;
+        .map_err(|e| SyncError::new(format!("{e:?}")))?;
 
     let m: Clock<String, String> = serde_json::from_str(&text).map_err(|e| {
-        JsValue::from_str(&format!(
+        SyncError::new(format!(
             "Failed to parse get_clock response: {e}. Body: {text}"
         ))
     })?;
@@ -340,7 +353,6 @@ async fn get_clock(
 }
 
 #[derive(Debug)]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
 pub struct SupabaseSyncResult {
     pub uploaded_to_supabase: usize,
     pub downloaded_from_supabase: usize,

@@ -1,9 +1,8 @@
 use crate::deck_selection::DailyReviewTarget;
 use language_utils::Language;
-use wasm_bindgen::prelude::*;
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CourseMaturity {
     Stable,
@@ -11,8 +10,8 @@ pub enum CourseMaturity {
     Alpha,
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LanguageLearningMetadata {
     pub iso_code: String,
@@ -20,7 +19,7 @@ pub struct LanguageLearningMetadata {
     pub status: CourseMaturity,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_language_learning_metadata(language: Language) -> LanguageLearningMetadata {
     use Language::*;
     LanguageLearningMetadata {
@@ -36,8 +35,8 @@ pub fn get_language_learning_metadata(language: Language) -> LanguageLearningMet
     }
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct DailyGoalOption {
     pub value: DailyReviewTarget,
     pub minutes: u32,
@@ -45,7 +44,7 @@ pub struct DailyGoalOption {
     pub estimated_first_week_words: u32,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_daily_goal_options() -> Vec<DailyGoalOption> {
     use DailyReviewTarget::*;
     [Casual, Regular, Serious, Intense]

@@ -1,9 +1,6 @@
 use weapon::supabase::SupabaseConfig;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn supabase_config() -> SupabaseConfig {
     SupabaseConfig {
         supabase_url: "https://eearwzqotpfoderpfrqx.supabase.co".to_string(),

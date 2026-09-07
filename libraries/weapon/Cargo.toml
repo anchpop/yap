@@ -11,6 +11,8 @@ name = "weapon-scope"
 path = "src/bin/weapon-scope.rs"
 
 [dependencies]
+web-time.workspace = true
+bridgerton.workspace = true
 chrono = { workspace = true, features = ["serde"] }
 im.workspace = true
 serde.workspace = true
@@ -18,31 +20,16 @@ log.workspace = true
 serde_json.workspace = true
 
 fetch-happen = { workspace = true, optional = true }
-tsify = { workspace = true, optional = true }
-wasm-bindgen = { workspace = true, optional = true }
 opfs = { workspace = true, optional = true }
 futures = { workspace = true, optional = true }
 thiserror = { workspace = true, optional = true }
 slotmap = { workspace = true }
 weblocks = { workspace = true }
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-wasm-bindgen = { workspace = true }
-tsify = { workspace = true }
-web-sys = { version = "0.3", features = [
-    "BroadcastChannel",
-    "MessageEvent",
-], optional = true }
-serde-wasm-bindgen = { version = "0.6", optional = true }
-js-sys = { version = "0.3", optional = true }
-
 [features]
-supabase = ["dep:fetch-happen", "dep:tsify", "dep:wasm-bindgen"]
+supabase = ["dep:fetch-happen", "dep:thiserror"]
 opfs = [
     "dep:opfs",
     "dep:futures",
     "dep:thiserror",
-    "dep:web-sys",
-    "dep:serde-wasm-bindgen",
-    "dep:js-sys",
 ]

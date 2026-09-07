@@ -1,8 +1,7 @@
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _};
-use wasm_bindgen::prelude::*;
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
-pub async fn test_opfs() -> Result<bool, JsValue> {
+#[bridgerton::bridge]
+pub async fn test_opfs() -> Result<bool, bridgerton::Error> {
     log::info!("Testing OPFS support...");
 
     let mut root = match opfs::persistent::app_specific_dir().await {

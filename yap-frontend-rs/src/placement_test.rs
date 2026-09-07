@@ -3,8 +3,8 @@ use language_utils::{Atom, GramDefinition, Heteronym, PartOfSpeech};
 use lasso::Spur;
 use pav_regression::{IsotonicRegression, Point, SmoothRegression, UnitWeight};
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct PlacementTestWord {
     pub word: String,
     pub definition: String,
@@ -96,7 +96,7 @@ impl Context {
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
     /// Find the eligible word closest to `target_ease`. Scan because entries are
     /// sorted by count, which differs from ease after cognate and phrase adjustments.
@@ -135,7 +135,6 @@ impl Deck {
     /// Get placement test words distributed by likelihood of knowledge
     /// Takes lists of known and unknown words as strings, builds a regression, and returns
     /// words at different knowledge probability levels (1%, 10%, 20%, ..., 99%)
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
     pub fn get_placement_test(
         &self,
         known_words: Vec<String>,

@@ -1,5 +1,4 @@
 #![doc = include_str!("../readme.md")]
-
 #[cfg(feature = "supabase")]
 pub mod supabase;
 

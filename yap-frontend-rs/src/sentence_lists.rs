@@ -1,24 +1,23 @@
 use crate::{Deck, SentenceListSelection};
-use wasm_bindgen::prelude::*;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize, tsify::Tsify)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum SentenceListCategory {
     Essential,
     Movie,
     Pimsleur,
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct SentenceListNavigation {
     pub categories: Vec<SentenceListCategory>,
     pub selection: Option<SentenceListSelection>,
     pub selected_index: usize,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_sentence_list_navigation(
     selection: Option<SentenceListSelection>,
     has_movies: bool,
@@ -45,14 +44,14 @@ pub fn get_sentence_list_navigation(
     }
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct SentenceListProgress {
     pub percent_known: f64,
     pub all_available_learned: bool,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
     /// Called only when switching categories, so choosing the best movie stays lazy.
     pub fn get_sentence_list_for_category(

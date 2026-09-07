@@ -1,0 +1,17 @@
+[package]
+name = "cargo-bridgerton"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "One build entry point for bridged crates: the JavaScript package and the Swift bindings"
+
+[[bin]]
+name = "cargo-bridgerton"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.6", features = ["derive"] }
+serde_json.workspace = true
+libloading = "0.9"
+sha2 = "0.10"
+shlex = "1.3"

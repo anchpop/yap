@@ -1,12 +1,12 @@
 use crate::{AudioRequest, TtsRequest, human_audio, persistent, utils::hit_ai_server};
 use base64::Engine;
+use bridgerton::Error;
 use futures::FutureExt;
 use futures::future::{LocalBoxFuture, Shared};
 use language_utils::{Compensation, TtsProvider};
 use opfs::{DirectoryHandle as _, FileHandle as _, WritableFileStream as _};
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, HashMap};
-use wasm_bindgen::JsValue;
 use xxhash_rust::const_xxh3::xxh3_64 as const_xxh3;
 
 type SharedFetch = Shared<LocalBoxFuture<'static, Result<Vec<u8>, String>>>;
@@ -27,8 +27,7 @@ thread_local! {
     /// directory. Challenge selection is a synchronous wasm call, but every
     /// OPFS probe is async — this mirror is how `get_review_info` can ask
     /// "is this clip already local?" without I/O. `None` until the first
-    /// `AudioCache::new` enumerates the directory (and forever on native,
-    /// where there is no OPFS audio cache); callers must treat unknown as
+    /// `AudioCache::new` enumerates the directory; callers must treat unknown as
     /// available so nothing gets hidden before the mirror loads.
     static CACHED_CLIPS: RefCell<Option<BTreeSet<String>>> = const { RefCell::new(None) };
 
@@ -100,8 +99,8 @@ pub struct FetchedAudio {
 /// Identifies the voice actor behind a human-recorded clip. Crosses the
 /// wasm boundary as a plain object (`{ name, compensation }`) so the
 /// frontend shares this type rather than redeclaring it.
-#[derive(Clone, serde::Serialize, schemars::JsonSchema, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, serde::Serialize, schemars::JsonSchema)]
 pub struct VoiceActorInfo {
     pub name: String,
     pub compensation: Compensation,
@@ -130,10 +129,10 @@ pub struct AudioCache {
 }
 
 impl AudioCache {
-    pub async fn new() -> Result<Self, JsValue> {
+    pub async fn new() -> Result<Self, Error> {
         let root = persistent::app_specific_dir()
             .await
-            .map_err(|e| JsValue::from_str(&format!("Failed to get app directory: {e:?}")))?;
+            .map_err(|e| Error::new(format!("Failed to get app directory: {e:?}")))?;
 
         let audio_dir = root
             .get_directory_handle_with_options(
@@ -141,7 +140,7 @@ impl AudioCache {
                 &opfs::GetDirectoryHandleOptions { create: true },
             )
             .await
-            .map_err(|e| JsValue::from_str(&format!("Failed to get audio directory: {e:?}")))?;
+            .map_err(|e| Error::new(format!("Failed to get audio directory: {e:?}")))?;
 
         // First construction this session: enumerate the directory once to
         // seed the synchronous mirror. Later constructions skip this — the
@@ -214,7 +213,7 @@ impl AudioCache {
         &self,
         request: &TtsRequest,
         provider: &TtsProvider,
-    ) -> Result<(), JsValue> {
+    ) -> Result<(), Error> {
         let cache_filename = tts_cache_filename(request, provider);
 
         let mut audio_dir = self.audio_dir.clone();
@@ -308,7 +307,7 @@ impl AudioCache {
         &self,
         request: &AudioRequest,
         access_token: Option<&String>,
-    ) -> Result<FetchedAudio, JsValue> {
+    ) -> Result<FetchedAudio, Error> {
         let AudioRequest { request, provider } = request;
 
         // Human recordings live in the language pack and don't need OPFS caching.
@@ -336,7 +335,7 @@ impl AudioCache {
         let bytes = self
             .fetch_and_cache_coalesced(request, provider, access_token)
             .await
-            .map_err(|e| JsValue::from_str(&e))?;
+            .map_err(Error::new)?;
 
         Ok(FetchedAudio {
             bytes,
@@ -388,10 +387,7 @@ impl AudioCache {
     /// because the simulation can diverge from what the app actually shows
     /// (and only looks ~30 challenges ahead), so "not in the keep set" alone
     /// is not evidence a clip is done with.
-    pub async fn cleanup_except(
-        &mut self,
-        keep_filenames: BTreeSet<String>,
-    ) -> Result<(), JsValue> {
+    pub async fn cleanup_except(&mut self, keep_filenames: BTreeSet<String>) -> Result<(), Error> {
         use futures::StreamExt;
 
         let now = chrono::Utc::now().timestamp();
@@ -400,9 +396,11 @@ impl AudioCache {
 
         // First, collect all files to delete
         let (files_to_delete, present_files) = {
-            let mut entries = self.audio_dir.entries().await.map_err(|e| {
-                JsValue::from_str(&format!("Failed to read audio directory: {e:?}"))
-            })?;
+            let mut entries = self
+                .audio_dir
+                .entries()
+                .await
+                .map_err(|e| Error::new(format!("Failed to read audio directory: {e:?}")))?;
 
             let mut to_delete = Vec::new();
             let mut present = BTreeSet::new();
@@ -478,10 +476,10 @@ pub struct TempAudioCache {
 }
 
 impl TempAudioCache {
-    pub async fn new() -> Result<Self, JsValue> {
+    pub async fn new() -> Result<Self, Error> {
         let root = persistent::app_specific_dir()
             .await
-            .map_err(|e| JsValue::from_str(&format!("Failed to get app directory: {e:?}")))?;
+            .map_err(|e| Error::new(format!("Failed to get app directory: {e:?}")))?;
 
         let temp_dir = root
             .get_directory_handle_with_options(
@@ -489,9 +487,7 @@ impl TempAudioCache {
                 &opfs::GetDirectoryHandleOptions { create: true },
             )
             .await
-            .map_err(|e| {
-                JsValue::from_str(&format!("Failed to get temp audio directory: {e:?}"))
-            })?;
+            .map_err(|e| Error::new(format!("Failed to get temp audio directory: {e:?}")))?;
 
         Ok(Self { temp_dir })
     }
@@ -541,7 +537,7 @@ impl TempAudioCache {
         &self,
         request: &AudioRequest,
         access_token: Option<&String>,
-    ) -> Result<FetchedAudio, JsValue> {
+    ) -> Result<FetchedAudio, Error> {
         let AudioRequest { request, provider } = request;
 
         // Human recordings live in the language pack and don't need OPFS caching.
@@ -570,7 +566,7 @@ impl TempAudioCache {
 
         let bytes = fetch_tts(request, provider, access_token)
             .await
-            .map_err(|e| JsValue::from_str(&e))?;
+            .map_err(Error::new)?;
 
         // Cache with timestamp in filename
         let temp_filename = Self::temp_filename(&base_filename);
@@ -598,15 +594,16 @@ impl TempAudioCache {
     }
 
     /// Remove all temp audio files older than 24 hours.
-    pub async fn cleanup_old(&mut self) -> Result<(), JsValue> {
+    pub async fn cleanup_old(&mut self) -> Result<(), Error> {
         use futures::StreamExt;
 
         let cutoff = chrono::Utc::now().timestamp() - 24 * 60 * 60;
 
         let files_to_delete = {
-            let mut entries = self.temp_dir.entries().await.map_err(|e| {
-                JsValue::from_str(&format!("Failed to read temp audio directory: {e:?}"))
-            })?;
+            let mut entries =
+                self.temp_dir.entries().await.map_err(|e| {
+                    Error::new(format!("Failed to read temp audio directory: {e:?}"))
+                })?;
 
             let mut files = Vec::new();
             while let Some(Ok((filename, _))) = entries.next().await {

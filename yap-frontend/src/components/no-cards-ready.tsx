@@ -655,11 +655,7 @@ function NextReviewLine({
   targetLanguage: Language;
 }) {
   let nextTargetLanguageWord: string | null = null;
-  if (
-    nextDueCard &&
-    (nextDueCard.card_indicator.type === "WrittenPhrase" ||
-      nextDueCard.card_indicator.type === "WrittenGram")
-  ) {
+  if (nextDueCard?.card_indicator.type === "WrittenGram") {
     nextTargetLanguageWord = nextDueCard.card_text;
   }
 

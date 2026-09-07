@@ -1,0 +1,17 @@
+{
+  "timestamp": "2020-01-01T00:00:01Z",
+  "within_device_events_index": 1,
+  "timezone": 0,
+  "event": {
+    "User": {
+      "version": "V3",
+      "type": "Language",
+      "target_language": "French",
+      "native_language": "English",
+      "content": {
+        "type": "SetDailyReviewTarget",
+        "daily_review_target": "Casual"
+      }
+    }
+  }
+}

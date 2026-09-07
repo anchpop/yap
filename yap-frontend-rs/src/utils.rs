@@ -43,56 +43,6 @@ pub fn match_grams_to_literals<'a, T>(
     results
 }
 
-/// Logs elapsed time on drop.
-pub struct PerfTimer {
-    label: String,
-    start_time: f64,
-}
-
-impl PerfTimer {
-    pub fn new(label: impl Into<String>) -> Self {
-        let start_time = web_sys::window()
-            .and_then(|w| w.performance())
-            .map(|p| p.now())
-            .unwrap_or(0.0);
-
-        Self {
-            label: label.into(),
-            start_time,
-        }
-    }
-}
-
-impl Drop for PerfTimer {
-    fn drop(&mut self) {
-        if let Some(window) = web_sys::window()
-            && let Some(performance) = window.performance()
-        {
-            let duration = performance.now() - self.start_time;
-            log::info!("[PERF] {}: {:.2}ms", self.label, duration);
-        }
-    }
-}
-
-/// The user's current local timezone offset from UTC, as a `chrono::FixedOffset`.
-///
-/// On wasm, this reads the browser's timezone via `js_sys::Date::getTimezoneOffset`, which
-/// returns minutes that are positive when local time is *behind* UTC. Off-wasm (tests, native
-/// tooling) it falls back to UTC.
-pub fn current_local_offset() -> chrono::FixedOffset {
-    #[cfg(target_arch = "wasm32")]
-    let offset_seconds = {
-        // getTimezoneOffset() is minutes and positive when local is behind UTC.
-        let offset_minutes = js_sys::Date::new_0().get_timezone_offset();
-        (-offset_minutes * 60.0) as i32
-    };
-    #[cfg(not(target_arch = "wasm32"))]
-    let offset_seconds = 0;
-
-    chrono::FixedOffset::east_opt(offset_seconds)
-        .unwrap_or_else(|| chrono::FixedOffset::east_opt(0).expect("UTC offset is always valid"))
-}
-
 pub(crate) async fn get_or_create_device_id(
     weapon_dir: &persistent::DirectoryHandle,
     user_id: &Option<String>,
@@ -141,10 +91,16 @@ pub(crate) async fn get_or_create_device_id(
     }
 }
 
-/// Base URL of the yap AI backend. The `local-backend` feature wins (local
-/// dev), then the `YAP_AI_BACKEND_URL` compile-time env var (beta/staging
-/// builds pointing at a non-production backend), then production.
+/// Base URL of the Yap AI backend. Native hosts may override it with the
+/// `YAP_AI_BACKEND_URL` runtime environment variable, read once on first use.
+/// Otherwise the `local-backend` feature wins, then the compile-time
+/// `YAP_AI_BACKEND_URL` setting (beta/staging builds), then production.
 pub fn ai_server_url() -> &'static str {
+    static OVERRIDE: std::sync::LazyLock<Option<String>> =
+        std::sync::LazyLock::new(|| bridgerton::platform::runtime_env("YAP_AI_BACKEND_URL"));
+    if let Some(url) = OVERRIDE.as_deref() {
+        return url;
+    }
     if cfg!(feature = "local-backend") {
         "http://localhost:21516"
     } else {

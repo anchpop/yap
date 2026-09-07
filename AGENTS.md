@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 To clean up unused imports in rust code, you can generally just run `cargo fix`. No need to do it yourself! Then run `cargo fmt` afterwards to clean everything up. Make sure everything passes `cargo clippy`, it's very helpful! One important tip: you do not need to cd anywhere to use these commands. You can use them from the root of the project, because the root of the project defines a cargo workspace.
 
-To make sure you can still make a release WASM build with LTO, you do have to `cd` into `yap-frontend-rs` and then run `CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release --features local-backend`.
+To make sure you can still make a release WASM build with LTO, run `CARGO_PROFILE_RELEASE_LTO=true cargo bridgerton web --package yap-frontend-rs --release --features local-backend` from the repo root. It wraps wasm-pack; `cargo bridgerton swift --package yap-swift-prototype --out-dir prototypes/yap-swift/generated` is the Swift counterpart.
 
 Whenever possible, I want you to use `cargo fix`, `cargo clippy --fix`, and `cargo fmt`.
 
@@ -67,8 +67,8 @@ cmake --version
 # Generate dictionary data from Anki decks
 cargo run --bin generate-data
 
-# Build WASM module
-cd yap-frontend-rs && CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
+# Build WASM module (wraps wasm-pack)
+CARGO_PROFILE_RELEASE_LTO=true cargo bridgerton web --package yap-frontend-rs --release
 
 # Install frontend dependencies and build
 cd yap-frontend && pnpm install && pnpm build

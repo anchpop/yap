@@ -77,8 +77,7 @@ Of course, in addition to being the most effective language learning app, I coul
 Build the rust library
 
 ```bash
-cd yap-frontend-rs
-wasm-pack build
+cargo bridgerton web --package yap-frontend-rs
 ```
 
 Then, run the page
@@ -89,7 +88,7 @@ pnpm i
 pnpm dev
 ```
 
-There is also a supporting backend, normally assumed to be at `https://yap-ai-backend.fly.io`. But if you build the rust library with `wasm-pack build --features "local-backend"`, it will look for the server on `localhost:8080`. You can then run the server locally with `cd yap-ai-backend && cargo run`.
+There is also a supporting backend, normally assumed to be at `https://yap-ai-backend.fly.io`. But if you build the rust library with `--features local-backend`, it will look for the server on `localhost:8080`. You can then run the server locally with `cd yap-ai-backend && cargo run`.
 
 ## Data Generation
 

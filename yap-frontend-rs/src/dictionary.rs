@@ -2,9 +2,6 @@ use language_utils::features::{Morphology, WordPrefix};
 use language_utils::text_cleanup::remove_accents_lowercase;
 use language_utils::{Atom, Gram, GramDefinition, Language, TargetToNativeWord, WordType};
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
 use crate::{
     AudioRequest, CardData, CardIndicator, Deck, DeckEvent, LanguageEvent, LanguageEventContent,
 };
@@ -63,9 +60,8 @@ pub(crate) fn compute_word_prefix_and_morphology(
 
 /// Get gram dictionary entries ordered by frequency (most common first).
 /// Optionally filters by search query (accent-insensitive) and limits results.
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_gram_dictionary_entries(
         &self,
         search_query: Option<String>,
@@ -135,7 +131,6 @@ impl Deck {
 
     /// Build the dictionary entry at a frequency index (None when out of
     /// range or the gram has no definition).
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn gram_dictionary_entry(&self, frequency_index: usize) -> Option<GramDictionaryEntry> {
         let language_pack = &self.context.language_pack;
         let target_language = self.context.course.target_language;
@@ -186,7 +181,6 @@ impl Deck {
     }
 
     /// Get the total number of gram dictionary entries (for "Showing X of Y" display)
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_gram_dictionary_count(&self) -> usize {
         let language_pack = &self.context.language_pack;
         language_pack
@@ -198,7 +192,6 @@ impl Deck {
     }
 
     /// Create a DeckEvent for adding a gram/phrase by its frequency index
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn add_gram_by_frequency_index(&self, frequency_index: usize) -> Option<DeckEvent> {
         let language_pack = &self.context.language_pack;
         let (spur_gram, _freq) = language_pack
@@ -221,7 +214,7 @@ impl Deck {
 }
 
 #[derive(Debug, Clone)]
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge(opaque)]
 pub struct GramDictionaryEntry {
     display_text: String,
     frequency_index: usize,
@@ -233,44 +226,44 @@ pub struct GramDictionaryEntry {
     target_language: Language,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl GramDictionaryEntry {
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn display_text(&self) -> String {
         self.display_text.clone()
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn frequency_index(&self) -> usize {
         self.frequency_index
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn is_in_deck(&self) -> bool {
         self.is_in_deck
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn is_phrase(&self) -> bool {
         self.is_phrase
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn prefix(&self) -> Option<WordPrefix> {
         self.prefix.clone()
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn morphology(&self) -> Option<Morphology> {
         self.morphology.clone()
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn definition(&self) -> GramDictionaryDefinition {
         self.definition.clone()
     }
 
-    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(getter))]
+    #[bridge(getter)]
     pub fn audio_request(&self) -> AudioRequest {
         AudioRequest {
             request: TtsRequest {
@@ -286,9 +279,8 @@ impl GramDictionaryEntry {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, schemars::JsonSchema)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub enum GramDictionaryDefinition {
     Dictionary {
         definitions: Vec<TargetToNativeWord>,

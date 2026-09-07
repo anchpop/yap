@@ -1,2 +1,7 @@
 [build]
 rustflags = ["--cfg=web_sys_unstable_apis"]
+
+# `cargo bridgerton web|swift|package` builds either platform's bindings without
+# installing the binary; see libraries/bridgerton/README.md.
+[alias]
+bridgerton = "run -p cargo-bridgerton --quiet --"

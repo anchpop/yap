@@ -10,22 +10,47 @@ use crate::data_model::{
 
 use super::DirtyOnDerefMut;
 
-/// Listener callbacks are `Send + Sync` off-wasm (so `EventStore` is `Send`)
-/// but may capture JS values in the browser. See `MaybeSendSync`.
-#[cfg(not(target_arch = "wasm32"))]
-type Listener<Stream> = Arc<dyn Fn(ListenerKey, Stream) + Send + Sync>;
-#[cfg(target_arch = "wasm32")]
-type Listener<Stream> = Arc<dyn Fn(ListenerKey, Stream)>;
+/// Select callback ownership independently of the platform. Native UI callers
+/// use local listeners; server callers retain the default Send + Sync store.
+pub trait Listeners<Stream>: 'static {
+    type Callback: Clone + 'static;
+    fn notify(callback: &Self::Callback, key: ListenerKey, stream: Stream);
+}
+pub struct SharedListeners;
+pub struct LocalListeners;
+impl<Stream: 'static> Listeners<Stream> for SharedListeners {
+    #[cfg(not(target_arch = "wasm32"))]
+    type Callback = Arc<dyn Fn(ListenerKey, Stream) + Send + Sync>;
+    #[cfg(target_arch = "wasm32")]
+    type Callback = Arc<dyn Fn(ListenerKey, Stream)>;
+    fn notify(callback: &Self::Callback, key: ListenerKey, stream: Stream) {
+        callback(key, stream);
+    }
+}
+impl<Stream: 'static> Listeners<Stream> for LocalListeners {
+    type Callback = std::rc::Rc<dyn Fn(ListenerKey, Stream)>;
+    fn notify(callback: &Self::Callback, key: ListenerKey, stream: Stream) {
+        callback(key, stream);
+    }
+}
+pub type EventStore<Stream, Device> = EventStoreWithListeners<Stream, Device, SharedListeners>;
+pub type LocalEventStore<Stream, Device> = EventStoreWithListeners<Stream, Device, LocalListeners>;
 
-pub struct EventStore<Stream: Eq + Hash + Clone, Device: Eq + Hash + Clone> {
+pub struct EventStoreWithListeners<
+    Stream: Eq + Hash + Clone,
+    Device: Eq + Hash + Clone,
+    L: Listeners<Stream>,
+> {
     streams: HashMap<Stream, DirtyTracker<Box<dyn StreamStore<Device>>>>,
-    listeners: slotmap::SlotMap<slotmap::DefaultKey, Listener<Stream>>,
+    listeners: slotmap::SlotMap<slotmap::DefaultKey, L::Callback>,
 
     /// Updated whenever a sync target is updated.
     sync_states: SyncStates<Stream, Device>,
 }
 
-impl<Stream: Eq + Hash + Clone, Device: Eq + Hash + Clone> Default for EventStore<Stream, Device> {
+impl<Stream: Eq + Hash + Clone, Device: Eq + Hash + Clone, L: Listeners<Stream>> Default
+    for EventStoreWithListeners<Stream, Device, L>
+{
     fn default() -> Self {
         Self {
             streams: HashMap::new(),
@@ -36,8 +61,8 @@ impl<Stream: Eq + Hash + Clone, Device: Eq + Hash + Clone> Default for EventStor
     }
 }
 
-impl<Stream: Eq + Hash + Clone + 'static, Device: Eq + Hash + Clone + 'static>
-    EventStore<Stream, Device>
+impl<Stream: Eq + Hash + Clone + 'static, Device: Eq + Hash + Clone + 'static, L: Listeners<Stream>>
+    EventStoreWithListeners<Stream, Device, L>
 {
     pub fn drain_due_notifications(&mut self) -> Vec<Box<dyn FnOnce()>> {
         let mut notifications: Vec<Box<dyn FnOnce()>> = Vec::new();
@@ -58,15 +83,20 @@ impl<Stream: Eq + Hash + Clone + 'static, Device: Eq + Hash + Clone + 'static>
                 }
                 let listener = listener.clone();
                 let stream_id = stream_id.clone();
-                notifications.push(Box::new(move || listener(listener_key, stream_id)));
+                notifications.push(Box::new(move || {
+                    L::notify(&listener, listener_key, stream_id)
+                }));
             }
         }
         notifications
     }
 }
 
-impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
-    EventStore<Stream, Device>
+impl<
+    Stream: Eq + Hash + Clone + Ord,
+    Device: Eq + Hash + Clone + Ord + 'static,
+    L: Listeners<Stream>,
+> EventStoreWithListeners<Stream, Device, L>
 {
     pub fn iter(&self) -> impl Iterator<Item = (&Stream, &dyn StreamStore<Device>)> {
         self.streams
@@ -90,8 +120,11 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     }
 }
 
-impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
-    EventStore<Stream, Device>
+impl<
+    Stream: Eq + Hash + Clone + Ord,
+    Device: Eq + Hash + Clone + Ord + 'static,
+    L: Listeners<Stream>,
+> EventStoreWithListeners<Stream, Device, L>
 {
     pub fn get_raw(&self, stream: Stream) -> Option<&dyn StreamStore<Device>> {
         self.streams.get(&stream).map(|s| s.store().as_ref())
@@ -172,15 +205,6 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
             .expect("stream must exist at this point")
     }
 
-    /// The listener is invoked whenever a new stream is added.
-    pub fn register_listener(
-        &mut self,
-        listener: impl Fn(ListenerKey, Stream) + MaybeSendSync + 'static,
-    ) -> ListenerKey {
-        let key = self.listeners.insert(Arc::new(listener));
-        ListenerKey(key)
-    }
-
     /// Unregister a previously registered store-level listener.
     pub fn unregister_listener(&mut self, token: ListenerKey) {
         self.listeners.remove(token.0);
@@ -207,8 +231,11 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     }
 }
 
-impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
-    EventStore<Stream, Device>
+impl<
+    Stream: Eq + Hash + Clone + Ord,
+    Device: Eq + Hash + Clone + Ord + 'static,
+    L: Listeners<Stream>,
+> EventStoreWithListeners<Stream, Device, L>
 {
     /// Add versioned events to a stream from multiple devices.
     pub fn add_events<VersionedEvent, EventsIter>(
@@ -301,8 +328,11 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
     }
 }
 
-impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord + 'static>
-    EventStore<Stream, Device>
+impl<
+    Stream: Eq + Hash + Clone + Ord,
+    Device: Eq + Hash + Clone + Ord + 'static,
+    L: Listeners<Stream>,
+> EventStoreWithListeners<Stream, Device, L>
 {
     /// Add a raw event (not timestamped). The event is automatically timestamped (with the
     /// current time and the given `timezone`) and converted to its versioned form for storage.
@@ -420,16 +450,17 @@ where
     result
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi, from_wasm_abi))]
 #[serde(rename_all = "camelCase")]
 pub enum SyncTarget {
     Supabase,
     Opfs,
 }
 
-impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord> EventStore<Stream, Device> {
+impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord, L: Listeners<Stream>>
+    EventStoreWithListeners<Stream, Device, L>
+{
     /// Join and record the latest sync clock for a specific target.
     pub fn update_sync_clock(&mut self, target: SyncTarget, new_clock: Clock<Stream, Device>) {
         let state = self.sync_states.entry(target).or_default();
@@ -448,9 +479,8 @@ impl<Stream: Eq + Hash + Clone + Ord, Device: Eq + Hash + Clone + Ord> EventStor
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi, from_wasm_abi))]
 #[serde(rename_all = "camelCase")]
 #[serde(bound(
     serialize = "Stream: serde::Serialize + Eq + Hash + Ord, Device: serde::Serialize + Eq + Hash + Ord",
@@ -475,5 +505,26 @@ impl<Stream, Device> Default for SyncState<Stream, Device> {
             last_sync_finished: None,
             last_sync_error: None,
         }
+    }
+}
+
+impl<Stream: Eq + Hash + Clone + 'static, Device: Eq + Hash + Clone>
+    EventStoreWithListeners<Stream, Device, SharedListeners>
+{
+    pub fn register_listener(
+        &mut self,
+        listener: impl Fn(ListenerKey, Stream) + MaybeSendSync + 'static,
+    ) -> ListenerKey {
+        ListenerKey(self.listeners.insert(Arc::new(listener)))
+    }
+}
+impl<Stream: Eq + Hash + Clone + 'static, Device: Eq + Hash + Clone>
+    EventStoreWithListeners<Stream, Device, LocalListeners>
+{
+    pub fn register_listener(
+        &mut self,
+        listener: impl Fn(ListenerKey, Stream) + 'static,
+    ) -> ListenerKey {
+        ListenerKey(self.listeners.insert(std::rc::Rc::new(listener)))
     }
 }

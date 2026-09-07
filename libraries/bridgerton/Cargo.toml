@@ -1,0 +1,44 @@
+[package]
+name = "bridgerton"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "One Rust API: real wasm-bindgen bindings for JavaScript and main-actor bindings for Swift"
+
+[dependencies]
+abort-signal.workspace = true
+bridgerton-macros = { path = "macros" }
+futures.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+chrono.workspace = true
+log.workspace = true
+web-time.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+js-sys.workspace = true
+web-sys = { version = "0.3", features = ["AbortSignal", "BroadcastChannel"] }
+serde-wasm-bindgen = "0.6"
+gloo-timers = { version = "0.3", features = ["futures"] }
+wasm-logger.workspace = true
+console_error_panic_hook = { version = "0.1.7", optional = true }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+inventory = "0.3"
+sha2 = "0.10"
+tokio.workspace = true
+env_logger.workspace = true
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.72"
+
+[features]
+# Report browser panics to the console; a host toggle, not a binding feature.
+console_error_panic_hook = ["dep:console_error_panic_hook"]
+
+[[test]]
+name = "tokio-context"
+path = "tests/tokio_context.rs"
+harness = false

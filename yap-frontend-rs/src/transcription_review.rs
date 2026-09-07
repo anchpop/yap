@@ -1,17 +1,16 @@
 use crate::{ReviewDefinition, TranscribeComprehensibleSentence};
 use language_utils::transcription_challenge::{Part, PartGraded, PartSubmitted, WordGrade};
 use std::collections::{BTreeMap, BTreeSet};
-use wasm_bindgen::prelude::*;
 
-#[derive(serde::Serialize, serde::Deserialize, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize, serde::Deserialize)]
 pub struct TranscriptionInput {
     pub index: usize,
     pub text: String,
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct TranscriptionSubmission {
     pub request: Vec<PartSubmitted>,
     pub all_blanks_filled: bool,
@@ -23,7 +22,7 @@ fn trim_submission(text: &str) -> &str {
     text.trim_matches(|c: char| c == '\u{feff}' || (c.is_whitespace() && c != '\u{0085}'))
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn prepare_transcription_submission(
     parts: Vec<Part>,
     inputs: Vec<TranscriptionInput>,
@@ -49,7 +48,7 @@ pub fn prepare_transcription_submission(
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn transcription_is_perfect(results: Vec<PartGraded>) -> bool {
     results.iter().all(|result| match result {
         PartGraded::Provided { .. } => true,
@@ -82,7 +81,7 @@ fn wrong_gram_groups(results: &[PartGraded], indices: &[Vec<usize>]) -> Vec<usiz
     groups
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_transcription_review_definitions(
     challenge: TranscribeComprehensibleSentence,
     results: Vec<PartGraded>,
@@ -108,7 +107,7 @@ pub fn get_transcription_review_definitions(
 
 /// Operates on an owned snapshot: changing a grade must not mutate earlier
 /// React state objects or a saved draft through a shared nested reference.
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn apply_transcription_grade(
     mut results: Vec<PartGraded>,
     part_index: usize,

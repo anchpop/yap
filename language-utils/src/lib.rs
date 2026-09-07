@@ -9,11 +9,9 @@ use rustc_hash::FxHashMap;
 use std::collections::BTreeMap;
 use std::hash::Hash;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
 use crate::features::Morphology;
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -25,13 +23,11 @@ use crate::features::Morphology;
     Ord,
     PartialOrd,
     Copy,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[schemars(rename = "PartOfSpeech")]
 pub enum PartOfSpeechTag {
     #[serde(rename = "ADJ")]
@@ -99,6 +95,7 @@ impl std::fmt::Display for PartOfSpeechTag {
 }
 
 /// Part-of-speech for heteronyms (excludes proper nouns, punctuation, spaces, and unknown)
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -110,13 +107,11 @@ impl std::fmt::Display for PartOfSpeechTag {
     Ord,
     PartialOrd,
     Copy,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PartOfSpeech {
     #[serde(rename = "ADJ")]
     Adj, // adjective
@@ -170,13 +165,13 @@ impl std::fmt::Display for PartOfSpeech {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
     serde::Deserialize,
     schemars::JsonSchema,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -185,7 +180,6 @@ impl std::fmt::Display for PartOfSpeech {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct TargetToNativeWord {
     pub native: String,
     pub note: Option<String>,
@@ -195,13 +189,13 @@ pub struct TargetToNativeWord {
     pub false_cognate: bool,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
     serde::Deserialize,
     schemars::JsonSchema,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -210,7 +204,6 @@ pub struct TargetToNativeWord {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PhrasebookDefinitionEntry {
     pub target_language_multi_word_term: String,
     pub meaning: String,
@@ -239,13 +232,13 @@ pub struct PhrasebookDefinitionEntryV2 {
     pub can_be_translated_literally: bool,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
     serde::Deserialize,
     schemars::JsonSchema,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -256,7 +249,6 @@ pub struct PhrasebookDefinitionEntryV2 {
     rkyv::Deserialize,
 )]
 #[rkyv(compare(PartialEq), derive(Debug), derive(Hash))]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ProperNounDefinition {
     pub is_person_name: bool,
     pub is_place_name: bool,
@@ -272,7 +264,6 @@ pub struct ProperNounDefinition {
     serde::Deserialize,
     schemars::JsonSchema,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -281,19 +272,18 @@ pub struct ProperNounDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DictionaryDefinition {
     pub target_language_word: String,
     pub definitions: Vec<TargetToNativeWord>,
 }
 
 /// A gram definition - either a dictionary entry (single word) or phrasebook entry (multi-word)
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
     serde::Deserialize,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -302,19 +292,18 @@ pub struct DictionaryDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum GramDefinition {
     Dictionary(DictionaryEntry),
     Phrasebook(PhrasebookDefinitionEntry),
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
     serde::Deserialize,
     schemars::JsonSchema,
     serde::Serialize,
-    tsify::Tsify,
     Eq,
     PartialEq,
     Ord,
@@ -323,7 +312,6 @@ pub enum GramDefinition {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct DictionaryEntry {
     pub target_language_word: String,
     pub definitions: Vec<TargetToNativeWord>,
@@ -503,9 +491,8 @@ where
 }
 
 /// Basic movie metadata without poster bytes, for serialization to files
+#[bridgerton::bridge(transparent)]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Eq, PartialEq, Ord, PartialOrd)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct MovieMetadataBasic {
     /// Unique identifier (IMDb ID, e.g., "tt0211915")
     pub id: String,
@@ -537,8 +524,6 @@ pub struct MovieMetadataBasic {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct MovieMetadata {
     /// Unique identifier (IMDb ID, e.g., "tt0211915")
     pub id: String,
@@ -571,6 +556,7 @@ impl From<MovieMetadataBasic> for MovieMetadata {
 /// appears in [`SentenceSource::book_ids`]. Stored per language in
 /// `sentence-sources/books/<series>/metadata.jsonl` (one line per book in the
 /// series) and carried into the language pack for attribution display.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -584,8 +570,6 @@ impl From<MovieMetadataBasic> for MovieMetadata {
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct BookMetadata {
     /// Book slug, e.g. "pale-lights"
     pub id: String,
@@ -1016,6 +1000,7 @@ pub struct DocToken {
     pub morph: BTreeMap<String, String>,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1027,13 +1012,11 @@ pub struct DocToken {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Heteronym<S> {
     pub word: S,
     pub lemma: S,
@@ -1051,6 +1034,7 @@ pub struct Heteronym<S> {
 ///   ending; English `-s` can be plural, 3sg present, or possessive. The tag
 ///   disambiguates so the same surface+canonical can map to distinct
 ///   `MorphemeInfo` entries.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -1062,12 +1046,10 @@ pub struct Heteronym<S> {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct MorphemeSegment<S> {
     pub surface: S,
     pub canonical: S,
@@ -1106,6 +1088,7 @@ pub enum MorphemeInfo<S> {
 }
 
 /// Type of non-heteronym word
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1117,13 +1100,11 @@ pub enum MorphemeInfo<S> {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum OtherWordType {
     #[serde(rename = "PROPN")]
     Propn, // proper noun
@@ -1136,6 +1117,7 @@ pub enum OtherWordType {
 }
 
 /// Information about a non-heteronym word
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1147,18 +1129,17 @@ pub enum OtherWordType {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct OtherWord {
     pub other_tag: OtherWordType,
 }
 
 /// The type of word in a literal - heteronym or other
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1170,13 +1151,11 @@ pub struct OtherWord {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
 pub enum WordType<S> {
     /// A word with dictionary/grammatical information
@@ -1186,6 +1165,7 @@ pub enum WordType<S> {
 }
 
 /// A word with its text and grammatical type
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1197,19 +1177,18 @@ pub enum WordType<S> {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Word<S> {
     pub text: S,
     pub word_type: WordType<S>,
 }
 
 /// A literal token in a sentence (word + trailing whitespace)
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -1219,14 +1198,12 @@ pub struct Word<S> {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     serde::Serialize,
     serde::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Literal<S> {
     pub word: Word<S>,
     pub whitespace: S,
@@ -1352,13 +1329,11 @@ impl Heteronym<lasso::Spur> {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
 pub enum Lexeme<S> {
     Heteronym { heteronym: Heteronym<S> },
@@ -1495,27 +1470,25 @@ impl Frequency {
 pub mod autograde {
     use super::*;
 
+    #[bridgerton::bridge(transparent)]
     #[derive(
         Clone,
         Debug,
         serde::Serialize,
         serde::Deserialize,
         schemars::JsonSchema,
-        tsify::Tsify,
         PartialEq,
         Eq,
         PartialOrd,
         Ord,
         Hash,
     )]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
     pub enum Remembered {
         Remembered,
         Forgot,
     }
 
-    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
     pub struct AutoGradeTranslationRequest {
         pub course: Course,
         pub challenge_sentence: String,
@@ -1527,8 +1500,8 @@ pub mod autograde {
     }
 
     /// Response from autograde.
-    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
+    #[bridgerton::bridge(transparent)]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
     pub struct AutoGradeTranslationResponse {
         pub encouragement: Option<String>,
         pub explanation: Option<String>,
@@ -1541,8 +1514,7 @@ pub mod autograde {
         pub autograding_error: Option<String>,
     }
 
-    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
     pub struct AutoGradeTranscriptionRequest {
         pub course: Course,
         pub submission: Vec<transcription_challenge::PartSubmitted>,
@@ -1550,51 +1522,33 @@ pub mod autograde {
 
     /// Wrapper for passing gram grades across the WASM boundary.
     /// One entry per literal in order. None = ungradable (Other word type) or indeterminate.
-    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
+    #[bridgerton::bridge(transparent)]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
     pub struct LiteralGrades(pub Vec<Option<Remembered>>);
 
     /// Wrapper for passing gram definitions across the WASM boundary.
-    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
+    #[bridgerton::bridge(transparent)]
+    #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
     pub struct GramDefinitions(pub Vec<Option<GramDefinition>>);
 }
 
 pub mod transcription_challenge {
     use super::*;
 
+    #[bridgerton::bridge(transparent, namespace)]
     #[derive(
-        Clone,
-        Debug,
-        serde::Serialize,
-        serde::Deserialize,
-        tsify::Tsify,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Hash,
+        Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
-    #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
     #[serde(tag = "type")]
     pub enum Part {
         AskedToTranscribe { parts: Vec<Literal<String>> },
         Provided { part: Literal<String> },
     }
 
+    #[bridgerton::bridge(transparent)]
     #[derive(
-        Clone,
-        Debug,
-        serde::Serialize,
-        serde::Deserialize,
-        tsify::Tsify,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Hash,
+        Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
-    #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
     #[serde(tag = "type")]
     pub enum PartSubmitted {
         AskedToTranscribe {
@@ -1606,19 +1560,10 @@ pub mod transcription_challenge {
         },
     }
 
+    #[bridgerton::bridge(transparent, namespace)]
     #[derive(
-        Clone,
-        Debug,
-        serde::Serialize,
-        serde::Deserialize,
-        tsify::Tsify,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Hash,
+        Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
-    #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
     #[serde(tag = "type")]
     pub enum PartGraded {
         AskedToTranscribe {
@@ -1630,38 +1575,28 @@ pub mod transcription_challenge {
         },
     }
 
+    #[bridgerton::bridge(transparent)]
     #[derive(
-        Clone,
-        Debug,
-        serde::Serialize,
-        serde::Deserialize,
-        tsify::Tsify,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Hash,
+        Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
     pub struct PartGradedPart {
         pub heard: Literal<String>,
         pub grade: WordGrade,
     }
 
+    #[bridgerton::bridge(transparent, namespace)]
     #[derive(
         Clone,
         Debug,
         serde::Serialize,
         serde::Deserialize,
         schemars::JsonSchema,
-        tsify::Tsify,
         PartialEq,
         Eq,
         PartialOrd,
         Ord,
         Hash,
     )]
-    #[tsify(namespace, into_wasm_abi, from_wasm_abi)]
     #[serde(tag = "type")]
     pub enum WordGrade {
         Perfect {
@@ -1687,19 +1622,10 @@ pub mod transcription_challenge {
         Missed {},
     }
 
+    #[bridgerton::bridge(transparent)]
     #[derive(
-        Clone,
-        Debug,
-        serde::Serialize,
-        serde::Deserialize,
-        tsify::Tsify,
-        PartialEq,
-        Eq,
-        PartialOrd,
-        Ord,
-        Hash,
+        Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
     )]
-    #[tsify(into_wasm_abi, from_wasm_abi)]
     pub struct Grade {
         pub encouragement: Option<String>,
         pub explanation: Option<String>,
@@ -1712,6 +1638,7 @@ pub mod transcription_challenge {
 /// Represents whitespace between tokens.
 /// We use an explicit enum rather than storing the actual string to normalize
 /// the representation and make it more compact.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -1723,13 +1650,11 @@ pub mod transcription_challenge {
     Hash,
     serde::Serialize,
     serde::Deserialize,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Whitespace {
     /// Regular space (U+0020)
     Space,
@@ -1781,6 +1706,7 @@ impl std::str::FromStr for Whitespace {
 /// A control token that corrects wrong whitespace predictions.
 /// When the predicted whitespace doesn't match the actual whitespace,
 /// we emit a Control token to record the correct value.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -1792,17 +1718,16 @@ impl std::str::FromStr for Whitespace {
     Ord,
     serde::Serialize,
     serde::Deserialize,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct ControlToken(pub Whitespace);
 
 /// An atom is either a word token or a control token.
 /// This is the basic unit after whitespace normalization.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Debug,
@@ -1814,13 +1739,11 @@ pub struct ControlToken(pub Whitespace);
     Hash,
     serde::Serialize,
     serde::Deserialize,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Atom<S> {
     /// A regular word token
     Tok(Word<S>),
@@ -1922,6 +1845,7 @@ impl<'de> serde::Deserialize<'de> for EncodedSentence {
 /// A gram is a sequence of atoms representing a learnable unit in a sentence.
 /// This is a newtype wrapper around `Vec<Atom<S>>` that provides methods for
 /// working with grams and implements `Internable` for use with lasso.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -1932,13 +1856,11 @@ impl<'de> serde::Deserialize<'de> for EncodedSentence {
     Hash,
     serde::Serialize,
     serde::Deserialize,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Gram<S>(pub Vec<Atom<S>>);
 pub type SpurGram = lasso::Spur<Gram<lasso::Spur>>;
 
@@ -2283,6 +2205,7 @@ impl GramVocabEntry<lasso::Spur> {
 }
 
 /// Whether a voice actor was paid for their recordings or contributed them as a volunteer.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -2296,11 +2219,9 @@ impl GramVocabEntry<lasso::Spur> {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
 #[rkyv(derive(Hash, PartialEq, Eq))]
 #[serde(rename_all = "snake_case")]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Compensation {
     Paid,
     Volunteer,
@@ -2585,6 +2506,7 @@ impl ConsolidatedLanguageData {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Copy,
@@ -2599,10 +2521,8 @@ impl ConsolidatedLanguageData {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum TtsProvider {
     ElevenLabs,
     Google,
@@ -2631,6 +2551,7 @@ impl Pronunciations {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -2641,19 +2562,18 @@ impl Pronunciations {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PronunciationDifficulty {
     Easy,
     Medium,
     Hard,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -2664,13 +2584,11 @@ pub enum PronunciationDifficulty {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PronunciationFamiliarity {
     LikelyAlreadyKnows,
     MaybeAlreadyKnows,
@@ -2687,17 +2605,16 @@ pub enum PronunciationFamiliarity {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct LanguageSoundPattern {
     pub pattern: String, // e.g. "ch", "ent$", "^h"
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -2708,13 +2625,11 @@ pub struct LanguageSoundPattern {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum SoundPosition {
     Beginning,
     Middle,
@@ -2722,6 +2637,7 @@ pub enum SoundPosition {
     Multiple,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -2733,19 +2649,18 @@ pub enum SoundPosition {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum PatternPosition {
     Beginning,
     End,
     Anywhere,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -2756,13 +2671,11 @@ pub enum PatternPosition {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct WordPair {
     pub target: String,
     pub native: String,
@@ -2780,13 +2693,11 @@ pub struct WordPair {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PronunciationGuideThoughts {
     pub thoughts: String,
     pub pattern: String,
@@ -2797,6 +2708,7 @@ pub struct PronunciationGuideThoughts {
     pub example_words: Vec<WordPair>,
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -2807,13 +2719,11 @@ pub struct PronunciationGuideThoughts {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PronunciationGuide {
     pub pattern: String,
     pub position: PatternPosition,
@@ -2845,19 +2755,18 @@ impl From<PronunciationGuideThoughts> for PronunciationGuide {
     PartialEq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct PronunciationData {
     pub sounds: Vec<(String, PatternPosition)>, // List of characteristic sounds/patterns for the language
     pub guides: Vec<PronunciationGuide>,        // Detailed guides for each sound
     pub pattern_frequencies: Vec<((String, PatternPosition), u32)>, // Pattern frequencies sorted by frequency (descending)
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -2868,10 +2777,8 @@ pub struct PronunciationData {
     Eq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Language {
     French,
     English,
@@ -2896,17 +2803,8 @@ pub enum Language {
 }
 
 #[derive(
-    Copy,
-    Clone,
-    Debug,
-    serde::Serialize,
-    serde::Deserialize,
-    PartialEq,
-    Eq,
-    tsify::Tsify,
-    schemars::JsonSchema,
+    Copy, Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum WritingSystem {
     /// Latin alphabet (Romance languages, Germanic languages, etc.)
     Latin,
@@ -3772,19 +3670,10 @@ impl std::fmt::Display for Language {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
-    Copy,
-    Clone,
-    Debug,
-    serde::Serialize,
-    serde::Deserialize,
-    tsify::Tsify,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
+    Copy, Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(rename_all = "camelCase")]
 pub struct Course {
     pub native_language: Language,
@@ -3900,18 +3789,16 @@ pub const LANGUAGES: &[Language] = &[
 ];
 
 /// A sentence example for the landing page showcase.
+#[bridgerton::bridge(transparent)]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 pub struct ShowcaseExampleSentence {
     pub target: String,
     pub native: String,
 }
 
 /// A phrase entry for the landing page showcase.
+#[bridgerton::bridge(transparent)]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 #[serde(rename_all = "camelCase")]
 pub struct ShowcasePhrase {
     pub display_text: String,
@@ -3920,9 +3807,8 @@ pub struct ShowcasePhrase {
 }
 
 /// Landing page showcase data for a single course.
+#[bridgerton::bridge(transparent)]
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(into_wasm_abi))]
 #[serde(rename_all = "camelCase")]
 pub struct CourseShowcase {
     pub target_language: Language,
@@ -3947,10 +3833,8 @@ pub struct CourseShowcase {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
 #[rkyv(compare(PartialEq), derive(Hash), derive(PartialEq), derive(Eq))]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct HomophoneWordPair<S>
 where
     S: rkyv::Archive + Hash + std::fmt::Debug + Eq + PartialEq + Ord + PartialOrd,
@@ -4116,10 +4000,8 @@ impl HomophonePractice<lasso::Spur> {
         }
     }
 }
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, tsify::Tsify, schemars::JsonSchema,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, schemars::JsonSchema)]
 pub struct TtsRequest {
     pub text: String,
     pub language: Language,

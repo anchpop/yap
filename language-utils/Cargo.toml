@@ -4,15 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+bridgerton.workspace = true
 schemars.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tsify.workspace = true
-wasm-bindgen.workspace = true
 rkyv.workspace = true
 lasso.workspace = true
 parse-display = "0.11.0"
 rustc-hash = "2.1"
 xxhash-rust.workspace = true
 unicode-normalization.workspace = true
-

@@ -118,8 +118,7 @@ jobs:
           version: 10
 
       - name: Build WASM module
-        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
-        working-directory: yap-frontend-rs
+        run: CARGO_PROFILE_RELEASE_LTO=true cargo bridgerton web --package yap-frontend-rs --release
 
       - name: Generate dictionary data from language packs
         run: cargo run --release --bin generate-dictionary-data
@@ -278,8 +277,7 @@ jobs:
       # imports — the WASM itself never enters the bundle, but tsc needs the
       # declarations).
       - name: Build WASM module (for widget type declarations)
-        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
-        working-directory: yap-frontend-rs
+        run: CARGO_PROFILE_RELEASE_LTO=true cargo bridgerton web --package yap-frontend-rs --release
 
       - name: Install frontend dependencies
         run: pnpm install

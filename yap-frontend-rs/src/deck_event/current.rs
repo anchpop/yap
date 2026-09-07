@@ -9,6 +9,7 @@ use language_utils::{Gram, Language, Literal, PatternPosition, SpurGram};
 use lasso::Spur;
 use serde::{Deserialize, Serialize};
 
+#[bridgerton::bridge(transparent)]
 #[derive(
     Copy,
     Clone,
@@ -19,11 +20,9 @@ use serde::{Deserialize, Serialize};
     Eq,
     Ord,
     PartialOrd,
-    tsify::Tsify,
     Hash,
     schemars::JsonSchema,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(tag = "type")]
 // Every variant is an object; saying so at the top level keeps MCP clients
 // that key off `type` from treating the union as untyped.
@@ -134,15 +133,15 @@ impl CardIndicator<SpurGram, Spur> {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub struct LiteralResult {
     pub remembered: Option<bool>,
     pub hinted: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub enum GradePart<S> {
     Ungradable,
@@ -152,8 +151,8 @@ pub enum GradePart<S> {
 /// Alias for backwards compatibility with v2 migration code
 pub type TranscriptionGradePart<S> = GradePart<S>;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub enum SentenceReviewResult {
     Perfect {
@@ -171,18 +170,16 @@ pub enum SentenceReviewResult {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub struct LanguageEvent {
     pub target_language: Language,
     pub native_language: Language,
     pub content: LanguageEventContent,
 }
 
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(rename_all = "lowercase")]
 pub enum Rating {
     Again,
@@ -192,15 +189,15 @@ pub enum Rating {
     Easy,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub struct PlacementTest {
     pub known_words: Vec<String>,
     pub unknown_words: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub enum SentenceListSelection {
     Movie {
@@ -213,8 +210,8 @@ pub enum SentenceListSelection {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub enum LanguageEventContent {
     CompletePlacementTest {
@@ -265,8 +262,8 @@ pub struct LegacyTranslationChallenge {
     pub heteronyms_needed_hint: BTreeSet<language_utils::Heteronym<String>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub enum DeckEvent {
     Language(LanguageEvent),

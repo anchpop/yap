@@ -5,7 +5,7 @@ use crate::{
 };
 use chrono::{DateTime, Duration, Utc};
 use language_utils::{Gram, transcription_challenge};
-use wasm_bindgen::prelude::*;
+use std::cell::{Cell, RefCell};
 use weapon::AppState;
 use weapon::data_model::Timestamped;
 
@@ -275,8 +275,8 @@ impl Deck {
 }
 
 /// One simulated day's results, sampled after the day's reviews and new cards.
-#[derive(tsify::Tsify, serde::Serialize, serde::Deserialize, Debug, Clone)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct SimulationSample {
     /// Days since the simulation started (1 = end of the first simulated day).
     pub day: u32,
@@ -297,17 +297,19 @@ pub struct SimulationSample {
 /// A paused simulation of future deck usage. The frontend advances it in
 /// chunks (e.g. two weeks at a time), yielding to the main thread between
 /// chunks and rendering the samples incrementally.
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge(opaque)]
 pub struct DeckSimulation {
-    iterator: Option<DailySimulationIterator>,
-    day: u32,
+    // Bridged objects are shared by reference on both platforms, so the
+    // paused iterator lives behind a cell rather than a `&mut self` method.
+    iterator: RefCell<Option<DailySimulationIterator>>,
+    day: Cell<u32>,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl DeckSimulation {
     /// Advance the simulation by `days` days, returning one sample per day.
-    pub fn simulate_days(&mut self, days: u32) -> Vec<SimulationSample> {
-        let Some(mut iterator) = self.iterator.take() else {
+    pub fn simulate_days(&self, days: u32) -> Vec<SimulationSample> {
+        let Some(mut iterator) = self.iterator.borrow_mut().take() else {
             return Vec::new();
         };
 
@@ -317,7 +319,7 @@ impl DeckSimulation {
             let mut day_iter = iterator.next_day();
             let reviews = day_iter.by_ref().count() as u32;
             iterator = day_iter.finish_day();
-            self.day += 1;
+            self.day.set(self.day.get() + 1);
 
             let deck = &iterator.deck;
             let goal_percent = deck.get_sentence_list().map(|selection| {
@@ -326,7 +328,7 @@ impl DeckSimulation {
             });
             let total_cards = deck.num_cards_added();
             samples.push(SimulationSample {
-                day: self.day,
+                day: self.day.get(),
                 goal_percent,
                 overall_percent: deck.get_percent_of_words_known() * 100.0,
                 reviews,
@@ -336,12 +338,12 @@ impl DeckSimulation {
             });
         }
 
-        self.iterator = Some(iterator);
+        *self.iterator.borrow_mut() = Some(iterator);
         samples
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
     /// Begin a chunked simulation of future usage starting at `timestamp_ms`,
     /// adding `new_cards_per_day` cards each simulated day (None uses the
@@ -359,8 +361,8 @@ impl Deck {
             iterator = iterator.with_new_cards_per_day(count as usize);
         }
         DeckSimulation {
-            iterator: Some(iterator),
-            day: 0,
+            iterator: RefCell::new(Some(iterator)),
+            day: Cell::new(0),
         }
     }
 }

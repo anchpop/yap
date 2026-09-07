@@ -27,7 +27,7 @@ pub use event_type::*;
 pub use stream_store::*;
 pub use timestamped::*;
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen::prelude::wasm_bindgen)]
+#[bridgerton::bridge(opaque)]
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct ListenerKey(pub(crate) slotmap::DefaultKey);
 
@@ -51,6 +51,7 @@ impl<T: ?Sized> MaybeSend for T {}
 pub trait MaybeSendSync: Send + Sync {}
 #[cfg(not(target_arch = "wasm32"))]
 impl<T: Send + Sync + ?Sized> MaybeSendSync for T {}
+
 #[cfg(target_arch = "wasm32")]
 pub trait MaybeSendSync {}
 #[cfg(target_arch = "wasm32")]

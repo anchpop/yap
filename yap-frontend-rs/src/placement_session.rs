@@ -1,12 +1,11 @@
 //! In-memory placement workflow. Completing it still appends the existing event.
 use crate::{Deck, placement_test::PlacementTestWord};
 use std::collections::BTreeSet;
-use wasm_bindgen::prelude::*;
 
 const ROUNDS: u8 = 3;
 
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct PlacementSession {
     pub round: u8,
     pub words: Vec<PlacementTestWord>,
@@ -67,8 +66,8 @@ impl PlacementSession {
     }
 }
 
-#[derive(serde::Serialize, tsify::Tsify)]
-#[tsify(into_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(serde::Serialize)]
 pub struct PlacementSessionInfo {
     pub finished: bool,
     pub total_rounds: u8,
@@ -77,7 +76,7 @@ pub struct PlacementSessionInfo {
     pub too_advanced: bool,
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn get_placement_session_info(session: PlacementSession) -> PlacementSessionInfo {
     let answers = session.known_words.len() + session.unknown_words.len();
     PlacementSessionInfo {
@@ -89,7 +88,7 @@ pub fn get_placement_session_info(session: PlacementSession) -> PlacementSession
     }
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 pub fn toggle_placement_word(mut session: PlacementSession, word: String) -> PlacementSession {
     if !session.finished()
         && session.words.iter().any(|w| w.word == word)
@@ -100,7 +99,7 @@ pub fn toggle_placement_word(mut session: PlacementSession, word: String) -> Pla
     session
 }
 
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[bridgerton::bridge]
 impl Deck {
     pub fn start_placement_session(&self) -> PlacementSession {
         let mut session = PlacementSession::default();

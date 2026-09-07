@@ -8,8 +8,6 @@
 pub enum MetaEvent {}
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(target_arch = "wasm32", derive(tsify::Tsify))]
-#[cfg_attr(target_arch = "wasm32", tsify(from_wasm_abi, into_wasm_abi))]
 pub enum EventType<E> {
     User(E),
     Meta(MetaEvent),

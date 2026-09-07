@@ -11,8 +11,7 @@ use weapon::data_model::Event;
 // Re-export current types for convenience
 pub use current::*;
 
-#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, Ord, PartialOrd, Eq, PartialEq)]
 #[serde(tag = "version")]
 #[allow(private_interfaces)] // old types are not public outside of this module to prevent them from being used in our code
 pub enum VersionedDeckEvent {

@@ -4,17 +4,14 @@ use std::{
     convert::{TryFrom, TryInto},
 };
 
-#[cfg(target_arch = "wasm32")]
-use js_sys;
-#[cfg(target_arch = "wasm32")]
-use web_sys::BroadcastChannel;
-
 use opfs::{
     DirectoryEntry, DirectoryHandle as _, FileHandle as _, WritableFileStream as _,
     persistent::{self, DirectoryHandle, FileHandle},
 };
 
-use crate::data_model::{Clock, EventStore, IndexedEvent, ListenerKey, SyncTarget, Timestamped};
+use crate::data_model::{
+    Clock, EventStoreWithListeners, IndexedEvent, ListenerKey, Listeners, SyncTarget, Timestamped,
+};
 use futures::{Stream, StreamExt};
 
 const EVENTS_FILE_NAME: &str = "events.blob";
@@ -22,10 +19,10 @@ const EVENT_LOG_MAGIC: &[u8] = b"WEAPONLG";
 const EVENT_LOG_VERSION: u32 = 1;
 const EVENT_LOG_HEADER_LEN: usize = EVENT_LOG_MAGIC.len() + 4;
 
-impl EventStore<String, String> {
+impl<L: Listeners<String>> EventStoreWithListeners<String, String, L> {
     /// Full OPFS sync wrapper: marks lifecycle, runs inner sync, records result.
     pub async fn sync_with_opfs(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         user_directory: &UserDirectory,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
@@ -51,7 +48,7 @@ impl EventStore<String, String> {
     /// Performs OPFS load/save for either a specific stream or all streams, then
     /// refreshes and records the OPFS clock in the sync state.
     async fn sync_with_opfs_inner(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         user_directory: &UserDirectory,
         stream_id_to_sync: Option<String>,
         modifier: Option<ListenerKey>,
@@ -91,7 +88,7 @@ impl EventStore<String, String> {
     }
     /// Reload events from local storage and merge with current state
     pub async fn load_from_local_storage(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         user_directory: &UserDirectory,
         stream_id: String,
         modifier: Option<ListenerKey>,
@@ -160,9 +157,8 @@ impl EventStore<String, String> {
     }
 
     /// Save events to local storage
-    // todo: this should use the WebLocks API to prevent multiple saves from happening at once
     pub async fn save_to_local_storage(
-        store: &RefCell<EventStore<String, String>>,
+        store: &RefCell<Self>,
         user_directory: &UserDirectory,
         stream_id: String,
     ) -> Result<usize, persistent::Error> {
@@ -170,8 +166,7 @@ impl EventStore<String, String> {
             &format!("opfs-save-to-local-storage-{stream_id}"),
             weblocks::AcquireOptions::exclusive(),
         )
-        .await
-        .unwrap();
+        .await?;
         let mut total_written: usize = 0;
 
         // Local desired counts per device for this stream
@@ -217,26 +212,22 @@ impl EventStore<String, String> {
             total_written += records_to_append.len();
         }
 
-        // If we wrote anything, broadcast a message to other tabs
-        #[cfg(target_arch = "wasm32")]
+        // Tell the other instances of the app (browser tabs) to reload this stream.
         if total_written > 0 {
-            match BroadcastChannel::new("weapon-opfs-sync") {
-                Ok(channel) => {
-                    // Create a simple JS object directly
-                    let obj = js_sys::Object::new();
-                    js_sys::Reflect::set(&obj, &"type".into(), &"opfs-written".into()).unwrap();
-                    js_sys::Reflect::set(&obj, &"stream_id".into(), &stream_id.as_str().into())
-                        .unwrap();
-
-                    log::info!("Broadcasting opfs-written message for stream: {stream_id}");
-                    match channel.post_message(&obj) {
-                        Ok(_) => log::info!("Message posted successfully"),
-                        Err(e) => log::error!("Failed to post message: {e:?}"),
-                    }
-                }
-                Err(e) => {
-                    log::error!("Failed to create BroadcastChannel: {e:?}");
-                }
+            #[derive(serde::Serialize)]
+            struct Written<'a> {
+                r#type: &'static str,
+                stream_id: &'a str,
+            }
+            log::info!("Broadcasting opfs-written message for stream: {stream_id}");
+            if let Err(error) = bridgerton::platform::broadcast(
+                "weapon-opfs-sync",
+                &Written {
+                    r#type: "opfs-written",
+                    stream_id: &stream_id,
+                },
+            ) {
+                log::error!("Failed to broadcast: {error}");
             }
         }
 
@@ -720,24 +711,13 @@ fn parse_event_log_records_with_skip(
 }
 
 pub fn parse_device_counts(bytes: &[u8]) -> BTreeMap<String, usize> {
-    // Start performance measurement
-    #[cfg(target_arch = "wasm32")]
-    let start_time = web_sys::window()
-        .and_then(|w| w.performance())
-        .map(|p| p.now());
-
-    #[cfg(target_arch = "wasm32")]
+    let start_time = web_time::Instant::now();
     let bytes_len = bytes.len();
-
     let mut counts: BTreeMap<String, usize> = BTreeMap::new();
-    #[cfg(target_arch = "wasm32")]
     let mut record_count = 0usize;
 
     for raw_record in event_log_records_iter(bytes) {
-        #[cfg(target_arch = "wasm32")]
-        {
-            record_count += 1;
-        }
+        record_count += 1;
 
         let within_device_index = match usize::try_from(raw_record.within_device_events_index) {
             Ok(index) => index,
@@ -769,17 +749,9 @@ pub fn parse_device_counts(bytes: &[u8]) -> BTreeMap<String, usize> {
         *entry += 1;
     }
 
-    // Log performance metrics
-    #[cfg(target_arch = "wasm32")]
-    if let Some(start) = start_time
-        && let Some(perf) = web_sys::window().and_then(|w| w.performance())
-    {
-        let duration = perf.now() - start;
-        let throughput = if duration > 0.0 {
-            bytes_len as f64 / duration / 1024.0 // KB/ms
-        } else {
-            0.0
-        };
+    let duration = start_time.elapsed().as_secs_f64() * 1000.0;
+    if duration > 0.0 {
+        let throughput = bytes_len as f64 / duration / 1024.0; // KB/ms
         log::info!(
             "parse_device_counts: processed {} records from {} bytes in {:.2}ms ({:.2} KB/ms, {:.2} records/ms)",
             record_count,

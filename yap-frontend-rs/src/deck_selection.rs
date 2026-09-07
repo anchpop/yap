@@ -3,10 +3,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use language_utils::Language;
 use weapon::data_model::Event;
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub enum HeardAbout {
     FriendsOrFamily,
     Reddit,
@@ -17,10 +15,8 @@ pub enum HeardAbout {
     Other,
 }
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub enum Motivation {
     SpendTimeProductively,
     SupportMyEducation,
@@ -31,10 +27,8 @@ pub enum Motivation {
     Other,
 }
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub enum ExperienceLevel {
     New,
     CommonWords,
@@ -43,10 +37,8 @@ pub enum ExperienceLevel {
     MostTopics,
 }
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub enum DailyReviewTarget {
     Casual,
     Regular,
@@ -67,19 +59,10 @@ impl DailyReviewTarget {
     }
 }
 
+#[bridgerton::bridge(transparent)]
 #[derive(
-    Clone,
-    Debug,
-    Default,
-    serde::Serialize,
-    serde::Deserialize,
-    PartialEq,
-    Eq,
-    Ord,
-    PartialOrd,
-    tsify::Tsify,
+    Clone, Debug, Default, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 #[serde(rename_all = "camelCase")]
 pub struct OnboardingSelections {
     pub starting_fresh: bool,
@@ -88,8 +71,8 @@ pub struct OnboardingSelections {
     pub study_goal: Option<DailyReviewTarget>,
 }
 
-#[derive(Clone, Debug, tsify::Tsify, serde::Serialize, serde::Deserialize)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeckSelection {
     pub target_language: Option<Language>,
@@ -169,10 +152,8 @@ impl weapon::AppState for DeckSelection {
     }
 }
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub enum DeckSelectionEvent {
     #[serde(alias = "SelectLanguage")]
     SelectTargetLanguage(Language),
@@ -204,10 +185,7 @@ pub enum DeckSelectionEventV1 {
     },
 }
 
-#[derive(
-    Clone, Debug, serde::Serialize, serde::Deserialize, Ord, PartialOrd, Eq, PartialEq, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, Ord, PartialOrd, Eq, PartialEq)]
 #[serde(tag = "version")]
 pub enum VersionedDeckSelectionEvent {
     V1(DeckSelectionEventV1),

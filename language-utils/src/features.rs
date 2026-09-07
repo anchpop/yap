@@ -62,6 +62,7 @@ pub enum Clusivity {}
 /// See also the related feature of Animacy.
 ///
 /// African languages have an analogous feature of noun classes: there might be separate grammatical categories for flat objects, long thin objects etc.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -77,9 +78,7 @@ pub enum Clusivity {}
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Gender {
     /// Nouns denoting male persons are masculine. Other nouns may be also grammatically masculine, without any relation to sex.
     Masculine,
@@ -128,6 +127,7 @@ pub enum NounClass {}
 /// Number is usually an inflectional feature of nouns and, depending on language, other parts of speech (pronouns, adjectives, determiners, numerals, verbs) that mark agreement with nouns.
 ///
 /// In languages where noun phrases are pluralized using a specific function word (pluralizer), this function word is tagged DET and Number=Plur is its lexical feature.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -143,9 +143,7 @@ pub enum NounClass {}
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Number {
     /// Singular number: denotes one person, animal or thing
     Singular,
@@ -188,6 +186,7 @@ pub enum Number {
 /// Note that Indian corpora based on the so-called Paninian model use a related feature called vibhakti. It is a merger of the Case feature described here and of various postpositions. Values of the feature are language-dependent because they are copies of the relevant morphemes (either bound morphemes or postpositions). Vibhakti can be mapped on the Case values described here if we know 1. which source values are bound morphemes (postpositions are separate nodes for us) and 2. what is their meaning. For instance, the genitive case (Gen) in Bengali is marked using the suffix -ra (-র), i.e. vib=era. In Hindi, the suffix has been split off the noun and it is now written as a separate word – the postposition kā/kī/ke (का/की/के). Even if the postpositional phrase can be understood as a genitive noun phrase, the noun is not in genitive. Instead, the postposition requires that it takes one of three case forms that are marked directly on the noun: the oblique case (Acc).
 ///
 /// Person is typically feature of personal and possessive pronouns / determiners, and of verbs. On verbs it is in fact an agreement feature that marks the person of the verb’s subject (some languages, e.g. Basque, can also mark person of objects). Person marked on verbs makes it unnecessary to always add a personal pronoun as subject and thus subjects are sometimes dropped (pro-drop languages).
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -203,9 +202,7 @@ pub enum Number {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Case {
     /// The base form of the noun, typically used as citation form (lemma). In many languages this is the word form used for subjects of clauses. If the language has only two cases, which are called “direct” and “oblique”, the direct case will be marked Nom.
     Nominative,
@@ -319,6 +316,7 @@ pub enum Degree {}
 pub enum VerbForm {}
 
 /// Mood is a feature that expresses modality and subclassifies finite verb forms.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -334,9 +332,7 @@ pub enum VerbForm {}
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Mood {
     /// The indicative can be considered the default mood. A verb in indicative merely states that something happens, has happened or will happen, without adding any attitude of the speaker.
     Indicative,
@@ -373,6 +369,7 @@ pub enum Mood {
 /// Tense is a feature that specifies the time when the action took / takes / will take place, in relation to a reference point. The reference is often the moment of producing the sentence, but it can be also another event in the context. In some languages (e.g. English), some tenses are actually combinations of tense and aspect. In other languages (e.g. Czech), aspect and tense are separate, although not completely independent of each other.
 ///
 /// Note that we are defining features that apply to a single word. If a tense is constructed periphrastically (two or more words, e.g. auxiliary verb indicative + participle of the main verb) and none of the participating words are specific to this tense, then the features will probably not directly reveal the tense. For instance, [en] I had been there is past perfect (pluperfect) tense, formed periphrastically by the simple past tense of the auxiliary to have and the past participle of the main verb to be. The auxiliary will be tagged VerbForm=Fin|Mood=Ind|Tense=Past and the participle will have VerbForm=Part|Tense=Past; none of the two will have Tense=Pqp. On the other hand, Portuguese can form the pluperfect morphologically as just one word, such as estivera, which will thus be tagged VerbForm=Fin|Mood=Ind|Tense=Pqp.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -388,9 +385,7 @@ pub enum Mood {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Tense {
     /// The past tense denotes actions that happened before a reference point. In the prototypical case, the reference point is the moment of producing the sentence and the past event happened before the speaker speaks about it. However, Tense=Past is also used to distinguish past participles from other kinds of participles, and past converbs from other kinds of converbs; in these cases, the reference point may itself be in past or future, when compared to the moment of speaking. For instance, the Czech converb spatřivše “having seen” in the sentence spatřivše vojáky, velmi se ulekli “having seen the soldiers, they got very scared” describes an event that is anterior to the event of getting scared. It also happens to be anterior to the moment of speaking, but that fact is not encoded in the converb itself, it is rather a consequence of “getting scared” being in the past tense.
     ///
@@ -415,6 +410,7 @@ pub enum Tense {
 /// In Czech and other Slavic languages, aspect is a lexical feature. Pairs of imperfective and perfective verbs exist and are often morphologically related but the space is highly irregular and the verbs are considered to belong to separate lemmas.
 ///
 /// Since we proceed bottom-up, the current standard covers only a few aspect values found in corpora. See Wikipedia (http://en.wikipedia.org/wiki/Grammatical_aspect) for a long list of other possible aspects.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -430,9 +426,7 @@ pub enum Tense {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Aspect {
     /// Imperfect aspect: the action took / takes / will take some time span and there is
     /// no information whether and when it was / will be completed.
@@ -483,6 +477,7 @@ pub enum Evident {}
 pub enum Polarity {}
 
 /// Person is typically feature of personal and possessive pronouns / determiners, and of verbs. On verbs it is in fact an agreement feature that marks the person of the verb’s subject (some languages, e.g. Basque, can also mark person of objects). Person marked on verbs makes it unnecessary to always add a personal pronoun as subject and thus subjects are sometimes dropped (pro-drop languages).
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -498,9 +493,7 @@ pub enum Polarity {}
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Person {
     /// Zero person is for impersonal statements, appears in Finnish as well as in Santa Ana Pueblo Keres. (The construction is distinctive in Finnish but it does not use unique morphology that would necessarily require a feature. However, it is morphologically distinct in Keres (Davis 1964:75): The fourth (zero) person is used “when the subject of the action is obscure, as when the speaker is telling of something that he himself did not observe. It is also used when the subject of the action is inferior to the object, as when an animal is the subject and a human being the object.”
     Zeroth,
@@ -525,6 +518,7 @@ pub enum Person {
 /// In German, Spanish or Hindi, both number and person are changed (informal third person is used as formal second person) and in addition, special pronouns are used that only occur in the formal register ([de] Sie; [es] usted, ustedes; [hi] आप āpa).
 ///
 /// In Japanese, verbs and other words have polite and informal forms but the polite forms are not referring to the addressee (they are not in second person). They are just used because of who the addressee is, even if the topic does not involve the addressee at all. This kind of polite language is called teineigo (丁寧語) and belongs to the speaker-addressee axis. Nevertheless, we currently use the same values for both axes, i.e. Polite=Form can be used for teineigo too. This approach may be refined in future.
+#[bridgerton::bridge(transparent)]
 #[derive(
     Debug,
     Clone,
@@ -540,9 +534,7 @@ pub enum Person {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub enum Polite {
     /// The most intimate register, below the ordinary informal/T-form.
     /// Used in languages with three-way politeness distinctions for addressing small
@@ -1688,6 +1680,7 @@ impl FeatureSet for Polite {
 }
 
 // Just gender, politeness, tense and person for now
+#[bridgerton::bridge(transparent)]
 #[derive(
     Clone,
     Debug,
@@ -1702,10 +1695,8 @@ impl FeatureSet for Polite {
     rkyv::Archive,
     rkyv::Serialize,
     rkyv::Deserialize,
-    tsify::Tsify,
     Default,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct Morphology {
     pub gender: Option<Gender>,
     pub number: Option<Number>,
@@ -1718,17 +1709,10 @@ pub struct Morphology {
 }
 
 /// Represents a grammatical prefix for a word (like articles in French)
+#[bridgerton::bridge(transparent)]
 #[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    schemars::JsonSchema,
-    serde::Serialize,
-    serde::Deserialize,
-    tsify::Tsify,
+    Debug, Clone, PartialEq, Eq, schemars::JsonSchema, serde::Serialize, serde::Deserialize,
 )]
-#[tsify(into_wasm_abi, from_wasm_abi)]
 pub struct WordPrefix {
     /// The prefix text (e.g., "le", "la", "les", "l'")
     pub prefix: String,

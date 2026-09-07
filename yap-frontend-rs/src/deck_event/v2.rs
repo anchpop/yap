@@ -6,10 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 use std::hash::Hash;
 
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify, Hash,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash)]
 #[serde(tag = "type")]
 pub(super) enum CardIndicator<S> {
     TargetLanguage {
@@ -27,8 +24,7 @@ pub(super) enum CardIndicator<S> {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub(super) enum SentenceReviewResult {
     Perfect {
@@ -42,8 +38,7 @@ pub(super) enum SentenceReviewResult {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub(super) enum SentenceReviewIndicator {
     TargetToNative {
@@ -52,18 +47,14 @@ pub(super) enum SentenceReviewIndicator {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub(super) struct LanguageEvent {
     pub(super) target_language: Language,
     pub(super) native_language: Language,
     pub(super) content: LanguageEventContent,
 }
 
-#[derive(
-    Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify,
-)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(rename_all = "lowercase")]
 pub(super) enum Rating {
     Again,
@@ -73,15 +64,13 @@ pub(super) enum Rating {
     Easy,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 pub(super) struct PlacementTest {
     pub(super) known_words: Vec<String>,
     pub(super) unknown_words: Vec<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub(super) enum LanguageEventContent {
     CompletePlacementTest {
@@ -102,8 +91,7 @@ pub(super) enum LanguageEventContent {
     },
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd)]
 #[serde(tag = "type")]
 pub(super) enum DeckEvent {
     Language(LanguageEvent),

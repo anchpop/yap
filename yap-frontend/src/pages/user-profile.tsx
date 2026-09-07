@@ -15,40 +15,21 @@ import {
   get_follow_status,
   follow_user,
   unfollow_user,
+  type Profile,
+  type UserLanguageStats,
+  type FollowStatus,
 } from "../../../yap-frontend-rs/pkg";
 import { Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { getLanguageFlag, getLanguageName } from "@/lib/utils";
 import type { AppContextType } from "@/App";
 
-interface Profile {
-  id: string;
-  display_name: string | null;
-  bio: string | null;
-  display_name_slug: string | null;
-  notifications_enabled: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-interface LanguageStats {
-  user_id: string;
-  language: string;
-  total_count: number;
-  daily_streak: number;
-  daily_streak_expiry: string | null;
-  xp: number;
-  percent_known: number;
-  started: string;
-  last_updated: string;
-}
-
 export function UserProfilePage() {
   const { id } = useParams<{ id: string }>();
   const { userInfo, accessToken } = useOutletContext<AppContextType>();
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [languageStats, setLanguageStats] = useState<LanguageStats[]>([]);
+  const [languageStats, setLanguageStats] = useState<UserLanguageStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,11 +37,7 @@ export function UserProfilePage() {
   const [editDisplayName, setEditDisplayName] = useState("");
   const [editBio, setEditBio] = useState("");
   const [saving, setSaving] = useState(false);
-  const [followStatus, setFollowStatus] = useState<{
-    is_following: boolean;
-    follower_count: number;
-    following_count: number;
-  } | null>(null);
+  const [followStatus, setFollowStatus] = useState<FollowStatus | null>(null);
   const [followLoading, setFollowLoading] = useState(false);
 
   const isOwnProfile = userInfo?.id === id;
@@ -76,7 +53,7 @@ export function UserProfilePage() {
       try {
         setLoading(true);
         const profileData = await get_profile_by_id(id);
-        setProfile(profileData as Profile);
+        setProfile(profileData);
         setEditDisplayName(profileData.display_name || "");
         setEditBio(profileData.bio || "");
         setError(null);
@@ -101,7 +78,7 @@ export function UserProfilePage() {
       try {
         setStatsLoading(true);
         const stats = await get_user_language_stats_by_id(id);
-        setLanguageStats(stats as LanguageStats[]);
+        setLanguageStats(stats);
       } catch (err) {
         console.error("Error loading language stats:", err);
         // Don't set error state - stats are optional
@@ -122,7 +99,7 @@ export function UserProfilePage() {
 
       try {
         const status = await get_follow_status(id, null, accessToken);
-        setFollowStatus(status as any);
+        setFollowStatus(status);
       } catch (err) {
         console.error("Error loading follow status:", err);
       }
@@ -147,7 +124,7 @@ export function UserProfilePage() {
 
       // Reload profile to get updated data including slug
       const profileData = await get_profile_by_id(id!);
-      setProfile(profileData as Profile);
+      setProfile(profileData);
       setIsEditing(false);
       toast.success("Profile updated successfully");
     } catch (err) {

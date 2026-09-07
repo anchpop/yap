@@ -21,8 +21,8 @@ const TIERS: &[(&str, usize)] = &[
 
 pub(crate) const WORDS_PER_LEVEL: usize = 31;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, tsify::Tsify)]
-#[tsify(into_wasm_abi, from_wasm_abi)]
+#[bridgerton::bridge(transparent)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct TierInfo {
     /// 1-indexed tier number
     pub tier: u32,

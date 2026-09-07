@@ -9,46 +9,24 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["console_error_panic_hook"]
+console_error_panic_hook = ["bridgerton/console_error_panic_hook"]
 local-backend = []
 
 [dependencies]
-wasm-bindgen.workspace = true
+bridgerton.workspace = true
 serde.workspace = true
 schemars.workspace = true
 serde_json.workspace = true
 chrono.workspace = true
 im.workspace = true
-tsify.workspace = true
 futures.workspace = true
 opfs.workspace = true
 fetch-happen.workspace = true
 xxhash-rust.workspace = true
 rkyv.workspace = true
-wasm-bindgen-futures = { version = "0.4", features = [
-    "futures-core-03-stream",
-] }
-js-sys = "0.3"
-web-sys = { version = "0.3.99", features = [
-    "Storage",
-    "Window",
-    "FileSystemDirectoryHandle",
-    "FileSystemFileHandle",
-    "FileSystemWritableFileStream",
-    "FileSystemGetFileOptions",
-    "FileSystemCreateWritableOptions",
-    "Blob",
-    "Navigator",
-    "StorageManager",
-    "FileSystemGetDirectoryOptions",
-    "File",
-    "AbortSignal",
-    "Performance",
-] }
-console_error_panic_hook = { version = "0.1.7", optional = true }
 rs-fsrs = { git = "https://github.com/anchpop/rs-fsrs.git", rev = "79393f05a435e31255a1cbfae48ff6f94e214900" }
 language-utils = { path = "../language-utils" }
 ordered-float = "5.3.0"
-serde-wasm-bindgen = "0.6"
 base64 = "0.22"
 thiserror = "2.0.18"
 weapon = { path = "../libraries/weapon", features = ["supabase", "opfs"] }
@@ -56,7 +34,6 @@ imdex_map = { path = "../libraries/imdex_map" }
 eyedee = { path = "../libraries/eyedee" }
 lasso = { workspace = true }
 unicode-normalization = "0.1.25"
-wasm-logger.workspace = true
 log.workspace = true
 pav_regression = { git = "https://github.com/anchpop/pav.rs.git", rev = "1d44104842df02b2b66d9443df6fb540aa368d69" }
 rustc-hash = "2.1"

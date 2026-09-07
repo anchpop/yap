@@ -73,8 +73,7 @@ jobs:
       - name: Build WASM module
         # To point beta at a non-production backend, add
         # `YAP_AI_BACKEND_URL=https://...` to this line.
-        run: CARGO_PROFILE_RELEASE_LTO=true wasm-pack build --release
-        working-directory: yap-frontend-rs
+        run: CARGO_PROFILE_RELEASE_LTO=true cargo bridgerton web --package yap-frontend-rs --release
 
       - name: Install frontend dependencies
         run: pnpm install
