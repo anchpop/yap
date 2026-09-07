@@ -4,6 +4,18 @@ private func check(_ condition: Bool, file: StaticString = #file, line: UInt = #
 
 @main struct YapSmoke {
     @MainActor static func main() async throws {
+        // Shared language copy crosses the real native bridge, including Unicode,
+        // optional script qualifiers, and accent keyboard arrays.
+        let french = get_language_metadata(language: .French)
+        check(french.native_name == "Français" && french.flag == "🇫🇷")
+        check(french.i_speak == "Je parle français" && french.lets_go == "Allons-y !")
+        check(french.accented_characters.contains("œ") && french.script == nil)
+        let simplified = get_language_metadata(language: .ChineseSimplified)
+        let traditional = get_language_metadata(language: .ChineseTraditional)
+        check(simplified.script == "Hans" && traditional.script == "Hant")
+        check(simplified.iso_code != traditional.iso_code && simplified.iso6391 == traditional.iso6391)
+        check(traditional.native_name == "繁體中文" && traditional.i_speak == "我說中文")
+        check(get_language_metadata(language: .English).character_type == nil)
         try YapHost.initialize()
         do {
             try YapHost.initialize()

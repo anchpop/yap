@@ -11,8 +11,8 @@ mod human_audio;
 mod language_pack;
 mod learning_metadata;
 pub use learning_metadata::{
-    CourseMaturity, DailyGoalOption, LanguageLearningMetadata, get_daily_goal_options,
-    get_language_learning_metadata,
+    CourseMaturity, DailyGoalOption, LanguageMetadata, get_daily_goal_options,
+    get_language_metadata,
 };
 mod next_cards;
 mod notifications;
